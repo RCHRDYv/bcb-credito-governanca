@@ -1,0 +1,43 @@
+# =============================================================================
+# PT: Dados brutos NUNCA entram no repositório. Cada CSV mensal do SCR tem
+#     cerca de 97 MB, e o pipeline os baixa da fonte oficial a cada execução.
+#     Versionar dado bruto de fonte pública é desperdício e quebra o princípio
+#     de reprodutibilidade a partir da origem.
+# EN: Raw data NEVER enters the repository. Each monthly SCR CSV is about
+#     97 MB, and the pipeline downloads them from the official source on every
+#     run. Versioning raw public-source data is wasteful and breaks the
+#     principle of reproducing from origin.
+# =============================================================================
+data/
+*.zip
+*.csv
+!dbt/seeds/*.csv
+
+# PT: Artefatos de build do dbt / EN: dbt build artifacts
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+logs/
+
+# PT: Credenciais. O profiles.yml real vive em ~/.dbt/, fora do repositório.
+#     Só o exemplo, sem valores reais, é versionado.
+# EN: Credentials. The real profiles.yml lives in ~/.dbt/, outside the repo.
+#     Only the example, with no real values, is versioned.
+profiles.yml
+.env
+*.pem
+.databrickscfg
+
+# PT: Ambiente Python / EN: Python environment
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv/
+*.egg-info/
+
+# PT: Sistema operacional e editor / EN: OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

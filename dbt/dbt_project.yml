@@ -1,0 +1,63 @@
+# =============================================================================
+# PT: Projeto dbt para a camada semântica dos dados de crédito do Banco Central.
+# EN: dbt project for the semantic layer over Brazilian Central Bank credit data.
+#
+# PT: A camada semântica aqui não é só transformação. Ela é o objeto de estudo:
+#     o experimento mede quanto essa camada, somada à ontologia, melhora a
+#     capacidade de um LLM responder perguntas de negócio corretamente.
+# EN: The semantic layer here is not just transformation. It is the object of
+#     study: the experiment measures how much this layer, combined with the
+#     ontology, improves an LLM's ability to answer business questions correctly.
+# =============================================================================
+
+name: 'bcb_credito'
+version: '0.1.0'
+config-version: 2
+
+profile: 'bcb_credito'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  bcb_credito:
+    # PT: staging faz relação 1:1 com a fonte. Renomeia, converte tipo e trata
+    #     valor sentinela. Nenhuma regra de negócio mora aqui.
+    # EN: staging maps 1:1 to the source. Renames, casts types and handles
+    #     sentinel values. No business logic lives here.
+    staging:
+      +materialized: view
+      +schema: staging
+
+    # PT: intermediate resolve as dimensões conformadas entre fontes que usam
+    #     código e granularidade diferentes (SCR, PIX, IF.data, IBGE).
+    # EN: intermediate resolves conformed dimensions across sources that use
+    #     different codes and grains (SCR, PIX, IF.data, IBGE).
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+
+    # PT: marts é o modelo dimensional voltado a negócio. É o que a IA consulta
+    #     no experimento e o que alimenta o dashboard.
+    # EN: marts is the business-facing dimensional model. This is what the AI
+    #     queries in the experiment and what feeds the dashboard.
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  bcb_credito:
+    # PT: dim_modalidade é GERADA a partir de ontology/modalidades.yml, e não
+    #     escrita à mão. A ontologia é fonte do modelo, não documentação sobre
+    #     ele, o que torna a deriva entre documentação e dado impossível.
+    # EN: dim_modalidade is GENERATED from ontology/modalidades.yml rather than
+    #     hand-written. The ontology is a source of the model, not documentation
+    #     about it, which makes doc-to-data drift structurally impossible.
+    +schema: marts

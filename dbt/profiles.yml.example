@@ -1,0 +1,40 @@
+# =============================================================================
+# PT: Modelo de configuração. Copie para ~/.dbt/profiles.yml e preencha com os
+#     valores do seu próprio workspace. Este arquivo não contém segredo algum.
+# EN: Configuration template. Copy to ~/.dbt/profiles.yml and fill in your own
+#     workspace values. This file contains no secrets.
+#
+# PT: A autenticação recomendada é OAuth via Databricks CLI. Rode antes:
+#         databricks auth login --host https://<seu-workspace>.cloud.databricks.com
+#     Assim nenhum token precisa ser escrito em disco por você.
+# EN: Recommended auth is OAuth through the Databricks CLI. Run first:
+#         databricks auth login --host https://<your-workspace>.cloud.databricks.com
+#     This way no token needs to be written to disk by you.
+# =============================================================================
+
+bcb_credito:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+
+      # PT: Catálogo e schema do Unity Catalog onde os modelos serão criados.
+      # EN: Unity Catalog catalog and schema where models will be created.
+      catalog: workspace
+      schema: bcb_scr
+
+      # PT: Host sem o prefixo https://. Ex: dbc-xxxxxxxx-xxxx.cloud.databricks.com
+      # EN: Host without the https:// prefix.
+      host: <seu-workspace>.cloud.databricks.com
+
+      # PT: HTTP path do SQL Warehouse. Encontre com: databricks warehouses list
+      # EN: SQL Warehouse HTTP path. Find it with: databricks warehouses list
+      http_path: /sql/1.0/warehouses/<id-do-warehouse>
+
+      # PT: Usa a sessão OAuth do CLI. Alternativa: token: <PAT> (menos seguro).
+      # EN: Uses the CLI OAuth session. Alternative: token: <PAT> (less secure).
+      auth_type: oauth
+
+      threads: 4
+      connect_retries: 3
+      connect_timeout: 120
