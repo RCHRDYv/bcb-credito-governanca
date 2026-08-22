@@ -59,6 +59,24 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | `dashboard/` | Visualização estática |
 | `docs/adr/` | Registro de decisões de arquitetura |
 
+## Segurança
+
+Repositório público tem duas propriedades que mudam o cálculo de risco: qualquer pessoa lê, e **o histórico do git é permanente**. Apagar um segredo do arquivo não o remove do histórico.
+
+**Nenhuma credencial existe neste repositório, em nenhum commit.** A autenticação no Databricks usa OAuth, então nenhum token é sequer gerado. O `profiles.yml` real vive em `~/.dbt/`, fora do projeto, e o repositório publica apenas um `.example` com placeholders.
+
+**Três camadas de defesa, porque uma só é frágil:**
+
+| Camada | O que faz | Por que não basta sozinha |
+|---|---|---|
+| `.gitignore` | Cobre o caso normal | Contornável por engano com `git add -f` |
+| Hooks de pre-commit | `gitleaks`, detecção de chave privada, bloqueio de arquivo grande, e verificador próprio de dado bruto | Depende de quem clona ter instalado os hooks |
+| CI no GitHub Actions | Roda os mesmos verificadores no servidor | Não depende da máquina de ninguém |
+
+O verificador de dado bruto (`scripts/check_no_raw_data.py`) foi testado contra violação real, não apenas assumido como funcional.
+
+O raciocínio completo, com as alternativas descartadas, está em [`docs/adr/0001`](docs/adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md).
+
 ## Notas de honestidade
 
 **Sobre o volume:** cada CSV mensal tem cerca de 97 MB. O conjunto de 2024 a 2026 chega a vários gigabytes e dezenas de milhões de linhas. O uso de Databricks é justificado pelo volume, não é vitrine.

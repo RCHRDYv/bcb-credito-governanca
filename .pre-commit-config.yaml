@@ -1,0 +1,74 @@
+# =============================================================================
+# PT: Barreiras automáticas antes de cada commit. A premissa é que disciplina
+#     humana falha, e que segredo commitado em repositório público fica no
+#     histórico do git para sempre, mesmo depois de apagado do arquivo.
+# EN: Automated guardrails before every commit. The premise is that human
+#     discipline fails, and that a secret committed to a public repository
+#     stays in git history forever, even after being deleted from the file.
+#
+# PT: Instalar com:  uv tool install pre-commit && pre-commit install
+# EN: Install with:  uv tool install pre-commit && pre-commit install
+# =============================================================================
+
+repos:
+  # PT: Detecção de segredos. Roda sobre o diff, não sobre o disco inteiro.
+  # EN: Secret detection. Runs over the diff, not the whole disk.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.29.0
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # PT: Bloqueia arquivo grande. Cada CSV mensal do SCR tem ~97 MB, e um
+      #     único commit acidental inflaria o repositório de forma irreversível.
+      # EN: Blocks large files. Each monthly SCR CSV is ~97 MB, and a single
+      #     accidental commit would bloat the repository irreversibly.
+      - id: check-added-large-files
+        args: ['--maxkb=5000']
+
+      # PT: Bloqueia chave privada em qualquer formato.
+      # EN: Blocks private keys in any format.
+      - id: detect-private-key
+
+      # PT: Impede commit direto em branch principal sem passar por PR.
+      # EN: Prevents committing straight to the main branch without a PR.
+      - id: no-commit-to-branch
+        args: ['--branch', 'main']
+
+      # PT: Higiene de arquivo e validação de sintaxe.
+      # EN: File hygiene and syntax validation.
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # PT: Barreira específica deste projeto: nenhum dado bruto entra no
+  #     repositório, independentemente de tamanho. O pipeline baixa da fonte
+  #     oficial a cada execução, o que garante reprodutibilidade a partir da
+  #     origem em vez de depender de cópia versionada.
+  # EN: Project-specific guardrail: no raw data enters the repository,
+  #     regardless of size. The pipeline downloads from the official source on
+  #     every run, which guarantees reproducibility from origin rather than
+  #     relying on a versioned copy.
+  # PT: language "python" faz o pre-commit criar e gerenciar o próprio
+  #     ambiente. Isso torna o hook portátil: funciona para quem clonar,
+  #     independentemente de como o Python está instalado na máquina dessa
+  #     pessoa. Com "system", o hook dependeria de haver um `python` no PATH,
+  #     o que quebra em ambientes gerenciados por uv, pyenv ou conda.
+  # EN: language "python" makes pre-commit create and manage its own
+  #     environment. This keeps the hook portable: it works for anyone who
+  #     clones the repo, regardless of how Python is installed on their
+  #     machine. With "system", the hook would depend on a `python` on PATH,
+  #     which breaks in environments managed by uv, pyenv or conda.
+  - repo: local
+    hooks:
+      - id: bloqueia-dado-bruto
+        name: bloqueia dado bruto (csv/zip fora de seeds)
+        entry: python scripts/check_no_raw_data.py
+        language: python
+        pass_filenames: true
