@@ -1,0 +1,44 @@
+# =============================================================================
+# PT: Terceira camada de defesa. Os hooks de pre-commit rodam na máquina de
+#     quem commita, o que significa que dependem de essa pessoa tê-los
+#     instalado. Este workflow roda os mesmos verificadores no servidor, onde
+#     não depende de configuração local de ninguém.
+# EN: Third layer of defence. Pre-commit hooks run on the committer's machine,
+#     which means they depend on that person having installed them. This
+#     workflow runs the same checks on the server, where it does not depend on
+#     anyone's local configuration.
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# PT: Permissão mínima. O workflow só precisa ler o código.
+# EN: Least privilege. The workflow only needs to read the code.
+permissions:
+  contents: read
+
+jobs:
+  qualidade-e-seguranca:
+    name: Qualidade e segurança
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # PT: Histórico completo para o gitleaks poder varrer os commits do PR.
+          # EN: Full history so gitleaks can scan the PR's commits.
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Rodar verificadores de pre-commit
+        uses: pre-commit/action@v3.0.1
