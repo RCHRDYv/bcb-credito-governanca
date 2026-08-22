@@ -57,7 +57,18 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | `dbt/` | Camada semântica: staging, intermediate, marts, testes |
 | `evaluation/` | Perguntas de negócio, gabarito e análise estatística |
 | `dashboard/` | Visualização estática |
+| `scripts/` | Utilitários e verificadores |
 | `docs/adr/` | Registro de decisões de arquitetura |
+
+### Documentação
+
+| Documento | O que traz |
+|---|---|
+| [Especificação](docs/especificacao.md) | Arquitetura, esquema da fonte, camadas do dbt, desenho do experimento |
+| [Referências](docs/referencias.md) | Literatura e premissa de mercado que sustentam a tese |
+| [Desenvolvimento com IA](docs/desenvolvimento-com-ia.md) | Contabilidade honesta do processo, incluindo os erros da IA e como foram pegos |
+| [ADR 0001](docs/adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) | Credenciais e dado bruto fora do repositório |
+| [Perguntas do experimento](evaluation/questions.yml) | As 30 perguntas, pré-registradas antes de qualquer execução |
 
 ## Segurança
 
