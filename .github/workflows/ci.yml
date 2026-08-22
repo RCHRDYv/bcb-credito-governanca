@@ -42,3 +42,17 @@ jobs:
 
       - name: Rodar verificadores de pre-commit
         uses: pre-commit/action@v3.0.1
+        env:
+          # PT: no-commit-to-branch é guarda-corpo de desenvolvimento local:
+          #     impede commit direto na main na máquina de quem desenvolve.
+          #     No CI ele não faz sentido e quebra de propósito, porque após o
+          #     merge o runner faz checkout justamente da main. Pular aqui não
+          #     enfraquece nada: a proteção continua valendo onde ela atua, que
+          #     é antes do commit sair da máquina.
+          # EN: no-commit-to-branch is a local development guardrail: it blocks
+          #     direct commits to main on the developer's machine. In CI it is
+          #     meaningless and fails by construction, because after a merge the
+          #     runner checks out main itself. Skipping it here weakens nothing:
+          #     the protection still applies where it acts, which is before the
+          #     commit ever leaves the machine.
+          SKIP: no-commit-to-branch
