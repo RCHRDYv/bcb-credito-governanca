@@ -98,7 +98,23 @@ Sete artefatos, todos gerados de fonte versionada:
 
 Site estruturado segundo **Diátaxis**, separando tutorial, guia prático, referência e explicação.
 
-**Formalidade da ontologia:** o YAML é, tecnicamente, um vocabulário controlado. O projeto emite **SKOS/RDF como artefato gerado**, que é o padrão W3C para taxonomia, tornando o termo "ontologia" defensável sem o peso do OWL.
+**Modelo de ontologia:** três padrões complementares, decididos em [ADR 0002](adr/0002-modelo-de-ontologia-skos-datacube-xkos.md).
+
+| Camada | Padrão | Papel |
+|---|---|---|
+| Vocabulário | **SKOS** | Conceito, esquema, hierarquia `broader`/`narrower`, definição, nota de escopo |
+| Estrutura | **RDF Data Cube** (`qb:`) | Dimensões e medidas do cubo estatístico. Alinhado ao modelo SDMX usado por bancos centrais |
+| Versionamento da classificação | **XKOS** | Correspondência entre as taxonomias V1 e V2, com tipo (exata, aproximada, mais ampla, mais restrita) |
+
+**Autoria em YAML, emissão em RDF.** A fonte da verdade é YAML versionado, e o RDF é gerado por script. O motivo é que revisão humana sobre Turtle não acontece na prática, e revisão que não acontece é controle que não existe.
+
+**OWL foi descartado** por não haver regra de inferência a derivar nesta taxonomia.
+
+### Escopo da ontologia, levantado do dado antes de ler normativo
+
+99 termos: 13 modalidades, 55 submodalidades (em 65 pares), 13 portes, 8 segmentos, 6 indexadores, 2 valores de cliente e 2 de origem.
+
+**Armadilha semântica já identificada:** a coluna `porte` mistura **duas taxonomias distintas**. Pessoa jurídica usa porte de empresa (Micro, Pequeno, Médio, Grande) e pessoa física usa faixa de renda em salários mínimos. Agrupar por `porte` sem filtrar `cliente` mistura categorias incompatíveis. Isso não está em lugar nenhum do esquema, e é exatamente o tipo de conhecimento que só a ontologia carrega.
 
 ## Desenho do experimento
 
