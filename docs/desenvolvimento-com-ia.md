@@ -60,9 +60,23 @@ Para configurar uma integração, a IA gravou um token de acesso amplo numa vari
 
 **Correção:** variável removida, token de volta ao cofre, e a integração passou a ser opcional em vez de exigir credencial ampla.
 
+### 6. Encoding afirmado sem teste
+
+A IA afirmou, e registrou na especificação, que os arquivos do SCR usavam codificação **latin-1**. Estão em **UTF-8 com BOM**.
+
+A afirmação parecia confirmada porque ler em latin-1 **não gera erro**: latin-1 mapeia qualquer byte para algum caractere, então o arquivo abre normalmente e apenas os acentos ficam corrompidos. A verificação inicial olhou "abriu sem erro" em vez de "o conteúdo está correto".
+
+**Pego por:** um artefato visual no cabeçalho (`ï»¿data_base`), que é a assinatura de um BOM UTF-8 lido como latin-1, seguido de teste explícito decodificando os mesmos bytes em quatro codificações e comparando o resultado.
+
+**Por que importa:** é o pior tipo de falha, porque é silenciosa. Toda a ingestão teria rodado sem erro, produzindo dado com acento corrompido em toda dimensão textual, e a ontologia teria sido construída sobre rótulos errados.
+
+**Correção adotada:** `utf-8-sig`, e a regra de que verificar encoding significa comparar conteúdo decodificado, nunca ausência de exceção.
+
 ## O padrão que emerge
 
-Os cinco erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+Os seis erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+
+O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos seis casos passaram despercebidos justamente porque nada quebrou.
 
 A prática adotada no projeto a partir daí: **nenhuma afirmação sobre fonte de dado, volume ou endpoint entra em código ou documentação sem verificação direta na origem.** Onde a verificação não foi possível, o documento declara isso explicitamente.
 

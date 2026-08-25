@@ -41,9 +41,10 @@ Todas verificadas no arquivo, e todas são material para a camada de staging e p
 1. **Sentinela `-1`** em `numero_de_operacoes`, indicando supressão por sigilo estatístico. Somar essa coluna sem tratar produz número sem sentido
 2. **Delimitador dentro de campo entre aspas.** O arquivo usa `;` e há valores de `cnae_ocupacao` contendo `;`, por exemplo `"Comércio; reparação de veículos automotores e motocicletas"`
 3. **Vírgula decimal** em formato brasileiro, com números vindo entre aspas como texto
-4. **Codificação latin-1**, não UTF-8
-5. **`carteira_inadimplencia` e `ativo_problematico` são colunas distintas**, com definição normativa diferente
-6. **Faixas de aging devem somar** para `carteira_a_vencer`, o que dá teste de qualidade natural
+4. **Codificação UTF-8 com BOM.** Ler com `utf-8-sig`. Ler com `latin-1` **não gera erro**, apenas corrompe silenciosamente todo acento, o que é o pior tipo de falha
+5. **Padding com espaços à direita** nos valores da V1, exigindo `strip` na normalização
+6. **`carteira_inadimplencia` e `ativo_problematico` são colunas distintas**, com definição normativa diferente
+7. **Faixas de aging devem somar** para `carteira_a_vencer`, o que dá teste de qualidade natural
 
 ### PIX: esse sim é OData
 
