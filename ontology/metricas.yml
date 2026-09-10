@@ -1,0 +1,278 @@
+# =============================================================================
+# PT: Ontologia das medidas do SCR.data. Cada conceito carrega definição
+#     citada da fonte oficial, nível de confiança declarado, e as notas de
+#     escopo que existem no normativo mas não acompanham o dado.
+# EN: Ontology of SCR.data measures. Each concept carries a definition quoted
+#     from the official source, a declared confidence level, and the scope
+#     notes that exist in the methodology but do not travel with the data.
+#
+# PT: Estrutura alinhada ao SKOS conforme ADR 0002. O RDF é gerado a partir
+#     deste arquivo, que é a fonte da verdade. Ver docs/adr/0002.
+# EN: SKOS-aligned structure per ADR 0002. RDF is generated from this file,
+#     which is the source of truth. See docs/adr/0002.
+#
+# -----------------------------------------------------------------------------
+# confianca:
+#   verbatim      = definição transcrita literalmente da fonte
+#   parafraseado  = redação própria, sentido diretamente amparado na fonte
+#   inferido      = conclusão a partir de contexto, não declarada na fonte
+#   lacuna        = não encontrado em nenhum documento consultado
+# =============================================================================
+
+esquema:
+  id: scr-metricas
+  titulo: "Medidas do SCR.data"
+  versao_dado: "V2"
+  fonte_primaria: "Metodologia do SCR.data, Versão 2 (BCB)"
+  data_leitura: "2026-08-25"
+
+conceitos:
+
+  # ---------------------------------------------------------------------------
+  # PT: As duas métricas que motivaram este projeto. Nomes parecidos,
+  #     definições diferentes, R$ 274 bilhões de distância entre elas.
+  # EN: The two metrics that motivated this project. Similar names, different
+  #     definitions, R$ 274 billion apart.
+  # ---------------------------------------------------------------------------
+
+  - id: carteira_inadimplencia
+    notation: carteira_inadimplencia
+    prefLabel_pt: "Carteira inadimplida"
+    prefLabel_en: "Non-performing portfolio"
+    altLabel_pt:
+      - "Carteira inadimplida arrastada"   # PT: nome usado na V1 / EN: name used in V1
+    definition: >
+      Somatório das operações de crédito a vencer e vencidas que possuam
+      alguma parcela vencida há mais de 90 dias.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.x"
+    scopeNote: >
+      O valor inclui a operação INTEIRA, incluindo a parcela ainda a vencer,
+      quando qualquer parcela ultrapassa 90 dias de atraso. É esse mecanismo
+      que o nome usado na V1, "arrastada", descrevia explicitamente.
+    aviso_critico: >
+      NÃO confundir com o conceito "Inadimplência" da seção 2.c do mesmo
+      documento, que é uma RAZÃO (carteira em atraso dividida pela carteira
+      total). Esta coluna é um valor absoluto em reais. Aplicar a definição
+      da seção 2 a esta coluna erra por cerca de três ordens de grandeza.
+    historyNote: >
+      Renomeada de "carteira_inadimplida_arrastada" (V1) para
+      "carteira_inadimplencia" (V2). A definição é textualmente idêntica nas
+      duas versões, portanto a série é contínua. A mudança é apenas de rótulo.
+    correspondencia_v1:
+      tipo: exata
+      termo: carteira_inadimplida_arrastada
+      fonte: "Metodologia V1, seção 4.u"
+
+  - id: ativo_problematico
+    notation: ativo_problematico
+    prefLabel_pt: "Ativo problemático"
+    prefLabel_en: "Problem asset"
+    definition: >
+      Somatório das operações de crédito classificadas como ativos
+      problemáticos.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.y"
+    scopeNote: >
+      São consideradas ativos problemáticos as operações em atraso há mais de
+      noventa dias E as operações nas quais existem indícios de que a
+      obrigação não será integralmente honrada, incluindo operações objeto de
+      reestruturação com deterioração significativa da qualidade do crédito.
+      É, portanto, um superconjunto da carteira inadimplida.
+    fonte_scopeNote: "Metodologia V2, seção 2.d"
+    aviso_critico: >
+      MUDANÇA DE DEFINIÇÃO EM JANEIRO DE 2025. Até dezembro de 2024, o BCB
+      aplicava critério próprio, combinando atraso acima de 90 dias,
+      reestruturação identificada por algoritmo interno do BCB, e
+      classificação de risco entre os níveis E e H. A partir de janeiro de
+      2025 são consideradas SOMENTE as operações que a própria instituição
+      financeira classificou como ativo problemático (característica especial
+      19). Comparar dezembro de 2024 com janeiro de 2025 é comparar
+      definições diferentes, e nada no dado sinaliza isso.
+    historyNote: >
+      Quebra de definição em 2025-01-01, documentada em ambas as versões da
+      metodologia. Anterior e independente da quebra de taxonomia V1 para V2.
+    correspondencia_v1:
+      tipo: exata
+      termo: ativo_problematico
+      fonte: "Metodologia V1, seção 4.v"
+      ressalva: >
+        A correspondência de definição é exata, mas ambas as versões sofrem a
+        mesma quebra de janeiro de 2025.
+
+  # ---------------------------------------------------------------------------
+  # PT: Medidas de composição da carteira.
+  # EN: Portfolio composition measures.
+  # ---------------------------------------------------------------------------
+
+  - id: carteira_ativa
+    notation: carteira_ativa
+    prefLabel_pt: "Carteira ativa"
+    prefLabel_en: "Active portfolio"
+    definition: "Somatório da carteira a vencer e da carteira vencida."
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.w"
+    scopeNote: >
+      É o denominador natural para os indicadores de inadimplência e de ativo
+      problemático quando expressos como percentual.
+
+  - id: carteira_a_vencer
+    notation: carteira_a_vencer
+    prefLabel_pt: "Carteira a vencer"
+    prefLabel_en: "Performing portfolio"
+    definition: >
+      Somatório das seis faixas de valores a vencer, de até 90 dias até acima
+      de 5400 dias.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.s"
+    regra_de_qualidade: >
+      Deve ser igual à soma das seis colunas a_vencer_*. Divergência indica
+      erro de ingestão ou de parse. É teste de qualidade obrigatório.
+    novo_na_v2: true
+    historyNote: >
+      Coluna inexistente na V1, que trazia apenas "Carteira total" como
+      somatório das faixas a vencer.
+
+  - id: carteira_vencida
+    notation: carteira_vencida
+    prefLabel_pt: "Carteira vencida"
+    prefLabel_en: "Overdue portfolio"
+    definition: >
+      Somatório dos valores vencidos de 15 a 90 dias e dos vencidos acima de
+      90 dias.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.v"
+    novo_na_v2: true
+    historyNote: >
+      A V1 trazia uma única coluna, "vencido_acima_de_15_dias", sem separar as
+      faixas. A V2 desmembrou em duas e criou o agregado. Ganho de
+      granularidade, e a soma das duas faixas da V2 corresponde à coluna única
+      da V1.
+    correspondencia_v1:
+      tipo: mais_ampla
+      termo: vencido_acima_de_15_dias
+      fonte: "Metodologia V1, seção 4.s"
+
+  # ---------------------------------------------------------------------------
+  # PT: A coluna com a armadilha mais silenciosa do arquivo.
+  # EN: The column with the quietest trap in the file.
+  # ---------------------------------------------------------------------------
+
+  - id: numero_de_operacoes
+    notation: numero_de_operacoes
+    prefLabel_pt: "Número de operações"
+    prefLabel_en: "Number of operations"
+    definition: "Representa o número de operações de crédito para um dado recorte de dados."
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.l"
+    aviso_critico: >
+      O valor -1 aparece nesta coluna e NÃO é uma contagem. É marcador de
+      supressão. Somar, calcular média ou usar como denominador sem tratar o
+      sentinela produz resultado sem sentido, e o cálculo não gera erro
+      algum.
+    valor_sentinela:
+      valor: -1
+      significado: "Supressão por baixa contagem de operações"
+      confianca: inferido
+      justificativa: >
+        A metodologia da V2 não documenta o sentinela. A inferência vem da V1,
+        que declarava: "Casos em que o número de operações seja inferior ou
+        igual a 15, a informação divulgada será '<= 15'". A V2 substituiu o
+        rótulo legível por um código numérico e removeu a explicação.
+      fonte_da_inferencia: "Metodologia V1, seção 4.l"
+      pendente_de_confirmacao: true
+    historyNote: >
+      Regressão de qualidade semântica na V2: a V1 documentava a supressão e
+      usava rótulo legível; a V2 usa código numérico não documentado.
+
+  # ---------------------------------------------------------------------------
+  # PT: Conceito de nível de relatório, não coluna. Registrado justamente
+  #     porque a colisão de nome com a coluna é a armadilha.
+  # EN: Report-level concept, not a column. Recorded precisely because the
+  #     name collision with the column is the trap.
+  # ---------------------------------------------------------------------------
+
+  - id: indicador_inadimplencia
+    prefLabel_pt: "Inadimplência (indicador)"
+    prefLabel_en: "Default rate (indicator)"
+    tipo: razao
+    definition: >
+      Calcula-se pela divisão do valor da carteira das operações de crédito
+      com alguma parcela em atraso acima de 90 dias pelo valor da carteira de
+      todas as operações.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 2.c"
+    formula: "carteira_inadimplencia / carteira_ativa"
+    aviso_critico: >
+      Não existe como coluna no arquivo. É um indicador derivado. A colisão de
+      nome com a coluna carteira_inadimplencia é a razão de este conceito
+      estar registrado separadamente.
+
+  - id: indicador_ativo_problematico
+    prefLabel_pt: "Ativo problemático (indicador)"
+    prefLabel_en: "Problem asset rate (indicator)"
+    tipo: razao
+    definition: >
+      Calcula-se pela divisão do valor da carteira das operações de crédito
+      consideradas como ativos problemáticos pelo valor da carteira de todas
+      as operações.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 2.d"
+    formula: "ativo_problematico / carteira_ativa"
+
+# =============================================================================
+# PT: Avisos que valem para o conjunto todo e não pertencem a uma métrica só.
+# EN: Warnings that apply to the whole set and do not belong to one metric.
+# =============================================================================
+
+avisos_gerais:
+
+  - id: outros_creditos_balde_de_supressao
+    gravidade: alta
+    descricao: >
+      A modalidade "Outros créditos" acumula agregações cujo número de
+      operações é muito baixo. O total dessa modalidade, portanto, NÃO
+      representa o total dessa categoria no Sistema Financeiro. Ela é
+      parcialmente um destino de supressão, e não uma categoria de negócio
+      pura.
+    confianca: verbatim
+    fonte: "Metodologia V1, introdução"
+    aviso_critico: >
+      ESTA ADVERTÊNCIA FOI REMOVIDA DA METODOLOGIA V2. Não há indicação de que
+      a regra tenha deixado de valer, apenas de que deixou de ser comunicada.
+      Em junho de 2026, "Outros créditos" representa 10,42% da carteira ativa.
+      Quem usa a V2 não recebe esse aviso em lugar nenhum.
+    pendente_de_confirmacao: true
+
+  - id: limiar_de_valor_mudou
+    gravidade: media
+    descricao: >
+      A base inclui operações de valor superior a R$ 1.000 até a data-base de
+      maio de 2016, e superior a R$ 200 a partir de junho de 2016.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 1"
+    scopeNote: >
+      Séries que atravessam junho de 2016 têm mudança de cobertura, não apenas
+      de mercado. O salto no número de operações naquele mês é artefato
+      metodológico.
+
+  - id: divergencia_com_outras_publicacoes
+    gravidade: media
+    descricao: >
+      Os dados podem divergir de outras publicações do BCB, porque estas são
+      baseadas em documentos agregados enquanto o SCR.data vem do documento
+      3040, com informação detalhada por operação. Existe margem de tolerância
+      declarada entre o total informado e os saldos contábeis.
+    confianca: parafraseado
+    fonte: "Metodologia V2, seção 1"
+    scopeNote: >
+      Relevante para qualquer pergunta que compare este dado com a Nota para a
+      Imprensa ou com o SGS. Divergência não é erro.
+
+  - id: escopo_exclui_exterior
+    gravidade: baixa
+    descricao: >
+      Não compõem as informações os saldos de dependências ou empresas
+      controladas pela instituição financeira no exterior.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 1"
