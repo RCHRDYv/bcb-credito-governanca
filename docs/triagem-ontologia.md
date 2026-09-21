@@ -3,6 +3,8 @@
 **Data:** 2026-08-25
 **Objetivo deste documento:** tornar a revisão possível de verdade.
 
+> **Atualização de 2026-09-21:** as quatro decisões do Bloco 1 foram tomadas e os dois achados do Bloco 3 foram investigados. O registro das decisões e das verificações está em [`docs/cadeia-normativa.md`](cadeia-normativa.md). Resumo: sentinela será testado empiricamente; "Outros créditos" continua sendo balde de supressão; recorte a partir de 2024; Anexo 3 lido; o rótulo duplo é renomeação oficial, não corrupção; a diferença 76 contra 55 tem explicação parcial com pendência declarada. O texto abaixo é mantido como estava, para registro de como a decisão foi apresentada.
+
 Revisar 99 termos em YAML não acontece na prática. Este documento separa o que **exige decisão sua** do que você pode conferir por amostragem, para que a atenção fique onde ela muda o resultado.
 
 ---

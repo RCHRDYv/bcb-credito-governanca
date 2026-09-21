@@ -67,7 +67,13 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | [Especificação](docs/especificacao.md) | Arquitetura, esquema da fonte, camadas do dbt, desenho do experimento |
 | [Referências](docs/referencias.md) | Literatura e premissa de mercado que sustentam a tese |
 | [Desenvolvimento com IA](docs/desenvolvimento-com-ia.md) | Contabilidade honesta do processo, incluindo os erros da IA e como foram pegos |
+| [Análise V1 e V2](docs/analise-v1-v2.md) | A quebra de taxonomia entre as duas versões do SCR.data |
+| [Leitura dos normativos](docs/leitura-normativos.md) | O que as metodologias oficiais respondem, e o que não respondem |
+| [Cadeia normativa](docs/cadeia-normativa.md) | Por que o dado mudou: leiaute, instruções do documento 3040 e as normas por trás de cada quebra |
+| [Triagem da ontologia](docs/triagem-ontologia.md) | Decisões de domínio que a ontologia exigiu |
 | [ADR 0001](docs/adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) | Credenciais e dado bruto fora do repositório |
+| [ADR 0002](docs/adr/0002-modelo-de-ontologia-skos-datacube-xkos.md) | Modelo de ontologia: SKOS, RDF Data Cube e XKOS |
+| [ADR 0003](docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md) | Conformação de taxonomia entre versões |
 | [Perguntas do experimento](evaluation/questions.yml) | As 30 perguntas, pré-registradas antes de qualquer execução |
 
 ## Segurança

@@ -72,11 +72,21 @@ A afirmação parecia confirmada porque ler em latin-1 **não gera erro**: latin
 
 **Correção adotada:** `utf-8-sig`, e a regra de que verificar encoding significa comparar conteúdo decodificado, nunca ausência de exceção.
 
+### 7. Afirmação sobre o conteúdo do dado sem consulta
+
+Ao investigar um rótulo duplo na planilha oficial de equivalência, a IA afirmou que as duas modalidades do rótulo, "PJ - Capital de giro rotativo" e "PJ - Cheque especial e conta garantida", apareciam separadamente no dado de 2025, e usou isso como objeção à hipótese de renomeação.
+
+**Pego por:** o desenvolvedor pediu para conferir a ressalva antes de seguir. A consulta nos 12 meses de 2025 mostrou só o nome novo. A IA provavelmente confundiu com "PJ - Capital de giro", modalidade diferente e a maior da carteira PJ.
+
+**Por que importa:** o erro não gerou afirmação falsa publicada, mas quase derrubou uma conclusão correta. Dúvida sem verificação também é afirmação, e também precisa de fonte.
+
+**Correção:** hipótese de renomeação confirmada pela nota de rodapé da própria planilha e pelo dado. Ver `docs/cadeia-normativa.md`, seção 4.
+
 ## O padrão que emerge
 
-Os seis erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+Os sete erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
 
-O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos seis casos passaram despercebidos justamente porque nada quebrou.
+O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos sete casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
 
 A prática adotada no projeto a partir daí: **nenhuma afirmação sobre fonte de dado, volume ou endpoint entra em código ou documentação sem verificação direta na origem.** Onde a verificação não foi possível, o documento declara isso explicitamente.
 
