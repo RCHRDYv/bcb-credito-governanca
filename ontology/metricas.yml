@@ -179,24 +179,43 @@ conceitos:
     confianca: verbatim
     fonte: "Metodologia V2, seção 3.l"
     aviso_critico: >
-      O valor -1 aparece nesta coluna e NÃO é uma contagem. É marcador de
-      supressão. Somar, calcular média ou usar como denominador sem tratar o
-      sentinela produz resultado sem sentido, e o cálculo não gera erro
-      algum.
+      O valor -1 aparece nesta coluna e NÃO é uma contagem: é contagem não
+      divulgada. Está em 26,7% das linhas da V2, que somam 6,71% da carteira.
+      Somar, calcular média ou usar como denominador sem tratar o sentinela
+      produz resultado sem sentido, e o cálculo não gera erro algum. Soma da
+      coluna em grupo com linhas suprimidas é limite inferior, não total.
     valor_sentinela:
       valor: -1
-      significado: "Supressão por baixa contagem de operações"
-      confianca: inferido
-      justificativa: >
-        A metodologia da V2 não documenta o sentinela. A inferência vem da V1,
-        que declarava: "Casos em que o número de operações seja inferior ou
-        igual a 15, a informação divulgada será '<= 15'". A V2 substituiu o
-        rótulo legível por um código numérico e removeu a explicação.
-      fonte_da_inferencia: "Metodologia V1, seção 4.l"
+      significado: "Contagem não divulgada. Critério de supressão não publicado."
+      confianca: lacuna
+      evidencia: >
+        Teste empírico sobre jan/2024 a jul/2026. A V2 divulga contagens de 1
+        a 15 abertamente (3.026.742 linhas), então o -1 não substitui o
+        "<= 15" da V1. Linhas com -1 têm carteira mediana de R$ 30,8 mil,
+        próxima à de linhas com uma operação. Concentram-se em modalidades e
+        segmentos de nicho, em UFs menores e em PJ. 80.401 recortes alternam
+        entre -1 e contagem divulgada ao longo dos meses, com contagem máxima
+        de 514.490 operações, o que exclui o número de operações como
+        critério.
+      fonte: "docs/sentinela-numero-de-operacoes.md"
+      hipotese_refutada: >
+        "O -1 é o '<= 15' da V1 com outro rótulo." Era a leitura inicial,
+        inferida da Metodologia V1, seção 4.l.
+      hipotese_de_trabalho: >
+        Sigilo aplicado a recortes com poucas instituições ou poucos clientes.
+        Não testável com o dado publicado, que não traz a instituição.
       pendente_de_confirmacao: true
+    valor_sentinela_v1:
+      valor: "<= 15"
+      significado: "Entre 1 e 15 operações"
+      confianca: verbatim
+      fonte: "Metodologia V1, seção 4.l"
+      scopeNote: "Presente em 75% das linhas da V1 no recorte do projeto."
     historyNote: >
-      Regressão de qualidade semântica na V2: a V1 documentava a supressão e
-      usava rótulo legível; a V2 usa código numérico não documentado.
+      A V1 suprimia toda contagem até 15, com rótulo legível e documentado.
+      A V2 passou a divulgar essas contagens e introduziu o -1 para uma
+      supressão diferente, por critério não publicado. Não é a mesma regra
+      com outro rótulo: são regras diferentes.
 
   # ---------------------------------------------------------------------------
   # PT: Conceito de nível de relatório, não coluna. Registrado justamente

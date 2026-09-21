@@ -40,7 +40,7 @@ Medido na ingestão de 2026-09-21, de janeiro de 2024 a julho de 2026: 31 CSVs m
 
 Todas verificadas no arquivo, e todas são material para a camada de staging e para o experimento:
 
-1. **Sentinela `-1`** em `numero_de_operacoes`, indicando supressão por sigilo estatístico. Somar essa coluna sem tratar produz número sem sentido
+1. **Sentinela `-1`** em `numero_de_operacoes`, marcando contagem não divulgada, por critério não publicado e que não é o limiar de 15 operações da V1 (ver [`sentinela-numero-de-operacoes.md`](sentinela-numero-de-operacoes.md)). Somar essa coluna sem tratar produz número sem sentido
 2. **Delimitador dentro de campo entre aspas.** O arquivo usa `;` e há valores de `cnae_ocupacao` contendo `;`, por exemplo `"Comércio; reparação de veículos automotores e motocicletas"`
 3. **Vírgula decimal** em formato brasileiro, com números vindo entre aspas como texto
 4. **Codificação UTF-8 com BOM.** Ler com `utf-8-sig`. Ler com `latin-1` **não gera erro**, apenas corrompe silenciosamente todo acento, o que é o pior tipo de falha
