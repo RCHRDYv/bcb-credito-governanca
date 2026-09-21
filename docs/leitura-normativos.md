@@ -74,6 +74,8 @@ A V1 documentava a supressão e usava um rótulo legível. **A V2 usa o código 
 
 **Nível de confiança:** `inferido`. O limiar de 15 operações e o significado de supressão vêm da V1 por continuidade, não de declaração da V2.
 
+> **Atualização de 2026-09-21: esta resposta estava errada.** O teste empírico mostrou que a V2 divulga contagens de 1 a 15, então o `-1` não é o `<= 15` da V1. Ele marca contagem não divulgada, por um critério que não está publicado e que não é o número de operações. O texto original fica acima para registro. Ver [`sentinela-numero-de-operacoes.md`](sentinela-numero-de-operacoes.md).
+
 ### 5. Quais modalidades têm garantia real?
 
 **Lacuna. Nenhum dos dois documentos responde.**

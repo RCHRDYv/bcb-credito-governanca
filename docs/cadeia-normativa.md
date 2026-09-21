@@ -125,7 +125,7 @@ Onde o ativo problemático sobe muito mais que a inadimplência, a diferença ve
 
 | Item da triagem | Decisão | Quem decidiu |
 |---|---|---|
-| 1.1 Sentinela `-1` | Testar empiricamente, como artefato do projeto | Desenvolvedor |
+| 1.1 Sentinela `-1` | Testar empiricamente, como artefato do projeto. Testado em 2026-09-21: a hipótese herdada da V1 foi refutada (`docs/sentinela-numero-de-operacoes.md`) | Desenvolvedor |
 | 1.2 "Outros créditos" | A regra continua valendo. O aviso saiu da V2 por estar implícito em agregações do tipo "outros", não por mudança de regra | Desenvolvedor, com base em conhecimento de domínio |
 | 1.3 Recorte temporal | 2024 em diante | Desenvolvedor |
 | 1.4 Anexo 3 | Buscado, e lido neste documento | Desenvolvedor |

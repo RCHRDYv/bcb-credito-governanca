@@ -96,11 +96,19 @@ No plano da ingestão, a IA fez três afirmações sem verificar:
 
 **Por que importa:** plano aprovado tende a ser tratado como verdade na execução. Aqui, cada premissa foi conferida no momento de agir sobre ela, e não no momento de escrevê-la.
 
+### 9. Inferência "forte" que o dado derrubou
+
+Na leitura dos normativos, a IA concluiu "por inferência forte" que o `-1` de `numero_de_operacoes` na V2 era o rótulo `<= 15` da V1 com outro nome. A conclusão foi marcada como `inferido`, e não como fato, o que foi certo. Mas a palavra "forte" fez a hipótese parecer mais segura do que era.
+
+**Pego por:** a decisão do desenvolvedor de testar empiricamente em vez de publicar a inferência (`docs/triagem-ontologia.md`, item 1.1). A V2 divulga contagens de 1 a 15, então o `-1` não pode ser o `<= 15`. Ver `docs/sentinela-numero-de-operacoes.md`.
+
+**Por que importa:** é o caso mais próximo do tema do projeto. Uma definição coerente, com fonte citada e redação convincente, estava errada. Só a marcação de confiança e o teste impediram que ela virasse regra de staging.
+
 ## O padrão que emerge
 
-Os oito erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+Os nove erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
 
-O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos oito casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
+O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos nove casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
 
 A prática adotada no projeto a partir daí: **nenhuma afirmação sobre fonte de dado, volume ou endpoint entra em código ou documentação sem verificação direta na origem.** Onde a verificação não foi possível, o documento declara isso explicitamente.
 

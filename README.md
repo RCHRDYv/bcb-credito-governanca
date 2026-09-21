@@ -26,8 +26,8 @@ O [SCR.data](https://dadosabertos.bcb.gov.br/dataset/scr_data) do Banco Central 
 
 Três características o tornam ideal para este estudo:
 
-1. **A bagunça é real e não foi plantada.** Valor sentinela `-1` para supressão por sigilo estatístico, delimitador `;` dentro de campo entre aspas, vírgula decimal em texto, codificação latin-1, e duas métricas distintas com nomes parecidos (`carteira_inadimplencia` e `ativo_problematico`).
-2. **A taxonomia mudou de verdade.** Há quebra metodológica documentada entre a Versão 1 (descontinuada em junho de 2025) e a Versão 2, com PDFs oficiais explicando cada uma. Isso permite testar a pergunta mais difícil do conjunto: como uma mudança de classificação afeta a comparabilidade da série histórica.
+1. **A bagunça é real e não foi plantada.** Valor sentinela `-1` sem documentação e com critério desconhecido, delimitador `;` dentro de campo entre aspas, vírgula decimal em texto, UTF-8 com BOM que abre "sem erro" em latin-1 e corrompe os acentos, e duas métricas distintas com nomes parecidos (`carteira_inadimplencia` e `ativo_problematico`).
+2. **A taxonomia mudou de verdade.** Há quebra metodológica documentada entre a Versão 1 e a Versão 2, com PDFs oficiais explicando cada uma. Isso permite testar a pergunta mais difícil do conjunto: como uma mudança de classificação afeta a comparabilidade da série histórica.
 3. **O significado é auditável na fonte.** A ontologia deste projeto é destilada dos normativos oficiais do BCB, não inventada. Cada definição cita o documento de origem.
 
 ## Arquitetura
@@ -85,6 +85,7 @@ Todas as etapas são idempotentes. O raciocínio está no [ADR 0004](docs/adr/00
 | [Leitura dos normativos](docs/leitura-normativos.md) | O que as metodologias oficiais respondem, e o que não respondem |
 | [Cadeia normativa](docs/cadeia-normativa.md) | Por que o dado mudou: leiaute, instruções do documento 3040 e as normas por trás de cada quebra |
 | [Triagem da ontologia](docs/triagem-ontologia.md) | Decisões de domínio que a ontologia exigiu |
+| [O valor -1](docs/sentinela-numero-de-operacoes.md) | Teste empírico que refutou a leitura inicial do sentinela |
 | [ADR 0001](docs/adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) | Credenciais e dado bruto fora do repositório |
 | [ADR 0002](docs/adr/0002-modelo-de-ontologia-skos-datacube-xkos.md) | Modelo de ontologia: SKOS, RDF Data Cube e XKOS |
 | [ADR 0003](docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md) | Conformação de taxonomia entre versões |
@@ -125,7 +126,7 @@ O raciocínio completo, com as alternativas descartadas, está em [`docs/adr/000
 
 This is a **demonstration, not a discovery**. The effect of metadata on text-to-SQL accuracy is established in the literature and already underpins commercial products. What this project adds is a transparent, auditable replication in a new domain: Brazilian regulatory credit data, in Portuguese, with genuine and officially documented taxonomy drift.
 
-The dataset is the Brazilian Central Bank's credit registry (SCR), published monthly with breakdowns by state, credit modality, company size, sector and client type. It was chosen because its messiness is real rather than manufactured: undocumented sentinel values, delimiters inside quoted fields, Brazilian decimal notation, latin-1 encoding, and two similarly named metrics with different regulatory definitions.
+The dataset is the Brazilian Central Bank's credit registry (SCR), published monthly with breakdowns by state, credit modality, company size, sector and client type. It was chosen because its messiness is real rather than manufactured: undocumented sentinel values, delimiters inside quoted fields, Brazilian decimal notation, UTF-8 with a BOM that opens "fine" as latin-1 while corrupting every accent, and two similarly named metrics with different regulatory definitions.
 
 The ontology is distilled from the Central Bank's own official normative documents, with each definition citing its source, rather than authored from scratch. The modality dimension is generated from the versioned ontology file rather than hand-written in dbt, which makes drift between documentation and data structurally impossible.
 
