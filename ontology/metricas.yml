@@ -59,6 +59,14 @@ conceitos:
       Renomeada de "carteira_inadimplida_arrastada" (V1) para
       "carteira_inadimplencia" (V2). A definição é textualmente idêntica nas
       duas versões, portanto a série é contínua. A mudança é apenas de rótulo.
+    aviso_pendente: >
+      Salto de 9,7% entre dezembro de 2024 e janeiro de 2025, contra 2,4% na
+      mesma virada do ano anterior. A IN BCB 414/2023 alterou a descrição do
+      campo "Valor dos Vencimentos" do documento 3040 a partir de janeiro de
+      2025, e é desse campo que a métrica deriva. A definição publicada não
+      mudou, mas a base de cálculo pode ter mudado. Texto anterior do campo
+      não localizado. Ver docs/cadeia-normativa.md, seção 6.
+    pendente_de_confirmacao: true
     correspondencia_v1:
       tipo: exata
       termo: carteira_inadimplida_arrastada
@@ -92,6 +100,11 @@ conceitos:
     historyNote: >
       Quebra de definição em 2025-01-01, documentada em ambas as versões da
       metodologia. Anterior e independente da quebra de taxonomia V1 para V2.
+      Causa regulatória: a Resolução CMN 4.966 levou à exclusão dos Anexos 16
+      e 17 do leiaute (classificação de risco ClassCli e ClassOp, a escala E a
+      H do critério antigo), e a IN BCB 531 colocou a característica especial
+      19, existente desde 2017, na ordem de prioridade da agregação a partir
+      de janeiro de 2025. Ver docs/cadeia-normativa.md, seção 1.
     correspondencia_v1:
       tipo: exata
       termo: ativo_problematico
@@ -238,11 +251,14 @@ avisos_gerais:
     confianca: verbatim
     fonte: "Metodologia V1, introdução"
     aviso_critico: >
-      ESTA ADVERTÊNCIA FOI REMOVIDA DA METODOLOGIA V2. Não há indicação de que
-      a regra tenha deixado de valer, apenas de que deixou de ser comunicada.
-      Em junho de 2026, "Outros créditos" representa 10,42% da carteira ativa.
-      Quem usa a V2 não recebe esse aviso em lugar nenhum.
-    pendente_de_confirmacao: true
+      ESTA ADVERTÊNCIA FOI REMOVIDA DA METODOLOGIA V2, mas a regra continua
+      valendo. Em junho de 2026, "Outros créditos" representa 10,42% da
+      carteira ativa. Quem usa a V2 não recebe esse aviso em lugar nenhum.
+    decisao: >
+      Regra tratada como vigente. O aviso saiu da V2 por estar implícito em
+      agregações do tipo "outros", não por mudança de regra. Decisão de
+      domínio do desenvolvedor, registrada em docs/cadeia-normativa.md.
+    pendente_de_confirmacao: false
 
   - id: limiar_de_valor_mudou
     gravidade: media
