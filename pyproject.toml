@@ -1,0 +1,26 @@
+# =============================================================================
+# PT: Dependências Python do projeto. O dbt roda como ferramenta à parte
+#     (uv tool install dbt-core --with dbt-databricks), então não entra aqui.
+# EN: Project Python dependencies. dbt runs as a separate tool
+#     (uv tool install dbt-core --with dbt-databricks), so it is not listed.
+#
+# PT: Uso:  uv run python -m ingestion.baixar
+# EN: Usage: uv run python -m ingestion.baixar
+# =============================================================================
+
+[project]
+name = "bcb-credito-governanca"
+version = "0.1.0"
+description = "Ontologia e camada semântica sobre os dados de crédito do Banco Central"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "databricks-sdk>=0.40",
+    "polars>=1.0",
+]
+
+[tool.uv]
+# PT: projeto de aplicação, não pacote publicável.
+# EN: application project, not a publishable package.
+package = false

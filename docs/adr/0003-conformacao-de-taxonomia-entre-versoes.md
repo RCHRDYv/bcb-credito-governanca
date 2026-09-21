@@ -63,6 +63,10 @@ A tabela de correspondência entra como **seed do dbt**, derivada da planilha of
 
 **Mitigação da última:** a planilha baixada é versionada em cópia própria junto do script de extração, com a data de download registrada, de modo que uma mudança na origem seja detectável em vez de silenciosa.
 
+## Atualização de 2026-09-21: universo diferente
+
+A ingestão mostrou que **a carteira ativa da V2 é de 3,95% a 5,94% maior que a da V1** em todos os 31 meses em que as duas coexistem (`docs/analise-v1-v2.md`, seção 6). A decisão deste ADR continua de pé para o que ela resolve, a **classificação**: o lookup V2 para V1 segue determinístico e sem fan-out. Mas "reconstruir a série V1 a partir da V2 sem perda" vale para a taxonomia, não para os valores. A série reconstruída tem a classificação da V1 aplicada ao universo da V2, e não reproduz os totais que a V1 publicou. Todo mart que usar a conformação precisa dizer isso.
+
 ## Nota de método
 
 O ponto que decide este ADR não é a escolha da abordagem, é o fato de **a ambiguidade ter sido medida antes**. As três alternativas descartadas seriam defensáveis sob a suposição de que a correspondência era muitos-para-muitos, que era a suposição inicial. Ela estava errada, e só a medição mostrou isso.

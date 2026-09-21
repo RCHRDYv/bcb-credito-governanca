@@ -111,6 +111,27 @@ A queda de aproximadamente 15% a partir de julho sugere mudança de granularidad
 
 **Consequência para o projeto:** confiar na descrição do portal, sem verificar o dado, teria produzido um recorte temporal errado. Registrado como achado de governança, e como material adicional para a Q30.
 
+**Atualização de 2026-09-21:** a V1 continua publicada. `planilha_2026.zip` traz de janeiro a julho de 2026. A queda de julho de 2025 aparece também na contagem de linhas, nas duas versões (V1 de 1.025.243 para 891.135, V2 de 322.852 para 308.209), e coincide com a vigência da IN BCB 627 (`docs/cadeia-normativa.md`, seção 2).
+
+## 6. Os totais das duas versões não reconciliam
+
+Verificado em 2026-09-21, sobre os 31 meses de janeiro de 2024 a julho de 2026 em que as duas versões coexistem, com o script de verificação da ingestão (`ingestion/verificar_bronze.py`).
+
+**A carteira ativa da V2 é maior que a da V1 em todos os meses**, e a diferença não é pequena:
+
+| Período | V2 acima da V1 | Exemplo |
+|---|---|---|
+| jan/2024 a ago/2025 | entre 3,95% e 4,88% | jan/2024: R$ 5.714,3 bi na V1, R$ 5.961,1 bi na V2 |
+| set/2025 a jul/2026 | entre 5,41% e 5,94% | jul/2026: R$ 7.192,4 bi na V1, R$ 7.590,7 bi na V2 |
+
+São cerca de R$ 250 a R$ 400 bilhões de diferença para a mesma medida, no mesmo mês, publicada pelo mesmo órgão. **O degrau de setembro de 2025 coincide com a IN BCB 659, de 08/09/2025**, que alterou domínios e subdomínios do Anexo 3 (modalidades). É coincidência temporal, não causa verificada.
+
+**Consequências:**
+
+1. **A conformação do ADR 0003 continua válida para a taxonomia, mas não para os totais.** Reconstruir a série "no padrão V1" a partir do dado V2 produz a classificação da V1 com o universo da V2, cerca de 4% a 6% maior que a V1 publicada. O ADR 0003 recebeu nota sobre isso.
+2. **A V2 é a fonte de verdade do projeto.** A V1 fica como fonte legada, e toda comparação entre versões precisa declarar a diferença de universo.
+3. **Causa ainda não identificada.** Hipóteses a testar: escopo de modalidades (a V1 pode excluir modalidades ou submodalidades que a V2 inclui), tratamento de "Outros créditos" e limiar de supressão. Pendente.
+
 ## Próximo passo
 
 Estas correspondências são **hipóteses derivadas do dado**, não definições. Nenhuma delas entra na ontologia sem confirmação nos normativos oficiais (metodologia V1, metodologia V2 e tutorial), com citação da fonte e nível de confiança declarado.

@@ -16,17 +16,19 @@ Verificado em 2026-08-20. **O SCR.data não é uma API OData.** Isso vale para a
 
 | Recurso | URL |
 |---|---|
-| Dados V2 (atual) | `https://www.bcb.gov.br/pda/desig/scrdata_{ANO}.zip` |
-| Dados V1 (descontinuada em jun/2025) | `https://www.bcb.gov.br/pda/desig/planilha_{ANO}.zip` |
+| Dados V2 (atual, publicada também para anos anteriores a 2025) | `https://www.bcb.gov.br/pda/desig/scrdata_{ANO}.zip` |
+| Dados V1 (legada, ainda publicada em 2026) | `https://www.bcb.gov.br/pda/desig/planilha_{ANO}.zip` |
 | Metodologia V1 | `https://www.bcb.gov.br/content/estabilidadefinanceira/scr/scr.data/scr_data_metodologia.pdf` |
 | Metodologia V2 | `https://www.bcb.gov.br/pda/desig/metodologia_versao2.pdf` |
 | Tutorial | `https://www.bcb.gov.br/content/estabilidadefinanceira/scr/scr.data/tutorial.pdf` |
+
+**Cobertura verificada em 2026-09-21**, abrindo os arquivos e não pela descrição do portal: as duas versões cobrem de janeiro de 2024 a julho de 2026 (a V2 existe também para 2023). O portal descreve a V1 como encerrada em junho de 2025, e o dado contradiz isso. O BCB também republica arquivos antigos sem aviso, o que a ingestão detecta pelo manifesto (ver [ADR 0004](adr/0004-ingestao-em-camada-bronze.md)).
 
 **A quebra metodológica entre V1 e V2 é o achado que sustenta a pergunta mais difícil do experimento.** É um caso real, datado e oficialmente documentado de mudança de taxonomia afetando comparabilidade de série histórica. Os dois PDFs de metodologia são a documentação de negócio da qual a ontologia é destilada.
 
 ### Volume verificado
 
-O ZIP de 2026 tem 86,57 MB comprimidos e contém seis CSVs mensais de aproximadamente 97 MB cada. O conjunto de 2024 a 2026 chega à casa de vários gigabytes e dezenas de milhões de linhas.
+Medido na ingestão de 2026-09-21, de janeiro de 2024 a julho de 2026: 31 CSVs mensais por versão, de cerca de 100 MB (V2) e 300 MB (V1) cada, somando 12,7 GB descompactados e 1,5 GB compactados. São 9,7 milhões de linhas na V2 e 29,5 milhões na V1. A contagem exata por arquivo está em `ingestion/manifesto.json`.
 
 ### Esquema do SCR: 24 colunas
 

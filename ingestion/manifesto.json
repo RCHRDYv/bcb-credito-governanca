@@ -1,0 +1,250 @@
+{
+  "arquivos": {
+    "planilha_2024.zip": {
+      "ano": 2024,
+      "bytes": 414495509,
+      "last_modified": "Tue, 15 Sep 2026 06:14:37 GMT",
+      "meses": {
+        "202401": {
+          "linhas": 929671
+        },
+        "202402": {
+          "linhas": 936750
+        },
+        "202403": {
+          "linhas": 947088
+        },
+        "202404": {
+          "linhas": 945183
+        },
+        "202405": {
+          "linhas": 950174
+        },
+        "202406": {
+          "linhas": 957947
+        },
+        "202407": {
+          "linhas": 974683
+        },
+        "202408": {
+          "linhas": 978831
+        },
+        "202409": {
+          "linhas": 982741
+        },
+        "202410": {
+          "linhas": 989411
+        },
+        "202411": {
+          "linhas": 992156
+        },
+        "202412": {
+          "linhas": 995670
+        }
+      },
+      "sha256": "0c6051f45c0b8f11f86225ca9debc10d03be778f9b327b8ff790e4dc6665c3b6",
+      "url": "https://www.bcb.gov.br/pda/desig/planilha_2024.zip",
+      "versao": "v1"
+    },
+    "planilha_2025.zip": {
+      "ano": 2025,
+      "bytes": 410201086,
+      "last_modified": "Sat, 05 Sep 2026 06:44:57 GMT",
+      "meses": {
+        "202501": {
+          "linhas": 997612
+        },
+        "202502": {
+          "linhas": 1008665
+        },
+        "202503": {
+          "linhas": 1011446
+        },
+        "202504": {
+          "linhas": 1021395
+        },
+        "202505": {
+          "linhas": 1027060
+        },
+        "202506": {
+          "linhas": 1025243
+        },
+        "202507": {
+          "linhas": 891135
+        },
+        "202508": {
+          "linhas": 892783
+        },
+        "202509": {
+          "linhas": 895802
+        },
+        "202510": {
+          "linhas": 896755
+        },
+        "202511": {
+          "linhas": 904108
+        },
+        "202512": {
+          "linhas": 913725
+        }
+      },
+      "sha256": "a0fb1c9e8132141adcf02858b92e87a2e6f4eeb102f96661c8e2dd74feb5e336",
+      "url": "https://www.bcb.gov.br/pda/desig/planilha_2025.zip",
+      "versao": "v1"
+    },
+    "planilha_2026.zip": {
+      "ano": 2026,
+      "bytes": 228865408,
+      "last_modified": "Sat, 19 Sep 2026 09:39:31 GMT",
+      "meses": {
+        "202601": {
+          "linhas": 908177
+        },
+        "202602": {
+          "linhas": 912470
+        },
+        "202603": {
+          "linhas": 913204
+        },
+        "202604": {
+          "linhas": 914173
+        },
+        "202605": {
+          "linhas": 924383
+        },
+        "202606": {
+          "linhas": 917822
+        },
+        "202607": {
+          "linhas": 915277
+        }
+      },
+      "sha256": "31fb9583a96c57884ebbd2245acb61a7b03316c0f17343bfc062c400865cb001",
+      "url": "https://www.bcb.gov.br/pda/desig/planilha_2026.zip",
+      "versao": "v1"
+    },
+    "scrdata_2024.zip": {
+      "ano": 2024,
+      "bytes": 176049923,
+      "last_modified": "Tue, 15 Sep 2026 05:38:34 GMT",
+      "meses": {
+        "202401": {
+          "linhas": 311692
+        },
+        "202402": {
+          "linhas": 312030
+        },
+        "202403": {
+          "linhas": 312636
+        },
+        "202404": {
+          "linhas": 312358
+        },
+        "202405": {
+          "linhas": 313841
+        },
+        "202406": {
+          "linhas": 306976
+        },
+        "202407": {
+          "linhas": 309604
+        },
+        "202408": {
+          "linhas": 310263
+        },
+        "202409": {
+          "linhas": 309037
+        },
+        "202410": {
+          "linhas": 308777
+        },
+        "202411": {
+          "linhas": 308866
+        },
+        "202412": {
+          "linhas": 310432
+        }
+      },
+      "sha256": "962c6aaf6cf7d4758344b033f8623dc3df0795fe6379db34bb7d883ac86a3e45",
+      "url": "https://www.bcb.gov.br/pda/desig/scrdata_2024.zip",
+      "versao": "v2"
+    },
+    "scrdata_2025.zip": {
+      "ano": 2025,
+      "bytes": 180107968,
+      "last_modified": "Sat, 05 Sep 2026 06:47:47 GMT",
+      "meses": {
+        "202501": {
+          "linhas": 313638
+        },
+        "202502": {
+          "linhas": 313564
+        },
+        "202503": {
+          "linhas": 317087
+        },
+        "202504": {
+          "linhas": 318875
+        },
+        "202505": {
+          "linhas": 322164
+        },
+        "202506": {
+          "linhas": 322852
+        },
+        "202507": {
+          "linhas": 308209
+        },
+        "202508": {
+          "linhas": 309544
+        },
+        "202509": {
+          "linhas": 310830
+        },
+        "202510": {
+          "linhas": 309193
+        },
+        "202511": {
+          "linhas": 308434
+        },
+        "202512": {
+          "linhas": 310452
+        }
+      },
+      "sha256": "b6c4e3a02bf3698e572024f538287aea25a9844f5f9acb8800ee40f6d64dd25e",
+      "url": "https://www.bcb.gov.br/pda/desig/scrdata_2025.zip",
+      "versao": "v2"
+    },
+    "scrdata_2026.zip": {
+      "ano": 2026,
+      "bytes": 105707342,
+      "last_modified": "Sat, 19 Sep 2026 09:43:06 GMT",
+      "meses": {
+        "202601": {
+          "linhas": 312638
+        },
+        "202602": {
+          "linhas": 314729
+        },
+        "202603": {
+          "linhas": 315433
+        },
+        "202604": {
+          "linhas": 314308
+        },
+        "202605": {
+          "linhas": 315592
+        },
+        "202606": {
+          "linhas": 313517
+        },
+        "202607": {
+          "linhas": 310240
+        }
+      },
+      "sha256": "db8b30a712591a1d334a738582d1b0684e53820fb8bf0da809219cc9e71e7631",
+      "url": "https://www.bcb.gov.br/pda/desig/scrdata_2026.zip",
+      "versao": "v2"
+    }
+  }
+}

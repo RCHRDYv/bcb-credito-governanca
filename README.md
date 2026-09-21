@@ -52,13 +52,27 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 
 | Pasta | Conteúdo |
 |---|---|
-| `ingestion/` | Download e parse das fontes oficiais |
+| `ingestion/` | Da fonte oficial à camada bronze no Databricks, com manifesto de linhagem |
 | `ontology/` | Ontologia, glossário e contratos de dados, com citação normativa |
 | `dbt/` | Camada semântica: staging, intermediate, marts, testes |
 | `evaluation/` | Perguntas de negócio, gabarito e análise estatística |
 | `dashboard/` | Visualização estática |
 | `scripts/` | Utilitários e verificadores |
 | `docs/adr/` | Registro de decisões de arquitetura |
+
+### Como rodar a ingestão
+
+Pré-requisitos: [uv](https://docs.astral.sh/uv/) e o [Databricks CLI](https://docs.databricks.com/dev-tools/cli/) autenticado por OAuth (`databricks auth login`). Nenhuma credencial fica no repositório.
+
+```bash
+uv run python -m ingestion.baixar             # ZIPs oficiais para data/raw/ e manifesto
+uv run python -m ingestion.converter_parquet  # CSV para Parquet só texto, com validação
+uv run python -m ingestion.enviar_volume      # schema, volume e envio ao Unity Catalog
+uv run python -m ingestion.criar_bronze       # tabelas bronze_scr_v1 e bronze_scr_v2
+uv run python -m ingestion.verificar_bronze   # prova que o bronze é o dado publicado
+```
+
+Todas as etapas são idempotentes. O raciocínio está no [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md).
 
 ### Documentação
 
@@ -74,6 +88,7 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | [ADR 0001](docs/adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) | Credenciais e dado bruto fora do repositório |
 | [ADR 0002](docs/adr/0002-modelo-de-ontologia-skos-datacube-xkos.md) | Modelo de ontologia: SKOS, RDF Data Cube e XKOS |
 | [ADR 0003](docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md) | Conformação de taxonomia entre versões |
+| [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md) | Ingestão em camada bronze: ZIP local, Parquet só texto, volume do Unity Catalog |
 | [Perguntas do experimento](evaluation/questions.yml) | As 30 perguntas, pré-registradas antes de qualquer execução |
 
 ## Segurança
