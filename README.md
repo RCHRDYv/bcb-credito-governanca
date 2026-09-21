@@ -109,7 +109,7 @@ O verificador de dado bruto (`scripts/check_no_raw_data.py`) foi testado contra 
 
 O raciocínio completo, com as alternativas descartadas, está em [`docs/adr/0001`](docs/adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md).
 
-## Notas de honestidade
+## Notas
 
 **Sobre o volume:** cada CSV mensal tem cerca de 97 MB. O conjunto de 2024 a 2026 chega a vários gigabytes e dezenas de milhões de linhas. O uso de Databricks é justificado pelo volume, não é vitrine.
 
