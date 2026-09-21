@@ -82,6 +82,43 @@ As notas também são conteúdo útil para a ontologia, porque registram a hist�
 - **a2:** inclusão dos subdomínios 13 (cheque especial), 14 (conta garantida), 15 e 16 (capital de giro por prazo, nova faixa)
 - **c1:** inclusão do subdomínio 17 (capital de giro com teto rotativo), a partir de maio de 2017
 
+## 6. O que a quebra de janeiro de 2025 faz no dado
+
+**Script:** `scripts/analises/quebra_ativo_problematico.py`, sobre a V1, que cobre 2023 a 2025 com a mesma taxonomia.
+
+### O salto existe
+
+| | dez/2024 | jan/2025 | Variação |
+|---|---|---|---|
+| Carteira ativa | R$ 6.397,9 bi | R$ 6.395,6 bi | 0,0% |
+| Carteira inadimplida | R$ 195,4 bi | R$ 214,4 bi | **+9,7%** (+R$ 19,0 bi) |
+| Ativo problemático | R$ 421,0 bi | R$ 452,6 bi | **+7,5%** (+R$ 31,6 bi) |
+| Ativo problemático fora do atraso acima de 90 dias | R$ 225,7 bi | R$ 238,2 bi | +5,5% (+R$ 12,5 bi) |
+
+Em 2024, a variação mensal do ativo problemático ficou entre -0,8% e +3,2%.
+
+### Mas não pode ser atribuído só à mudança de definição
+
+**A carteira inadimplida, cuja definição não mudou, subiu mais que o ativo problemático no mesmo mês.** O controle de sazonalidade não explica: na virada de dez/2023 para jan/2024, a carteira inadimplida subiu 2,4% e o ativo problemático, 0,5%. (É um único ano de controle, e a conclusão vale com essa limitação.)
+
+**Explicação candidata, não confirmada:** a Instrução Normativa BCB 414, de 16/10/2023, alterou a descrição do campo "Valor dos Vencimentos" (`Venc`) do documento 3040 **a partir da data-base de janeiro de 2025**, a mesma data de vigência da Resolução CMN 4.966. É desse campo que saem as faixas de vencimento, e portanto a carteira inadimplida. O leiaute atual traz só a descrição nova e a norma não transcreve a antiga. A versão anterior do leiaute não foi localizada nesta leitura (Internet Archive fora do ar em 2026-09-21). **Pendente.**
+
+### A decomposição por modalidade mostra a assinatura da mudança de definição
+
+Onde o ativo problemático sobe muito mais que a inadimplência, a diferença vem de operações classificadas como problemáticas sem atraso acima de 90 dias, que é exatamente a parte que depende do critério:
+
+| Modalidade | Variação da inadimplência | Variação do ativo problemático |
+|---|---|---|
+| PF - Habitacional | +R$ 1,4 bi | **+R$ 11,9 bi** (R$ 45,5 bi para R$ 57,5 bi, +26%) |
+| PF - Empréstimo com consignação em folha | +R$ 1,1 bi | +R$ 5,8 bi |
+| PJ - Financiamento de infraestrutura e projeto | +R$ 0,1 bi | +R$ 3,6 bi |
+| PJ - Capital de giro | +R$ 2,5 bi | **-R$ 2,4 bi** |
+| PJ - Outros créditos | +R$ 1,1 bi | **-R$ 3,4 bi** |
+
+**Leitura:** o total líquido esconde movimentos em direções opostas. No crédito imobiliário e no consignado, as instituições classificam como problemático mais do que o algoritmo anterior do BCB classificava. Em capital de giro e em outros créditos PJ, classificam menos.
+
+**Consequência:** a variação de janeiro de 2025 não pode ser lida como piora de crédito nem como efeito puro de definição. O dado mistura as duas coisas e não oferece meio de separá-las. Uma análise que compare dezembro com janeiro sem essa ressalva está errada, e o erro não gera nenhum sinal.
+
 ---
 
 ## Decisões registradas a partir desta leitura
