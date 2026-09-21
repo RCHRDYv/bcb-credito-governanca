@@ -82,11 +82,25 @@ Ao investigar um rótulo duplo na planilha oficial de equivalência, a IA afirmo
 
 **Correção:** hipótese de renomeação confirmada pela nota de rodapé da própria planilha e pelo dado. Ver `docs/cadeia-normativa.md`, seção 4.
 
+### 8. Premissas de plano escritas como fato
+
+No plano da ingestão, a IA fez três afirmações sem verificar:
+- que o hook de dado bruto só bloqueava `.csv` e `.zip`, deduzido do nome exibido do hook;
+- que o Parquet reduziria o envio em cerca de dez vezes;
+- os números de linhas e de volume da especificação, escritos de memória.
+
+**Pego por:**
+- **O hook:** abrir o arquivo antes de editar. Ele já bloqueava `.parquet` e `.xlsx`, e só o nome exibido estava desatualizado.
+- **O Parquet:** medir. Ele é dez vezes menor que o CSV, mas praticamente do tamanho do ZIP, então a redução de envio não existia. A justificativa certa, dispensar a descompactação no servidor, está no ADR 0004.
+- **Os números:** conferir contra o manifesto antes do commit. Dois estavam arredondados errado.
+
+**Por que importa:** plano aprovado tende a ser tratado como verdade na execução. Aqui, cada premissa foi conferida no momento de agir sobre ela, e não no momento de escrevê-la.
+
 ## O padrão que emerge
 
-Os sete erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+Os oito erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
 
-O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos sete casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
+O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos oito casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
 
 A prática adotada no projeto a partir daí: **nenhuma afirmação sobre fonte de dado, volume ou endpoint entra em código ou documentação sem verificação direta na origem.** Onde a verificação não foi possível, o documento declara isso explicitamente.
 

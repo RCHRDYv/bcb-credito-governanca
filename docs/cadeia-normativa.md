@@ -17,7 +17,7 @@
 
 ## 1. A quebra do ativo problemático em janeiro de 2025
 
-A metodologia informa a mudança numa frase entre parênteses: até dezembro de 2024 o critério combinava atraso, reestruturação e classificação de risco E a H; a partir de janeiro de 2025, vale só a característica especial 19. A metodologia não explica o motivo. O motivo está nesta sequência:
+Na metodologia, o fim do critério antigo aparece entre parênteses, "(até dezembro/2024)": até dezembro de 2024 o critério combinava atraso, reestruturação e classificação de risco E a H; a partir de janeiro de 2025, vale só a característica especial 19. A metodologia não explica o motivo. O motivo está nesta sequência:
 
 | Data | Evento | Fonte |
 |---|---|---|

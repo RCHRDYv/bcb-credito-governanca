@@ -68,7 +68,7 @@ repos:
   - repo: local
     hooks:
       - id: bloqueia-dado-bruto
-        name: bloqueia dado bruto (csv/zip fora de seeds)
+        name: bloqueia dado bruto (csv, zip, parquet, xlsx fora de seeds)
         entry: python scripts/check_no_raw_data.py
         language: python
         pass_filenames: true

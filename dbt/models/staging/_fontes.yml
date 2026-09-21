@@ -1,0 +1,61 @@
+# =============================================================================
+# PT: Fontes do dbt: as tabelas bronze criadas por ingestion/criar_bronze.py.
+#     O dbt não carrega dado; ele parte daqui. Todas as colunas são texto,
+#     exatamente como publicadas. Tipagem, trim e tratamento do sentinela -1
+#     acontecem nos modelos de staging.
+# EN: dbt sources: the bronze tables created by ingestion/criar_bronze.py.
+#     dbt does not load data; it starts here. Every column is text, exactly as
+#     published. Typing, trimming and handling the -1 sentinel happen in the
+#     staging models.
+#
+# PT: As definições de negócio de cada medida vivem em ontology/metricas.yml,
+#     que é a fonte da verdade. As descrições abaixo só apontam para lá.
+# EN: Each measure's business definition lives in ontology/metricas.yml, the
+#     source of truth. The descriptions below only point there.
+# =============================================================================
+
+version: 2
+
+sources:
+  - name: bcb_scr
+    description: "SCR.data do Banco Central, camada bronze. Linhagem por arquivo em ingestion/manifesto.json."
+    database: workspace
+    schema: bcb_scr
+    tables:
+
+      - name: bronze_scr_v2
+        description: >
+          SCR.data V2 (scrdata_AAAA.zip), fonte principal do projeto. Uma linha
+          por recorte de UF, segmento, cliente, CNAE ou ocupação, porte,
+          modalidade, submodalidade, origem e indexador.
+        columns:
+          - name: data_base
+            description: "Último dia do mês de referência, como texto AAAA-MM-DD."
+            data_tests: [not_null]
+          - name: numero_de_operacoes
+            description: "Contagem de operações. Contém o sentinela -1, que não é contagem. Ver ontology/metricas.yml, numero_de_operacoes."
+          - name: carteira_ativa
+            description: "Ver ontology/metricas.yml, carteira_ativa. Texto com vírgula decimal."
+          - name: carteira_inadimplencia
+            description: "Valor em reais, não percentual. Ver ontology/metricas.yml, carteira_inadimplencia."
+          - name: ativo_problematico
+            description: "Muda de critério em janeiro de 2025. Ver ontology/metricas.yml, ativo_problematico."
+          - name: arquivo_origem
+            description: "ZIP e CSV de origem da linha, para linhagem."
+            data_tests: [not_null]
+
+      - name: bronze_scr_v1
+        description: >
+          SCR.data V1 (planilha_AAAA.zip), fonte legada. Taxonomia de
+          modalidades diferente da V2 e totais que não reconciliam com ela
+          (docs/analise-v1-v2.md). Mantida para a reconciliação e para a
+          conformação do ADR 0003.
+        columns:
+          - name: data_base
+            description: "Último dia do mês de referência, como texto AAAA-MM-DD."
+            data_tests: [not_null]
+          - name: carteira_inadimplida_arrastada
+            description: "Mesma definição de carteira_inadimplencia da V2, com outro nome. Ver ontology/metricas.yml."
+          - name: arquivo_origem
+            description: "ZIP e CSV de origem da linha, para linhagem."
+            data_tests: [not_null]

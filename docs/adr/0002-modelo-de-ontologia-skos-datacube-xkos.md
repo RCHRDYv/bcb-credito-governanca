@@ -9,7 +9,7 @@ O projeto usa a palavra "ontologia" como elemento central da tese, mas até este
 
 **Problema de credibilidade:** um projeto que se propõe a demonstrar o efeito de ontologia sobre consumo de dado por IA precisa que o termo signifique algo verificável. Vocabulário informal em YAML, sem padrão por trás, é glossário. Chamar glossário de ontologia é exagero que um revisor técnico identifica.
 
-**Problema técnico concreto:** o SCR tem uma quebra metodológica documentada entre a Versão 1 (descontinuada em junho de 2025) e a Versão 2. Expressar em prosa que "a modalidade X da V1 corresponde aproximadamente à Y da V2" não é consumível por máquina, e a pergunta mais difícil do experimento depende exatamente dessa correspondência.
+**Problema técnico concreto:** o SCR tem uma quebra metodológica documentada entre a Versão 1 e a Versão 2. (Na data deste ADR, o portal descrevia a V1 como descontinuada em junho de 2025. Em 2026-09-21 verificou-se que ela continua publicada, ver ADR 0004.) Expressar em prosa que "a modalidade X da V1 corresponde aproximadamente à Y da V2" não é consumível por máquina, e a pergunta mais difícil do experimento depende exatamente dessa correspondência.
 
 O escopo real, levantado a partir do dado antes de qualquer leitura de normativo, é de 99 termos: 13 modalidades, 55 submodalidades, 13 portes, 8 segmentos, 6 indexadores, e 2 valores cada para cliente e origem.
 
