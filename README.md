@@ -74,6 +74,12 @@ uv run python -m ingestion.verificar_bronze   # prova que o bronze é o dado pub
 
 Todas as etapas são idempotentes. O raciocínio está no [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md).
 
+Para conferir a ontologia de modalidades contra o dado do bronze:
+
+```bash
+uv run python -m scripts.validar_modalidades
+```
+
 ### Documentação
 
 | Documento | O que traz |

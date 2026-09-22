@@ -67,6 +67,20 @@ Um recorte com mais de meio milhão de operações não é suprimido por ter pou
 
 **Observação sem explicação:** entre 1 e 20, a contagem de linhas cai a cada valor, com uma única exceção. Há mais linhas com 6 operações (195.508) do que com 5 (158.599). É compatível com alguma regra atuando sobre recortes muito pequenos, mas não permite dizer qual.
 
+## Busca por documentação oficial
+
+Feita em 2026-09-21, depois do teste, para saber se o critério do `-1` estava publicado em algum lugar:
+
+| Onde | Resultado |
+|---|---|
+| Metodologia V2, texto integral | Nenhuma menção a `-1`, sigilo ou supressão |
+| Metodologia V1 | Só o `<= 15` e uma regra análoga para o CNAE: com 5 CNPJs ou menos, divulga só a seção |
+| Página do SCR.data no portal de dados abertos, lida pela API | Nenhuma menção. A página ainda diz que a V1 parou em jun/2025, o que o dado desmente |
+| Conjunto "SCR por sub-região", do mesmo departamento | Outro mecanismo: agrupa recortes pequenos em "Não Identificado", sem `-1` |
+| Projetos públicos no GitHub que usam o SCR.data | Três tratam o `-1` como sigilo ou "limite de divulgação", sem citar fonte. Um deles mediu `-1` em 27% das linhas de dez/2024, o que bate com os 26,9% medidos aqui |
+
+**Conclusão:** quem usa o dado trata o `-1` como sigilo, mas o critério não está publicado. O que este teste acrescenta é o que ninguém tinha registrado: o critério não é o número de operações. O caminho para uma resposta oficial continua sendo um pedido pela Lei de Acesso à Informação (issue #21).
+
 ## Consequências
 
 1. **Na ontologia:** `numero_de_operacoes.valor_sentinela` passa de `inferido` para `lacuna`. O significado "contagem não divulgada" fica registrado com evidência, e a hipótese derivada da V1 fica registrada como refutada.

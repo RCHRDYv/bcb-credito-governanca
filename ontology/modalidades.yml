@@ -1,0 +1,1303 @@
+# =============================================================================
+# PT: Ontologia das modalidades e submodalidades de crédito do SCR.data (V2).
+#     Cada conceito carrega a definição oficial, a página de onde ela vem, o
+#     nível de confiança e o rótulo EXATO com que aparece no dado, que é a
+#     chave de junção. Os nomes oficiais divergem entre documentos e entre
+#     documento e dado, por isso nome oficial e rótulo no dado são campos
+#     separados.
+# EN: Ontology of SCR.data (V2) credit modalities and sub-modalities. Each
+#     concept carries the official definition, the page it comes from, the
+#     confidence level and the EXACT label found in the data, which is the
+#     join key. Official names diverge across documents and between documents
+#     and data, so official name and data label are separate fields.
+#
+# PT: Estrutura SKOS conforme ADR 0002. Validação contra o dado:
+#     uv run python -m scripts.validar_modalidades
+# EN: SKOS structure per ADR 0002. Validation against the data:
+#     uv run python -m scripts.validar_modalidades
+#
+# -----------------------------------------------------------------------------
+# confianca:
+#   verbatim      = definição transcrita literalmente da fonte
+#   parafraseado  = redação própria, sentido diretamente amparado na fonte
+#   inferido      = conclusão a partir de contexto, não declarada na fonte
+#   lacuna        = não encontrado em nenhum documento consultado
+# =============================================================================
+
+esquema:
+  id: scr-modalidades
+  titulo: "Modalidades e submodalidades de crédito do SCR.data, Versão 2"
+  data_leitura: "2026-09-21"
+  fontes:
+    instrucoes:
+      nome: "Instruções de Preenchimento do Documento 3040, seção IV (Mod), pp. 20 a 36"
+      url: "https://www.bcb.gov.br/content/estabilidadefinanceira/Leiaute_de_documentos/scrdoc3040/SCR_InstrucoesDePreenchimento_Doc3040.pdf"
+      papel: "Fonte das definições. Os códigos e nomes da tabela 'Mod Descrição' de cada modalidade são o prefLabel."
+    anexo3:
+      nome: "Leiaute do Documento 3040, aba Anexo, Anexo 3 (Modalidade Operação)"
+      url: "https://www.bcb.gov.br/content/estabilidadefinanceira/Leiaute_de_documentos/scrdoc3040/SCR3040_Leiaute.xls"
+      papel: "Lista de códigos e nomes. Não traz definição. Quando o nome difere das Instruções, entra como altLabel."
+    historico:
+      nome: "Leiaute do Documento 3040, aba HistoricoAtualizacoes"
+      papel: "Datas e normas das renomeações e das inclusões e exclusões de submodalidades."
+    dado:
+      nome: "SCR.data V2, camada bronze, jan/2024 a jul/2026"
+      papel: "rotulo_no_dado: valor exato da coluna modalidade ou submodalidade, depois de trim."
+  nota_de_transcricao: >
+    As definições marcadas como verbatim foram transcritas do PDF das
+    Instruções. A extração de texto do PDF insere espaços espúrios no meio de
+    palavras ("utilizaçã o", "mo dalidade"), e esses espaços foram removidos.
+    Nenhuma outra alteração foi feita. Trechos que tratam só de como preencher
+    o documento, sem dizer o que a operação é, ficaram de fora da definição.
+
+# =============================================================================
+# PT: Avisos que valem para o conjunto e que o dado não carrega.
+# EN: Warnings that apply to the whole set and do not travel with the data.
+# =============================================================================
+
+avisos_gerais:
+
+  - id: modalidade_e_conta_contabil
+    gravidade: media
+    descricao: >
+      A modalidade é definida pela conta contábil do Cosif em que a operação
+      é lançada, e não por característica de produto. As Instruções definem
+      cada modalidade como "operações lançadas na rubrica" de uma conta.
+    historyNote: >
+      As contas mudaram em janeiro de 2025, com o novo plano contábil ligado à
+      Resolução CMN 4.966. As Instruções trazem as duas numerações, a antiga e
+      a "a partir de jan/25". É a mesma data da quebra do ativo problemático
+      (docs/cadeia-normativa.md).
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 20 a 35"
+
+  - id: cartao_de_credito_em_tres_modalidades
+    gravidade: alta
+    descricao: >
+      Cartão de crédito não é uma modalidade. As operações de cartão estão em
+      cinco submodalidades de três modalidades diferentes: 0204, 0210 e 0218
+      em Empréstimos; 0406 em Financiamentos; 1304 em Outros créditos. A
+      compra comum no cartão, sem juros, está em Outros créditos (1304).
+    consequencia: >
+      Filtrar "cartão de crédito" pela coluna modalidade não encontra nada.
+      Somar só Empréstimos deixa de fora a maior parte: em jun/2026, a 1304
+      sozinha soma R$ 594,7 bi.
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 20 a 22, 27 a 28, 35"
+    nao_confundir: >
+      0303 "antecipação de fatura de cartão de crédito" é adiantamento a
+      lojistas (pessoas jurídicas) sobre o que eles têm a receber das
+      credenciadoras. Não é crédito ao portador do cartão.
+
+  - id: garantia_nao_declarada
+    gravidade: alta
+    descricao: >
+      Só uma definição declara garantia: 0211 home equity, "garantidos por
+      hipoteca ou por alienação fiduciária de bens imóveis residenciais". As
+      demais não mencionam garantia, e o SCR.data não traz o campo de
+      garantias do documento 3040 (Anexo 12 do leiaute).
+    consequencia: >
+      Classificar modalidades por "tem garantia real" a partir de normativo só
+      é possível para 0211. Para as demais, qualquer classificação é
+      suposição de domínio (por exemplo, supor que financiamento de veículo
+      tem alienação fiduciária) e precisa ser marcada como inferida. Afeta a
+      pergunta Q17 do experimento.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 22"
+
+  - id: nomes_divergentes
+    gravidade: media
+    descricao: >
+      O mesmo código tem nomes diferentes nas Instruções, no Anexo 3, no
+      histórico do leiaute e no dado. Exemplo extremo: 0217 é "capital de
+      giro com crédito rotativo" na inclusão de 2017, "capital de giro com
+      teto rotativo" no Anexo 3 e no dado, e "capital de giro rotativo" nas
+      Instruções.
+    consequencia: >
+      A junção entre dado e ontologia usa rotulo_no_dado, nunca o nome
+      oficial. Para cruzar documentos, usar o código (notation).
+    confianca: verbatim
+    fonte: "Instruções 3040; Anexo 3; HistoricoAtualizacoes; dado"
+
+  - id: escopo_modalidades_01_a_13
+    gravidade: baixa
+    descricao: >
+      O SCR.data traz só as modalidades 01 a 13. As modalidades 14 a 20 do
+      Anexo 3 (relações interfinanceiras, coobrigações e garantias prestadas,
+      títulos de crédito fora da carteira, limites e retenção de risco) não
+      aparecem no dado.
+    confianca: verbatim
+    fonte: "Anexo 3; dado"
+
+  - id: submodalidades_sem_ocorrencia
+    gravidade: baixa
+    descricao: >
+      Dez submodalidades das modalidades 01 a 13 existem no Anexo 3 e não têm
+      nenhuma linha no dado de jan/2024 a jul/2026.
+    detalhe:
+      - {codigo: "0201", motivo: "Excluída (nota a1 da planilha de equivalência). Substituída por 0213 e 0214."}
+      - {codigo: "0205", motivo: "Excluída (nota a1). Substituída por 0215."}
+      - {codigo: "0206", motivo: "Excluída (nota a1). Substituída por 0216."}
+      - {codigo: "0890", motivo: "Excluída pela Carta-Circular 3.806/2017, a partir de jul/2017. O Anexo 3 ainda a lista."}
+      - {codigo: "0407", motivo: "Sem ocorrência no período. Motivo não verificado."}
+      - {codigo: "0690", motivo: "Sem ocorrência no período. Motivo não verificado."}
+      - {codigo: "1203", motivo: "Sem ocorrência no período. Motivo não verificado."}
+      - {codigo: "1207", motivo: "Sem ocorrência no período. Motivo não verificado."}
+      - {codigo: "1290", motivo: "Sem ocorrência no período. Motivo não verificado."}
+      - {codigo: "1390", motivo: "Sem ocorrência no período. Motivo não verificado."}
+    confianca: verbatim
+    fonte: "Anexo 3; Equivalencia_Modalidades.xlsx; HistoricoAtualizacoes; dado"
+
+# =============================================================================
+# PT: Conceitos. Modalidade seguida das suas submodalidades.
+# EN: Concepts. Each modality followed by its sub-modalities.
+# =============================================================================
+
+conceitos:
+
+  # ---------------------------------------------------------------------------
+  # 01 Adiantamentos a depositantes
+  # ---------------------------------------------------------------------------
+
+  - id: mod_01
+    notation: "01"
+    tipo: modalidade
+    prefLabel_pt: "Adiantamentos a depositantes"
+    rotulo_no_dado: "Adiantamentos a depositantes"
+    definition: >
+      operações lançadas na rubrica 1.6.1.10.00-1 (1.6.1.10.01.10-5 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 20"
+
+  - id: sub_0101
+    notation: "0101"
+    tipo: submodalidade
+    broader: mod_01
+    prefLabel_pt: "adiantamentos a depositantes"
+    rotulo_no_dado: "Adiantamentos a depositantes"
+    definition: >
+      operações lançadas na rubrica 1.6.1.10.00-1 (1.6.1.10.01.10-5 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 20"
+    scopeNote: "Única submodalidade da modalidade 01. A definição é a da modalidade."
+
+  # ---------------------------------------------------------------------------
+  # 02 Empréstimos
+  # ---------------------------------------------------------------------------
+
+  - id: mod_02
+    notation: "02"
+    tipo: modalidade
+    prefLabel_pt: "Empréstimos"
+    rotulo_no_dado: "Empréstimos"
+    definition: >
+      operações lançadas na rubrica 1.6.1.20.00-8 e 1.6.1.40.00-2
+      (1.6.1.20.01.10-4 a partir de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 20"
+
+  - id: sub_0202
+    notation: "0202"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "crédito pessoal - com consignação em folha de pagam."
+    rotulo_no_dado: "Crédito pessoal - com consignação em folha de pagam."
+    definition: >
+      operações de crédito com retenção de parcela do salário ou benefício do
+      tomador, para o pagamento das prestações do empréstimo – desconto em
+      folha de pagamento – nos termos da legislação em vigor.
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 20 e 21"
+
+  - id: sub_0203
+    notation: "0203"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "crédito pessoal - sem consignação em folha de pagam."
+    rotulo_no_dado: "Crédito pessoal - sem consignação em folha de pagam."
+    definition: >
+      operações de empréstimos às pessoas físicas, sem vinculação com
+      aquisição de bem ou serviço e sem retenção de parcela do salário ou
+      benefício do tomador para o pagamento das prestações do empréstimo
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 21"
+    scopeNote: >
+      Inclui a antecipação do saque-aniversário do FGTS, que as Instruções
+      mandam informar nesta submodalidade.
+
+  - id: sub_0204
+    notation: "0204"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "crédito rotativo vinculado a cartão de crédito"
+    rotulo_no_dado: "Crédito rotativo vinculado a cartão de crédito"
+    definition: >
+      saldo devedor remanescente após o vencimento da fatura, equivalente à
+      diferença entre o valor total da fatura e o valor pago pelo tomador, aí
+      incluídos os juros calculados até o final do mês
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 21"
+    scopeNote: "Uma das cinco submodalidades de cartão. Ver avisos_gerais.cartao_de_credito_em_tres_modalidades."
+
+  - id: sub_0207
+    notation: "0207"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "vendor"
+    rotulo_no_dado: "Vendor"
+    confianca: lacuna
+    fonte: "Anexo 3 (nome); ausente da tabela de Empréstimos das Instruções, p. 20"
+    aviso: >
+      A submodalidade existe no Anexo 3 e no dado, mas as Instruções não a
+      listam em Empréstimos. Existe definição de vendor em Financiamentos
+      (0404). Ela não foi copiada para cá, porque aplicar a definição de outra
+      modalidade seria inferência.
+
+  - id: sub_0208
+    notation: "0208"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "compror"
+    rotulo_no_dado: "Compror"
+    confianca: lacuna
+    fonte: "Anexo 3 (nome); ausente da tabela de Empréstimos das Instruções, p. 20"
+    aviso: >
+      Mesma situação de 0207. Existe definição de compror em Financiamentos
+      (0405), não aplicada aqui.
+
+  - id: sub_0209
+    notation: "0209"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "ARO - adiantamento de receitas orçamentárias"
+    rotulo_no_dado: "ARO - adiantamento de receitas orçamentárias"
+    definition: >
+      operações de crédito por antecipação de receita ao setor público
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 21"
+
+  - id: sub_0210
+    notation: "0210"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "cartão de crédito – compra, fatura parcelada ou saque financiados pela instituição emitente do cartão"
+    rotulo_no_dado: "Cartão de crédito - compra, fatura parcelada ou saque financiado pela instituição financeira emitente do cartão"
+    definition: >
+      crédito parcelado financiado pelo emissor do cartão, com cobrança de
+      encargos financeiros. Essas operações podem estar vinculadas a saques,
+      ao parcelamento de compras ou ao parcelamento de faturas de cartão de
+      crédito.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 22"
+    scopeNote: "Uma das cinco submodalidades de cartão."
+
+  - id: sub_0211
+    notation: "0211"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "home equity"
+    rotulo_no_dado: "Home Equity"
+    definition: >
+      empréstimos a pessoas físicas, garantidos por hipoteca ou por alienação
+      fiduciária de bens imóveis residenciais, sem vinculação a aquisição de
+      bens
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 22"
+    garantia_na_definicao: "hipoteca ou alienação fiduciária de imóvel residencial"
+
+  - id: sub_0212
+    notation: "0212"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "microcrédito"
+    rotulo_no_dado: "Microcrédito"
+    definition: >
+      Deve ser utilizada exclusivamente para operações de Microcrédito
+      Produtivo Orientado disciplinados pela Resolução n° 4.854, de 24 de
+      setembro de 2020.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 22"
+    scopeNote: >
+      Só o microcrédito produtivo orientado. O microcrédito que não é
+      produtivo orientado vai para a submodalidade natural da operação.
+
+  - id: sub_0213
+    notation: "0213"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "cheque especial"
+    rotulo_no_dado: "Cheque especial"
+    definition: >
+      operações de crédito vinculadas à conta corrente, nas quais determinado
+      limite de crédito é disponibilizado aos clientes para utilização de
+      acordo com suas conveniências, sem necessidade de comunicação prévia à
+      instituição financeira
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 23 e 24"
+    historyNote: "Substituiu, com 0214, a antiga 0201 'cheque especial e conta garantida' (nota a2 da planilha de equivalência)."
+
+  - id: sub_0214
+    notation: "0214"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "conta garantida"
+    rotulo_no_dado: "Conta Garantida"
+    definition: >
+      operações de crédito rotativo, nas quais determinado limite de crédito é
+      disponibilizado para utilização pelo cliente, através da simples
+      movimentação da conta corrente e/ou solicitação formal à instituição
+      financeira. As operações classificadas nessa modalidade não devem ter
+      data definida para a amortização do saldo devedor, exceto a
+      estabelecida para vigência do contrato
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 24"
+    historyNote: "Substituiu, com 0213, a antiga 0201 (nota a2 da planilha de equivalência)."
+
+  - id: sub_0215
+    notation: "0215"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "capital de giro com prazo de vencimento até 365 d"
+    altLabel_pt:
+      - "capital de giro com prazo de vencimento inferior até 365 d"   # PT: grafia da tabela das Instruções / EN: spelling in the Instructions table
+    rotulo_no_dado: "Capital de giro com prazo de vencimento até 365 dias"
+    definition: >
+      operações de crédito voltadas para o financiamento de curto prazo (igual
+      ou inferior a 365 dias) das pessoas jurídicas, vinculadas às
+      necessidades de capital de giro e a um contrato específico que
+      estabeleça prazos, taxas e garantias
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 24"
+    historyNote: "Substituiu a antiga 0205, com prazo inferior a 30 dias (notas a1 e a2 da planilha de equivalência)."
+
+  - id: sub_0216
+    notation: "0216"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "capital de giro com prazo vencimento superior 365 d"
+    rotulo_no_dado: "Capital de giro com prazo de vencimento superior a 365 dias"
+    definition: >
+      operações de crédito voltadas para o financiamento de médio e longo
+      prazo (superior a 365 dias) das pessoas jurídicas, vinculadas às
+      necessidades de capital de giro e a um contrato específico que
+      estabeleça prazos, taxas e garantias
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 24"
+    historyNote: "Substituiu a antiga 0206 (notas a1 e a2 da planilha de equivalência)."
+
+  - id: sub_0217
+    notation: "0217"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "capital de giro rotativo"
+    altLabel_pt:
+      - "capital de giro com teto rotativo"      # PT: Anexo 3 e dado / EN: Anexo 3 and data
+      - "capital de giro com crédito rotativo"   # PT: nome na inclusão, 2017 / EN: name at inclusion, 2017
+    rotulo_no_dado: "Capital de giro com teto rotativo"
+    definition: >
+      operações de crédito voltadas para o financiamento de capital de giro,
+      vinculadas a um contrato que estabeleça linha de crédito rotativo, de
+      forma que, à medida que a empresa devedora amortize os empréstimos já
+      tomados, o limite disponível para utilização seja restituído, e
+      amortizações com datas predeterminadas, podendo ser facultado ao
+      devedor repactuar o fluxo de pagamentos ao longo da vigência do
+      contrato
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 24"
+    historyNote: "Incluída pela Carta-Circular 3.806/2017, a partir de mai/2017. Três nomes oficiais para o mesmo código."
+
+  - id: sub_0218
+    notation: "0218"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "cartão de crédito – não migrado"
+    rotulo_no_dado: "Cartão de crédito - não migrado"
+    definition: >
+      operações anteriormente informadas na modalidade crédito rotativo
+      vinculado a cartão de crédito, sem previsão de consignação em folha de
+      pagamento, quando não forem liquidadas integralmente no vencimento do
+      crédito rotativo vinculado a cartão de crédito e não tenha havido
+      financiamento do saldo devedor nos prazos previstos na Resolução 4.549,
+      de 26 de janeiro de 2017.
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 24 e 25"
+    scopeNote: "Uma das cinco submodalidades de cartão."
+
+  - id: sub_0250
+    notation: "0250"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "recebíveis adquiridos"
+    rotulo_no_dado: "Recebíveis adquiridos"
+    definition: >
+      operações relativas à compra de créditos decorrentes da negociação de
+      bens e serviços mediante pagamento a prazo, onde os referidos créditos
+      não estão devidamente identificados. Nessas operações, o cedente será
+      informado como o cliente devedor da operação
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 25"
+
+  - id: sub_0290
+    notation: "0290"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "financiamento de projeto"
+    rotulo_no_dado: "Financiamento de projeto"
+    confianca: lacuna
+    fonte: "Anexo 3 (nome); ausente da tabela de Empréstimos das Instruções, p. 20"
+    aviso: >
+      Mesma situação de 0207. As Instruções definem "financiamento de
+      projeto" em outras modalidades (0490, 0590, 0990, 1190), sempre com
+      prazo acima de 360 dias e vínculo entre o fluxo de caixa do projeto e o
+      pagamento. Para Empréstimos, não há definição.
+
+  - id: sub_0299
+    notation: "0299"
+    tipo: submodalidade
+    broader: mod_02
+    prefLabel_pt: "outros empréstimos"
+    rotulo_no_dado: "Outros empréstimos"
+    definition: >
+      deve ser utilizada quando inexistir submodalidade adequada para a
+      operação sob registro e na composição de dívidas de diferentes
+      submodalidades.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 25"
+
+  # ---------------------------------------------------------------------------
+  # 03 Direitos creditórios descontados
+  # ---------------------------------------------------------------------------
+
+  - id: mod_03
+    notation: "03"
+    tipo: modalidade
+    prefLabel_pt: "Direitos creditórios descontados"
+    altLabel_pt:
+      - "Títulos descontados"   # PT: nome até ago/2016 / EN: name until Aug/2016
+    rotulo_no_dado: "Direitos creditórios descontados"
+    definition: >
+      operações lançadas na rubrica 1.6.1.30.00-5 (1.6.1.30.01.10-3 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 25"
+    historyNote: >
+      Renomeada de "Títulos descontados" pela Carta-Circular 3.773/2016, a
+      partir de set/2016. O Anexo 3 registra a renomeação com os dois nomes
+      na mesma célula.
+
+  - id: sub_0301
+    notation: "0301"
+    tipo: submodalidade
+    broader: mod_03
+    prefLabel_pt: "desconto de duplicatas"
+    rotulo_no_dado: "Desconto de duplicatas"
+    definition: >
+      operações de crédito para adiantamento de recursos com base em fluxo de
+      caixa futuro vinculado a duplicatas mercantis
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 26"
+
+  - id: sub_0302
+    notation: "0302"
+    tipo: submodalidade
+    broader: mod_03
+    prefLabel_pt: "desconto de cheques"
+    rotulo_no_dado: "Desconto de cheques"
+    definition: >
+      operações de crédito para adiantamento de recursos com base em fluxo de
+      caixa futuro vinculado a cheques custodiados
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 26"
+
+  - id: sub_0303
+    notation: "0303"
+    tipo: submodalidade
+    broader: mod_03
+    prefLabel_pt: "antecipação de fatura de cartão de crédito"
+    rotulo_no_dado: "Antecipação de fatura de cartão de crédito"
+    definition: >
+      operações de crédito para adiantamento de recursos às pessoas jurídicas
+      com base em fluxo de caixa futuro vinculado a direitos creditórios sob a
+      forma de faturas de cartão de crédito
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 26"
+    aviso: "Não é crédito ao portador do cartão. Ver avisos_gerais.cartao_de_credito_em_tres_modalidades."
+
+  - id: sub_0398
+    notation: "0398"
+    tipo: submodalidade
+    broader: mod_03
+    prefLabel_pt: "outros direitos creditórios descontados"
+    rotulo_no_dado: "Outros direitos creditórios descontados"
+    definition: >
+      operações de crédito para adiantamento de recursos com base em outros
+      tipos de direitos creditórios que não títulos. Abrange as operações
+      formalizadas como aquisição de recebíveis comerciais de pessoa não
+      integrante do SFN e nas quais tal pessoa seja devedor solidário ou
+      subsidiário dos recebíveis
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 26"
+    historyNote: "Incluída pela Carta-Circular 3.773/2016, a partir de set/2016."
+
+  - id: sub_0399
+    notation: "0399"
+    tipo: submodalidade
+    broader: mod_03
+    prefLabel_pt: "outros títulos descontados"
+    rotulo_no_dado: "Outros títulos descontados"
+    definition: >
+      operações de crédito para adiantamento de recursos com base em outros
+      títulos não relacionados nos demais itens.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 26"
+
+  # ---------------------------------------------------------------------------
+  # 04 Financiamentos
+  # ---------------------------------------------------------------------------
+
+  - id: mod_04
+    notation: "04"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos"
+    rotulo_no_dado: "Financiamentos"
+    definition: >
+      operações lançadas nas rubricas 1.6.2.10.00-4, 1.6.2.15.00-9,
+      1.6.2.40.00-5, 1.6.2.50.00-2 e 1.6.2.60.00-9 (1.6.2.10.01.10-2,
+      1.6.2.15.01.10-7, 1.6.2.30.01.10-0 e 1.6.2.40.01.10-9 a partir de
+      jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 27"
+
+  - id: sub_0401
+    notation: "0401"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "aquisição de bens – veículos automotores"
+    rotulo_no_dado: "Aquisição de bens - veículos automotores"
+    definition: >
+      destinados a financiar a compra de veículos automotores
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 27"
+
+  - id: sub_0402
+    notation: "0402"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "aquisição de bens – outros bens"
+    rotulo_no_dado: "Aquisição de bens - outros bens"
+    definition: >
+      destinados a financiar a aquisição de bens, serviços, máquinas e
+      equipamentos, exceto veículos automotores
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 27"
+
+  - id: sub_0403
+    notation: "0403"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "microcrédito"
+    rotulo_no_dado: "Microcrédito"
+    definition: >
+      Deve ser utilizada exclusivamente para operações de Microcrédito
+      Produtivo Orientado disciplinados pela Resolução n° 4.854, de 24 de
+      setembro de 2020.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 27"
+
+  - id: sub_0404
+    notation: "0404"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "vendor"
+    rotulo_no_dado: "Vendor"
+    definition: >
+      operações de financiamento de vendas baseadas no princípio da cessão de
+      crédito, que permite à empresa tomadora do financiamento
+      (fornecedor/vendedor) vender seus produtos a prazo, recebendo o
+      pagamento à vista da instituição financeira. A empresa compradora
+      assume o compromisso de efetuar o pagamento a prazo, destinado a
+      liquidar a operação junto à instituição financeira. Em geral, a
+      instituição financeira ficará com os direitos creditórios da empresa
+      vendedora, à qual caberá o risco da operação. O registro dessas
+      operações é efetuado tendo como cliente o sacado, sendo o
+      cedente/interveniente reportado na informação adicional 0201
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 27 e 28"
+
+  - id: sub_0405
+    notation: "0405"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "compror"
+    rotulo_no_dado: "Compror"
+    definition: >
+      operações de crédito a pessoas jurídicas, voltadas para o financiamento
+      de suas compras (produtos e serviços), caracterizadas pelo fato de que
+      o desembolso inicial ocorre com o pagamento à vista das compras, pela
+      instituição financeira, diretamente ao fornecedor. As operações de
+      "Floor-Plan" devem ser registradas nessa modalidade
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 28"
+
+  - id: sub_0406
+    notation: "0406"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "cartão de crédito – compra ou fatura parcelada pela instituição financeira emitente do cartão"
+    rotulo_no_dado: "Cartão de crédito - compra ou fatura parcelada pela instituição financeira emitente do cartão"
+    definition: >
+      devem ser registrados nessa modalidade, desde que haja incidência de
+      juros, os financiamentos parcelados pela instituição financeira, bem
+      como os saques em cartão de crédito financiado (pagamento em múltiplas
+      parcelas).
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 28"
+    scopeNote: "Uma das cinco submodalidades de cartão."
+
+  - id: sub_0440
+    notation: "0440"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "financiamentos agroindustriais"
+    rotulo_no_dado: "Financiamentos agroindustriais"
+    definition: >
+      operações a pessoas físicas e jurídicas para financiamento de atividade
+      agroindustrial
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 28"
+    historyNote: >
+      Incluída pela Carta-Circular 3.806/2017, a partir de jul/2017, quando a
+      modalidade 08 deixou de ser "rurais e agroindustriais". Crédito
+      agroindustrial fica em Financiamentos, não em Financiamentos rurais.
+
+  - id: sub_0450
+    notation: "0450"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "recebíveis adquiridos"
+    rotulo_no_dado: "Recebíveis adquiridos"
+    definition: >
+      financiamentos relativos à compra de créditos decorrentes da negociação
+      de bens e serviços mediante pagamento a prazo, onde os referidos
+      créditos não estão devidamente identificados. Nessas operações, o
+      cedente será informado como o cliente devedor da operação
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 28 e 29"
+
+  - id: sub_0490
+    notation: "0490"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "financiamento de projeto"
+    rotulo_no_dado: "Financiamento de projeto"
+    definition: >
+      operações contratadas com prazo superior a 360 dias, com vínculo entre
+      o fluxo de caixa gerado pelo projeto e o pagamento da linha de crédito
+      concedida
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 29"
+
+  - id: sub_0499
+    notation: "0499"
+    tipo: submodalidade
+    broader: mod_04
+    prefLabel_pt: "outros financiamentos"
+    rotulo_no_dado: "Outros financiamentos"
+    definition: >
+      utilizar apenas quando inexistir submodalidade adequada para a operação
+      sob registro.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 29"
+
+  # ---------------------------------------------------------------------------
+  # 05 Financiamentos à exportação
+  # ---------------------------------------------------------------------------
+
+  - id: mod_05
+    notation: "05"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos à exportação"
+    rotulo_no_dado: "Financiamentos à exportação"
+    definition: >
+      operações lançadas nas rubricas 1.6.2.20.00-1, 1.8.8.20.00-7,
+      4.9.2.06.00-9, 4.9.2.36.10-3, 4.9.2.36.20-6, 4.9.2.36.40-2,
+      4.9.2.36.80-4 e 4.9.2.36.90-7 (1.6.2.20.01.10-1 e 1.8.1.20.10.10-8 a
+      partir de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 29"
+
+  - id: sub_0501
+    notation: "0501"
+    tipo: submodalidade
+    broader: mod_05
+    prefLabel_pt: "financiamento à exportação"
+    rotulo_no_dado: "Financiamento à exportação"
+    definition: >
+      financiamentos para a venda de bens e serviços ao exterior, que não se
+      enquadrem como ACC e ACE. Inclui operações com Cédulas de Crédito à
+      Exportação (CCE) e Notas de Crédito à Exportação (NCE)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 29"
+
+  - id: sub_0502
+    notation: "0502"
+    tipo: submodalidade
+    broader: mod_05
+    prefLabel_pt: "adiantamento sobre contratos de câmbio"
+    rotulo_no_dado: "Adiantamento sobre contratos de câmbio"
+    definition: >
+      operações de antecipação parcial ou total de receitas vinculadas a
+      contratos de exportação, com finalidade de financiar a produção das
+      respectivas mercadorias
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 29"
+
+  - id: sub_0503
+    notation: "0503"
+    tipo: submodalidade
+    broader: mod_05
+    prefLabel_pt: "adiantamento sobre cambiais entregues"
+    rotulo_no_dado: "Adiantamento sobre cambiais entregues"
+    definition: >
+      operações de adiantamento feito ao exportador, por conta do efetivo
+      embarque de mercadorias exportadas (pós-embarque)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 29"
+
+  - id: sub_0504
+    notation: "0504"
+    tipo: submodalidade
+    broader: mod_05
+    prefLabel_pt: "créd decorrentes de contratos de exportação-export note"
+    rotulo_no_dado: "Créd decorrentes de contratos de exportação-export note"
+    definition: >
+      operação lastreada em contratos de compra e venda entre o exportador e
+      as empresas estrangeiras importadoras
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 30"
+
+  - id: sub_0590
+    notation: "0590"
+    tipo: submodalidade
+    broader: mod_05
+    prefLabel_pt: "financiamento de projeto"
+    rotulo_no_dado: "Financiamento de projeto"
+    definition: >
+      operações ligadas a exportação, contratadas com prazo superior a 360
+      dias, em que exista vinculação entre o fluxo de caixa gerado pelo
+      projeto e o pagamento da linha de crédito concedida
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 30"
+
+  - id: sub_0599
+    notation: "0599"
+    tipo: submodalidade
+    broader: mod_05
+    prefLabel_pt: "outros financiamentos à exportação"
+    rotulo_no_dado: "Outros financiamentos à exportação"
+    definition: >
+      utilizar apenas quando inexistir submodalidade adequada para a operação
+      sob registro.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 30"
+
+  # ---------------------------------------------------------------------------
+  # 06 Financiamentos à importação
+  # ---------------------------------------------------------------------------
+
+  - id: mod_06
+    notation: "06"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos à importação"
+    rotulo_no_dado: "Financiamentos à importação"
+    definition: >
+      financiamentos destinados à compra de bens ou serviços no exterior,
+      vinculados a linhas externas, lançados na rubrica 1.6.2.25.00-6 e
+      4.9.2.07.00-8 (1.6.2.25.01.10-6 a partir de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 30"
+
+  - id: sub_0601
+    notation: "0601"
+    tipo: submodalidade
+    broader: mod_06
+    prefLabel_pt: "financiamento à importação"
+    rotulo_no_dado: "Financiamento à importação"
+    definition: >
+      financiamentos destinados à compra de bens ou serviços no exterior,
+      vinculados a linhas externas, lançados na rubrica 1.6.2.25.00-6 e
+      4.9.2.07.00-8 (1.6.2.25.01.10-6 a partir de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 30"
+    scopeNote: "Única submodalidade com ocorrência na modalidade 06. A definição é a da modalidade."
+
+  # ---------------------------------------------------------------------------
+  # 07 Financiamentos com interveniência
+  # ---------------------------------------------------------------------------
+
+  - id: mod_07
+    notation: "07"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos com interveniência"
+    rotulo_no_dado: "Financiamentos com interveniência"
+    definition: >
+      operações lançadas na rubrica 1.6.2.30.00-8 (1.6.2.30.01.00-7 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 30"
+
+  - id: sub_0701
+    notation: "0701"
+    tipo: submodalidade
+    broader: mod_07
+    prefLabel_pt: "aquisição de bens com interveniência – veículos autom."
+    rotulo_no_dado: "Aquisição de bens com interveniência - veículos autom."
+    definition: >
+      operações de crédito concedidas à empresa vendedora, voltados a
+      financiar a compra de veículos automotores por parte de seus clientes,
+      com interveniência. A empresa vendedora será apontada como cliente
+      dessas operações
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 30"
+    aviso: "O cliente informado é a empresa vendedora, não quem compra o veículo."
+
+  - id: sub_0702
+    notation: "0702"
+    tipo: submodalidade
+    broader: mod_07
+    prefLabel_pt: "aquisição de bens com interveniência – outros bens"
+    rotulo_no_dado: "Aquisição de bens com interveniência - outros bens"
+    definition: >
+      operações de crédito concedidas à empresa vendedora, destinados a
+      financiar a compra de máquinas e equipamentos, exceto veículos
+      automotores, por parte de seus clientes, com interveniência. A empresa
+      vendedora será apontada como cliente dessas operações
+    confianca: verbatim
+    fonte: "Instruções 3040, pp. 30 e 31"
+    aviso: "O cliente informado é a empresa vendedora, não quem compra o bem."
+
+  - id: sub_0790
+    notation: "0790"
+    tipo: submodalidade
+    broader: mod_07
+    prefLabel_pt: "financiamento de projeto"
+    rotulo_no_dado: "Financiamento de projeto"
+    confianca: lacuna
+    fonte: "Anexo 3 (nome); ausente da tabela de Financiamentos com interveniência das Instruções, p. 30"
+    aviso: "Existe no Anexo 3 e no dado, sem definição nas Instruções. Ver sub_0290."
+
+  - id: sub_0799
+    notation: "0799"
+    tipo: submodalidade
+    broader: mod_07
+    prefLabel_pt: "outros financiamentos com interveniência"
+    rotulo_no_dado: "Outros financiamentos com interveniência"
+    definition: >
+      financiamentos concedidos com interveniência, não descrito nos itens
+      anteriores.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 31"
+
+  # ---------------------------------------------------------------------------
+  # 08 Financiamentos rurais
+  # ---------------------------------------------------------------------------
+
+  - id: mod_08
+    notation: "08"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos rurais"
+    altLabel_pt:
+      - "Financiamentos rurais e agroindustriais"   # PT: nome até jun/2017, ainda usado no Anexo 3 / EN: name until Jun/2017, still used in Anexo 3
+    rotulo_no_dado: "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)"
+    definition: >
+      operações lançadas na rubrica 1.6.3.00.00-0 (1.6.3.00.00.00-8 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+    historyNote: >
+      Renomeada de "Financiamentos rurais e agroindustriais" pela
+      Carta-Circular 3.806/2017, a partir de jul/2017. O crédito
+      agroindustrial passou para a submodalidade 0440, em Financiamentos. O
+      rótulo no dado ainda traz o nome antigo entre parênteses, com dois
+      espaços antes do parêntese.
+    aviso: "O rótulo no dado tem dois espaços seguidos. Normalizar espaços antes de comparar texto."
+
+  - id: sub_0801
+    notation: "0801"
+    tipo: submodalidade
+    broader: mod_08
+    prefLabel_pt: "custeio"
+    altLabel_pt:
+      - "custeio e pré-custeio"   # PT: Anexo 3 / EN: Anexo 3
+    rotulo_no_dado: "Custeio"
+    definition: >
+      financiamentos concedidos a produtores rurais para custeio, tanto
+      agrícolas quanto pecuários
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+
+  - id: sub_0802
+    notation: "0802"
+    tipo: submodalidade
+    broader: mod_08
+    prefLabel_pt: "investimento"
+    altLabel_pt:
+      - "investimento e capital de giro de financiam. agroindustr."   # PT: Anexo 3 / EN: Anexo 3
+    rotulo_no_dado: "Investimento"
+    definition: >
+      financiamentos concedidos a produtores rurais para investimento, tanto
+      agrícolas quanto pecuários
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+    aviso: >
+      O nome no Anexo 3 ainda menciona "financiam. agroindustr.", que desde
+      2017 pertence à submodalidade 0440. Vale a definição das Instruções.
+
+  - id: sub_0803
+    notation: "0803"
+    tipo: submodalidade
+    broader: mod_08
+    prefLabel_pt: "comercialização"
+    altLabel_pt:
+      - "comercialização e pré-comercialização"   # PT: Anexo 3 / EN: Anexo 3
+    rotulo_no_dado: "Comercialização"
+    definition: >
+      financiamentos concedidos a produtores rurais para comercialização,
+      tanto agrícolas quanto pecuários
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+
+  - id: sub_0804
+    notation: "0804"
+    tipo: submodalidade
+    broader: mod_08
+    prefLabel_pt: "industrialização"
+    rotulo_no_dado: "Industrialização"
+    definition: >
+      financiamentos concedidos a produtores rurais para industrialização,
+      tanto agrícolas quanto pecuários.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+    historyNote: "Incluída pela Carta-Circular 3.806/2017, a partir de jul/2017."
+
+  # ---------------------------------------------------------------------------
+  # 09 Financiamentos imobiliários
+  # ---------------------------------------------------------------------------
+
+  - id: mod_09
+    notation: "09"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos imobiliários"
+    rotulo_no_dado: "Financiamentos imobiliários"
+    definition: >
+      operações lançadas na rubrica 1.6.4.00.00-3 (1.6.4.00.00.00-5 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+
+  - id: sub_0901
+    notation: "0901"
+    tipo: submodalidade
+    broader: mod_09
+    prefLabel_pt: "financiamento habitacional – SFH"
+    rotulo_no_dado: "Financiamento habitacional - SFH"
+    definition: >
+      financiamento para aquisição ou construção de unidades habitacionais
+      enquadradas no Sistema Financeiro de Habitação - SFH
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+
+  - id: sub_0902
+    notation: "0902"
+    tipo: submodalidade
+    broader: mod_09
+    prefLabel_pt: "financiamento habitacional – exceto SFH"
+    rotulo_no_dado: "Financiamento habitacional \x96 exceto SFH"
+    definition: >
+      financiamento para aquisição ou construção de unidades habitacionais com
+      taxas de juros livremente pactuadas entre a instituição financeira e o
+      mutuário
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 32"
+    aviso: >
+      O rótulo no dado contém o caractere de controle U+0096, invisível na
+      maioria das telas, no lugar do traço. É o traço do Windows (byte 0x96)
+      gravado com a codificação errada na origem. Comparar com "Financiamento
+      habitacional – exceto SFH" ou com hífen falha em silêncio: medido em
+      2026-09-21, um join com o rótulo limpo perde 179.292 linhas, sem erro.
+      O staging precisa normalizar esse caractere.
+
+  - id: sub_0903
+    notation: "0903"
+    tipo: submodalidade
+    broader: mod_09
+    prefLabel_pt: "financiamento imobiliário – empreendim, exceto habitac."
+    rotulo_no_dado: "Financiamento imobiliário - empreendim, exceto habitac."
+    definition: >
+      financiamento imobiliário para aquisição ou construção de unidades não
+      habitacionais
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 33"
+
+  - id: sub_0990
+    notation: "0990"
+    tipo: submodalidade
+    broader: mod_09
+    prefLabel_pt: "financiamento de projeto"
+    rotulo_no_dado: "Financiamento de projeto"
+    definition: >
+      financiamento imobiliário não enquadrado nas modalidades anteriores, em
+      que exista vinculação entre o fluxo de caixa gerado pelo projeto e o
+      pagamento da linha de crédito concedida.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 33"
+
+  # ---------------------------------------------------------------------------
+  # 10 Financiamentos de títulos e valores mobiliários
+  # ---------------------------------------------------------------------------
+
+  - id: mod_10
+    notation: "10"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos de títulos e valores mobiliários"
+    rotulo_no_dado: "Financiamentos de títulos e valores mobiliários"
+    definition: >
+      operações lançadas na rubrica 1.6.5.00.00-6 (1.6.5.00.00.00-2 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 33"
+
+  - id: sub_1001
+    notation: "1001"
+    tipo: submodalidade
+    broader: mod_10
+    prefLabel_pt: "financiamento de TVM"
+    rotulo_no_dado: "Financiamento de TVM"
+    definition: >
+      operações lançadas na rubrica 1.6.5.00.00-6 (1.6.5.00.00.00-2 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 33"
+    scopeNote: >
+      Única submodalidade da modalidade 10. A definição é a da modalidade.
+      Nos direitos por empréstimos de ações, o cliente informado são as
+      câmaras e prestadores de serviços de compensação.
+
+  # ---------------------------------------------------------------------------
+  # 11 Financiamentos de infraestrutura e desenvolvimento
+  # ---------------------------------------------------------------------------
+
+  - id: mod_11
+    notation: "11"
+    tipo: modalidade
+    prefLabel_pt: "Financiamentos de infraestrutura e desenvolvimento"
+    rotulo_no_dado: "Financiamentos de infraestrutura e desenvolvimento"
+    definition: >
+      operações lançadas na rubrica 1.6.6.00.00-9 (1.6.6.00.00.00-9 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 33"
+
+  - id: sub_1101
+    notation: "1101"
+    tipo: submodalidade
+    broader: mod_11
+    prefLabel_pt: "financiamento de infraestrutura e desenvolvimento"
+    rotulo_no_dado: "Financiamento de infraestrutura e desenvolvimento"
+    definition: >
+      operações de crédito contratadas com o objetivo de financiar
+      infraestrutura e desenvolvimento
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 33"
+
+  - id: sub_1190
+    notation: "1190"
+    tipo: submodalidade
+    broader: mod_11
+    prefLabel_pt: "financiamento de projeto"
+    rotulo_no_dado: "Financiamento de projeto"
+    definition: >
+      operações de financiamento de infraestrutura e desenvolvimento,
+      contratadas com prazo superior a 360 dias, com vinculação entre o fluxo
+      de caixa gerado pelo projeto e o pagamento da linha de crédito.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 33"
+
+  # ---------------------------------------------------------------------------
+  # 12 Operações de arrendamento
+  # ---------------------------------------------------------------------------
+
+  - id: mod_12
+    notation: "12"
+    tipo: modalidade
+    prefLabel_pt: "Operações de arrendamento"
+    rotulo_no_dado: "Operações de arrendamento"
+    definition: >
+      operações lançadas nas rubricas 1.7.1.00.00-3, 1.7.2.00.00-6,
+      1.7.3.00.00-9 e 1.7.5.00.00-5 (1.7.4.10.10.00-4 e 1.7.4.20.10.00-3 a
+      partir de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 34"
+
+  - id: sub_1201
+    notation: "1201"
+    tipo: submodalidade
+    broader: mod_12
+    prefLabel_pt: "arrendamento financeiro exceto veículos automotores e imóveis"
+    rotulo_no_dado: "Arrendamento financeiro exceto veículos automotores e imóveis"
+    definition: >
+      operações de arrendamento mercantil (leasing) financeiro, em que o
+      arrendador concede ao arrendatário a utilização de bem, exceto veículo
+      automotor e bem imóvel, objeto do contrato de arrendamento, com opção
+      de compra ao final do contrato.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 34"
+    scopeNote: "Inclui o pré-leasing quando o objeto do contrato não é veículo automotor."
+
+  - id: sub_1202
+    notation: "1202"
+    tipo: submodalidade
+    broader: mod_12
+    prefLabel_pt: "arrendamento financeiro imobiliário"
+    rotulo_no_dado: "Arrendamento financeiro imobiliário"
+    definition: >
+      operações de arrendamento mercantil (leasing) financeiro, em que o
+      arrendador concede ao arrendatário a utilização de bem imóvel, objeto
+      do contrato de arrendamento, com opção de compra ao final do contrato
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 34"
+
+  - id: sub_1205
+    notation: "1205"
+    tipo: submodalidade
+    broader: mod_12
+    prefLabel_pt: "arrendamento operacional"
+    rotulo_no_dado: "Arrendamento operacional"
+    definition: >
+      operações de arrendamento mercantil operacional
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 34"
+
+  - id: sub_1206
+    notation: "1206"
+    tipo: submodalidade
+    broader: mod_12
+    prefLabel_pt: "arrendamento financeiro de veículos automotores"
+    rotulo_no_dado: "Arrendamento financeiro de veículos automotores"
+    definition: >
+      operações de arrendamento mercantil (leasing) financeiro, em que o
+      arrendador concede ao arrendatário a utilização de veículo automotor,
+      objeto do contrato de arrendamento, com opção de compra ao final do
+      contrato.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 34"
+    scopeNote: "Inclui o pré-leasing quando o objeto do contrato é veículo automotor."
+
+  # ---------------------------------------------------------------------------
+  # 13 Outros créditos
+  # ---------------------------------------------------------------------------
+
+  - id: mod_13
+    notation: "13"
+    tipo: modalidade
+    prefLabel_pt: "Outros créditos"
+    rotulo_no_dado: "Outros créditos"
+    confianca: lacuna
+    fonte: "Instruções 3040, p. 35 (a modalidade não tem definição própria, só as submodalidades)"
+    scopeNote: >
+      Em jun/2026, a modalidade soma R$ 795,5 bi, 10,42% da carteira ativa.
+      Desse total, 74,8% é compra no cartão de crédito sem juros (1304) e
+      21,2% são recebíveis adquiridos (1350). A submodalidade genérica, "outros
+      com característica de crédito" (1399), é 1,8%.
+    aviso: >
+      Não confundir o nome com "categoria residual". A maior parte da
+      modalidade é produto bem definido. Ver ontology/metricas.yml,
+      avisos_gerais.outros_creditos_balde_de_supressao.
+
+  - id: sub_1301
+    notation: "1301"
+    tipo: submodalidade
+    broader: mod_13
+    prefLabel_pt: "avais e fianças honrados"
+    rotulo_no_dado: "Avais e fianças honrados"
+    definition: >
+      créditos honrados decorrentes de avais, fianças e outras coobrigações,
+      registrados na rubrica 1.8.1.00.00-2 do Cosif (1.8.1.10.10.10-9 a
+      partir de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 35"
+
+  - id: sub_1302
+    notation: "1302"
+    tipo: submodalidade
+    broader: mod_13
+    prefLabel_pt: "devedores por compra de valores e bens"
+    rotulo_no_dado: "Devedores por compra de valores e bens"
+    definition: >
+      débitos de terceiros, resultantes da alienação, a prazo, de valores e
+      bens, registrados na rubrica 1.8.8.35.00-9 (1.8.1.40.10.10-6 a partir
+      de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 35"
+
+  - id: sub_1303
+    notation: "1303"
+    tipo: submodalidade
+    broader: mod_13
+    prefLabel_pt: "títulos e créditos a receber"
+    rotulo_no_dado: "Títulos e créditos a receber"
+    definition: >
+      valores a receber representados por títulos de crédito, notas
+      promissórias ou contratos, que não se caracterizem como operações de
+      crédito ou avais e fianças honrados, porém possuam características de
+      concessão de crédito, registrados na rubrica 1.8.8.80.10-2
+      (1.8.1.30.10.10-7 a partir de jan/25)
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 35"
+
+  - id: sub_1304
+    notation: "1304"
+    tipo: submodalidade
+    broader: mod_13
+    prefLabel_pt: "cartão de crédito - compra à vista e parcelado lojista"
+    rotulo_no_dado: "Cartão de crédito - compra à vista e parcelado lojista"
+    definition: >
+      valores a receber representados por compras efetuadas com cartões de
+      crédito, tanto à vista como parceladas pelo lojista no ato da compra,
+      sem incidência de encargos financeiros.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 35"
+    scopeNote: >
+      Uma das cinco submodalidades de cartão, e a maior delas: em jun/2026,
+      R$ 594,7 bi, 7,79% de toda a carteira ativa.
+
+  - id: sub_1350
+    notation: "1350"
+    tipo: submodalidade
+    broader: mod_13
+    prefLabel_pt: "recebíveis adquiridos"
+    rotulo_no_dado: "Recebíveis adquiridos"
+    definition: >
+      compra de direitos creditórios devidamente especificados, onde não haja
+      coobrigação por parte do cedente. O cliente informado será o sacado da
+      operação original
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 35"
+    aviso: >
+      Mesmo nome de 0250 e 0450, definição diferente: aqui os créditos são
+      especificados e o cliente é o sacado. Em 0250 e 0450 os créditos não
+      estão identificados e o cliente é o cedente.
+
+  - id: sub_1399
+    notation: "1399"
+    tipo: submodalidade
+    broader: mod_13
+    prefLabel_pt: "outros com característica de crédito"
+    rotulo_no_dado: "Outros com característica de crédito"
+    definition: >
+      deve ser utilizada apenas quando inexistir submodalidade adequada para
+      os valores a receber sob registro.
+    confianca: verbatim
+    fonte: "Instruções 3040, p. 36"
