@@ -278,6 +278,15 @@ avisos_gerais:
       agregações do tipo "outros", não por mudança de regra. Decisão de
       domínio do desenvolvedor, registrada em docs/cadeia-normativa.md.
     pendente_de_confirmacao: false
+    composicao_v2: >
+      Medido em 2026-09-21: a regra vale, mas não descreve a modalidade
+      inteira. Em jun/2026, "Outros créditos" soma R$ 795,5 bi, dos quais
+      74,8% são compra no cartão de crédito sem juros (submodalidade 1304) e
+      21,2% são recebíveis adquiridos (1350). O componente genérico, "outros
+      com característica de crédito" (1399), é 1,8%. Tratar a modalidade
+      inteira como balde de supressão é errado. Onde houver agregação de
+      recortes pequenos, ela cabe nas submodalidades do tipo "outros". Ver
+      ontology/modalidades.yml, mod_13.
 
   - id: limiar_de_valor_mudou
     gravidade: media

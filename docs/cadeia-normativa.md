@@ -53,6 +53,13 @@ Três fatores, com graus de verificação diferentes:
 
 **Pendente:** cruzar a lista das 76 com as 55 e atribuir cada uma das 21 ausentes a um dos três fatores. Até lá, a ontologia registra a explicação como parcial.
 
+**Resolução, 2026-09-21** (`ontology/modalidades.yml`):
+- **Os 55 contavam rótulos, não submodalidades.** Vários rótulos se repetem em modalidades diferentes: "Financiamento de projeto" aparece em seis, "Recebíveis adquiridos" em três, e "Microcrédito", "Vendor" e "Compror" em duas cada.
+- **A unidade certa é o par modalidade e submodalidade.** Nessa unidade, o dado de jan/2024 a jul/2026 tem 66 submodalidades, com 56 rótulos distintos. Em jun/2026 foram 65 pares e 55 rótulos.
+- **Todas as 66 estão na ontologia,** validadas contra o dado.
+- **As submodalidades do Anexo 3 sem ocorrência no período estão listadas em `avisos_gerais.submodalidades_sem_ocorrencia`,** com o motivo quando documentado.
+- **Correção do fator 2:** as marcas "descontinuado a partir da data-base maio/2026" estão na modalidade 15, fora do SCR.data, e não explicam ausência nas modalidades 01 a 13.
+
 ## 4. O rótulo "duplo" na planilha de equivalência não é erro
 
 A aba `de-para_PJ - Tipo Origem 1` traz, numa célula mesclada (A9:A11), o texto `PJ - Capital de Giro Rotativo PJ - Cheque Especial e Conta Garantidaf`. A triagem inicial tratou isso como corrupção. **É renomeação**, e a planilha diz isso explicitamente:

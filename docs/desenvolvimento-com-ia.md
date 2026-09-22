@@ -104,11 +104,19 @@ Na leitura dos normativos, a IA concluiu "por inferência forte" que o `-1` de `
 
 **Por que importa:** é o caso mais próximo do tema do projeto. Uma definição coerente, com fonte citada e redação convincente, estava errada. Só a marcação de confiança e o teste impediram que ela virasse regra de staging.
 
+### 10. Regra da versão antiga aplicada à versão nova sem medir
+
+Num rascunho de post, a IA escreveu que parte dos 10% de "Outros créditos" "não é categoria: é onde o BC agrupa recortes pequenos demais". A frase vinha da metodologia da V1. O post fala da V2, e a composição da V2 não tinha sido medida.
+
+**Pego por:** a própria IA, antes da publicação, ao montar a ontologia de modalidades. As Instruções do documento 3040 mostram que a submodalidade 1304, compra no cartão de crédito, fica em "Outros créditos". Medida, ela é 74,8% da modalidade. O componente genérico é 1,8%.
+
+**Por que importa:** é o erro 9 com o sinal trocado. Lá, uma leitura da V1 foi estendida à V2 e o teste a derrubou. Aqui, a mesma extensão quase foi a público assinada pelo desenvolvedor. A regra que ficou: **nenhum número ou afirmação sobre a V2 sai para fora do repositório sem ter sido medido na V2.**
+
 ## O padrão que emerge
 
-Os nove erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+Os dez erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
 
-O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos nove casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
+O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos dez casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
 
 A prática adotada no projeto a partir daí: **nenhuma afirmação sobre fonte de dado, volume ou endpoint entra em código ou documentação sem verificação direta na origem.** Onde a verificação não foi possível, o documento declara isso explicitamente.
 
