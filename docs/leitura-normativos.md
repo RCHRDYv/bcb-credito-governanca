@@ -18,7 +18,7 @@
 
 ### 1. `carteira_inadimplida_arrastada` (V1) e `carteira_inadimplencia` (V2) são o mesmo conceito?
 
-**Sim. As definições são textualmente idênticas.**
+**Sim. As definições coincidem palavra por palavra, tirando uma diferença de concordância.**
 
 > **V1, item 4.u, "Carteira inadimplida arrastada":** "Somatório das operações de crédito a vencer e vencidos que possuam alguma parcela vencida há mais de 90 dias."
 
@@ -26,7 +26,7 @@
 
 A única diferença é concordância verbal. O mecanismo de "arrastar" continua descrito com exatidão: **a operação inteira entra, incluindo a parte a vencer, quando qualquer parcela passa de 90 dias.**
 
-**Consequência:** a série é continuável entre V1 e V2 para esta métrica. E é um caso instrutivo de **mudança de rótulo sem mudança de definição**, ou seja, o inverso do que a suspeita inicial apontava. Quem olhasse só o nome concluiria erradamente que houve ruptura.
+**Consequência:** a série é continuável entre V1 e V2 para esta métrica. É também um caso instrutivo de **mudança de rótulo sem mudança de definição**, ou seja, o inverso do que a suspeita inicial apontava. Quem olhasse só o nome concluiria erradamente que houve ruptura.
 
 **Correspondência XKOS:** exata.
 
@@ -120,6 +120,8 @@ Se a regra continua valendo, e não há indicação de que tenha mudado, então 
 
 **Este é possivelmente o achado mais consequente da leitura**, porque afeta qualquer análise por modalidade e não é sinalizado em lugar nenhum da documentação vigente.
 
+> **Atualização de 2026-09-22: o peso disso é menor do que parecia.** A composição da modalidade foi medida na V2 e está em `ontology/metricas.yml`. A compra no cartão de crédito, submodalidade 1304, é 74,8% de "Outros créditos". O componente genérico, que é onde a supressão cairia, é 1,8% da modalidade. O aviso da V1 continua valendo, mas o problema principal da modalidade não é o balde de supressão: é que ela junta o cartão de crédito com resíduo, e o nome não avisa nem uma coisa nem outra.
+
 ### D. Há quebras de taxonomia anteriores, por Carta Circular
 
 A aba `OutrasInformacoes` da planilha de equivalência documenta alterações de subdomínio determinadas por:
@@ -138,6 +140,8 @@ A aba `HistoricoAtualizacoes` mostra que a própria tabela de equivalência tem 
 > **V1, item 4.h:** o CNAE era disponibilizado em **duas colunas** (Seção e Subclasse), com subclasse de 7 dígitos apenas quando a combinação CNAE Subclasse × UF × Porte tivesse **mais de 5 CNPJs** no cadastro da Receita Federal. Abaixo disso, reportava só a Seção.
 
 > **V2, item 3.e:** uma coluna só, preenchida com a **Seção** (primeiro nível).
+
+**Medido em 2026-09-23:** na V1, a supressão da subclasse atinge 989.730 das 25,2 milhões de linhas de pessoa jurídica, e usa o mesmo marcador `-` que a coluna traz nas linhas de pessoa física, onde ela simplesmente não se aplica. O mesmo símbolo, dois significados, e só a coluna `cliente` separa os dois casos.
 
 ### F. Confirmação: `cnae_ocupacao` é polimórfica, como `porte`
 
@@ -172,11 +176,11 @@ Mais uma descontinuidade histórica, anterior a todas as outras.
 **O que a ontologia precisa registrar e o dado não carrega:**
 
 1. A polimorfia de `porte` e de `cnae_ocupacao` conforme `cliente`. **Registrado em 2026-09-23** em `ontology/dimensoes.yml`, com o caso medido: "Indisponível" é o único valor de porte que ocorre nos dois tipos de cliente
-2. O significado do sentinela `-1`, marcado como inferido
+2. O significado do sentinela `-1`. **Atualizado em 2026-09-21:** passou de `inferido` para `lacuna`, depois de o teste empírico refutar a leitura herdada da V1
 3. Que "Outros créditos" acumula supressão e não é categoria pura
 4. A quebra de janeiro de 2025 no ativo problemático
 5. A distinção entre inadimplência como razão e `carteira_inadimplencia` como soma
 6. Que UF é domicílio ou sede, não local da operação. **Registrado em 2026-09-23** em `ontology/dimensoes.yml`
 7. As descontinuidades por Carta Circular e o limiar de junho de 2016
 
-**Nível de confiança das definições coletadas:** as sete listadas acima são `verbatim` ou `parafraseado`, com exceção do item 2, que é `inferido`, e da questão de garantia real, que permanece `lacuna`.
+**Nível de confiança das definições coletadas:** as sete listadas acima são `verbatim` ou `parafraseado`, com duas exceções, as duas marcadas como `lacuna`: o critério do sentinela `-1` (item 2) e a questão de garantia real.

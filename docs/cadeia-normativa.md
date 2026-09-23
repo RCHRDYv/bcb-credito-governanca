@@ -40,10 +40,12 @@ O texto das instruções, na página 119, mostra a troca:
 
 | Norma | Vigência | O que mudou | Relação com o dado |
 |---|---|---|---|
-| IN BCB 627, 2025-05-29 | julho de 2025 | Leiaute e instruções sobre crédito de programas governamentais | Coincide com a queda de tamanho dos arquivos mensais da V1 em julho de 2025, de cerca de 320 MB para 273 MB. **Coincidência temporal, não causalidade verificada** |
+| IN BCB 627, 2025-05-29 | julho de 2025 | Leiaute e instruções sobre crédito de programas governamentais | Coincide com a quebra de julho de 2025, cujo mecanismo foi medido em 2026-09-23: a V1 parou de publicar a coluna `tcb` e a V2 passou a publicar a mesma carteira em menos recortes (`docs/analise-v1-v2.md`, seção 7). A norma trata de outro assunto, então continua sendo **coincidência temporal, não causalidade verificada**. Issue #33 |
 | IN BCB 659, 2025-09-08 | a confirmar | Anexo 3: descrição do domínio 15 da modalidade e inclusão e exclusão de subdomínios | Explica parte da diferença de contagem de submodalidades (seção 3) |
 
-## 3. Por que a planilha de equivalência tem 76 submodalidades e o dado tem 55
+## 3. Por que a planilha de equivalência tem 76 submodalidades e o dado tem menos
+
+A pergunta nasceu de uma comparação entre 76 na planilha e 55 no dado de junho de 2026. Os três fatores abaixo foram levantados primeiro, e a resolução no fim da seção mostra que parte do problema estava na própria contagem.
 
 Três fatores, com graus de verificação diferentes:
 
@@ -51,14 +53,16 @@ Três fatores, com graus de verificação diferentes:
 2. **Descontinuações.** O Anexo 3 marca submodalidades como "descontinuado a partir da data-base maio/2026", e a IN 659 incluiu e excluiu subdomínios. *Verificado no leiaute.*
 3. **Ausência de operação no mês.** Uma submodalidade vigente sem operação em junho de 2026 não gera linha. *Hipótese, ainda não medida submodalidade a submodalidade.*
 
-**Pendente:** cruzar a lista das 76 com as 55 e atribuir cada uma das 21 ausentes a um dos três fatores. Até lá, a ontologia registra a explicação como parcial.
-
 **Resolução, 2026-09-21** (`ontology/modalidades.yml`):
 - **Os 55 contavam rótulos, não submodalidades.** Vários rótulos se repetem em modalidades diferentes: "Financiamento de projeto" aparece em seis, "Recebíveis adquiridos" em três, e "Microcrédito", "Vendor" e "Compror" em duas cada.
 - **A unidade certa é o par modalidade e submodalidade.** Nessa unidade, o dado de jan/2024 a jul/2026 tem 66 submodalidades, com 56 rótulos distintos. Em jun/2026 foram 65 pares e 55 rótulos.
 - **Todas as 66 estão na ontologia,** validadas contra o dado.
 - **As submodalidades do Anexo 3 sem ocorrência no período estão listadas em `avisos_gerais.submodalidades_sem_ocorrencia`,** com o motivo quando documentado.
 - **Correção do fator 2:** as marcas "descontinuado a partir da data-base maio/2026" estão na modalidade 15, fora do SCR.data, e não explicam ausência nas modalidades 01 a 13.
+
+**A conta fecha, a atribuição de motivo não fecha inteira.** As 76 da planilha menos as 66 do dado dão exatamente as 10 submodalidades sem ocorrência no período. Quatro delas têm exclusão documentada por norma, e as outras seis (0407, 0690, 1203, 1207, 1290 e 1390) não têm motivo verificado: podem estar vigentes sem operação, ou excluídas por norma que não foi localizada. É o que continua pendente.
+
+**Acréscimo de 2026-09-23:** nenhum mês isolado tem os 66 pares. São 64 em 13 meses e 65 em 18, porque dois pares ocorrem só em parte da série. Uma junção mês a mês com a ontologia encontrar menos de 66 é, portanto, o comportamento correto.
 
 ## 4. O rótulo "duplo" na planilha de equivalência não é erro
 
@@ -104,7 +108,7 @@ As notas também são conteúdo útil para a ontologia, porque registram a hist�
 
 Em 2024, a variação mensal do ativo problemático ficou entre -0,8% e +3,2%.
 
-### Mas não pode ser atribuído só à mudança de definição
+### O salto não pode ser atribuído só à mudança de definição
 
 **A carteira inadimplida, cuja definição não mudou, subiu mais que o ativo problemático no mesmo mês.** O controle de sazonalidade não explica: na virada de dez/2023 para jan/2024, a carteira inadimplida subiu 2,4% e o ativo problemático, 0,5%. (É um único ano de controle, e a conclusão vale com essa limitação.)
 
@@ -122,7 +126,7 @@ Onde o ativo problemático sobe muito mais que a inadimplência, a diferença ve
 | PJ - Capital de giro | +R$ 2,5 bi | **-R$ 2,4 bi** |
 | PJ - Outros créditos | +R$ 1,1 bi | **-R$ 3,4 bi** |
 
-**Leitura:** o total líquido esconde movimentos em direções opostas. No crédito imobiliário e no consignado, as instituições classificam como problemático mais do que o algoritmo anterior do BCB classificava. Em capital de giro e em outros créditos PJ, classificam menos.
+**Leitura:** o total líquido esconde movimentos em direções opostas. No crédito imobiliário e no consignado, a característica especial informada pelas instituições marca como problemático mais do que o critério anterior marcava. Em capital de giro e em outros créditos PJ, marca menos.
 
 **Consequência:** a variação de janeiro de 2025 não pode ser lida como piora de crédito nem como efeito puro de definição. O dado mistura as duas coisas e não oferece meio de separá-las. Uma análise que compare dezembro com janeiro sem essa ressalva está errada, e o erro não gera nenhum sinal.
 
@@ -137,4 +141,4 @@ Onde o ativo problemático sobe muito mais que a inadimplência, a diferença ve
 | 1.3 Recorte temporal | 2024 em diante | Desenvolvedor |
 | 1.4 Anexo 3 | Buscado, e lido neste documento | Desenvolvedor |
 | 3.1 Rótulo duplo | Renomeação, resolvido na seção 4 | Verificado na fonte e no dado |
-| 3.2 76 contra 55 | Explicação parcial, seção 3, com pendência declarada | Verificado em parte |
+| 3.2 76 contra 55 | Resolvido em parte, seção 3: a contagem certa é por par, e 66 pares mais 10 sem ocorrência fecham as 76. Falta o motivo de seis delas | Verificado em parte |

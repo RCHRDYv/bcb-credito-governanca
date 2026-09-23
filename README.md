@@ -147,7 +147,7 @@ uv run python -m scripts.analises.qa_staging
 | [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md) | O projeto termina numa recomendação, com a fronteira do dado declarada |
 | [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md) | O staging corrige a forma e preserva o conteúdo, incluindo o tratamento assimétrico dos dois sentinelas |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
-| [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com duas notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
+| [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 
 ## Planejado versus entregue
 
@@ -163,7 +163,7 @@ Três replanejamentos que já aconteceram, com o que causou cada um:
 
 ## Segurança
 
-Repositório público tem duas propriedades que mudam o cálculo de risco: qualquer pessoa lê, e **o histórico do git é permanente**. Apagar um segredo do arquivo não o remove do histórico.
+Repositório público muda o cálculo de risco por dois motivos: qualquer pessoa lê o conteúdo, e **o histórico do git é permanente**. Apagar um segredo do arquivo não o remove do histórico.
 
 **Nenhuma credencial existe neste repositório, em nenhum commit.** A autenticação no Databricks usa OAuth, então nenhum token é sequer gerado. O `profiles.yml` real vive em `~/.dbt/`, fora do projeto, e o repositório publica apenas um `.example` com placeholders.
 
@@ -191,7 +191,12 @@ O raciocínio completo, com as alternativas descartadas, está em [`docs/adr/000
 
 # English
 
-**Question:** how much do a semantic layer and an ontology improve an LLM's accuracy when answering business questions over real enterprise data?
+**Two questions over the same data.**
+
+- **Business:** a lender wants to grow its corporate loan book. Which credit modalities and which states are worth more exposure, and where is risk deteriorating too fast for that?
+- **Method:** how much do a semantic layer and an ontology improve an LLM's accuracy on the questions that decision depends on?
+
+The project ends in a recommendation, with the list of what this data cannot support stated next to it, rather than in a dashboard of indicators.
 
 This is a **demonstration, not a discovery**. The effect of metadata on text-to-SQL accuracy is established in the literature and already underpins commercial products. What this project adds is a transparent, auditable replication in a new domain: Brazilian regulatory credit data, in Portuguese, with genuine and officially documented taxonomy drift.
 

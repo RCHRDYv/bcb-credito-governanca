@@ -15,7 +15,7 @@ Esta análise é insumo direto do mapeamento XKOS (ver [ADR 0002](adr/0002-model
 | **origem** | 2 | 2 | Idêntico |
 | **indexador** | 6 | 6 | Idêntico |
 | **cliente** | 2 | 2 | Idêntico |
-| Granularidade (linhas/mês) | 1.025.243 | 322.852 | V1 tem 3,2x mais linhas |
+| Granularidade, linhas no mês | 1.025.243 | 322.852 | V1 tem 3,2x mais linhas. As duas caem em julho de 2025, por motivos diferentes: ver seção 7 |
 
 ## 1. Modalidade: reclassificação, não renomeação
 
@@ -57,7 +57,7 @@ Grande
 
 O resultado é que, na V2, agrupar por `porte` sem filtrar `cliente` mistura categorias incompatíveis, e nada no esquema avisa. **É uma regressão de qualidade semântica introduzida pela V2**, e é um caso claro de conhecimento que só a ontologia pode restituir.
 
-**Detalhe de parsing:** os valores da V1 vêm com padding de espaços à direita (`'PJ - Grande                    '`), exigindo normalização com `strip`.
+**Detalhe de leitura:** na V1, os valores de `porte` vêm preenchidos com espaços à direita (`'PJ - Grande                    '`) em todas as linhas, o que exige `trim` antes de qualquer comparação ou junção.
 
 ## 3. Segmento: ganho real de granularidade
 
@@ -98,6 +98,8 @@ A V2 desmembrou "Não bancário" em seis categorias, incluindo Fintech e Institu
 
 **Isso precisa ser resolvido no normativo antes de qualquer afirmação.** É o exemplo mais limpo de por que este projeto existe.
 
+> **Resolvido em 2026-08-25:** é a primeira possibilidade. A seção 3.x da metodologia V2 e a seção 4.u da V1 trazem definições equivalentes, então a renomeação não mudou o conceito e a série é continuável ([`leitura-normativos.md`](leitura-normativos.md)). Fica uma ressalva registrada em `ontology/metricas.yml`: a IN BCB 414 alterou a descrição do campo "Valor dos Vencimentos" a partir de janeiro de 2025, e é desse campo que sai a carteira inadimplida. O texto antigo do campo não foi localizado, então o efeito dessa alteração continua pendente.
+
 ## 5. Discrepância entre documentação e dado publicado
 
 O portal de dados abertos descreve a Versão 1 como disponível **apenas até junho de 2025** e não mais atualizada.
@@ -115,7 +117,7 @@ A queda de aproximadamente 15% a partir de julho sugere mudança de granularidad
 
 **Consequência para o projeto:** confiar na descrição do portal, sem verificar o dado, teria produzido um recorte temporal errado. Registrado como achado de governança, e como material adicional para a Q30.
 
-**Atualização de 2026-09-21:** a V1 continua publicada. `planilha_2026.zip` traz de janeiro a julho de 2026. A queda de julho de 2025 aparece também na contagem de linhas, nas duas versões (V1 de 1.025.243 para 891.135, V2 de 322.852 para 308.209), e coincide com a vigência da IN BCB 627 (`docs/cadeia-normativa.md`, seção 2).
+**Atualização de 2026-09-21:** a V1 continua publicada. `planilha_2026.zip` traz de janeiro a julho de 2026. A queda de julho de 2025 aparece também na contagem de linhas, nas duas versões (V1 de 1.025.243 para 891.135, V2 de 322.852 para 308.209), e coincide com a vigência da IN BCB 627 (`docs/cadeia-normativa.md`, seção 2). **O mecanismo da queda foi medido em 2026-09-23 e está na seção 7:** a hipótese de mudança de granularidade se confirmou, e a de mudança de escopo não, porque a carteira não caiu.
 
 ## 6. Os totais das duas versões não reconciliam
 

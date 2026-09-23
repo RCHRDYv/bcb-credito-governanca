@@ -10,7 +10,7 @@ A pergunta central: uma IA consegue responder corretamente perguntas de negócio
 
 ## Fonte de dados
 
-Verificado em 2026-08-20. **O SCR.data não é uma API OData.** Isso vale para as estatísticas do PIX, não para o SCR. A ingestão lida com duas modalidades de fonte, o que é mais realista como engenharia.
+Verificado em 2026-08-20. **O SCR.data não é uma API OData.** OData vale para as estatísticas do PIX, não para o SCR. A ingestão precisa lidar com dois tipos de fonte, o que é mais realista como engenharia.
 
 ### SCR.data: download de ZIP anual
 
@@ -22,7 +22,7 @@ Verificado em 2026-08-20. **O SCR.data não é uma API OData.** Isso vale para a
 | Metodologia V2 | `https://www.bcb.gov.br/pda/desig/metodologia_versao2.pdf` |
 | Tutorial | `https://www.bcb.gov.br/content/estabilidadefinanceira/scr/scr.data/tutorial.pdf` |
 
-**Cobertura verificada em 2026-09-21**, abrindo os arquivos e não pela descrição do portal: as duas versões cobrem de janeiro de 2024 a julho de 2026 (a V2 existe também para 2023). O portal descreve a V1 como encerrada em junho de 2025, e o dado contradiz isso. O BCB também republica arquivos antigos sem aviso, o que a ingestão detecta pelo manifesto (ver [ADR 0004](adr/0004-ingestao-em-camada-bronze.md)).
+**Cobertura verificada em 2026-09-21**, abrindo os arquivos em vez de acreditar na descrição do portal: as duas versões cobrem de janeiro de 2024 a julho de 2026 (a V2 existe também para 2023). O portal descreve a V1 como encerrada em junho de 2025, e o dado contradiz isso. O BCB também republica arquivos antigos sem aviso, o que a ingestão detecta pelo manifesto (ver [ADR 0004](adr/0004-ingestao-em-camada-bronze.md)).
 
 **A quebra metodológica entre V1 e V2 é o achado que sustenta a pergunta mais difícil do experimento.** É um caso real, datado e oficialmente documentado de mudança de taxonomia afetando comparabilidade de série histórica. Os dois PDFs de metodologia são a documentação de negócio da qual a ontologia é destilada.
 
@@ -44,9 +44,9 @@ Todas verificadas no arquivo, e todas são material para a camada de staging e p
 2. **Delimitador dentro de campo entre aspas.** O arquivo usa `;` e há valores de `cnae_ocupacao` contendo `;`, por exemplo `"Comércio; reparação de veículos automotores e motocicletas"`
 3. **Vírgula decimal** em formato brasileiro, com números vindo entre aspas como texto
 4. **Codificação UTF-8 com BOM.** Ler com `utf-8-sig`. Ler com `latin-1` **não gera erro**, apenas corrompe silenciosamente todo acento, o que é o pior tipo de falha
-5. **Padding com espaços à direita** nos valores da V1, exigindo `strip` na normalização
+5. **Espaços à direita nos valores**, que exigem `trim` antes de qualquer comparação ou junção. Medido em 2026-09-23: acontece em `porte` em todas as linhas da V1, e em `submodalidade` em 720.339 linhas da V2
 6. **`carteira_inadimplencia` e `ativo_problematico` são colunas distintas**, com definição normativa diferente
-7. **Faixas de aging devem somar** para `carteira_a_vencer`, o que dá teste de qualidade natural
+7. **As faixas de vencimento somam `carteira_a_vencer`**, o que rende um teste de qualidade natural
 
 ### PIX: esse sim é OData
 
@@ -87,19 +87,19 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 
 ## Arquitetura de documentação
 
-Sete artefatos, todos gerados de fonte versionada:
+Sete artefatos, cada um com um público e uma origem versionada. A coluna de situação diz o que já existe, para a tabela não descrever como pronto o que ainda é plano:
 
-| Artefato | Público | Origem |
-|---|---|---|
-| Problema de negócio | Qualquer leitor | README |
-| Glossário de negócio | Negócio | `ontology/modalidades.yml` |
-| Dicionário de dados | Técnico | `schema.yml` do dbt |
-| Contrato de dados | Consumidor | `ontology/contratos.yml` |
-| ADR | Técnico sênior | `docs/adr/` |
-| Linhagem | Ambos | Gerada pelo `dbt docs` |
-| Runbook | Operação | `docs/runbook.md` |
+| Artefato | Público | Origem | Situação |
+|---|---|---|---|
+| Problema de negócio | Qualquer leitor | README | Entregue |
+| Glossário de negócio | Negócio | `ontology/modalidades.yml`, `ontology/dimensoes.yml`, `ontology/metricas.yml` | Entregue |
+| Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para staging e seeds |
+| ADR | Técnico sênior | `docs/adr/` | Entregue, seis decisões |
+| Linhagem | Ambos | Gerada pelo `dbt docs` | v0.2 |
+| Contrato de dados | Consumidor | `ontology/contratos.yml` | v0.2 |
+| Runbook | Operação | `docs/runbook.md` | v0.2 |
 
-Site estruturado segundo **Diátaxis**, separando tutorial, guia prático, referência e explicação.
+A publicação como site, estruturada segundo **Diátaxis** para separar tutorial, guia prático, referência e explicação, fica para a v0.2, junto do `dbt docs`.
 
 **Modelo de ontologia:** três padrões complementares, decididos em [ADR 0002](adr/0002-modelo-de-ontologia-skos-datacube-xkos.md).
 
@@ -117,7 +117,9 @@ Site estruturado segundo **Diátaxis**, separando tutorial, guia prático, refer
 
 99 termos: 13 modalidades, 55 submodalidades (em 65 pares), 13 portes, 8 segmentos, 6 indexadores, 2 valores de cliente e 2 de origem.
 
-**Armadilha semântica já identificada:** a coluna `porte` mistura **duas taxonomias distintas**. Pessoa jurídica usa porte de empresa (Micro, Pequeno, Médio, Grande) e pessoa física usa faixa de renda em salários mínimos. Agrupar por `porte` sem filtrar `cliente` mistura categorias incompatíveis. Isso não está em lugar nenhum do esquema, e é exatamente o tipo de conhecimento que só a ontologia carrega.
+**Medido depois, no recorte inteiro de 2024 a 2026:** são 56 rótulos distintos de submodalidade em 66 pares com a modalidade, e nenhum mês isolado tem os 66, porque dois pares ocorrem só em parte da série (ver `ontology/modalidades.yml`).
+
+**Armadilha semântica já identificada:** a coluna `porte` mistura **duas taxonomias distintas**. Pessoa jurídica usa porte de empresa (Micro, Pequeno, Médio, Grande) e pessoa física usa faixa de renda em salários mínimos. Agrupar por `porte` sem filtrar `cliente` mistura categorias incompatíveis. Isso não está em lugar nenhum do esquema, e é exatamente o tipo de conhecimento que só a ontologia carrega. O mesmo vale para `cnae_ocupacao`, que é seção do CNAE para pessoa jurídica e natureza da ocupação para pessoa física.
 
 ## Camada de decisão
 
@@ -140,7 +142,7 @@ O pré-registro não muda. A camada de decisão consome os marts e o gabarito, e
 ### O que entra na recomendação
 
 1. **Indicador de espaço,** por UF e modalidade: carteira PJ por empresa ativa, comparada à mediana nacional. Exige fonte externa para o número de empresas ativas por UF, declarada junto.
-2. **Indicador de risco,** por UF e modalidade: nível e tendência de inadimplência em seis meses, mais o gap entre ativo problemático e carteira inadimplida, que antecipa deterioração que o atraso ainda não mostra.
+2. **Indicador de risco,** por UF e modalidade: nível e tendência de inadimplência em seis meses, mais a distância entre ativo problemático e carteira inadimplida, que antecipa deterioração que o atraso ainda não mostra.
 3. **Projeção** da carteira por recorte, com intervalo, usando modelo simples de série temporal com sazonalidade.
 4. **Agrupamento de UFs** por perfil, combinando nível de crédito por empresa, tendência de risco e composição da carteira. Serve para tratar estados parecidos com a mesma estratégia.
 5. **A recomendação,** numa matriz espaço contra risco: onde entrar, onde manter, onde não entrar. Cada recomendação vem com o custo de errar e com a fronteira do dado.
@@ -190,7 +192,7 @@ Sem essa distinção, uma resposta numérica confiante sobre pergunta impossíve
 
 **Três exigências de rigor, declaradas junto dos resultados:**
 
-1. Perguntas **pré-registradas**, com data de registro anterior a qualquer execução: o conjunto original em [`../evaluation/questions.yml`](../evaluation/questions.yml), de 2026-08-20, preservado sem alteração, e o conjunto v2 em [`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml), de 2026-09-22, que vale para o experimento. O v2 mantém os 30 enunciados originais, corrige duas notas erradas no campo `errata` e acrescenta 11 perguntas nascidas de achados posteriores
+1. Perguntas **pré-registradas**, com data de registro anterior a qualquer execução: o conjunto original em [`../evaluation/questions.yml`](../evaluation/questions.yml), de 2026-08-20, preservado sem alteração, e o conjunto v2 em [`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml), de 2026-09-22, que vale para o experimento. O v2 mantém os 30 enunciados originais, corrige três notas erradas no campo `errata` e acrescenta 11 perguntas nascidas de achados posteriores
 2. Temperatura zero, ou múltiplas execuções por pergunta com variância reportada
 3. **No mínimo dois modelos** de níveis diferentes, para que o efeito não seja artefato de um modelo específico
 

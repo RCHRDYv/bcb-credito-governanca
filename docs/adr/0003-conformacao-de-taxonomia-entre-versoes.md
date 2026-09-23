@@ -7,13 +7,13 @@
 
 O SCR.data trocou de taxonomia de modalidades em 2025, e as duas versões **não compartilham nenhum valor**. A V1 usava uma agregação própria do relatório, organizada por produto e tipo de cliente ("PF - Cartão de Crédito", "PJ - Capital de Giro"). A V2 expõe a hierarquia oficial do Anexo 3 do documento 3040, em dois níveis (modalidade e submodalidade).
 
-Isso cria o problema clássico de **conformação de dimensão através de quebra de taxonomia**, que em modelagem dimensional é um dos casos genuinamente difíceis. Qualquer análise que atravesse a quebra precisa de uma decisão explícita sobre como reconciliar, e decisões implícitas aqui produzem número errado de forma silenciosa.
+Isso cria o problema clássico de **conformação de dimensão diante de uma quebra de taxonomia**, que em modelagem dimensional é um dos casos genuinamente difíceis. Qualquer análise que atravesse a quebra precisa de uma decisão explícita sobre como reconciliar, e decisão implícita aqui produz número errado em silêncio.
 
 O BCB publica uma tabela oficial de equivalência (`Equivalencia_Modalidades.xlsx`), o que dispensa inferência. Ela tem três abas, separadas por tipo de cliente e, para pessoa jurídica, por tipo de origem dos recursos.
 
 ## Investigação que precedeu a decisão
 
-Antes de escolher a abordagem, foi medida a ambiguidade real da correspondência, em vez de assumida.
+Antes de escolher a abordagem, a ambiguidade real da correspondência foi medida, em vez de suposta.
 
 **Dados extraídos da tabela oficial:** 222 linhas de correspondência, 16 modalidades V1, 13 modalidades V2, 76 submodalidades distintas.
 
@@ -59,15 +59,19 @@ A tabela de correspondência entra como **seed do dbt**, derivada da planilha of
 
 **Positivas.** A série histórica no padrão V1 pode ser reconstruída a partir do dado V2 sem perda e sem estimativa. O join é seguro por construção. A tabela de correspondência é derivada de fonte oficial e regenerável por script.
 
-**Negativas, e são reais.** A conformação só funciona em uma direção, o que precisa ser comunicado com clareza a quem consumir os marts, senão alguém vai tentar o caminho inverso. A validade temporal acrescenta complexidade ao modelo. E a correspondência depende de um arquivo XLSX publicado pelo BCB, que pode mudar de formato ou de endereço sem aviso, o que é uma dependência externa frágil.
+**Negativas, e são reais.** A conformação só funciona em uma direção, o que precisa ser comunicado com clareza a quem consumir os marts, senão alguém vai tentar o caminho inverso. A validade temporal acrescenta complexidade ao modelo. A correspondência também depende de um arquivo XLSX publicado pelo BCB, que pode mudar de formato ou de endereço sem aviso, e essa é uma dependência externa frágil.
 
-**Mitigação da última:** a planilha baixada é versionada em cópia própria junto do script de extração, com a data de download registrada, de modo que uma mudança na origem seja detectável em vez de silenciosa.
+**Mitigação da última:** a planilha em si não entra no repositório, porque é dado bruto (ADR 0001). O que entra é o seed gerado a partir dela, versionado, mais o script que o gera. Uma mudança na origem fica detectável de duas formas: o script falha quando um nome da planilha não casa mais com o rótulo do dado, e qualquer alteração de conteúdo aparece como diff no seed quando ele é regerado.
+
+## Atualização de 2026-09-21: universo diferente
+
+A ingestão mostrou que **a carteira ativa da V2 é de 3,95% a 5,94% maior que a da V1** em todos os 31 meses em que as duas coexistem (`docs/analise-v1-v2.md`, seção 6). A decisão deste ADR continua de pé para o que ela resolve, a **classificação**: o lookup V2 para V1 segue determinístico e sem fan-out. Já "reconstruir a série V1 a partir da V2 sem perda" vale para a taxonomia, não para os valores. A série reconstruída tem a classificação da V1 aplicada ao universo da V2, e não reproduz os totais que a V1 publicou. Todo mart que usar a conformação precisa dizer isso.
 
 ## Atualização de 2026-09-22: o que apareceu ao gerar o seed
 
 A extração da planilha oficial confirmou a parte central da decisão e acrescentou três limites que a investigação original não tinha visto. Seed em `dbt/seeds/correspondencia_modalidade_v2_v1.csv`, gerado por `scripts/gerar_seed_correspondencia.py` e verificado por `scripts/validar_correspondencia.py`.
 
-**Confirmado:** ambiguidade zero dentro de cada aba, agora medida pelo código da submodalidade, e não pelo nome. As 16 modalidades da V1 do dado são exatamente as 16 citadas pela planilha, e os 199 recortes distintos do dado da V2 encontram cada um uma linha do seed.
+**Confirmado:** ambiguidade zero dentro de cada aba, agora medida pelo código da submodalidade, e não pelo nome. As 16 modalidades da V1 que aparecem no dado são exatamente as 16 citadas pela planilha, e cada um dos 199 recortes distintos do dado da V2 encontra uma linha do seed.
 
 **Limite 1: a chave da planilha não é só (submodalidade, cliente, origem).** A aba `OutrasInformacoes` traz dois tratamentos adicionais:
 
@@ -83,10 +87,6 @@ A Natureza 4 do Anexo 2 é "operações adquiridas em negociação com pessoa in
 **Limite 2: a planilha oficial é incompleta.** Para cliente PF, as submodalidades 1303 (títulos e créditos a receber) e 1399 (outros com característica de crédito) não aparecem em nenhuma aba, e o dado tem linhas nas duas: 0,02% da carteira, em 120.177 linhas. O seed traz essas linhas com `modalidade_v1` vazia e a inferência do projeto em coluna separada, `modalidade_v1_inferida`, marcada como tal.
 
 **Limite 3: a validade temporal deixa de importar no recorte atual.** Todas as inclusões, exclusões e renomeações de submodalidade documentadas na planilha são de 2014 a 2017, anteriores ao recorte do projeto, que começa em 2024. A única mudança de agrupamento sem data declarada é a da submodalidade 0440 (nota "e"). Por isso o seed é de versão única, com a ressalva registrada, em vez de dimensão que muda lentamente. A estrutura SCD Tipo 2 volta a ser necessária se o recorte retroceder a 2017 ou antes.
-
-## Atualização de 2026-09-21: universo diferente
-
-A ingestão mostrou que **a carteira ativa da V2 é de 3,95% a 5,94% maior que a da V1** em todos os 31 meses em que as duas coexistem (`docs/analise-v1-v2.md`, seção 6). A decisão deste ADR continua de pé para o que ela resolve, a **classificação**: o lookup V2 para V1 segue determinístico e sem fan-out. Mas "reconstruir a série V1 a partir da V2 sem perda" vale para a taxonomia, não para os valores. A série reconstruída tem a classificação da V1 aplicada ao universo da V2, e não reproduz os totais que a V1 publicou. Todo mart que usar a conformação precisa dizer isso.
 
 ## Nota de método
 
