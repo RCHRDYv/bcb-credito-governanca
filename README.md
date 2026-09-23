@@ -101,8 +101,15 @@ As validações têm duas camadas. A que compara com o dado exige acesso ao Data
 
 ```bash
 uv run python -m scripts.validar_modalidades --estrutura
+uv run python -m scripts.validar_dimensoes --estrutura
 uv run python -m scripts.validar_correspondencia --estrutura
 uv run python -m scripts.validar_perguntas
+```
+
+Para conferir a ontologia de dimensões contra o dado, incluindo se cada valor ocorre nos tipos de cliente que a ontologia declara:
+
+```bash
+uv run python -m scripts.validar_dimensoes
 ```
 
 ### Documentação

@@ -171,12 +171,12 @@ Mais uma descontinuidade histórica, anterior a todas as outras.
 
 **O que a ontologia precisa registrar e o dado não carrega:**
 
-1. A polimorfia de `porte` e de `cnae_ocupacao` conforme `cliente`
+1. A polimorfia de `porte` e de `cnae_ocupacao` conforme `cliente`. **Registrado em 2026-09-23** em `ontology/dimensoes.yml`, com o caso medido: "Indisponível" é o único valor de porte que ocorre nos dois tipos de cliente
 2. O significado do sentinela `-1`, marcado como inferido
 3. Que "Outros créditos" acumula supressão e não é categoria pura
 4. A quebra de janeiro de 2025 no ativo problemático
 5. A distinção entre inadimplência como razão e `carteira_inadimplencia` como soma
-6. Que UF é domicílio ou sede, não local da operação
+6. Que UF é domicílio ou sede, não local da operação. **Registrado em 2026-09-23** em `ontology/dimensoes.yml`
 7. As descontinuidades por Carta Circular e o limiar de junho de 2016
 
 **Nível de confiança das definições coletadas:** as sete listadas acima são `verbatim` ou `parafraseado`, com exceção do item 2, que é `inferido`, e da questão de garantia real, que permanece `lacuna`.
