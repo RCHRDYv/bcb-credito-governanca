@@ -1,12 +1,22 @@
-# Governança de dados e consumo por IA: um estudo com dados de crédito do Banco Central
+# Crédito no Brasil: do dado oficial até a decisão, e quanto a IA acerta no caminho
 
-**Quanto uma camada semântica e uma ontologia melhoram a acurácia de um LLM ao responder perguntas de negócio sobre dado corporativo real?**
+Este projeto responde a duas perguntas sobre os mesmos dados públicos de crédito do Banco Central.
 
-*How much do a semantic layer and an ontology improve an LLM's accuracy when answering business questions over real enterprise data?*
+**De negócio:** uma financeira quer crescer em crédito para pessoa jurídica. Em quais modalidades e estados vale aumentar exposição, e onde o risco está piorando rápido demais para isso?
+
+**De método:** quanto uma camada semântica e uma ontologia melhoram a acurácia de um LLM ao responder as perguntas de que essa decisão depende?
+
+*Two questions over the same public Brazilian Central Bank credit data: where a lender should grow and where risk is deteriorating, and how much a semantic layer plus an ontology improve an LLM's accuracy on the questions that decision depends on.*
 
 > **Status:** v0.1 em construção. Este aviso será substituído por resultados conforme cada versão for publicada.
 
 ---
+
+## A decisão que o projeto sustenta
+
+A entrega final não é um painel de indicadores, é uma recomendação: onde entrar, onde manter e onde não entrar, por estado e modalidade, com o custo de errar e com **a lista do que este dado não permite afirmar.** O SCR é agregado e não traz taxa nem receita, então rentabilidade, spread e comportamento de instituição específica ficam fora, e isso é dito junto da recomendação.
+
+O desenho está em [`docs/especificacao.md`](docs/especificacao.md), seção "Camada de decisão", e o raciocínio no [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md).
 
 ## O problema
 
@@ -33,7 +43,7 @@ Três características o tornam ideal para este estudo:
 ## Arquitetura
 
 ```
-Fonte oficial (ZIP anual, ~97 MB por mês de CSV)
+Fonte oficial (ZIP anual, 100 a 300 MB por mês de CSV)
         ↓  ingestão em Python
 Databricks (Delta / Unity Catalog)
         ↓  dbt: staging → intermediate → marts
@@ -41,7 +51,7 @@ Camada semântica + ontologia versionada
         ↓
    ┌────┴────┐
 Dashboard   Interface de IA + avaliação medida
-(estático)  (com e sem ontologia)
+da decisão  (com e sem ontologia)
 ```
 
 **Decisão de desenho central:** a dimensão de modalidade não é escrita à mão no dbt, ela é **gerada a partir de `ontology/modalidades.yml`**. A ontologia é fonte do modelo, não documentação sobre ele. Assim, divergência entre documentação e dado se torna estruturalmente impossível.
@@ -86,7 +96,7 @@ uv run python -m scripts.validar_modalidades
 |---|---|
 | [Especificação](docs/especificacao.md) | Arquitetura, esquema da fonte, camadas do dbt, desenho do experimento |
 | [Referências](docs/referencias.md) | Literatura e premissa de mercado que sustentam a tese |
-| [Desenvolvimento com IA](docs/desenvolvimento-com-ia.md) | Contabilidade honesta do processo, incluindo os erros da IA e como foram pegos |
+| [Desenvolvimento com IA](docs/desenvolvimento-com-ia.md) | O processo de ponta a ponta, incluindo os erros da IA e como foram pegos |
 | [Análise V1 e V2](docs/analise-v1-v2.md) | A quebra de taxonomia entre as duas versões do SCR.data |
 | [Leitura dos normativos](docs/leitura-normativos.md) | O que as metodologias oficiais respondem, e o que não respondem |
 | [Cadeia normativa](docs/cadeia-normativa.md) | Por que o dado mudou: leiaute, instruções do documento 3040 e as normas por trás de cada quebra |
@@ -96,7 +106,20 @@ uv run python -m scripts.validar_modalidades
 | [ADR 0002](docs/adr/0002-modelo-de-ontologia-skos-datacube-xkos.md) | Modelo de ontologia: SKOS, RDF Data Cube e XKOS |
 | [ADR 0003](docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md) | Conformação de taxonomia entre versões |
 | [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md) | Ingestão em camada bronze: ZIP local, Parquet só texto, volume do Unity Catalog |
+| [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md) | O projeto termina numa recomendação, com a fronteira do dado declarada |
 | [Perguntas do experimento](evaluation/questions.yml) | As 30 perguntas, pré-registradas antes de qualquer execução |
+
+## Planejado versus entregue
+
+O plano vive em issues com dependências e critério de pronto, agrupadas por versão: [milestone v0.1](https://github.com/RCHRDYv/bcb-credito-governanca/milestone/1).
+
+Três replanejamentos que já aconteceram, com o que causou cada um:
+
+| O que mudou | Por que |
+|---|---|
+| **A leitura do sentinela `-1` foi refutada** e o conceito passou de "inferido" para "lacuna" | O teste empírico mostrou que a versão atual publica contagens de 1 a 15. A hipótese herdada da versão antiga estava errada ([documento](docs/sentinela-numero-de-operacoes.md)) |
+| **A conformação entre V1 e V2 deixou de valer para totais** e passou a valer só para a taxonomia | A ingestão mostrou que a V2 fica de 3,95% a 5,94% acima da V1 em todos os meses ([análise](docs/analise-v1-v2.md), seção 6) |
+| **A previsão e o agrupamento de UFs saíram da v0.1** para a v0.2 | A camada de decisão entrou depois do plano original, e inflar a primeira versão atrasaria a entrega visível ([ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md)) |
 
 ## Segurança
 
@@ -118,7 +141,7 @@ O raciocínio completo, com as alternativas descartadas, está em [`docs/adr/000
 
 ## Notas
 
-**Sobre o volume:** cada CSV mensal tem cerca de 97 MB. O conjunto de 2024 a 2026 chega a vários gigabytes e dezenas de milhões de linhas. O uso de Databricks é justificado pelo volume, não é vitrine.
+**Sobre o volume:** medido na ingestão de jan/2024 a jul/2026, cada CSV mensal tem cerca de 300 MB na V1 e 100 MB na V2, somando 12,7 GB e 39,2 milhões de linhas. O uso de Databricks é justificado pelo volume, não é vitrine.
 
 **Sobre o desenvolvimento com IA:** este projeto foi construído com assistência de IA, e isso está documentado em `docs/desenvolvimento-com-ia.md`, incluindo o que foi acelerado, o que exigiu julgamento humano e onde a IA errou e foi corrigida. Um projeto sobre habilitar IA no negócio deveria ser transparente quanto a isso.
 
