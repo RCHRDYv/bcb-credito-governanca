@@ -48,13 +48,15 @@ seeds:
         data_tests:
           - not_null
           - accepted_values:
-              values: ["PF", "PJ"]
+              arguments:
+                values: ["PF", "PJ"]
       - name: origem
         description: "Origem dos recursos, primeiro nível do Anexo 4, como aparece no dado."
         data_tests:
           - not_null
           - accepted_values:
-              values: ["Sem destinação específica", "Com destinação específica"]
+              arguments:
+                values: ["Sem destinação específica", "Com destinação específica"]
       - name: modalidade_v1
         description: >
           Modalidade da V1 indicada pela planilha oficial. Vazia nas quatro
@@ -73,7 +75,8 @@ seeds:
         data_tests:
           - not_null
           - accepted_values:
-              values: ["base", "tratamento_1", "tratamento_2", "ausente_na_planilha"]
+              arguments:
+                values: ["base", "tratamento_1", "tratamento_2", "ausente_na_planilha"]
       - name: ambiguidade
         description: >
           Vazio quando a correspondência é determinística. natureza_nao_publicada
@@ -81,6 +84,7 @@ seeds:
           tabela oficial não cobre a combinação.
         data_tests:
           - accepted_values:
-              values: ["natureza_nao_publicada", "ausente_na_planilha"]
+              arguments:
+                values: ["natureza_nao_publicada", "ausente_na_planilha"]
               config:
                 where: "ambiguidade is not null and ambiguidade != ''"

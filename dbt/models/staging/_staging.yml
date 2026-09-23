@@ -1,0 +1,288 @@
+# =============================================================================
+# PT: Contrato dos modelos de staging. As descrições aqui não repetem a
+#     definição de negócio: ela vive em ontology/metricas.yml e
+#     ontology/dimensoes.yml, que são a fonte da verdade. O que este arquivo
+#     descreve é o que o staging fez com a coluna.
+#
+#     Divisão deliberada de testes, para não existirem duas fontes da verdade:
+#     - aqui ficam os testes que protegem o MODELO: não nulo, valor aceito nas
+#       duas dimensões que carregam sentido de negócio, e as identidades
+#       contábeis (em dbt/tests/);
+#     - a conferência do conjunto COMPLETO de valores de cada dimensão contra a
+#       ontologia fica em scripts/validar_dimensoes.py, que roda contra o dado e
+#       compara com o arquivo YAML. Repetir as 27 UFs e as 30 seções do CNAE
+#       aqui criaria uma segunda lista para manter.
+#
+# EN: Staging models' contract. The descriptions here do not repeat the business
+#     definition, which lives in ontology/metricas.yml and ontology/dimensoes.yml
+#     as the source of truth. What this file describes is what staging did to the
+#     column.
+#
+#     Tests are split deliberately so no two sources of truth exist: model-level
+#     guards here (not null, accepted values on the two dimensions that carry
+#     business meaning, and the accounting identities under dbt/tests/), while
+#     the check of every dimension's COMPLETE value set against the ontology
+#     lives in scripts/validar_dimensoes.py.
+# =============================================================================
+
+version: 2
+
+models:
+
+  - name: stg_scr_v2
+    description: >
+      SCR.data V2 tipado e limpo, 1:1 com a camada bronze. Rótulos com trim,
+      valores em decimal(18,2), data-base como data e o sentinela -1 de
+      numero_de_operacoes convertido em nulo com a supressão marcada. Nenhuma
+      regra de negócio e nenhum filtro. Grão: as dez dimensões, verificado
+      único em 9.687.811 linhas.
+    columns:
+
+      - name: data_base
+        description: "Último dia do mês de referência, como data."
+        data_tests: [not_null]
+
+      - name: uf
+        description: >
+          Domicílio da pessoa física ou sede da pessoa jurídica, não local da
+          operação. Ver ontology/dimensoes.yml, avisos_gerais.
+        data_tests: [not_null]
+
+      - name: segmento
+        description: "Segmento da instituição financeira, oito valores."
+        data_tests: [not_null]
+
+      - name: cliente
+        description: >
+          PF ou PJ. É a coluna que resolve o polimorfismo de porte e de
+          cnae_ocupacao: nenhuma análise por essas duas é correta sem ela.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["PF", "PJ"]
+
+      - name: cnae_ocupacao
+        description: >
+          Polimórfica por cliente: seção do CNAE para PJ, natureza da ocupação
+          para PF. Trinta valores, sem sobreposição entre os dois conjuntos.
+        data_tests: [not_null]
+
+      - name: porte
+        description: >
+          Polimórfica por cliente: faixa de renda para PF, tamanho da empresa
+          para PJ. "Indisponível" é o único valor que ocorre nos dois tipos.
+        data_tests: [not_null]
+
+      - name: modalidade
+        description: "Rótulo exato do dado, chave de junção com ontology/modalidades.yml."
+        data_tests: [not_null]
+
+      - name: submodalidade
+        description: >
+          Rótulo exato do dado depois do trim. A chave de junção com a ontologia
+          é o par com modalidade, nunca esta coluna sozinha: cinco rótulos
+          ocorrem em mais de uma modalidade.
+        data_tests: [not_null]
+
+      - name: origem
+        description: "Origem dos recursos, primeiro nível do Anexo 4 do leiaute."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Sem destinação específica", "Com destinação específica"]
+
+      - name: indexador
+        description: "Indexador da operação, primeiro nível do Anexo 5 do leiaute."
+        data_tests: [not_null]
+
+      - name: numero_de_operacoes
+        description: >
+          Contagem de operações, nula onde o arquivo trazia -1. Somar num grupo
+          com linhas suprimidas dá limite inferior, não total.
+
+      - name: contagem_suprimida
+        description: >
+          Verdadeiro nas 2.590.482 linhas em que o arquivo trazia -1, 26,7% do
+          total e 6,71% da carteira. O critério da supressão não está publicado
+          e está medido que não é o número de operações.
+        data_tests: [not_null]
+
+      # PT: As seis faixas a vencer e as duas vencidas não levam not_null
+      #     próprio: um nulo em qualquer uma delas anula a soma e quebra o teste
+      #     de identidade correspondente, que é uma verificação mais forte.
+      # EN: The six performing and two overdue buckets carry no not_null of
+      #     their own: a null in any of them nulls the sum and breaks the
+      #     matching identity test, which is a stronger check.
+      - name: carteira_a_vencer
+        description: "Soma das seis faixas a vencer. Identidade testada."
+        data_tests: [not_null]
+
+      - name: carteira_vencida
+        description: "Soma das duas faixas vencidas. Identidade testada."
+        data_tests: [not_null]
+
+      - name: carteira_ativa
+        description: >
+          Carteira a vencer mais carteira vencida. Identidade testada, com uma
+          exceção conhecida de uma linha em dez/2024, publicada assim pelo BCB.
+        data_tests: [not_null]
+
+      - name: carteira_inadimplencia
+        description: >
+          Valor absoluto em reais, NÃO percentual, apesar do nome. O indicador
+          de inadimplência é uma razão e não existe como coluna no arquivo.
+        data_tests: [not_null]
+
+      - name: ativo_problematico
+        description: >
+          Muda de critério em janeiro de 2025, sem quebra de série visível no
+          dado. Ver docs/cadeia-normativa.md.
+        data_tests: [not_null]
+
+      - name: arquivo_origem
+        description: "ZIP e CSV de origem da linha."
+        data_tests: [not_null]
+
+      - name: sha256_zip
+        description: "Identidade do ZIP de origem. Muda quando o BCB republica o arquivo."
+        data_tests: [not_null]
+
+  - name: stg_scr_v1
+    description: >
+      SCR.data V1 tipado e limpo, 1:1 com a camada bronze. Além da tipagem, dois
+      tratamentos que a V1 exige: o marcador "-" de quatro colunas vira nulo, e o
+      sentinela "<= 15" de numero_de_operacoes vira nulo com o intervalo de 1 a
+      15 preservado. A taxonomia continua a da V1, sem conformação com a V2:
+      isso é papel da camada intermediária. Grão: as doze dimensões, verificado
+      único em 29.471.540 linhas.
+    columns:
+
+      - name: data_base
+        description: "Último dia do mês de referência, como data."
+        data_tests: [not_null]
+
+      - name: uf
+        description: "Mesma definição da V2."
+        data_tests: [not_null]
+
+      # PT: tcb, sr, ocupacao, cnae_secao e cnae_subclasse são nulas por
+      #     construção: são as colunas em que a V1 marca ausência, e o número de
+      #     nulos em cada uma é verificado no teste staging_preserva_o_bronze.
+      # EN: tcb, sr, ocupacao, cnae_secao and cnae_subclasse are null by
+      #     construction: they are where V1 marks absence, and each one's null
+      #     count is verified by the staging_preserva_o_bronze test.
+      - name: tcb
+        description: >
+          Tipo de Consolidado Bancário, antecessor do segmento da V2. Nulo onde o
+          arquivo trazia "-", 11.799.814 linhas, por ausência de classificação.
+
+      - name: sr
+        description: >
+          Segmento prudencial da Resolução CMN 4.553, de S1 a S5. Já vem nulo em
+          62.767 linhas no arquivo. Removido na V2, sem substituto.
+
+      - name: cliente
+        description: >
+          PF ou PJ. Na V1 é redundante com o prefixo da modalidade, e na V2
+          deixou de ser.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["PF", "PJ"]
+
+      - name: ocupacao
+        description: >
+          Natureza da ocupação da pessoa física, prefixada por "PF - ". Nula nas
+          25.227.055 linhas de PJ, onde não se aplica.
+
+      - name: cnae_secao
+        description: >
+          Seção do CNAE da pessoa jurídica. Nula nas 4.244.485 linhas de PF, onde
+          não se aplica.
+
+      - name: cnae_subclasse
+        description: >
+          CNAE de sete dígitos, removido na V2. Nulo em 5.234.215 linhas por dois
+          motivos diferentes com o mesmo símbolo no arquivo: nas 4.244.485 de PF
+          não se aplica, e em 989.730 de PJ foi suprimido pela regra documentada
+          dos 5 CNPJs. A coluna subclasse_suprimida separa os dois casos.
+
+      - name: subclasse_suprimida
+        description: >
+          Verdadeiro nas 989.730 linhas de PJ em que a subclasse foi suprimida.
+          Ao contrário do sentinela da V2, este critério está publicado.
+        data_tests: [not_null]
+
+      - name: porte
+        description: >
+          Mesmos valores da V2, prefixados por "PF - " ou "PJ - ". Quatorze aqui
+          contra treze na V2.
+        data_tests: [not_null]
+
+      - name: modalidade
+        description: >
+          Taxonomia da V1, dezesseis valores, sem submodalidade. Comparável com a
+          V2 apenas pelo seed correspondencia_modalidade_v2_v1.
+        data_tests: [not_null]
+
+      - name: origem
+        description: "Mesma definição da V2."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Sem destinação específica", "Com destinação específica"]
+
+      - name: indexador
+        description: "Mesma definição da V2."
+        data_tests: [not_null]
+
+      - name: numero_de_operacoes
+        description: "Contagem de operações, nula nas 22.120.146 linhas com \"<= 15\"."
+
+      - name: contagem_suprimida
+        description: >
+          Verdadeiro onde o arquivo trazia "<= 15", 75% das linhas. Diferente da
+          V2, aqui o critério está documentado na metodologia.
+        data_tests: [not_null]
+
+      - name: contagem_min
+        description: "Limite inferior da contagem: 1 nas linhas suprimidas, o próprio valor nas demais."
+        data_tests: [not_null]
+
+      - name: contagem_max
+        description: "Limite superior da contagem: 15 nas linhas suprimidas, o próprio valor nas demais."
+        data_tests: [not_null]
+
+      - name: vencido_acima_de_15_dias
+        description: >
+          Coluna única de vencidos, que a V2 desmembrou em duas faixas. A soma
+          das duas faixas da V2 corresponde a esta.
+        data_tests: [not_null]
+
+      - name: carteira_ativa
+        description: >
+          Soma das seis faixas a vencer com os vencidos acima de 15 dias. A V1
+          não publica carteira_a_vencer nem carteira_vencida. Identidade testada.
+        data_tests: [not_null]
+
+      - name: carteira_inadimplida_arrastada
+        description: >
+          Mesma definição da carteira_inadimplencia da V2, com o nome antigo.
+          Valor absoluto em reais.
+        data_tests: [not_null]
+
+      - name: ativo_problematico
+        description: "Mesma coluna da V2, com a mesma quebra de critério em janeiro de 2025."
+        data_tests: [not_null]
+
+      - name: arquivo_origem
+        description: "ZIP e CSV de origem da linha."
+        data_tests: [not_null]
+
+      - name: sha256_zip
+        description: "Identidade do ZIP de origem."
+        data_tests: [not_null]

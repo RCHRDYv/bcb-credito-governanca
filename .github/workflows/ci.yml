@@ -109,3 +109,26 @@ jobs:
       #     original wordings with no word changed.
       - name: Perguntas do experimento
         run: uv run python -m scripts.validar_perguntas
+
+      # PT: Carga do projeto dbt: Jinja, macros, referências entre modelos,
+      #     fontes e testes. Não conecta no warehouse e não precisa de
+      #     credencial (ver .github/dbt/profiles.yml). É o que pega um `ref`
+      #     errado, uma macro inexistente ou um schema.yml mal formado antes do
+      #     merge, já que o `dbt build` só roda na máquina com acesso.
+      # EN: dbt project load: Jinja, macros, model references, sources and
+      #     tests. It opens no warehouse connection and needs no credential. It
+      #     catches a wrong `ref`, a missing macro or a malformed schema.yml
+      #     before the merge, since `dbt build` only runs on a machine with
+      #     access.
+      #
+      #     O dbt roda como ferramenta à parte, e não como dependência do
+      #     projeto (ver pyproject.toml). As versões são fixas aqui para o CI
+      #     não mudar de comportamento no dia em que o dbt lançar uma versão.
+      # EN: dbt runs as a separate tool rather than a project dependency.
+      #     Versions are pinned here so CI does not change behaviour the day dbt
+      #     releases a new version.
+      - name: Projeto dbt (carga e compilação)
+        working-directory: dbt
+        run: >
+          uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9
+          dbt parse --profiles-dir ../.github/dbt --target ci --no-partial-parse

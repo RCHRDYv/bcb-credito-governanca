@@ -128,6 +128,20 @@ conceitos:
     scopeNote: >
       É o denominador natural para os indicadores de inadimplência e de ativo
       problemático quando expressos como percentual.
+    regra_de_qualidade: >
+      Deve ser igual a carteira_a_vencer mais carteira_vencida, que é a própria
+      definição. Testada em todas as linhas pelo teste
+      stg_scr_v2_carteira_ativa.
+    excecao_medida: >
+      A identidade falha em UMA linha das 9.687.811 da V2, e a linha vem assim
+      do arquivo publicado: dez/2024, Paraná, Fintech, PF, "Mais de 1 a 2
+      salários mínimos", Empréstimos, crédito pessoal com consignação, sem
+      destinação específica, prefixado, 63 operações. A vencer 345.658,37 mais
+      vencida 2.844,62 dá 348.502,99, contra carteira ativa publicada de
+      345.414,46: diferença de R$ 3.088,53, com a carteira a vencer sozinha
+      maior que a ativa. Medido em 2026-09-23. O teste avisa com uma linha e
+      falha com duas, em vez de excluir a exceção por filtro, para que uma
+      segunda ocorrência não passe em silêncio.
 
   - id: carteira_a_vencer
     notation: carteira_a_vencer
