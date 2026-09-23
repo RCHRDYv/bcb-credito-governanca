@@ -129,8 +129,12 @@ def ler_aba(aba: str, pular: int) -> pd.DataFrame:
     df.columns = ["mod_v1", "dom_num", "dom_desc", "mod_cod", "sub_cod", "sub_desc"]
     df["mod_v1"] = df["mod_v1"].ffill()
     df = df.dropna(subset=["mod_cod", "sub_cod"]).copy()
-    limpar = lambda col: df[col].astype(str).str.replace(r"\.0$", "", regex=True).str.strip().str.zfill(2)
-    df["codigo"] = limpar("mod_cod") + limpar("sub_cod")
+
+    def codigo_de(coluna: str) -> pd.Series:
+        """PT: '2' e '2.0' viram '02' / EN: '2' and '2.0' become '02'"""
+        return df[coluna].astype(str).str.replace(r"\.0$", "", regex=True).str.strip().str.zfill(2)
+
+    df["codigo"] = codigo_de("mod_cod") + codigo_de("sub_cod")
     return df[["codigo", "mod_v1"]].drop_duplicates()
 
 

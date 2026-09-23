@@ -1,12 +1,12 @@
 # =============================================================================
-# PT: Dados brutos NUNCA entram no repositório. Cada CSV mensal do SCR tem
-#     cerca de 97 MB, e o pipeline os baixa da fonte oficial a cada execução.
+# PT: Dados brutos NUNCA entram no repositório. Cada CSV mensal do SCR tem de
+#     100 MB (V2) a 300 MB (V1), e o pipeline os baixa da fonte a cada execução.
 #     Versionar dado bruto de fonte pública é desperdício e quebra o princípio
 #     de reprodutibilidade a partir da origem.
-# EN: Raw data NEVER enters the repository. Each monthly SCR CSV is about
-#     97 MB, and the pipeline downloads them from the official source on every
-#     run. Versioning raw public-source data is wasteful and breaks the
-#     principle of reproducing from origin.
+# EN: Raw data NEVER enters the repository. Each monthly SCR CSV is 100 MB (V2)
+#     to 300 MB (V1), and the pipeline downloads them from the official source
+#     on every run. Versioning raw public-source data is wasteful and breaks
+#     the principle of reproducing from origin.
 # =============================================================================
 data/
 *.zip

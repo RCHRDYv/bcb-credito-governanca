@@ -97,6 +97,14 @@ uv run python -m scripts.gerar_seed_correspondencia
 uv run python -m scripts.validar_correspondencia
 ```
 
+As validações têm duas camadas. A que compara com o dado exige acesso ao Databricks e roda localmente. A que confere apenas a coerência dos artefatos roda sem credencial, e é a que o CI executa em todo PR:
+
+```bash
+uv run python -m scripts.validar_modalidades --estrutura
+uv run python -m scripts.validar_correspondencia --estrutura
+uv run python -m scripts.validar_perguntas
+```
+
 ### Documentação
 
 | Documento | O que traz |
@@ -114,7 +122,8 @@ uv run python -m scripts.validar_correspondencia
 | [ADR 0003](docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md) | Conformação de taxonomia entre versões |
 | [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md) | Ingestão em camada bronze: ZIP local, Parquet só texto, volume do Unity Catalog |
 | [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md) | O projeto termina numa recomendação, com a fronteira do dado declarada |
-| [Perguntas do experimento](evaluation/questions.yml) | As 30 perguntas, pré-registradas antes de qualquer execução |
+| [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
+| [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com duas notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 
 ## Planejado versus entregue
 
@@ -140,7 +149,7 @@ Repositório público tem duas propriedades que mudam o cálculo de risco: qualq
 |---|---|---|
 | `.gitignore` | Cobre o caso normal | Contornável por engano com `git add -f` |
 | Hooks de pre-commit | `gitleaks`, detecção de chave privada, bloqueio de arquivo grande, e verificador próprio de dado bruto | Depende de quem clona ter instalado os hooks |
-| CI no GitHub Actions | Roda os mesmos verificadores no servidor | Não depende da máquina de ninguém |
+| CI no GitHub Actions | Roda os mesmos verificadores no servidor, mais a coerência da ontologia, do seed e do pré-registro das perguntas | Não depende da máquina de ninguém |
 
 O verificador de dado bruto (`scripts/check_no_raw_data.py`) foi testado contra violação real, não apenas assumido como funcional.
 

@@ -31,7 +31,11 @@ Esta análise é insumo direto do mapeamento XKOS (ver [ADR 0002](adr/0002-model
 
 **Hipótese a confirmar nos normativos:** a granularidade da V1 provavelmente foi absorvida pela nova dimensão `submodalidade` da V2, que tem 55 valores. Se confirmado, o mapeamento correto não é modalidade V1 para modalidade V2, e sim **modalidade V1 para submodalidade V2**, o que muda a natureza da correspondência XKOS.
 
+> **Confirmada em 2026-09-22, e mais complexa que o previsto.** A tabela oficial de equivalência mapeia cada modalidade da V1 para um conjunto de submodalidades da V2, e a chave depende também do tipo de cliente e da origem dos recursos. A contagem certa é 66 submodalidades no recorte de 2024 a 2026, e não 55, que eram rótulos distintos num mês só. Há ainda dois limites: uma regra oficial que depende de um campo não publicado, e duas combinações que a tabela não cobre. Ver [ADR 0003](adr/0003-conformacao-de-taxonomia-entre-versoes.md) e o seed em `dbt/seeds/`.
+
 **Pista encontrada no próprio dado:** a V2 traz o label `Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)`, ou seja, o BCB sinaliza renomeação dentro do próprio rótulo. Isso sugere que houve mudanças anteriores à quebra V1/V2 e que vale procurar no histórico normativo.
+
+> **Pista seguida em 2026-09-22.** A Carta-Circular 3.806/2017 renomeou a modalidade 08, de "Financiamentos rurais e agroindustriais" para "Financiamentos rurais", a partir de julho de 2017, e criou a submodalidade 0440 para o crédito agroindustrial, dentro de Financiamentos. O rótulo do dado ainda carrega o nome antigo entre parênteses, nove anos depois. Registrado em `ontology/modalidades.yml`, conceito `mod_08`.
 
 ## 2. Porte: a V2 introduziu ambiguidade que a V1 não tinha
 
@@ -74,9 +78,9 @@ A V2 desmembrou "Não bancário" em seis categorias, incluindo Fintech e Institu
 | V1 | V2 | Natureza |
 |---|---|---|
 | `tcb` | `segmento` | Renomeada e reclassificada |
-| `sr` (valores como `S1`) | *removida* | Provável classificação prudencial por segmento. **Confirmar no normativo** |
+| `sr` (valores como `S1`) | *removida* | **Confirmado em 2026-08-25:** é o Segmento da Resolução CMN 4.553/2017, classificação prudencial de S1 a S5 por porte e relevância internacional da instituição. Ver [leitura dos normativos](leitura-normativos.md), resposta 3 |
 | `ocupacao`, `cnae_secao`, `cnae_subclasse` | `cnae_ocupacao` | Três colunas colapsadas em uma. **Perda de granularidade** |
-| *inexistente* | `submodalidade` | Nova dimensão, 55 valores |
+| *inexistente* | `submodalidade` | Nova dimensão. Eram 55 rótulos distintos em junho de 2025; no recorte de 2024 a 2026 são 66 submodalidades, contadas por par com a modalidade |
 
 ### Medidas
 

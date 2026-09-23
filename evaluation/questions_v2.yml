@@ -1,0 +1,397 @@
+# =============================================================================
+# PT: Conjunto v2 das perguntas do experimento. REGISTRADO EM 2026-09-22,
+#     ainda antes de qualquer execução de modelo.
+#
+#     O conjunto original, de 2026-08-20, está em questions.yml e permanece
+#     intacto, como a própria nota de método dele exige. Este arquivo:
+#
+#     1. repete as 30 perguntas originais, sem alterar nenhum enunciado;
+#     2. corrige notas que a investigação mostrou estarem erradas, sempre no
+#        campo errata, com a data e o documento que sustenta a correção;
+#     3. acrescenta 11 perguntas (Q31 a Q41) nascidas de achados que não
+#        existiam em agosto;
+#     4. introduz o campo tipo_de_acerto, para que reconhecer um limite do
+#        dado conte como acerto, e não como falha.
+#
+#     Qual conjunto vale para o experimento: este. O original fica como
+#     registro de que nenhuma pergunta foi escolhida depois de ver resultado.
+#
+# EN: Version 2 of the experiment's questions, REGISTERED ON 2026-09-22, still
+#     before any model run. The original set (2026-08-20) stays untouched in
+#     questions.yml. This file repeats the 30 original questions verbatim,
+#     corrects notes proven wrong (in the errata field, with date and source),
+#     adds 11 questions born from later findings, and introduces the
+#     tipo_de_acerto field so that recognising a limit of the data counts as a
+#     correct answer rather than a failure.
+#
+# -----------------------------------------------------------------------------
+# dependencia_semantica:
+#   baixa   = agregação simples, respondível só com nome de coluna
+#   media   = exige entender uma métrica ou cruzar fontes
+#   alta    = exige a ontologia ou o normativo para acertar
+#   maxima  = impossível sem a documentação oficial
+#
+# tipo_de_acerto (quando ausente, vale "valor"):
+#   valor               = há um número ou uma lista certa
+#   valor_com_ressalva  = há resposta, e ela só está correta se vier com o
+#                         limite declarado junto
+#   abstencao           = a resposta correta é dizer que este dado não permite
+#                         responder, e explicar por quê. Inspirado no critério
+#                         do TrustSQL (ver docs/referencias.md)
+# =============================================================================
+
+metadata:
+  versao: 2
+  registrado_em: "2026-09-22"
+  registrado_antes_de_qualquer_execucao: true
+  conjunto_anterior: "evaluation/questions.yml, registrado em 2026-08-20, preservado sem alteração"
+  total: 41
+  fonte_principal: "SCR.data, Banco Central do Brasil"
+  fontes_complementares: ["Estatísticas do PIX (BCB)", "IF.data (BCB)", "IBGE", "SGS/BCB (Selic)"]
+  nota_de_metodo: >
+    Nenhuma pergunta pode ser alterada, removida ou acrescentada após a
+    primeira execução do experimento. Até esta data nenhuma execução ocorreu,
+    e é isso que torna este registro legítimo. Alterações posteriores entram
+    como um conjunto v3 separado e declarado, preservando este intacto.
+
+blocos:
+
+  - nome: "Monitoramento e benchmark de mercado"
+    perguntas:
+      - id: Q01
+        pergunta: "Qual o volume total da carteira ativa de crédito no Brasil no último mês disponível, e como se compara ao mesmo mês do ano anterior?"
+        question: "What is the total active credit portfolio in Brazil in the latest available month, and how does it compare to the same month a year earlier?"
+        dependencia_semantica: baixa
+
+      - id: Q02
+        pergunta: "Quais as cinco modalidades de crédito com maior crescimento de carteira nos últimos 12 meses?"
+        question: "Which five credit modalities grew the most in portfolio over the last 12 months?"
+        dependencia_semantica: media
+
+      - id: Q03
+        pergunta: "Qual a participação de pessoa física versus pessoa jurídica na carteira total, e como evoluiu nos últimos 24 meses?"
+        question: "What is the share of individual versus corporate clients in the total portfolio, and how has it evolved over the last 24 months?"
+        dependencia_semantica: baixa
+
+      - id: Q04
+        pergunta: "Qual o crescimento da carteira por segmento de instituição, separando bancos tradicionais de instituições de pagamento e fintechs?"
+        question: "What is portfolio growth by institution segment, separating traditional banks from payment institutions and fintechs?"
+        dependencia_semantica: alta
+        nota: "Exige conhecer a taxonomia de segmento definida em normativo."
+
+      - id: Q05
+        pergunta: "Qual percentual da carteira nacional está concentrado nas cinco UFs de maior volume?"
+        question: "What percentage of the national portfolio is concentrated in the five largest states by volume?"
+        dependencia_semantica: baixa
+
+  - nome: "Risco e inadimplência"
+    perguntas:
+      - id: Q06
+        pergunta: "Qual a taxa de inadimplência atual por modalidade, ordenada da maior para a menor?"
+        question: "What is the current default rate by modality, ordered from highest to lowest?"
+        dependencia_semantica: media
+        nota: "Exige saber numerador e denominador corretos da taxa."
+
+      - id: Q07
+        pergunta: "Quais modalidades tiveram maior deterioração de inadimplência nos últimos seis meses?"
+        question: "Which modalities showed the largest deterioration in default rate over the last six months?"
+        dependencia_semantica: media
+        nota: "Alimenta o indicador de risco da camada de decisão (ADR 0005)."
+
+      - id: Q08
+        pergunta: "A inadimplência do cartão de crédito rotativo está acima ou abaixo da média histórica de cinco anos?"
+        question: "Is revolving credit card default above or below its five-year historical average?"
+        dependencia_semantica: alta
+        nota: >
+          Exige desambiguar rotativo de parcelado. O cartão aparece em cinco
+          submodalidades de três modalidades diferentes, e só uma delas é o
+          rotativo (0204). Ver ontology/modalidades.yml, aviso
+          cartao_de_credito_em_tres_modalidades.
+
+      - id: Q09
+        pergunta: "Qual a diferença entre inadimplência e ativo problemático nesta base, e qual o gap entre as duas métricas por modalidade?"
+        question: "What is the difference between non-performing loans and problem assets in this dataset, and what is the gap between the two metrics by modality?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          São duas colunas distintas (carteira_inadimplencia e ativo_problematico)
+          com definição normativa diferente. Impossível responder corretamente
+          lendo apenas nome de coluna. A ressalva obrigatória é a mudança de
+          critério do ativo problemático em janeiro de 2025.
+
+      - id: Q10
+        pergunta: "Existe alguma modalidade onde a carteira cresce e a inadimplência cai ao mesmo tempo?"
+        question: "Is there any modality where the portfolio grows and the default rate falls at the same time?"
+        dependencia_semantica: media
+
+  - nome: "Expansão geográfica e priorização"
+    perguntas:
+      - id: Q11
+        pergunta: "Quais UFs têm maior carteira de crédito de pessoa jurídica por habitante?"
+        question: "Which states have the highest corporate credit portfolio per inhabitant?"
+        dependencia_semantica: media
+        nota: "Exige cruzar com população do IBGE (issue #25)."
+
+      - id: Q12
+        pergunta: "Quais UFs mais cresceram em carteira nos últimos 12 meses, ajustado por população?"
+        question: "Which states grew the most in portfolio over the last 12 months, adjusted for population?"
+        dependencia_semantica: media
+
+      - id: Q13
+        pergunta: "Existe correlação entre renda média por UF e taxa de inadimplência?"
+        question: "Is there a correlation between average income by state and default rate?"
+        dependencia_semantica: alta
+
+      - id: Q14
+        pergunta: "Quais UFs estão sub-atendidas em crédito de pessoa jurídica, considerando o número de empresas ativas na região?"
+        question: "Which states are underserved in corporate credit, considering the number of active companies in the region?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          Alimenta o indicador de espaço da camada de decisão (ADR 0005). A
+          ressalva obrigatória é a de que UF no SCR é o domicílio da pessoa ou
+          a sede da empresa, e não o local onde o crédito foi usado.
+
+      - id: Q15
+        pergunta: "A relação entre carteira de pessoa física e massa salarial regional sugere sobre-endividamento em alguma UF?"
+        question: "Does the ratio between individual credit portfolio and regional wage mass suggest over-indebtedness in any state?"
+        dependencia_semantica: alta
+
+  - nome: "Modalidade e produto"
+    perguntas:
+      - id: Q16
+        pergunta: "Qual a evolução do crédito consignado versus crédito pessoal não consignado nos últimos três anos?"
+        question: "How did payroll-deducted loans evolve versus non-payroll personal loans over the last three years?"
+        dependencia_semantica: alta
+        nota: "Exige a distinção normativa entre as duas submodalidades."
+
+      - id: Q17
+        pergunta: "Modalidades com garantia real apresentam inadimplência sistematicamente menor? Quantifique."
+        question: "Do collateral-backed modalities show systematically lower default? Quantify."
+        dependencia_semantica: maxima
+        tipo_de_acerto: abstencao
+        nota: >
+          Só é respondível se a documentação declarar QUAIS modalidades têm
+          garantia real.
+        errata: >
+          2026-09-22: a nota original supunha que o normativo declarava a
+          garantia por modalidade. Não declara. Das 66 submodalidades, só o
+          home equity (0211) menciona garantia na definição, e o SCR.data não
+          publica o campo de garantias do documento 3040. A resposta correta é
+          reconhecer isso e responder apenas para o home equity. Ver
+          ontology/modalidades.yml, aviso garantia_nao_declarada.
+
+      - id: Q18
+        pergunta: "Qual o ticket médio implícito por modalidade, e a base permite esse cálculo?"
+        question: "What is the implied average ticket by modality, and does the dataset allow this calculation?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          Pergunta armadilha proposital. Dividir carteira por
+          numero_de_operacoes sem tratar o valor -1 produz resultado sem
+          sentido.
+        errata: >
+          2026-09-22: a nota original chamava o -1 de "sentinela de supressão
+          por sigilo estatístico". É sentinela, e isso continua certo, mas o
+          critério não é sigilo por baixa contagem: a V2 divulga contagens de
+          1 a 15 normalmente. O critério não está publicado em lugar nenhum.
+          O cálculo só é possível sobre as linhas com contagem divulgada, que
+          deixam de fora 6,71% da carteira, e de forma não aleatória. Ver
+          docs/sentinela-numero-de-operacoes.md.
+
+      - id: Q19
+        pergunta: "O crédito rural se comportou de forma diferente do restante da carteira de pessoa jurídica?"
+        question: "Did rural credit behave differently from the rest of the corporate portfolio?"
+        dependencia_semantica: media
+        nota: >
+          Atenção à renomeação de 2017: o crédito agroindustrial saiu da
+          modalidade rural e foi para a submodalidade 0440, em Financiamentos.
+
+  - nome: "Concentração e competição"
+    perguntas:
+      - id: Q20
+        pergunta: "Qual a concentração da carteira entre segmentos de instituição, e ela aumentou ou diminuiu?"
+        question: "What is portfolio concentration across institution segments, and has it increased or decreased?"
+        dependencia_semantica: media
+
+      - id: Q21
+        pergunta: "Instituições de pagamento e fintechs ganharam participação de mercado em quais modalidades?"
+        question: "In which modalities did payment institutions and fintechs gain market share?"
+        dependencia_semantica: alta
+
+  - nome: "PIX e mudança estrutural"
+    perguntas:
+      - id: Q22
+        pergunta: "Qual a evolução do volume financeiro de PIX nos últimos 24 meses?"
+        question: "How did PIX financial volume evolve over the last 24 months?"
+        dependencia_semantica: baixa
+
+      - id: Q23
+        pergunta: "O crescimento do PIX coincide com retração em alguma modalidade de crédito específica?"
+        question: "Does PIX growth coincide with contraction in any specific credit modality?"
+        dependencia_semantica: media
+
+      - id: Q24
+        pergunta: "Qual a razão entre volume de PIX e carteira de crédito, por UF?"
+        question: "What is the ratio between PIX volume and credit portfolio, by state?"
+        dependencia_semantica: media
+
+  - nome: "Contexto econômico"
+    perguntas:
+      - id: Q25
+        pergunta: "Como a inadimplência se comportou frente à trajetória da Selic nos últimos três anos?"
+        question: "How did the default rate behave against the Selic policy rate over the last three years?"
+        dependencia_semantica: alta
+
+      - id: Q26
+        pergunta: "Existe defasagem entre variação da Selic e variação da inadimplência? De quantos meses?"
+        question: "Is there a lag between Selic changes and default rate changes? How many months?"
+        dependencia_semantica: alta
+
+      - id: Q27
+        pergunta: "Qual a projeção de carteira para os próximos três meses, com intervalo de confiança?"
+        question: "What is the portfolio projection for the next three months, with a confidence interval?"
+        dependencia_semantica: media
+        nota: "Alimenta a tela de projeção da camada de decisão (ADR 0005)."
+
+  - nome: "Automação do trabalho repetitivo"
+    perguntas:
+      - id: Q28
+        pergunta: "Gerar o resumo executivo mensal: carteira total, variação mensal e anual, três modalidades que mais cresceram, e três com maior deterioração de inadimplência."
+        question: "Generate the monthly executive summary: total portfolio, monthly and yearly variation, top three growing modalities, and top three deteriorating in default."
+        dependencia_semantica: media
+        nota: >
+          Representa a dor real: analista de risco e planejamento em instituição
+          financeira baixa planilha do BCB todo mês, refaz a mesma tabela
+          dinâmica e manda o mesmo slide. Trabalho repetitivo e manual.
+
+      - id: Q29
+        pergunta: "Quais métricas mudaram de comportamento de forma estatisticamente atípica no último mês frente à tendência?"
+        question: "Which metrics changed behaviour in a statistically atypical way in the latest month relative to trend?"
+        dependencia_semantica: alta
+
+      - id: Q30
+        pergunta: "Quais modalidades mudaram de classificação ou taxonomia ao longo do período, e como isso afeta a comparabilidade da série histórica?"
+        question: "Which modalities changed classification or taxonomy over the period, and how does that affect the comparability of the historical series?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          A pergunta mais importante do conjunto. Existe quebra metodológica
+          real e documentada entre a Versão 1 e a Versão 2 do SCR, com PDFs
+          oficiais de metodologia para cada uma. É impossível responder sem a
+          documentação normativa.
+        errata: >
+          2026-09-22: a nota original dizia que a Versão 1 foi descontinuada em
+          junho de 2025, repetindo o que o portal de dados abertos afirma. O
+          dado publicado desmente: a V1 continua sendo publicada, com meses de
+          2026. Ver docs/analise-v1-v2.md, seção 5.
+
+  # ---------------------------------------------------------------------------
+  # PT: Perguntas novas, de achados posteriores ao registro original.
+  # EN: New questions, from findings that came after the original registration.
+  # ---------------------------------------------------------------------------
+
+  - nome: "Armadilhas de classificação (novo em 2026-09-22)"
+    perguntas:
+      - id: Q31
+        pergunta: "Qual o total de crédito de cartão de crédito no país, somando todas as formas em que ele aparece na base?"
+        question: "What is the total credit card exposure in the country, summing every form in which it appears in the dataset?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: valor
+        nota: >
+          Cartão não é modalidade. Está em cinco submodalidades de três
+          modalidades: 0204, 0210 e 0218 em Empréstimos, 0406 em
+          Financiamentos e 1304 em Outros créditos. Filtrar a coluna
+          modalidade por "cartão" não retorna nada. Ignorar a 1304 deixa de
+          fora a maior parte.
+
+      - id: Q32
+        pergunta: "Qual a composição da modalidade 'Outros créditos', e o que isso implica para um ranking de modalidades?"
+        question: "What is the composition of the 'Outros créditos' modality, and what does that imply for a modality ranking?"
+        dependencia_semantica: alta
+        nota: >
+          O nome sugere categoria residual. Em junho de 2026, três quartos da
+          modalidade são compras no cartão de crédito sem juros.
+
+      - id: Q33
+        pergunta: "Qual a distribuição da carteira por porte do cliente?"
+        question: "What is the portfolio distribution by client size?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          Armadilha de coluna polimórfica. Para pessoa física, porte é faixa de
+          renda em salários mínimos; para pessoa jurídica, é tamanho da
+          empresa. Agrupar sem separar por cliente mistura duas taxonomias, e
+          a V2 removeu o prefixo que desambiguava na V1.
+
+      - id: Q34
+        pergunta: "Qual o total do crédito habitacional fora do Sistema Financeiro de Habitação?"
+        question: "What is the total housing credit outside the SFH housing finance system?"
+        dependencia_semantica: media
+        nota: >
+          O rótulo da submodalidade 0902 no dado contém um caractere de
+          controle invisível no lugar do traço. Um filtro escrito à mão não
+          casa, e a resposta vem vazia ou incompleta sem nenhum erro.
+
+      - id: Q35
+        pergunta: "Existem operações de crédito pessoal consignado com cliente pessoa jurídica? Se sim, o que isso significa?"
+        question: "Are there payroll-deducted personal loans with corporate clients? If so, what does that mean?"
+        dependencia_semantica: maxima
+        nota: >
+          Existem, e são poucas. A tabela oficial de equivalência manda
+          classificar essas operações como modalidade de pessoa física, o que
+          revela que o cliente informado nem sempre é o tomador final.
+
+  - nome: "Limites do dado e comparabilidade (novo em 2026-09-22)"
+    perguntas:
+      - id: Q36
+        pergunta: "Que parcela da carteira está em recortes cuja quantidade de operações não é divulgada, e o que isso impede de calcular?"
+        question: "What share of the portfolio sits in slices whose operation count is not disclosed, and what does that prevent calculating?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+
+      - id: Q37
+        pergunta: "Quantas operações de crédito existem no total na base, no último mês disponível?"
+        question: "How many credit operations are there in total in the dataset, in the latest available month?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          A soma da coluna é um limite inferior, porque parte das linhas não
+          traz a contagem. Responder um número fechado, sem essa ressalva, é
+          erro.
+
+      - id: Q38
+        pergunta: "A comparação do ativo problemático entre dezembro de 2024 e janeiro de 2025 é válida? Quantifique o efeito."
+        question: "Is the problem-asset comparison between December 2024 and January 2025 valid? Quantify the effect."
+        dependencia_semantica: maxima
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          Mudança de critério em janeiro de 2025, com causa regulatória
+          documentada. A resposta precisa separar o que é mudança de definição
+          do que pode ser piora real, e reconhecer que o dado não permite
+          separar completamente.
+
+      - id: Q39
+        pergunta: "As duas versões publicadas do SCR.data fecham no total para o mesmo mês? Se não, de quanto é a diferença e quando ela mudou de patamar?"
+        question: "Do the two published SCR.data versions agree on totals for the same month? If not, how large is the gap and when did it shift?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: valor_com_ressalva
+
+      - id: Q40
+        pergunta: "Ao reconstruir a série no padrão antigo de modalidades a partir do dado atual, que parcela da carteira não pode ser atribuída com certeza a uma modalidade antiga, e por quê?"
+        question: "When rebuilding the old modality series from current data, what share of the portfolio cannot be confidently assigned to an old modality, and why?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: valor_com_ressalva
+        nota: >
+          A tabela oficial de equivalência tem uma regra que depende do campo
+          Natureza da operação, que o SCR.data não publica.
+
+      - id: Q41
+        pergunta: "Qual a rentabilidade média por modalidade de crédito?"
+        question: "What is the average profitability by credit modality?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: abstencao
+        nota: >
+          Pergunta deliberadamente sem resposta possível. O SCR.data não traz
+          taxa, receita nem custo de captação. O acerto é reconhecer o limite
+          e dizer o que seria necessário, em vez de estimar.
