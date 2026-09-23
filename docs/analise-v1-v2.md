@@ -136,6 +136,44 @@ São cerca de R$ 250 a R$ 400 bilhões de diferença para a mesma medida, no mes
 2. **A V2 é a fonte de verdade do projeto.** A V1 fica como fonte legada, e toda comparação entre versões precisa declarar a diferença de universo.
 3. **Causa ainda não identificada.** Hipóteses a testar: escopo de modalidades (a V1 pode excluir modalidades ou submodalidades que a V2 inclui), tratamento de "Outros créditos" e limiar de supressão. Pendente.
 
+## 7. Julho de 2025: o mecanismo da queda, medido no staging
+
+A seção 5 registrou que os arquivos e a contagem de linhas caem em julho de 2025 nas duas versões, e deixou a causa em aberto. Com a camada de staging pronta, o **mecanismo** pôde ser medido. Ele é diferente em cada versão, e em nenhuma delas é perda de dado.
+
+### V1: a coluna `tcb` deixou de ser publicada
+
+A quebra é limpa, não gradual:
+
+| Período | Valores distintos em `tcb` | Linhas com `-` | Linhas no mês |
+|---|---|---|---|
+| jan/2024 a jun/2025, 18 meses | 3 | 0% | de 929.671 a 1.027.060 |
+| jul/2025 a jul/2026, 13 meses | 0 | 100% | de 891.135 a 924.383 |
+
+As 11.799.814 linhas com `-` em `tcb` estão **todas** depois da quebra, e nenhuma antes. É também o que explica a queda de 13% na contagem de linhas: perder uma dimensão de três valores funde recortes que antes eram distintos. Nenhuma outra dimensão, em nenhuma das duas versões, muda de cardinalidade em nenhum mês da série.
+
+**Consequência prática:** qualquer série da V1 agrupada por `tcb` termina em junho de 2025. Um gráfico feito sem tratar isso mostra "Bancário" caindo a zero, o que não aconteceu: a carteira dessas instituições continua no dado, agregada. A correspondência com o `segmento` da V2, descrita na seção 3, só vale até jun/2025.
+
+### V2: mesma carteira, menos recortes
+
+A V2 não perdeu nenhuma dimensão nem nenhum valor de dimensão. Ela perdeu 4,5% dos recortes, e a perda se concentra nos segmentos menores:
+
+| Segmento | Linhas, jun para jul | Carteira ativa, jun para jul | Carteira mediana por linha |
+|---|---|---|---|
+| Instituição de pagamento | -29,6% | +2,7% | R$ 71,3 mil para R$ 112,7 mil |
+| Outros | -18,3% | +0,5% | R$ 82,0 mil para R$ 114,3 mil |
+| Fintech | -11,4% | +3,8% | R$ 15,0 mil para R$ 15,3 mil |
+| Banco | -3,4% | 0,0% | R$ 454,6 mil para R$ 435,7 mil |
+| Arrendamento | +1,7% | +1,5% | estável |
+
+A carteira ativa total da V2 sobe de R$ 6.923,4 bi para R$ 6.941,0 bi no mês da quebra, e o valor "Indisponível" de `porte` não cresce. **Nenhum real saiu da base: o mesmo dinheiro passou a ser publicado em menos linhas, maiores.**
+
+### O que isso muda para o projeto
+
+1. **Totais e percentuais atravessam julho de 2025.** Carteira, inadimplência e ativo problemático continuam comparáveis.
+2. **Contagem de recortes e valor médio por recorte não atravessam.** Qualquer análise de concentração ou de "quantos recortes existem" mede mudança de publicação, não mudança de mercado.
+3. **A causa continua não identificada.** A IN BCB 627, de 29/05/2025 e vigente em julho de 2025, coincide no tempo, mas trata de crédito de programas governamentais, e não de remoção de coluna nem de regra de agregação. Coincidência temporal, não causa verificada.
+4. **É a terceira quebra datada da série**, ao lado de janeiro de 2025 (critério do ativo problemático) e setembro de 2025 (degrau na divergência entre versões). As três estão registradas na ontologia e nenhuma é visível no dado sem documentação.
+
 ## Próximo passo
 
 Estas correspondências são **hipóteses derivadas do dado**, não definições. Nenhuma delas entra na ontologia sem confirmação nos normativos oficiais (metodologia V1, metodologia V2 e tutorial), com citação da fonte e nível de confiança declarado.

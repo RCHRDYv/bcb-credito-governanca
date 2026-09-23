@@ -1,0 +1,41 @@
+# =============================================================================
+# PT: Perfil usado SÓ pelo CI, para o dbt conseguir carregar o projeto e
+#     compilar os modelos sem credencial nenhuma. O `dbt parse` não abre conexão
+#     com o warehouse: ele resolve o Jinja, as referências entre modelos, as
+#     macros e os testes, que é exatamente o que precisa ser verificado em todo
+#     PR. Um `ref` errado, uma macro que não existe ou um YAML mal formado
+#     falham aqui.
+#
+#     O host e o caminho são falsos de propósito, e o token é um texto qualquer.
+#     A conexão real do projeto vive em ~/.dbt/profiles.yml, na máquina de quem
+#     roda, por OAuth (ver dbt/profiles.yml.example e o ADR 0001). O projeto não
+#     guarda credencial do Databricks em segredo do GitHub.
+#
+#     Por que `token` e não `auth_type: oauth`: com OAuth, o adaptador tenta
+#     abrir o navegador já na carga do perfil, antes de qualquer consulta, e o
+#     CI travaria até o tempo limite. Com um token qualquer, nada é tentado.
+#
+# EN: Profile used ONLY by CI, so dbt can load the project and compile the
+#     models with no credential at all. `dbt parse` opens no warehouse
+#     connection: it resolves Jinja, model references, macros and tests, which
+#     is exactly what every PR needs checked. A wrong `ref`, a missing macro or
+#     malformed YAML fails here.
+#
+#     Host and path are fake on purpose and the token is arbitrary text. The
+#     project's real connection lives in ~/.dbt/profiles.yml on the operator's
+#     machine, via OAuth. With `auth_type: oauth` the adapter would try to open
+#     a browser while loading the profile and CI would hang until timeout, which
+#     is why an arbitrary token is used instead.
+# =============================================================================
+
+bcb_credito:
+  target: ci
+  outputs:
+    ci:
+      type: databricks
+      catalog: workspace
+      schema: bcb_scr
+      host: exemplo.cloud.databricks.com
+      http_path: /sql/1.0/warehouses/000000000000
+      token: sem-credencial-o-parse-nao-conecta
+      threads: 1

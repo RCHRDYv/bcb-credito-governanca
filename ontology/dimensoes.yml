@@ -105,13 +105,71 @@ avisos_gerais:
       de cliente PJ, porque ocupação só existe para pessoa física.
       "cnae_secao" traz "-" nas 4.244.485 linhas de PF, pelo motivo simétrico.
       "tcb" traz "-" em 11.799.814 linhas, nos dois tipos de cliente, e aí o
-      motivo não é simetria: é ausência de classificação. A coluna "sr" traz
-      nulo em 62.767 linhas.
+      motivo não é nenhum dos dois: a coluna deixou de ser publicada em
+      julho de 2025. Ver avisos_gerais.tcb_descontinuado_em_julho_de_2025. A
+      coluna "sr" traz nulo em 62.767 linhas, essas sim espalhadas: os cinco
+      valores de S1 a S5 aparecem em todos os 31 meses.
+      "cnae_subclasse" traz "-" em 5.234.215 linhas, e
+      esse é o caso mais grave: são dois motivos diferentes com o mesmo
+      símbolo, porque 4.244.485 são linhas de PF em que a coluna não se aplica
+      e 989.730 são linhas de PJ em que a subclasse foi suprimida pela regra
+      documentada dos 5 CNPJs.
     consequencia: >
       Contar valores distintos sem tratar o "-" produz uma categoria fantasma,
-      e filtrar por ela retorna linhas que não têm relação entre si.
+      e filtrar por ela retorna linhas que não têm relação entre si. Em
+      "cnae_subclasse", separar "não se aplica" de "suprimido" só é possível
+      olhando "cliente", e é isso que a coluna subclasse_suprimida do modelo
+      stg_scr_v1 registra.
     confianca: verbatim
     fonte: "dado da V1; nenhuma metodologia menciona o marcador"
+
+  - id: tcb_descontinuado_em_julho_de_2025
+    gravidade: alta
+    descricao: >
+      A coluna "tcb" da V1 deixou de ser publicada em julho de 2025. A quebra é
+      limpa, não gradual: nos 18 meses de jan/2024 a jun/2025 ela traz os três
+      valores (Bancário, Cooperativas, Não bancário) e zero linha vazia; nos 13
+      meses de jul/2025 a jul/2026 ela traz "-" em 100% das linhas.
+    evidencia: >
+      Medido em 2026-09-23 sobre os 31 meses: as 11.799.814 linhas com "-" estão
+      TODAS a partir de jul/2025, e nenhuma antes. É também o que explica a
+      queda de 13% na contagem de linhas da V1 no mesmo mês, de 1.025.243 para
+      891.135: perder uma dimensão de três valores funde recortes que antes eram
+      distintos. Nenhuma outra dimensão da V1 ou da V2 muda de cardinalidade em
+      nenhum mês da série.
+    consequencia: >
+      Qualquer série da V1 agrupada por tcb termina em jun/2025, e um gráfico
+      feito sem tratar isso mostra "Bancário" caindo a zero, o que não
+      aconteceu: a carteira dessas instituições continua no dado, agregada. A
+      correspondência com o "segmento" da V2 só é possível até jun/2025.
+    confianca: verbatim
+    fonte: "dado"
+    causa: >
+      Não identificada. A IN BCB 627, de 29/05/2025 e vigente a partir de julho
+      de 2025, coincide no tempo, mas trata de crédito de programas
+      governamentais, e não de remoção de coluna. Coincidência temporal, não
+      causa verificada. Ver docs/cadeia-normativa.md, seção 2.
+
+  - id: granularidade_encolhe_em_julho_de_2025
+    gravidade: media
+    descricao: >
+      No mesmo mês, a V2 perde 4,5% dos recortes sem perder nenhuma dimensão e
+      sem perder carteira. O mesmo dinheiro passa a ser publicado em menos
+      linhas, e o efeito se concentra nos segmentos menores.
+    evidencia: >
+      Medido em 2026-09-23, de jun/2025 para jul/2025: Instituição de pagamento
+      perde 29,6% das linhas e ganha 2,7% de carteira, com a carteira mediana
+      por linha subindo de R$ 71,3 mil para R$ 112,7 mil; "Outros" perde 18,3%
+      das linhas com carteira estável; Fintech perde 11,4% e ganha 3,8% de
+      carteira; Banco perde 3,4% com carteira constante; Arrendamento cresce
+      1,7%. A carteira ativa total da V2 sobe de R$ 6.923,4 bi para R$ 6.941,0
+      bi, e o "Indisponível" de porte não cresce.
+    consequencia: >
+      Totais e percentuais da carteira atravessam julho de 2025 sem problema.
+      Contagem de recortes, valor médio por recorte e qualquer análise de
+      concentração não atravessam: a mudança é de publicação, não de mercado.
+    confianca: verbatim
+    fonte: "dado"
 
   - id: cliente_e_redundante_na_v1
     gravidade: baixa
@@ -226,9 +284,10 @@ dimensoes:
       tipo: mais_restrita
       coluna: tcb
       nota: >
-        Cada segmento da V2 é mais restrito que o valor correspondente da V1.
-        A V1 ainda traz "-" em 11,8 milhões de linhas, sem documentação. Ver
-        avisos_gerais.marcadores_nao_documentados_na_v1.
+        Cada segmento da V2 é mais restrito que o valor correspondente da V1. A
+        correspondência só existe até jun/2025: a V1 parou de publicar tcb em
+        julho de 2025, e de lá em diante a coluna traz "-" em todas as linhas.
+        Ver avisos_gerais.tcb_descontinuado_em_julho_de_2025.
     valores:
       - {rotulo_no_dado: "Arrendamento", aplica_a: "PF e PJ"}
       - {rotulo_no_dado: "Banco", aplica_a: "PF e PJ"}
@@ -450,4 +509,8 @@ dimensoes_removidas_na_v2:
     scopeNote: >
       Removida na V2, que só traz a Seção. É a maior perda de granularidade
       entre as versões, e tem uma regra de supressão própria, essa sim
-      documentada, ao contrário do sentinela -1.
+      documentada, ao contrário do sentinela -1. A supressão foi medida em
+      2026-09-23: atinge 989.730 das 25.227.055 linhas de PJ, 3,9%, e usa o
+      mesmo marcador "-" que a coluna usa para as linhas de PF, onde o sentido
+      é outro. São 1.261 subclasses distintas divulgadas, prefixadas por
+      "PJ - ".

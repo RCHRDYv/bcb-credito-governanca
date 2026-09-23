@@ -112,6 +112,22 @@ Para conferir a ontologia de dimensões contra o dado, incluindo se cada valor o
 uv run python -m scripts.validar_dimensoes
 ```
 
+### Como rodar a camada semântica
+
+Do diretório `dbt/`, com o mesmo OAuth do CLI e um `~/.dbt/profiles.yml` copiado de [`dbt/profiles.yml.example`](dbt/profiles.yml.example):
+
+```bash
+uv run dbt build
+```
+
+O comando carrega o seed, cria as views de staging e roda os testes. Hoje são 66 verificações, e uma delas avisa de propósito: a identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024, que vem assim do arquivo publicado pelo BCB. O teste avisa com uma linha e falha com duas, para que uma segunda ocorrência não passe em silêncio. O raciocínio da camada está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+
+Para o QA da camada, por caminhos diferentes dos testes do dbt, incluindo a conferência das linhas contra o manifesto medido fora do Databricks e a varredura da cardinalidade mês a mês:
+
+```bash
+uv run python -m scripts.analises.qa_staging
+```
+
 ### Documentação
 
 | Documento | O que traz |
@@ -129,6 +145,7 @@ uv run python -m scripts.validar_dimensoes
 | [ADR 0003](docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md) | Conformação de taxonomia entre versões |
 | [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md) | Ingestão em camada bronze: ZIP local, Parquet só texto, volume do Unity Catalog |
 | [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md) | O projeto termina numa recomendação, com a fronteira do dado declarada |
+| [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md) | O staging corrige a forma e preserva o conteúdo, incluindo o tratamento assimétrico dos dois sentinelas |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com duas notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 

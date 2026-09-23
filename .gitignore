@@ -24,6 +24,18 @@ logs/
 # EN: Credentials. The real profiles.yml lives in ~/.dbt/, outside the repo.
 #     Only the example, with no real values, is versioned.
 profiles.yml
+
+# PT: Exceção: o perfil do CI não tem credencial nenhuma. Ele é host falso,
+#     caminho falso e um token que é texto qualquer, e existe só para o dbt
+#     conseguir carregar o projeto no GitHub Actions. Precisa ser versionado.
+# EN: Exception: the CI profile holds no credential at all. Fake host, fake
+#     path and an arbitrary token, so dbt can load the project on GitHub
+#     Actions. It needs to be versioned.
+!.github/dbt/profiles.yml
+
+# PT: Identificador anônimo que o dbt grava ao lado do perfil.
+# EN: Anonymous id dbt writes next to the profile.
+.user.yml
 .env
 *.pem
 .databrickscfg

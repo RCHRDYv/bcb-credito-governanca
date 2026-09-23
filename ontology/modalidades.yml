@@ -148,6 +148,26 @@ avisos_gerais:
     confianca: verbatim
     fonte: "Anexo 3; Equivalencia_Modalidades.xlsx; HistoricoAtualizacoes; dado"
 
+  - id: nem_todo_par_ocorre_em_todo_mes
+    gravidade: media
+    descricao: >
+      Os 66 pares de modalidade e submodalidade são a união dos 31 meses.
+      Nenhum mês isolado tem os 66: são 64 pares em 13 meses e 65 em 18 meses,
+      medido em 2026-09-23. Dois pares aparecem só em parte da série.
+    detalhe:
+      - par: "Empréstimos | ARO - adiantamento de receitas orçamentárias"
+        ocorrencia: "apenas dez/2024 e jan/2025, 2 meses"
+      - par: "Financiamentos à exportação | Financiamento de projeto"
+        ocorrencia: "de abr/2025 a jul/2026, 16 meses"
+    consequencia: >
+      Uma junção mês a mês com esta ontologia encontra 64 ou 65 pares, e isso é
+      correto, não falha de cobertura. Um teste que exija 66 pares em todo mês
+      reprovaria o dado certo. No sentido inverso, comparar a composição da
+      carteira entre meses precisa considerar que uma submodalidade pode
+      simplesmente não existir no mês de referência.
+    confianca: verbatim
+    fonte: "dado"
+
 # =============================================================================
 # PT: Conceitos. Modalidade seguida das suas submodalidades.
 # EN: Concepts. Each modality followed by its sub-modalities.
