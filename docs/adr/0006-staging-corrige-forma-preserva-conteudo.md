@@ -5,7 +5,7 @@
 
 ## Contexto
 
-O bronze guarda o SCR.data como publicado, com todas as colunas como texto (ADR 0004). Assim ele é auditável e inútil: nenhuma soma funciona, nenhuma comparação de data funciona, e a contagem de operações traz dois sentinelas diferentes conforme a versão.
+O bronze guarda o SCR.data como publicado, com todas as colunas como texto (ADR 0004). Isso o torna auditável e, ao mesmo tempo, inutilizável como está: nenhuma soma funciona, nenhuma comparação de data funciona, e a contagem de operações traz um sentinela diferente em cada versão.
 
 Entre o bronze e os marts existe uma decisão que não é técnica: **o que o staging tem direito de mudar.** Ela precisa ser explícita porque o projeto inteiro depende dela. O experimento compara respostas de uma IA sobre esta base, e a camada semântica é o objeto de estudo. Se o staging corrigir o dado por conta própria, o experimento passa a medir as correções do autor, não a qualidade da documentação. Se não corrigir nada, a pergunta mais simples já sai errada.
 
@@ -63,7 +63,7 @@ O teste `stg_scr_v2_carteira_ativa` avisa com uma linha e falha o build com duas
 
 **Tratar o `-1` como zero ou como 15.** Zero afirma que não há operação, e 15 afirma um limite que está medido como falso. As duas trocam lacuna por número plausível, que é o erro que este projeto existe para expor.
 
-**Guardar o sentinela como está e deixar o tratamento para quem consulta.** É o estado atual de quem usa o SCR.data sem documentação, e o próprio motivo do projeto.
+**Guardar o sentinela como está e deixar o tratamento para quem consulta.** É o que acontece hoje com quem usa o SCR.data sem documentação, e é justamente o problema que o projeto ataca.
 
 **Conformar V1 e V2 no staging.** Juntaria duas decisões de natureza diferente no mesmo lugar: converter tipo é mecânico e verificável, mapear taxonomia é interpretação com ambiguidade declarada (ADR 0003). Separadas, dá para testar cada uma.
 

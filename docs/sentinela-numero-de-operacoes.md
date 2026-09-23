@@ -88,6 +88,8 @@ Feita em 2026-09-21, depois do teste, para saber se o critério do `-1` estava p
    - na V2, `-1` vira nulo e ganha a marca `contagem_suprimida`;
    - na V1, `<= 15` vira nulo com o intervalo de 1 a 15 registrado;
    - somar a coluna num grupo com linhas suprimidas dá um **limite inferior**, e o mart precisa dizer isso.
+
+   **Implementado em 2026-09-23** nos modelos `stg_scr_v2` e `stg_scr_v1`, com o raciocínio no [ADR 0006](adr/0006-staging-corrige-forma-preserva-conteudo.md). A V1 ganhou `contagem_min` e `contagem_max`, e a V2 não ganhou intervalo nenhum, justamente porque o critério dela é desconhecido. O QA da camada confirmou por caminho independente que a V1 nunca publica contagem de 15 ou menos: a regra documentada dela se sustenta no dado, ao contrário do `-1`.
 3. **Errata da pergunta Q18** (`evaluation/questions.yml`, pré-registrada em 2026-08-20 e mantida sem alteração):
    - A nota da pergunta chama o `-1` de "sentinela de supressão por sigilo estatístico". A parte essencial continua certa: é sentinela, e dividir a carteira por ele sem tratamento produz resultado sem sentido.
    - "Sigilo estatístico" é hipótese.

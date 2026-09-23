@@ -5,9 +5,11 @@
 
 ## Contexto
 
-Este é um repositório público, e repositório público tem duas propriedades que mudam o cálculo de risco: qualquer pessoa lê, e **o histórico do git é permanente**. Apagar um segredo do arquivo não o remove do histórico. Corrigir de verdade exige reescrever o histórico e rotacionar a credencial exposta.
+Este é um repositório público, e isso muda o cálculo de risco por dois motivos: qualquer pessoa lê o conteúdo, e **o histórico do git é permanente**. Apagar um segredo do arquivo não o remove do histórico. Corrigir de verdade exige reescrever o histórico e rotacionar a credencial exposta.
 
-O projeto conecta a um workspace Databricks e consome arquivos de dado grandes, o que cria dois vetores distintos de problema: vazamento de credencial e inchaço permanente do repositório. (Na data deste ADR o volume conhecido era de cerca de 97 MB por arquivo mensal. A medição completa, feita na ingestão de 2026-09-21, é de 100 MB por mês na V2 e 300 MB na V1, somando 12,7 GB no recorte do projeto.)
+O projeto conecta a um workspace Databricks e consome arquivos de dado grandes, o que cria dois problemas de naturezas diferentes: vazamento de credencial e inchaço permanente do repositório.
+
+**Nota de 2026-09-21:** na data deste ADR, o volume conhecido era de cerca de 97 MB por arquivo mensal. A ingestão mediu o volume real: 100 MB por mês na V2 e 300 MB na V1, somando 12,7 GB no recorte do projeto.
 
 ## Decisão
 
@@ -39,8 +41,8 @@ Confiar só no `.gitignore` é frágil, porque ele é contornável por engano (`
 
 ## Consequências
 
-**Positivas.** Não existe segredo a rotacionar se o repositório for clonado ou tornado público por engano. O repositório permanece pequeno e clonável. A reprodutibilidade é a partir da fonte oficial, o que é auditável por terceiros.
+**Positivas.** Não existe segredo a rotacionar se o repositório for clonado ou tornado público por engano. O repositório permanece pequeno e clonável. A reprodução parte da fonte oficial, o que qualquer pessoa pode auditar.
 
-**Negativas, e são reais.** Quem clonar precisa configurar o próprio acesso ao Databricks antes de rodar qualquer coisa, o que aumenta o atrito de entrada. E a execução depende da disponibilidade do portal do Banco Central, que é uma dependência externa fora do nosso controle.
+**Negativas, e são reais.** Quem clonar precisa configurar o próprio acesso ao Databricks antes de rodar qualquer coisa, o que aumenta o atrito de entrada. A execução também depende da disponibilidade do portal do Banco Central, uma dependência externa.
 
-**Aceitamos essas duas negativas** porque o custo de um segredo vazado em repositório público é assimétrico: irreversível de um lado, e apenas inconveniente do outro.
+**As duas negativas são aceitas** porque o custo de um segredo vazado em repositório público é assimétrico: irreversível de um lado, apenas inconveniente do outro.

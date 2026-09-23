@@ -5,11 +5,13 @@
 
 ## Contexto
 
-O projeto usa a palavra "ontologia" como elemento central da tese, mas até este ponto nenhum modelo formal havia sido fixado. Isso é um problema de duas naturezas.
+O projeto usa a palavra "ontologia" como elemento central da tese, mas até este ponto nenhum modelo formal havia sido fixado. Isso cria um problema de duas naturezas.
 
 **Problema de credibilidade:** um projeto que se propõe a demonstrar o efeito de ontologia sobre consumo de dado por IA precisa que o termo signifique algo verificável. Vocabulário informal em YAML, sem padrão por trás, é glossário. Chamar glossário de ontologia é exagero que um revisor técnico identifica.
 
-**Problema técnico concreto:** o SCR tem uma quebra metodológica documentada entre a Versão 1 e a Versão 2. (Na data deste ADR, o portal descrevia a V1 como descontinuada em junho de 2025. Em 2026-09-21 verificou-se que ela continua publicada, ver ADR 0004.) Expressar em prosa que "a modalidade X da V1 corresponde aproximadamente à Y da V2" não é consumível por máquina, e a pergunta mais difícil do experimento depende exatamente dessa correspondência.
+**Problema técnico concreto:** o SCR tem uma quebra metodológica documentada entre a Versão 1 e a Versão 2. Expressar em prosa que "a modalidade X da V1 corresponde aproximadamente à Y da V2" não é consumível por máquina, e a pergunta mais difícil do experimento depende exatamente dessa correspondência.
+
+**Nota de 2026-09-21:** na data deste ADR, o portal descrevia a V1 como descontinuada em junho de 2025. A ingestão mostrou que ela continua publicada. Ver ADR 0004.
 
 O escopo real, levantado a partir do dado antes de qualquer leitura de normativo, é de 99 termos: 13 modalidades, 55 submodalidades, 13 portes, 8 segmentos, 6 indexadores, e 2 valores cada para cliente e origem.
 
@@ -65,14 +67,14 @@ Isso segue o mesmo princípio já adotado para `dim_modalidade`: uma fonte de ve
 
 ## Consequências
 
-**Positivas.** O termo "ontologia" passa a ter padrão W3C verificável por trás. A correspondência entre V1 e V2 vira dado estruturado em vez de nota de rodapé. O vocabulário fica interoperável com o ecossistema de dado estatístico ligado, incluindo SDMX. E a revisão humana continua viável, porque acontece sobre YAML.
+**Positivas.** O termo "ontologia" passa a ter padrão W3C verificável por trás. A correspondência entre V1 e V2 vira dado estruturado em vez de nota de rodapé. O vocabulário fica interoperável com o ecossistema de dado estatístico ligado, incluindo SDMX. A revisão humana continua viável, porque acontece sobre YAML.
 
-**Negativas, e são reais.** Adiciona o trabalho do script de emissão e da validação do RDF. Exige mapear cada campo do YAML ao construto correto, o que é uma fonte de erro a mais. E ninguém no público-alvo imediato do projeto vai consumir o RDF na prática, então o retorno é de credibilidade e correção, não de uso.
+**Negativas, e são reais.** A decisão acrescenta o trabalho do script de emissão e da validação do RDF, e exige mapear cada campo do YAML ao construto correto, o que é uma fonte de erro a mais. Ninguém no público-alvo imediato do projeto vai consumir o RDF na prática, então o retorno é de credibilidade e correção, não de uso.
 
-**Aceitamos essas negativas** porque o custo é limitado e localizado num script, enquanto o ganho atinge a afirmação central do projeto.
+**As negativas são aceitas** porque o custo é limitado e fica localizado num script, enquanto o ganho atinge a afirmação central do projeto.
 
 ## Nota sobre a origem do modelo
 
-Este modelo **não foi extraído de um estudo sobre taxonomia de crédito**. Não há, até onde apuramos, trabalho publicado modelando a taxonomia do SCR. O modelo vem dos padrões do W3C e da prática estabelecida de publicação de dado estatístico ligado.
+Este modelo **não foi extraído de um estudo sobre taxonomia de crédito**. Até onde a pesquisa deste projeto alcançou, não existe trabalho publicado que modele a taxonomia do SCR. O modelo vem dos padrões do W3C e da prática estabelecida de publicação de dado estatístico ligado.
 
-Registrar isso é deliberado: atribuir a decisão a uma referência inexistente seria pior do que assumir que ela é uma escolha de projeto fundamentada em padrão.
+Registrar isso é deliberado: atribuir a decisão a uma referência inexistente seria pior do que dizer o que ela é, uma escolha de projeto fundamentada em padrão.

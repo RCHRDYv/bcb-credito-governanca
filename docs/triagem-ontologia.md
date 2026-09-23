@@ -3,7 +3,20 @@
 **Data:** 2026-08-25
 **Objetivo deste documento:** tornar a revisão possível de verdade.
 
-> **Atualização de 2026-09-21:** as quatro decisões do Bloco 1 foram tomadas e os dois achados do Bloco 3 foram investigados. O registro das decisões e das verificações está em [`docs/cadeia-normativa.md`](cadeia-normativa.md). Resumo: sentinela será testado empiricamente; "Outros créditos" continua sendo balde de supressão; recorte a partir de 2024; Anexo 3 lido; o rótulo duplo é renomeação oficial, não corrupção; a diferença 76 contra 55 tem explicação parcial com pendência declarada. O texto abaixo é mantido como estava, para registro de como a decisão foi apresentada.
+## Atualização: o que foi decidido
+
+As quatro decisões do Bloco 1 foram tomadas em 2026-09-21, e os dois achados do Bloco 3 foram investigados. O registro completo está em [`cadeia-normativa.md`](cadeia-normativa.md). **O texto abaixo fica como estava**, para registrar como a decisão foi apresentada na época.
+
+| Item | Decisão, e o que aconteceu depois |
+|---|---|
+| 1.1 Sentinela `-1` | Testar empiricamente. O teste foi feito e **refutou** a hipótese herdada da V1: o critério de supressão não é o número de operações ([`sentinela-numero-de-operacoes.md`](sentinela-numero-de-operacoes.md)) |
+| 1.2 "Outros créditos" | Segue tratado como balde de supressão, com a ressalva visível. Medido depois: 74,8% da modalidade é compra no cartão de crédito, e o componente genérico é 1,8% |
+| 1.3 Recorte da série | De 2024 em diante |
+| 1.4 Anexo 3 | Buscado. A ontologia de modalidades saiu das Instruções de Preenchimento do documento 3040, com a página citada em cada definição |
+| 3.1 Rótulo duplo na planilha | Não é corrupção de formatação: é renomeação oficial registrada no histórico do leiaute |
+| 3.2 76 contra 55 submodalidades | Resolvido em parte. A contagem certa é por par de modalidade e submodalidade: 66 pares e 56 rótulos no recorte de 2024 a 2026. A atribuição das ausentes continua pendente ([`cadeia-normativa.md`](cadeia-normativa.md), seção 3) |
+
+---
 
 Revisar 99 termos em YAML não acontece na prática. Este documento separa o que **exige decisão sua** do que você pode conferir por amostragem, para que a atenção fique onde ela muda o resultado.
 

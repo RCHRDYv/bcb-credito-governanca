@@ -44,9 +44,9 @@ Inferência de tipo erra em silêncio neste arquivo:
 
 Esse é o mesmo tipo de falha do erro 6 de `docs/desenvolvimento-com-ia.md`: nada quebra, e o dado fica errado. O bronze guarda o que foi publicado. A tipagem acontece no staging do dbt, de forma explícita e testada. A única alteração no bronze é remover o BOM do nome da primeira coluna, que de outro modo viraria `﻿data_base`.
 
-### Uma coluna que aparece sozinha
+### A coluna que o `read_files` acrescenta
 
-O `read_files` acrescenta `_rescued_data`, onde ele guarda o que não couber no esquema esperado. Não é decisão do projeto, é comportamento padrão da função. Ela fica de propósito: se um mês vier com coluna nova ou com valor fora do formato, o conteúdo aparece ali em vez de desaparecer. Verificado em 2026-09-21 e em 2026-09-22: **está vazia nas duas tabelas**, ou seja, nada ficou de fora.
+O `read_files` cria a coluna `_rescued_data` e guarda nela o que não couber no esquema esperado. Não é decisão do projeto, é comportamento padrão da função, e a coluna fica de propósito: se um mês vier com coluna nova ou com valor fora do formato, o conteúdo aparece ali em vez de desaparecer. Verificado em 2026-09-21 e em 2026-09-22: **está vazia nas duas tabelas**, ou seja, nada ficou de fora.
 
 ### Por que existe o manifesto
 
@@ -57,16 +57,18 @@ O manifesto (`ingestion/manifesto.json`) é versionado e não contém dado. Ele 
 ## Alternativas descartadas
 
 **Enviar os ZIPs e descompactar no Databricks.**
-- **Não reduz o envio:** os ZIPs somam 1,51 GB, e os Parquets, quase o mesmo tanto. A premissa inicial deste ADR era que o Parquet seria dez vezes menor. É, mas em relação ao CSV, não ao ZIP.
+- **Não reduz o envio:** os ZIPs somam 1,51 GB, e os Parquets somam quase o mesmo. A premissa inicial deste ADR era que o Parquet seria dez vezes menor. Ele é, mas em relação ao CSV, não ao ZIP.
 - **Acrescenta peças:** descompactar exigiria um job Python serverless escrevendo no volume, só para chegar ao mesmo ponto.
 
-**Enviar os CSVs.** Seriam 12,7 GB, oito vezes mais envio. E o parse de BOM, separador e encoding passaria a acontecer no servidor, longe da validação local.
+**Enviar os CSVs.** Seriam 12,7 GB, oito vezes mais envio. A leitura de BOM, separador e codificação também passaria a acontecer no servidor, longe da validação local.
 
 **Baixar direto do BCB dentro do Databricks.**
 - Depende de acesso de saída à internet a partir do serverless do Free Edition, o que não foi verificado.
 - Separaria o download da máquina onde o manifesto e a validação acontecem.
 
-**Tipar no bronze** e **Auto Loader ou pipeline declarativo.** O primeiro foi descartado pelo motivo acima. O segundo é desproporcional para dois arquivos por mês e fica para quando houver agendamento.
+**Tipar no bronze.** Descartado pelo motivo da seção anterior: inferência de tipo erra em silêncio neste arquivo.
+
+**Auto Loader ou pipeline declarativo.** Desproporcional para dois arquivos por mês. Fica para quando houver agendamento.
 
 ## Consequências
 
@@ -79,7 +81,7 @@ O manifesto (`ingestion/manifesto.json`) é versionado e não contém dado. Ele 
 **Negativas, e são reais.**
 - **O envio depende da conexão de quem roda.** Medido em 2026-09-21: cerca de 0,45 MB/s por conexão. O envio usa 6 conexões simultâneas e chegou a cerca de 1,6 MB/s.
 - **O pipeline roda da máquina do desenvolvedor**, não de forma agendada.
-- **A V1 dobra o armazenamento** para uso legado.
+- **A V1 dobra o armazenamento**, e serve só a uso legado.
 - **Custo de armazenamento no Free Edition:** o volume guarda os Parquets e as tabelas Delta guardam uma segunda cópia.
 
 **Fora do escopo desta decisão:** staging, tratamento do sentinela e conformação de modalidades. Eles dependem do teste empírico do `-1` e de `ontology/modalidades.yml`.

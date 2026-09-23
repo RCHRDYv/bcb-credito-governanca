@@ -60,7 +60,7 @@ Para configurar uma integração, a IA gravou um token de acesso amplo numa vari
 
 **Correção:** variável removida, token de volta ao cofre, e a integração passou a ser opcional em vez de exigir credencial ampla.
 
-### 6. Encoding afirmado sem teste
+### 6. Codificação afirmada sem teste
 
 A IA afirmou, e registrou na especificação, que os arquivos do SCR usavam codificação **latin-1**. Estão em **UTF-8 com BOM**.
 
@@ -70,7 +70,7 @@ A afirmação parecia confirmada porque ler em latin-1 **não gera erro**: latin
 
 **Por que importa:** é o pior tipo de falha, porque é silenciosa. Toda a ingestão teria rodado sem erro, produzindo dado com acento corrompido em toda dimensão textual, e a ontologia teria sido construída sobre rótulos errados.
 
-**Correção adotada:** `utf-8-sig`, e a regra de que verificar encoding significa comparar conteúdo decodificado, nunca ausência de exceção.
+**Correção adotada:** `utf-8-sig`, e a regra de que verificar codificação significa comparar conteúdo decodificado, nunca ausência de exceção.
 
 ### 7. Afirmação sobre o conteúdo do dado sem consulta
 
