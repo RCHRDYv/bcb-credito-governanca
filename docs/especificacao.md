@@ -119,6 +119,58 @@ Site estruturado segundo **Diátaxis**, separando tutorial, guia prático, refer
 
 **Armadilha semântica já identificada:** a coluna `porte` mistura **duas taxonomias distintas**. Pessoa jurídica usa porte de empresa (Micro, Pequeno, Médio, Grande) e pessoa física usa faixa de renda em salários mínimos. Agrupar por `porte` sem filtrar `cliente` mistura categorias incompatíveis. Isso não está em lugar nenhum do esquema, e é exatamente o tipo de conhecimento que só a ontologia carrega.
 
+## Camada de decisão
+
+Acrescentada em 2026-09-22. Até aqui o projeto respondia "quanto a ontologia melhora a acurácia de um LLM", que é pergunta de método. Esta camada acrescenta a pergunta de negócio que o mesmo dado sustenta, e faz o projeto terminar numa recomendação em vez de terminar num número de acurácia.
+
+### A pergunta de negócio
+
+> **Uma financeira de médio porte quer crescer em crédito para pessoa jurídica. Em quais modalidades e em quais estados vale entrar ou aumentar exposição, e onde o risco está piorando rápido demais para isso?**
+
+Ela não é nova no projeto: três perguntas pré-registradas em [`../evaluation/questions.yml`](../evaluation/questions.yml) já a compõem.
+
+| Pergunta | O que entrega para a decisão |
+|---|---|
+| **Q14** | Onde há espaço: carteira de PJ por empresa ativa, por UF |
+| **Q07** | Onde o risco está piorando: modalidades com maior deterioração de inadimplência em seis meses |
+| **Q27** | Para onde a carteira aponta: projeção de três meses com intervalo |
+
+O pré-registro não muda. A camada de decisão consome os marts e o gabarito, e o experimento com IA continua como está.
+
+### O que entra na recomendação
+
+1. **Indicador de espaço,** por UF e modalidade: carteira PJ por empresa ativa, comparada à mediana nacional. Exige fonte externa para o número de empresas ativas por UF, declarada junto.
+2. **Indicador de risco,** por UF e modalidade: nível e tendência de inadimplência em seis meses, mais o gap entre ativo problemático e carteira inadimplida, que antecipa deterioração que o atraso ainda não mostra.
+3. **Projeção** da carteira por recorte, com intervalo, usando modelo simples de série temporal com sazonalidade.
+4. **Agrupamento de UFs** por perfil, combinando nível de crédito por empresa, tendência de risco e composição da carteira. Serve para tratar estados parecidos com a mesma estratégia.
+5. **A recomendação,** numa matriz espaço contra risco: onde entrar, onde manter, onde não entrar. Cada recomendação vem com o custo de errar e com a fronteira do dado.
+
+### A fronteira do dado, declarada junto da recomendação
+
+O SCR.data é agregado e público. Com ele **é possível** dizer onde há menos crédito por empresa, onde a inadimplência piora e como a composição da carteira difere entre estados.
+
+Com ele **não é possível** dizer:
+- rentabilidade, spread ou custo de captação, porque o dado não tem taxa nem receita;
+- comportamento de uma instituição específica, porque o dado é agregado por segmento;
+- risco de um cliente ou de uma safra, porque não há informação por operação nem por data de contratação;
+- número de operações em 26,7% das linhas, por causa da supressão não documentada ([`sentinela-numero-de-operacoes.md`](sentinela-numero-de-operacoes.md));
+- comparação direta de ativo problemático entre dez/2024 e jan/2025, por causa da mudança de critério ([`cadeia-normativa.md`](cadeia-normativa.md)).
+
+Declarar essa fronteira é parte da entrega. Uma recomendação sem ela é palpite com gráfico.
+
+### O dashboard conta a decisão
+
+Uma pergunta por tela, com o texto da conclusão junto do gráfico, e não uma galeria de indicadores:
+
+1. Onde está o crédito PJ hoje, e onde ele é escasso por empresa
+2. Onde o risco está piorando, com a distinção entre inadimplência e ativo problemático
+3. Para onde a carteira aponta nos próximos três meses, com intervalo
+4. A recomendação, com o custo de errar e o que o dado não permite afirmar
+
+### Relação com o experimento de IA
+
+As perguntas que sustentam a decisão são as mesmas do gabarito. Isso liga as duas metades do projeto: o experimento deixa de medir acurácia no abstrato e passa a medir **se a IA acerta justamente as perguntas de que a decisão depende.** Uma taxa alta de acerto em perguntas irrelevantes não vale nada, e essa ligação torna isso visível.
+
 ## Desenho do experimento
 
 - **Condição A:** o modelo recebe apenas o esquema cru, sem descrição
@@ -150,7 +202,7 @@ A ordem importa: perguntas antes de modelagem, porque são elas que determinam o
 
 | Versão | Escopo |
 |---|---|
-| **v0.1** | Ingestão, ontologia, dbt, gabarito, dashboard estático |
-| **v0.2** | `dbt docs` publicado, contratos de dados, emissão SKOS |
+| **v0.1** | Ingestão, ontologia, dbt, gabarito, dashboard que conta a decisão |
+| **v0.2** | `dbt docs` publicado, contratos de dados, emissão SKOS, previsão e agrupamento de UFs |
 | **v0.3** | Camada de IA, suíte de avaliação, análise estatística |
 | **v0.4** | LLMOps: versionamento de prompt, tracing, reavaliação automática mensal quando o BCB publica dado novo |
