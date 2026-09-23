@@ -112,11 +112,19 @@ Num rascunho de post, a IA escreveu que parte dos 10% de "Outros créditos" "nã
 
 **Por que importa:** é o erro 9 com o sinal trocado. Lá, uma leitura da V1 foi estendida à V2 e o teste a derrubou. Aqui, a mesma extensão quase foi a público assinada pelo desenvolvedor. A regra que ficou: **nenhum número ou afirmação sobre a V2 sai para fora do repositório sem ter sido medido na V2.**
 
+### 11. Marcador explicado sem olhar a distribuição no tempo
+
+Ao escrever a ontologia das dimensões, a IA mediu que a coluna `tcb` da V1 traz o marcador `-` em 11.799.814 linhas e explicou o motivo: "ausência de classificação", ou seja, um problema de qualidade espalhado pelas linhas. O número estava certo e a frase estava errada.
+
+**Pego por:** o QA da camada de staging, que olhou a cardinalidade de cada dimensão **mês a mês** em vez de olhar o total. A coluna tem 3 valores e zero marcador nos 18 meses até jun/2025, e 100% de marcador nos 13 meses seguintes. Ela não está incompleta: **deixou de ser publicada em julho de 2025.** As 11,8 milhões de linhas são exatamente os 13 meses depois da quebra.
+
+**Por que importa:** é uma forma nova de erro nesta lista. Os anteriores foram afirmações sem verificação; este foi verificado e ainda assim errado, porque a verificação foi feita no agregado. **Um total esconde uma série temporal**, e uma coluna que morre no meio da série parece idêntica a uma coluna com dado faltante quando se olha só a contagem. A regra que ficou: toda afirmação sobre marcador, nulo ou ausência é medida ao longo do tempo, não só no total.
+
 ## O padrão que emerge
 
-Os dez erros têm a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+Os onze erros têm quase a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
 
-O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos dez casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa.
+O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa. O décimo primeiro acrescenta a variação mais incômoda: **verificar no agregado não é verificar.** A medição estava correta e a conclusão tirada dela, não.
 
 A prática adotada no projeto a partir daí: **nenhuma afirmação sobre fonte de dado, volume ou endpoint entra em código ou documentação sem verificação direta na origem.** Onde a verificação não foi possível, o documento declara isso explicitamente.
 

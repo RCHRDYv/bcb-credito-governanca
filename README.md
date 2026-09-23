@@ -120,7 +120,13 @@ Do diretório `dbt/`, com o mesmo OAuth do CLI e um `~/.dbt/profiles.yml` copiad
 uv run dbt build
 ```
 
-O comando carrega o seed, cria as views de staging e roda os testes. Hoje são 65 verificações, e uma delas avisa de propósito: a identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024, que vem assim do arquivo publicado pelo BCB. O teste avisa com uma linha e falha com duas, para que uma segunda ocorrência não passe em silêncio. O raciocínio da camada está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+O comando carrega o seed, cria as views de staging e roda os testes. Hoje são 66 verificações, e uma delas avisa de propósito: a identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024, que vem assim do arquivo publicado pelo BCB. O teste avisa com uma linha e falha com duas, para que uma segunda ocorrência não passe em silêncio. O raciocínio da camada está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+
+Para o QA da camada, por caminhos diferentes dos testes do dbt, incluindo a conferência das linhas contra o manifesto medido fora do Databricks e a varredura da cardinalidade mês a mês:
+
+```bash
+uv run python -m scripts.analises.qa_staging
+```
 
 ### Documentação
 
