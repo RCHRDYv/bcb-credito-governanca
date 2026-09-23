@@ -91,6 +91,13 @@ jobs:
       - name: Ontologia de modalidades (estrutura)
         run: uv run python -m scripts.validar_modalidades --estrutura
 
+      # PT: Estrutura das dimensões: id e coluna únicos, definição e fonte em
+      #     todo conceito, aplica_a com valor previsto, valor não repetido.
+      # EN: Dimension structure: unique ids and columns, definition and source
+      #     everywhere, allowed aplica_a, no repeated values.
+      - name: Ontologia de dimensões (estrutura)
+        run: uv run python -m scripts.validar_dimensoes --estrutura
+
       # PT: Estrutura do seed: chave única e regras com valor permitido.
       # EN: Seed structure: unique key and rules with allowed values.
       - name: Seed de correspondência (estrutura)

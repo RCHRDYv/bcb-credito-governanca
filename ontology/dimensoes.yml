@@ -1,0 +1,453 @@
+# =============================================================================
+# PT: Ontologia das dimensões do SCR.data (V2): as colunas pelas quais o dado
+#     é recortado. Existe porque as armadilhas mais silenciosas do arquivo
+#     estão aqui, e não nas medidas: duas colunas mudam de taxonomia conforme
+#     o tipo de cliente, uma coluna geográfica não significa o que o nome
+#     sugere, e a V1 usa marcadores não documentados.
+# EN: Ontology of SCR.data (V2) dimensions: the columns the data is sliced by.
+#     It exists because the quietest traps in the file live here rather than in
+#     the measures: two columns switch taxonomy depending on the client type,
+#     one geographic column does not mean what its name suggests, and V1 uses
+#     undocumented placeholders.
+#
+# PT: Estrutura SKOS conforme ADR 0002. Validação contra o dado:
+#     uv run python -m scripts.validar_dimensoes
+# EN: SKOS structure per ADR 0002. Validation against the data:
+#     uv run python -m scripts.validar_dimensoes
+#
+# -----------------------------------------------------------------------------
+# confianca:
+#   verbatim      = definição transcrita literalmente da fonte
+#   parafraseado  = redação própria, sentido diretamente amparado na fonte
+#   inferido      = conclusão a partir de contexto, não declarada na fonte
+#   lacuna        = não encontrado em nenhum documento consultado
+#
+# aplica_a: tipo de cliente em que o valor ocorre no dado, MEDIDO, não suposto.
+# =============================================================================
+
+esquema:
+  id: scr-dimensoes
+  titulo: "Dimensões do SCR.data, Versão 2"
+  data_leitura: "2026-09-23"
+  fonte_primaria: "Metodologia do SCR.data, Versão 2 (BCB), seção 3"
+  fonte_do_dado: "SCR.data V2, camada bronze, jan/2024 a jul/2026"
+
+# =============================================================================
+# PT: Avisos que atravessam dimensões. São o motivo de este arquivo existir.
+# EN: Warnings that cut across dimensions. They are why this file exists.
+# =============================================================================
+
+avisos_gerais:
+
+  - id: colunas_polimorficas
+    gravidade: alta
+    descricao: >
+      Duas colunas mudam de taxonomia conforme o valor de "cliente". "porte" é
+      faixa de renda em salários mínimos para pessoa física e tamanho da
+      empresa para pessoa jurídica. "cnae_ocupacao" é seção do CNAE para
+      pessoa jurídica e natureza da ocupação para pessoa física.
+    consequencia: >
+      Agrupar por qualquer uma das duas sem separar por cliente soma
+      categorias incompatíveis, e nada no esquema avisa.
+    evidencia: >
+      O valor "Indisponível" de porte ocorre nos dois tipos de cliente: 408.056
+      linhas de PF e 568.551 de PJ, medido em 2026-09-23. É o único valor
+      compartilhado, e por isso o único em que a ambiguidade não se resolve
+      olhando o rótulo.
+    historyNote: >
+      A V1 não tinha esse problema: os valores vinham prefixados ("PF - Até 1
+      salário mínimo", "PJ - Grande"), e eram 14 em porte contra 13 na V2. A
+      diferença de um valor é exatamente o "Indisponível", que na V1 existia
+      duas vezes, uma por tipo de cliente. É regressão de qualidade semântica
+      introduzida pela V2.
+    confianca: verbatim
+    fonte: "Metodologia V2, seções 3.e, 3.f e 3.g; Metodologia V1, seções 4.h e 4.i; dado"
+
+  - id: uf_e_domicilio_ou_sede
+    gravidade: alta
+    descricao: >
+      A informação segregada por unidades da federação é baseada no CEP de
+      residência das pessoas físicas ou da Sede das pessoas jurídicas.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.b"
+    consequencia: >
+      UF não é onde o crédito foi tomado nem onde a atividade acontece. Uma
+      empresa com sede em São Paulo e operação na Bahia conta como São Paulo.
+      Afeta as perguntas Q11 a Q15 e o indicador de espaço da camada de
+      decisão (ADR 0005).
+
+  - id: origem_corresponde_ao_anexo_4
+    gravidade: media
+    descricao: >
+      Os dois valores de "origem" correspondem ao primeiro nível do Anexo 4 do
+      leiaute: "Sem destinação específica" ao domínio 01, "Recursos livres", e
+      "Com destinação específica" ao domínio 02, "Recursos direcionados".
+    confianca: inferido
+    justificativa: >
+      A metodologia diz que os valores representam o primeiro nível do Anexo 4,
+      e o Anexo 4 tem exatamente dois domínios de primeiro nível, com sentido
+      que corresponde termo a termo. A correspondência não está escrita em
+      lugar nenhum, e é dedução.
+    fonte_da_inferencia: "Metodologia V2, seção 3.j; Leiaute do documento 3040, Anexo 4"
+    onde_e_usada: >
+      Sustenta as 264 linhas do seed de correspondência entre versões, porque a
+      planilha oficial de equivalência separa as abas por tipo de origem 1 e 2.
+      Se a correspondência estiver invertida, o seed inverte com ela.
+    pendente_de_confirmacao: true
+
+  - id: marcadores_nao_documentados_na_v1
+    gravidade: media
+    descricao: >
+      A V1 usa o texto "-" onde a coluna não se aplica, e isso não está
+      documentado em nenhuma metodologia.
+    evidencia: >
+      Medido em 2026-09-23: "ocupacao" traz "-" em todas as 25.227.055 linhas
+      de cliente PJ, porque ocupação só existe para pessoa física.
+      "cnae_secao" traz "-" nas 4.244.485 linhas de PF, pelo motivo simétrico.
+      "tcb" traz "-" em 11.799.814 linhas, nos dois tipos de cliente, e aí o
+      motivo não é simetria: é ausência de classificação. A coluna "sr" traz
+      nulo em 62.767 linhas.
+    consequencia: >
+      Contar valores distintos sem tratar o "-" produz uma categoria fantasma,
+      e filtrar por ela retorna linhas que não têm relação entre si.
+    confianca: verbatim
+    fonte: "dado da V1; nenhuma metodologia menciona o marcador"
+
+  - id: cliente_e_redundante_na_v1
+    gravidade: baixa
+    descricao: >
+      Na V1, a coluna "cliente" não acrescenta informação: ela é o prefixo da
+      modalidade. Não existe uma única linha com modalidade de PF e cliente PJ,
+      nem o inverso, em 29,5 milhões de linhas.
+    consequencia: >
+      Na V2 a coluna passou a ser independente da modalidade, e é isso que
+      permite ver, por exemplo, crédito pessoal consignado com cliente PJ. Ler
+      a V2 com a intuição da V1 leva a supor consistência que não existe mais.
+    confianca: verbatim
+    fonte: "dado"
+
+  - id: ortografia_divergente_entre_versoes
+    gravidade: baixa
+    descricao: >
+      O mesmo valor aparece escrito de forma diferente nas duas versões. A
+      seção de agricultura é "aqüicultura" na V1, com trema, e "aquicultura" na
+      V2. Qualquer junção entre versões por texto precisa normalizar.
+    confianca: verbatim
+    fonte: "dado"
+
+# =============================================================================
+# PT: Dimensões, na ordem em que aparecem no arquivo.
+# EN: Dimensions, in the order they appear in the file.
+# =============================================================================
+
+dimensoes:
+
+  - id: dim_data_base
+    coluna: data_base
+    prefLabel_pt: "Data-base"
+    prefLabel_en: "Reference date"
+    definition: "Data-base (data de referência) dos dados."
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.a"
+    scopeNote: >
+      É sempre o último dia do mês de referência, e o arquivo mensal traz uma
+      única data-base. A série tem quebras que atravessam esta dimensão e que
+      não são visíveis nela: a mudança de critério do ativo problemático em
+      janeiro de 2025 e a divergência de universo entre as duas versões. Ver
+      ontology/metricas.yml e docs/analise-v1-v2.md.
+    correspondencia_v1:
+      tipo: exata
+      coluna: data_base
+
+  - id: dim_uf
+    coluna: uf
+    prefLabel_pt: "Unidade da federação"
+    prefLabel_en: "State"
+    definition: >
+      As 27 unidades da federação estão presentes no relatório. A informação
+      segregada por unidades da federação é baseada no CEP de residência das
+      pessoas físicas ou da Sede das pessoas jurídicas.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.b"
+    aviso: "Ver avisos_gerais.uf_e_domicilio_ou_sede."
+    correspondencia_v1:
+      tipo: exata
+      coluna: uf
+    valores:
+      - {rotulo_no_dado: "AC", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "AL", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "AM", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "AP", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "BA", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "CE", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "DF", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "ES", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "GO", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "MA", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "MG", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "MS", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "MT", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "PA", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "PB", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "PE", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "PI", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "PR", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "RJ", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "RN", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "RO", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "RR", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "RS", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "SC", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "SE", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "SP", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "TO", aplica_a: "PF e PJ"}
+
+  - id: dim_segmento
+    coluna: segmento
+    prefLabel_pt: "Segmento da instituição financeira"
+    prefLabel_en: "Financial institution segment"
+    definition: >
+      Agrupamentos criados a partir do segmento da instituição financeira
+      cadastrado no Banco Central.
+    confianca: parafraseado
+    fonte: "Metodologia V2, seção 3.c"
+    scopeNote: >
+      A metodologia traz a tabela completa de quais tipos de instituição caem
+      em cada agrupamento. "Fintech" reúne Sociedade de Empréstimo entre
+      Pessoas e Sociedade de Crédito Direto. "Outros" reúne Associação de
+      Poupança e Empréstimo, Companhia Hipotecária, Sociedade de Crédito ao
+      Microempreendedor e as corretoras e distribuidoras de TVM.
+    historyNote: >
+      Dimensão nova em relação à V1, que trazia "tcb" (Tipo de Consolidado
+      Bancário) com três valores: Bancário, Não bancário e Cooperativas. O
+      desmembramento de "Não bancário" em seis categorias, incluindo Fintech e
+      Instituição de pagamento, é ganho real de granularidade.
+    correspondencia_v1:
+      tipo: mais_restrita
+      coluna: tcb
+      nota: >
+        Cada segmento da V2 é mais restrito que o valor correspondente da V1.
+        A V1 ainda traz "-" em 11,8 milhões de linhas, sem documentação. Ver
+        avisos_gerais.marcadores_nao_documentados_na_v1.
+    valores:
+      - {rotulo_no_dado: "Arrendamento", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Banco", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Cooperativa", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Desenvolvimento/Fomento", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Financeira", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Fintech", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Instituição de pagamento", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Outros", aplica_a: "PF e PJ"}
+
+  - id: dim_cliente
+    coluna: cliente
+    prefLabel_pt: "Tipo de cliente"
+    prefLabel_en: "Client type"
+    definition: >
+      Os tipos de cliente representam agregações dos tipos definidos no Anexo
+      11 do Leiaute do SCR, e são equivalentes às disponibilizadas no IF.data.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.d"
+    aviso: >
+      É a coluna que resolve o polimorfismo de porte e de cnae_ocupacao.
+      Nenhuma análise por essas duas dimensões é correta sem ela. Ver
+      avisos_gerais.colunas_polimorficas e
+      avisos_gerais.cliente_e_redundante_na_v1.
+    correspondencia_v1:
+      tipo: exata
+      coluna: cliente
+    valores:
+      # PT: aqui aplica_a é o próprio valor, e é preenchido para a validação
+      #     contra o dado ser uniforme em todas as dimensões.
+      # EN: here aplica_a is the value itself, filled so the validation against
+      #     the data stays uniform across dimensions.
+      - {rotulo_no_dado: "PF", significado: "Pessoas físicas", aplica_a: "PF"}
+      - {rotulo_no_dado: "PJ", significado: "Pessoas jurídicas", aplica_a: "PJ"}
+
+  - id: dim_porte
+    coluna: porte
+    prefLabel_pt: "Porte do cliente"
+    prefLabel_en: "Client size"
+    definition: >
+      Para pessoa física, faixa de rendimento em salários-mínimos. Para pessoa
+      jurídica, porte da empresa. Os portes representam os definidos nos
+      Anexos 24 e 25 do Leiaute do SCR.
+    confianca: parafraseado
+    fonte: "Metodologia V2, seção 3.g"
+    polimorfica_por: cliente
+    aviso: "Ver avisos_gerais.colunas_polimorficas."
+    correspondencia_v1:
+      tipo: exata_com_prefixo_removido
+      coluna: porte
+      nota: >
+        Os mesmos valores, que na V1 vinham prefixados por "PF - " ou "PJ - ".
+        A V1 tem 14 valores e a V2 tem 13, e a diferença é o "Indisponível",
+        que na V1 existia uma vez para cada tipo de cliente.
+    valores:
+      - {rotulo_no_dado: "Sem rendimento", aplica_a: "PF"}
+      - {rotulo_no_dado: "Até 1 salário mínimo", aplica_a: "PF"}
+      - {rotulo_no_dado: "Mais de 1 a 2 salários mínimos", aplica_a: "PF"}
+      - {rotulo_no_dado: "Mais de 2 a 3 salários mínimos", aplica_a: "PF"}
+      - {rotulo_no_dado: "Mais de 3 a 5 salários mínimos", aplica_a: "PF"}
+      - {rotulo_no_dado: "Mais de 5 a 10 salários mínimos", aplica_a: "PF"}
+      - {rotulo_no_dado: "Mais de 10 a 20 salários mínimos", aplica_a: "PF"}
+      - {rotulo_no_dado: "Acima de 20 salários mínimos", aplica_a: "PF"}
+      - {rotulo_no_dado: "Micro", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Pequeno", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Médio", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Grande", aplica_a: "PJ"}
+      - rotulo_no_dado: "Indisponível"
+        aplica_a: "PF e PJ"
+        aviso: >
+          Único valor compartilhado pelos dois tipos de cliente, e por isso o
+          único em que o rótulo sozinho não diz de qual taxonomia ele vem.
+
+  - id: dim_cnae_ocupacao
+    coluna: cnae_ocupacao
+    prefLabel_pt: "CNAE ou natureza da ocupação"
+    prefLabel_en: "Economic activity or occupation"
+    definition: >
+      Para as pessoas jurídicas, o campo é preenchido com a Seção (1º nível)
+      do CNAE. Para as pessoas físicas, é preenchido com a natureza da
+      ocupação.
+    confianca: verbatim
+    fonte: "Metodologia V2, seções 3.e e 3.f"
+    polimorfica_por: cliente
+    aviso: "Ver avisos_gerais.colunas_polimorficas."
+    historyNote: >
+      A V1 separava em três colunas: "ocupacao" para pessoa física, com valores
+      prefixados por "PF - ", e "cnae_secao" e "cnae_subclasse" para pessoa
+      jurídica. A V2 colapsou tudo em uma coluna e perdeu a subclasse, que era
+      o nível de sete dígitos. Perda de granularidade e ganho de ambiguidade na
+      mesma mudança.
+    correspondencia_v1:
+      tipo: mais_ampla
+      colunas: ["ocupacao", "cnae_secao"]
+      nota: >
+        A coluna "cnae_subclasse" da V1 não tem correspondente na V2. Na V1, a
+        subclasse só era divulgada quando a combinação CNAE Subclasse, UF e
+        Porte tinha mais de 5 CNPJs no cadastro da Receita Federal.
+    valores:
+      # PT: 8 naturezas de ocupação, só para pessoa física.
+      # EN: 8 occupation natures, individuals only.
+      - {rotulo_no_dado: "Servidor ou empregado público", aplica_a: "PF"}
+      - {rotulo_no_dado: "Empregado de entidades sem fins lucrativos", aplica_a: "PF"}
+      - {rotulo_no_dado: "Empregado de empresa privada", aplica_a: "PF"}
+      - {rotulo_no_dado: "Aposentado/pensionista", aplica_a: "PF"}
+      - {rotulo_no_dado: "Autônomo", aplica_a: "PF"}
+      - {rotulo_no_dado: "Empresário", aplica_a: "PF"}
+      - {rotulo_no_dado: "MEI", aplica_a: "PF"}
+      - rotulo_no_dado: "Outros"
+        aplica_a: "PF"
+        aviso: >
+          É natureza de ocupação, não seção do CNAE. Não confundir com "Outras
+          atividades de serviços", que é a seção S do CNAE e só ocorre em PJ.
+      # PT: 21 seções do CNAE mais "Não informados", só para pessoa jurídica.
+      # EN: 21 CNAE sections plus "Não informados", corporate clients only.
+      - {rotulo_no_dado: "Administração pública, defesa e seguridade social", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Agricultura, pecuária, produção florestal, pesca e aquicultura", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Alojamento e alimentação", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Artes, cultura, esporte e recreação", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Atividades administrativas e serviços complementares", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Atividades financeiras, de seguros e serviços relacionados", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Atividades imobiliárias", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Atividades profissionais, científicas e técnicas", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Comércio; reparação de veículos automotores e motocicletas", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Construção", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Educação", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Eletricidade e gás", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Indústrias de transformação", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Indústrias extrativas", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Informação e comunicação", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Não informados", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Organismos internacionais e outras instituições extraterritoriais", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Outras atividades de serviços", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Saúde humana e serviços sociais", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Serviços domésticos", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Transporte, armazenagem e correio", aplica_a: "PJ"}
+      - {rotulo_no_dado: "Água, esgoto, atividades de gestão de resíduos e descontaminação", aplica_a: "PJ"}
+
+  - id: dim_origem
+    coluna: origem
+    prefLabel_pt: "Origem dos recursos"
+    prefLabel_en: "Funding origin"
+    definition: >
+      As origens de recursos apresentadas no relatório representam o primeiro
+      nível de agregação do Anexo 4 do Leiaute do SCR.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.j"
+    aviso: "Ver avisos_gerais.origem_corresponde_ao_anexo_4."
+    correspondencia_v1:
+      tipo: exata
+      coluna: origem
+    valores:
+      - rotulo_no_dado: "Sem destinação específica"
+        aplica_a: "PF e PJ"
+        corresponde_ao_anexo_4: "01 - Recursos livres"
+        confianca_da_correspondencia: inferido
+      - rotulo_no_dado: "Com destinação específica"
+        aplica_a: "PF e PJ"
+        corresponde_ao_anexo_4: "02 - Recursos direcionados"
+        confianca_da_correspondencia: inferido
+
+  - id: dim_indexador
+    coluna: indexador
+    prefLabel_pt: "Indexador da operação"
+    prefLabel_en: "Operation index"
+    definition: >
+      Os indexadores apresentados no relatório representam o primeiro nível de
+      agregação do Anexo 5 do Leiaute do SCR, e são equivalentes aos
+      disponibilizados no IF.data.
+    confianca: verbatim
+    fonte: "Metodologia V2, seção 3.k"
+    correspondencia_v1:
+      tipo: exata
+      coluna: indexador
+    valores:
+      - {rotulo_no_dado: "Prefixado", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Pós-fixado", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Flutuantes", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "Índices de preços", aplica_a: "PF e PJ"}
+      - rotulo_no_dado: "TCR/TRFC"
+        aplica_a: "PF e PJ"
+        significado: >
+          Taxas de Juros do Crédito Rural e Taxas de Juros Rurais dos Fundos
+          Constitucionais de Financiamento.
+      - {rotulo_no_dado: "Outros indexadores", aplica_a: "PF e PJ"}
+
+# =============================================================================
+# PT: Dimensões que existiam na V1 e saíram da V2. Ficam registradas porque
+#     qualquer série que atravesse as versões perde esses recortes.
+# EN: Dimensions that existed in V1 and are gone from V2. Recorded because any
+#     series crossing versions loses these breakdowns.
+# =============================================================================
+
+dimensoes_removidas_na_v2:
+
+  - id: dim_v1_sr
+    coluna: sr
+    prefLabel_pt: "Segmento da Resolução CMN 4.553/2017"
+    definition: >
+      Classificação prudencial das instituições financeiras em cinco níveis,
+      de S1 a S5, definida por porte medido como Exposição sobre PIB e por
+      relevância de atividade internacional.
+    confianca: parafraseado
+    fonte: "Metodologia V1, seção 4.b"
+    scopeNote: >
+      Removida na V2. Traz nulo em 62.767 linhas da V1. Sem substituto: o
+      segmento da V2 classifica por tipo de instituição, não por porte
+      prudencial.
+
+  - id: dim_v1_cnae_subclasse
+    coluna: cnae_subclasse
+    prefLabel_pt: "CNAE Subclasse"
+    definition: >
+      CNAE no nível máximo de desagregação, de sete dígitos, divulgado apenas
+      quando a combinação CNAE Subclasse, UF e Porte tinha mais de 5 CNPJs no
+      cadastro da Receita Federal. Abaixo disso era reportada a Seção.
+    confianca: verbatim
+    fonte: "Metodologia V1, seção 4.h"
+    scopeNote: >
+      Removida na V2, que só traz a Seção. É a maior perda de granularidade
+      entre as versões, e tem uma regra de supressão própria, essa sim
+      documentada, ao contrário do sentinela -1.
