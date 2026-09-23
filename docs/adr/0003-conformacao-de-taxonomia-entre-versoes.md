@@ -63,6 +63,27 @@ A tabela de correspondência entra como **seed do dbt**, derivada da planilha of
 
 **Mitigação da última:** a planilha baixada é versionada em cópia própria junto do script de extração, com a data de download registrada, de modo que uma mudança na origem seja detectável em vez de silenciosa.
 
+## Atualização de 2026-09-22: o que apareceu ao gerar o seed
+
+A extração da planilha oficial confirmou a parte central da decisão e acrescentou três limites que a investigação original não tinha visto. Seed em `dbt/seeds/correspondencia_modalidade_v2_v1.csv`, gerado por `scripts/gerar_seed_correspondencia.py` e verificado por `scripts/validar_correspondencia.py`.
+
+**Confirmado:** ambiguidade zero dentro de cada aba, agora medida pelo código da submodalidade, e não pelo nome. As 16 modalidades da V1 do dado são exatamente as 16 citadas pela planilha, e os 199 recortes distintos do dado da V2 encontram cada um uma linha do seed.
+
+**Limite 1: a chave da planilha não é só (submodalidade, cliente, origem).** A aba `OutrasInformacoes` traz dois tratamentos adicionais:
+
+| Tratamento | Regra | Efeito |
+|---|---|---|
+| 1 | Submodalidades 0202 e 0203 com cliente PJ usam a modalidade **PF** | Aplicável. São 4 linhas do seed, e no dado essas combinações existem: 17 linhas em 0202 e 253 em 0203 |
+| 2 | Submodalidades 0401, 0407, 0701, 1201, 1206 e 1207 com cliente PJ usam a modalidade PF **somente se a Natureza da operação for 4** | **Não aplicável com o dado publicado.** O SCR.data não traz o campo Natureza |
+
+A Natureza 4 do Anexo 2 é "operações adquiridas em negociação com pessoa integrante do SFN com retenção substancial de risco". Na prática, é o caso em que o cliente informado é a empresa cedente, mas a operação é de varejo. A V1 reclassificava isso; o dado publicado não permite reproduzir a reclassificação.
+
+**Quanto isso pesa:** 2,71% da carteira, em 295.134 linhas, cai em recortes onde a modalidade V1 depende da Natureza. O seed registra as duas candidatas, em `modalidade_v1` e `modalidade_v1_alternativa`, com `ambiguidade = natureza_nao_publicada`. Nenhuma das duas é escolhida em silêncio.
+
+**Limite 2: a planilha oficial é incompleta.** Para cliente PF, as submodalidades 1303 (títulos e créditos a receber) e 1399 (outros com característica de crédito) não aparecem em nenhuma aba, e o dado tem linhas nas duas: 0,02% da carteira, em 120.177 linhas. O seed traz essas linhas com `modalidade_v1` vazia e a inferência do projeto em coluna separada, `modalidade_v1_inferida`, marcada como tal.
+
+**Limite 3: a validade temporal deixa de importar no recorte atual.** Todas as inclusões, exclusões e renomeações de submodalidade documentadas na planilha são de 2014 a 2017, anteriores ao recorte do projeto, que começa em 2024. A única mudança de agrupamento sem data declarada é a da submodalidade 0440 (nota "e"). Por isso o seed é de versão única, com a ressalva registrada, em vez de dimensão que muda lentamente. A estrutura SCD Tipo 2 volta a ser necessária se o recorte retroceder a 2017 ou antes.
+
 ## Atualização de 2026-09-21: universo diferente
 
 A ingestão mostrou que **a carteira ativa da V2 é de 3,95% a 5,94% maior que a da V1** em todos os 31 meses em que as duas coexistem (`docs/analise-v1-v2.md`, seção 6). A decisão deste ADR continua de pé para o que ela resolve, a **classificação**: o lookup V2 para V1 segue determinístico e sem fan-out. Mas "reconstruir a série V1 a partir da V2 sem perda" vale para a taxonomia, não para os valores. A série reconstruída tem a classificação da V1 aplicada ao universo da V2, e não reproduz os totais que a V1 publicou. Todo mart que usar a conformação precisa dizer isso.

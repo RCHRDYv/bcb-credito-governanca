@@ -90,6 +90,13 @@ Para conferir a ontologia de modalidades contra o dado do bronze:
 uv run python -m scripts.validar_modalidades
 ```
 
+Para gerar e conferir o seed de correspondência entre as versões V2 e V1:
+
+```bash
+uv run python -m scripts.gerar_seed_correspondencia
+uv run python -m scripts.validar_correspondencia
+```
+
 ### Documentação
 
 | Documento | O que traz |
