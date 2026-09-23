@@ -178,9 +178,19 @@ As perguntas que sustentam a decisão são as mesmas do gabarito. Isso liga as d
 - **Métrica:** acerto da resposta final contra gabarito calculado por SQL
 - **Teste:** McNemar, apropriado para dado binário pareado, com tamanho de efeito reportado
 
+**O que conta como acerto, definido em 2026-09-22.** O conjunto v2 das perguntas ([`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml)) declara, por pergunta, o tipo de acerto esperado:
+
+| Tipo | Acerto é |
+|---|---|
+| `valor` | Chegar ao número ou à lista certa |
+| `valor_com_ressalva` | Chegar ao número **e** declarar o limite que o torna interpretável, como a quebra de janeiro de 2025 ou a supressão da contagem de operações |
+| `abstencao` | Reconhecer que o dado não permite responder, e dizer o que faltaria |
+
+Sem essa distinção, uma resposta numérica confiante sobre pergunta impossível contaria como acerto, ou o reconhecimento correto de um limite contaria como erro. O critério de penalizar resposta errada em vez de tratá-la como empate vem do TrustSQL (ver [`referencias.md`](referencias.md)).
+
 **Três exigências de rigor, declaradas junto dos resultados:**
 
-1. Perguntas **pré-registradas** em [`../evaluation/questions.yml`](../evaluation/questions.yml), com data de registro anterior a qualquer execução
+1. Perguntas **pré-registradas**, com data de registro anterior a qualquer execução: o conjunto original em [`../evaluation/questions.yml`](../evaluation/questions.yml), de 2026-08-20, preservado sem alteração, e o conjunto v2 em [`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml), de 2026-09-22, que vale para o experimento. O v2 mantém os 30 enunciados originais, corrige duas notas erradas no campo `errata` e acrescenta 11 perguntas nascidas de achados posteriores
 2. Temperatura zero, ou múltiplas execuções por pergunta com variância reportada
 3. **No mínimo dois modelos** de níveis diferentes, para que o efeito não seja artefato de um modelo específico
 

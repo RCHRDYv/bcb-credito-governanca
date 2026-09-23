@@ -44,6 +44,10 @@ Inferência de tipo erra em silêncio neste arquivo:
 
 Esse é o mesmo tipo de falha do erro 6 de `docs/desenvolvimento-com-ia.md`: nada quebra, e o dado fica errado. O bronze guarda o que foi publicado. A tipagem acontece no staging do dbt, de forma explícita e testada. A única alteração no bronze é remover o BOM do nome da primeira coluna, que de outro modo viraria `﻿data_base`.
 
+### Uma coluna que aparece sozinha
+
+O `read_files` acrescenta `_rescued_data`, onde ele guarda o que não couber no esquema esperado. Não é decisão do projeto, é comportamento padrão da função. Ela fica de propósito: se um mês vier com coluna nova ou com valor fora do formato, o conteúdo aparece ali em vez de desaparecer. Verificado em 2026-09-21 e em 2026-09-22: **está vazia nas duas tabelas**, ou seja, nada ficou de fora.
+
 ### Por que existe o manifesto
 
 O manifesto (`ingestion/manifesto.json`) é versionado e não contém dado. Ele cumpre dois papéis:

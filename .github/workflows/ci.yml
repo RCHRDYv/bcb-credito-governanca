@@ -3,10 +3,21 @@
 #     quem commita, o que significa que dependem de essa pessoa tê-los
 #     instalado. Este workflow roda os mesmos verificadores no servidor, onde
 #     não depende de configuração local de ninguém.
-# EN: Third layer of defence. Pre-commit hooks run on the committer's machine,
-#     which means they depend on that person having installed them. This
-#     workflow runs the same checks on the server, where it does not depend on
-#     anyone's local configuration.
+#
+#     Além da segurança, ele roda as validações que NÃO precisam de
+#     credencial: coerência da ontologia, coerência do seed de correspondência
+#     e integridade do pré-registro das perguntas. As camadas que comparam com
+#     o dado no Databricks continuam rodando só na máquina de quem tem acesso,
+#     porque o projeto não guarda credencial do Databricks em segredo do
+#     GitHub (ver issue #22 e ADR 0001).
+#
+# EN: Third layer of defence. Pre-commit hooks depend on the committer having
+#     installed them; this workflow runs the same checks on the server. It also
+#     runs the validations that need NO credential: ontology coherence,
+#     correspondence seed coherence and question pre-registration integrity.
+#     The layers that compare against data on Databricks run only on a machine
+#     with access, because the project keeps no Databricks credential in
+#     GitHub secrets (see issue #22 and ADR 0001).
 # =============================================================================
 
 name: CI
@@ -56,3 +67,38 @@ jobs:
           #     the protection still applies where it acts, which is before the
           #     commit ever leaves the machine.
           SKIP: no-commit-to-branch
+
+  coerencia-dos-artefatos:
+    name: Coerência dos artefatos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --frozen
+
+      # PT: Estrutura da ontologia: ids únicos, hierarquia coerente, definição
+      #     presente onde a confiança não é lacuna, fonte em todo conceito.
+      # EN: Ontology structure: unique ids, coherent hierarchy, definition where
+      #     confidence is not a gap, source on every concept.
+      - name: Ontologia de modalidades (estrutura)
+        run: uv run python -m scripts.validar_modalidades --estrutura
+
+      # PT: Estrutura do seed: chave única e regras com valor permitido.
+      # EN: Seed structure: unique key and rules with allowed values.
+      - name: Seed de correspondência (estrutura)
+        run: uv run python -m scripts.validar_correspondencia --estrutura
+
+      # PT: Integridade do pré-registro: o conjunto v2 das perguntas precisa
+      #     conter os 30 enunciados originais sem uma palavra alterada.
+      # EN: Pre-registration integrity: the v2 question set must carry the 30
+      #     original wordings with no word changed.
+      - name: Perguntas do experimento
+        run: uv run python -m scripts.validar_perguntas

@@ -21,10 +21,11 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      # PT: Bloqueia arquivo grande. Cada CSV mensal do SCR tem ~97 MB, e um
-      #     único commit acidental inflaria o repositório de forma irreversível.
-      # EN: Blocks large files. Each monthly SCR CSV is ~97 MB, and a single
-      #     accidental commit would bloat the repository irreversibly.
+      # PT: Bloqueia arquivo grande. Cada CSV mensal do SCR tem de 100 MB a
+      #     300 MB, e um único commit acidental inflaria o repositório de forma
+      #     irreversível.
+      # EN: Blocks large files. Each monthly SCR CSV is 100 MB to 300 MB, and a
+      #     single accidental commit would bloat the repository irreversibly.
       - id: check-added-large-files
         args: ['--maxkb=5000']
 

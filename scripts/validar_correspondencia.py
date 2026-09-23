@@ -29,10 +29,6 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from ingestion.databricks import cliente as cliente_databricks
-from ingestion.databricks import executar_sql, warehouse
-from ingestion.fontes import CATALOGO, SCHEMA
-
 SEED = Path(__file__).resolve().parents[1] / "dbt" / "seeds" / "correspondencia_modalidade_v2_v1.csv"
 REGRAS = {"base", "tratamento_1", "tratamento_2", "ausente_na_planilha"}
 AMBIGUIDADES = {"", "natureza_nao_publicada", "ausente_na_planilha"}
@@ -60,6 +56,9 @@ def checar_estrutura(seed: list[dict]) -> list[str]:
 
 
 def checar_rotulos(seed: list[dict], w, wid: str) -> list[str]:
+    from ingestion.databricks import executar_sql
+    from ingestion.fontes import CATALOGO, SCHEMA
+
     sql = f"SELECT DISTINCT trim(modalidade) FROM {CATALOGO}.{SCHEMA}.bronze_scr_v1"
     no_dado = {linha[0] for linha in executar_sql(w, wid, sql)}
     no_seed = {l[c] for l in seed for c in ("modalidade_v1", "modalidade_v1_alternativa", "modalidade_v1_inferida") if l[c]}
@@ -71,6 +70,9 @@ def checar_rotulos(seed: list[dict], w, wid: str) -> list[str]:
 
 
 def checar_cobertura(seed: list[dict], w, wid: str) -> list[str]:
+    from ingestion.databricks import executar_sql
+    from ingestion.fontes import CATALOGO, SCHEMA
+
     sql = f"""
         SELECT trim(modalidade), trim(submodalidade), trim(cliente), trim(origem),
                count(*), sum({VALOR})
@@ -98,20 +100,32 @@ def checar_cobertura(seed: list[dict], w, wid: str) -> list[str]:
 
 
 def main() -> None:
-    seed = ler_seed()
-    w = cliente_databricks()
-    wid = warehouse(w)
+    # PT: --estrutura roda só a camada 1, sem Databricks. É o que o CI usa.
+    # EN: --estrutura runs layer 1 only, with no Databricks. Used by CI.
+    so_estrutura = "--estrutura" in sys.argv[1:]
 
+    seed = ler_seed()
     erros = checar_estrutura(seed)
-    erros += checar_rotulos(seed, w, wid)
-    erros += checar_cobertura(seed, w, wid)
+
+    if not so_estrutura:
+        # PT: import aqui dentro para a camada 1 rodar onde não há credencial.
+        # EN: import inside so layer 1 can run where there is no credential.
+        from ingestion.databricks import cliente, warehouse
+
+        w = cliente()
+        wid = warehouse(w)
+        erros += checar_rotulos(seed, w, wid)
+        erros += checar_cobertura(seed, w, wid)
 
     if erros:
         print("\nFALHOU / FAILED:")
         for e in erros:
             print(f"  - {e}")
         sys.exit(1)
-    print("\nSeed de correspondência confere com o dado / correspondence seed matches the data.")
+    if so_estrutura:
+        print("\nEstrutura do seed está coerente / seed structure is coherent.")
+    else:
+        print("\nSeed de correspondência confere com o dado / correspondence seed matches the data.")
 
 
 if __name__ == "__main__":

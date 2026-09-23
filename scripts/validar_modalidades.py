@@ -30,9 +30,6 @@ from pathlib import Path
 
 import yaml
 
-from ingestion.databricks import cliente, executar_sql, warehouse
-from ingestion.fontes import CATALOGO, SCHEMA
-
 ARQUIVO = Path(__file__).resolve().parents[1] / "ontology" / "modalidades.yml"
 CONFIANCAS = {"verbatim", "parafraseado", "inferido", "lacuna"}
 OBRIGATORIOS = ("id", "notation", "tipo", "prefLabel_pt", "rotulo_no_dado", "confianca", "fonte")
@@ -99,7 +96,17 @@ def pares_da_ontologia(conceitos: list[dict]) -> tuple[dict[tuple[str, str], str
 
 
 def pares_do_dado() -> dict[tuple[str, str], int]:
-    """PT: pares distintos no bronze V2, com linhas / EN: distinct pairs with row counts"""
+    """
+    PT: Pares distintos no bronze V2, com linhas. O import do acesso ao
+        Databricks fica aqui dentro para a camada de estrutura rodar no CI,
+        onde não há credencial.
+    EN: Distinct pairs in V2 bronze with row counts. The Databricks import
+        lives inside the function so the structure layer can run in CI, where
+        there is no credential.
+    """
+    from ingestion.databricks import cliente, executar_sql, warehouse
+    from ingestion.fontes import CATALOGO, SCHEMA
+
     w = cliente()
     sql = f"""
         SELECT trim(modalidade), trim(submodalidade), count(*)
@@ -126,6 +133,10 @@ def checar_dado(conceitos: list[dict]) -> list[str]:
 
 
 def main() -> None:
+    # PT: --estrutura roda só a camada 1, sem Databricks. É o que o CI usa.
+    # EN: --estrutura runs layer 1 only, with no Databricks. Used by CI.
+    so_estrutura = "--estrutura" in sys.argv[1:]
+
     dados = yaml.safe_load(ARQUIVO.read_text(encoding="utf-8"))
     conceitos = dados["conceitos"]
     mods = sum(c.get("tipo") == "modalidade" for c in conceitos)
@@ -135,16 +146,20 @@ def main() -> None:
 
     erros = checar_estrutura(conceitos)
     print(f"  1. estrutura: {len(erros)} problemas")
-    erros_dado = checar_dado(conceitos)
-    print(f"  2. dado: {len(erros_dado)} problemas")
-    erros += erros_dado
+    if not so_estrutura:
+        erros_dado = checar_dado(conceitos)
+        print(f"  2. dado: {len(erros_dado)} problemas")
+        erros += erros_dado
 
     if erros:
         print("\nFALHOU / FAILED:")
         for e in erros:
             print(f"  - {e}")
         sys.exit(1)
-    print("\nOntologia de modalidades confere com o dado / modality ontology matches the data.")
+    if so_estrutura:
+        print("\nEstrutura da ontologia de modalidades está coerente / modality ontology structure is coherent.")
+    else:
+        print("\nOntologia de modalidades confere com o dado / modality ontology matches the data.")
 
 
 if __name__ == "__main__":

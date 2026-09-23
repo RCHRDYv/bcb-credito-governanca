@@ -34,7 +34,7 @@ A IA recomendou combinar o dataset Home Credit Default Risk com dados macroecon�
 
 A IA afirmou com convicção que o dado do SCR era pequeno e que usar Databricks seria sobredimensionamento.
 
-**Pego por:** baixar o arquivo real. Cada CSV mensal tem cerca de 97 MB, e o conjunto multianual chega a vários gigabytes.
+**Pego por:** baixar o arquivo real. Cada CSV mensal tem cerca de 97 MB, medido na V2 em agosto de 2026. A medição completa da ingestão, um mês depois, mostrou 100 MB por mês na V2 e 300 MB na V1, somando 12,7 GB e 39,2 milhões de linhas no recorte do projeto.
 
 **Correção:** o uso de Databricks passou a ter justificativa técnica, e não apenas de aprendizado.
 

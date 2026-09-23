@@ -7,7 +7,7 @@
 
 Este é um repositório público, e repositório público tem duas propriedades que mudam o cálculo de risco: qualquer pessoa lê, e **o histórico do git é permanente**. Apagar um segredo do arquivo não o remove do histórico. Corrigir de verdade exige reescrever o histórico e rotacionar a credencial exposta.
 
-O projeto conecta a um workspace Databricks e consome arquivos de dado com cerca de 97 MB cada, o que cria dois vetores distintos de problema: vazamento de credencial e inchaço permanente do repositório.
+O projeto conecta a um workspace Databricks e consome arquivos de dado grandes, o que cria dois vetores distintos de problema: vazamento de credencial e inchaço permanente do repositório. (Na data deste ADR o volume conhecido era de cerca de 97 MB por arquivo mensal. A medição completa, feita na ingestão de 2026-09-21, é de 100 MB por mês na V2 e 300 MB na V1, somando 12,7 GB no recorte do projeto.)
 
 ## Decisão
 

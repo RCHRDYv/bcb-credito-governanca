@@ -29,6 +29,29 @@ Há trabalho examinando o efeito de ruído e ambiguidade dentro do próprio BIRD
 
 - https://arxiv.org/abs/2402.12243
 
+### Camada semântica medida em protocolo pareado
+
+O trabalho mais próximo do desenho deste projeto, com outro conjunto de dados. Três modelos de fronteira responderam 100 perguntas sobre uma base analítica, cada um duas vezes: só com o esquema, e com o esquema mais um documento de 4 KB descrevendo medidas e convenções.
+
+**Os números:** de 45,5% a 50,5% de acerto só com o esquema, contra 67,7% a 68,7% com o documento semântico. O estudo mede acurácia e alucinação juntas.
+
+- https://arxiv.org/abs/2604.25149
+
+### Confiabilidade e abstenção: TrustSQL
+
+Propõe pontuar text-to-SQL pela capacidade de **se abster** quando a pergunta não é respondível com o dado, penalizando resposta errada em vez de tratá-la como empate. É a origem do campo `tipo_de_acerto: abstencao` no conjunto v2 das perguntas deste projeto.
+
+- https://arxiv.org/abs/2403.15879
+
+### Por que o modelo prefere chutar a dizer que não sabe
+
+Duas linhas de trabalho explicam o comportamento que aparece quando um modelo responde com confiança sobre dado que não entende:
+
+- **Incentivo de avaliação.** As avaliações dão zero para "não sei" e ponto para acerto, então o chute confiante pontua melhor que a dúvida honesta. https://arxiv.org/abs/2509.04664
+- **Bajulação.** Treino por preferência humana favorece a resposta que agrada quem pergunta, inclusive quando isso significa abandonar a resposta correta. https://arxiv.org/abs/2310.13548
+
+Elas não são o objeto deste projeto, que mede efeito de metadado, mas explicam por que um erro de interpretação costuma vir com aparência de segurança. É o motivo pelo qual o gabarito trata reconhecimento de limite como acerto.
+
 ## Premissa de mercado
 
 A indústria já concluiu que LLM sobre esquema cru não funciona de forma confiável. Produtos construídos sobre essa premissa:
@@ -52,6 +75,6 @@ Não é um resultado novo. É:
 
 ## Nota sobre verificação
 
-PT: Os números do BIRD citados aqui foram verificados na fonte antes da publicação desta página. Nenhuma métrica neste documento foi reproduzida de memória.
+PT: Todos os números citados aqui foram verificados na fonte antes de entrar nesta página, incluindo os acrescentados em 2026-09-22. Nenhuma métrica neste documento foi reproduzida de memória.
 
-EN: The BIRD figures cited here were verified at the source before this page was published. No metric in this document was reproduced from memory.
+EN: Every figure cited here was verified at the source before entering this page, including those added on 2026-09-22. No metric in this document was reproduced from memory.
