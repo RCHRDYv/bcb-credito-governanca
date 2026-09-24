@@ -152,3 +152,40 @@ models:
           - accepted_values:
               arguments:
                 values: ["base", "tratamento_1", "tratamento_2", "ausente_na_planilha"]
+
+  # ===========================================================================
+  # PT: Reconstrução do estoque de empresas ativas (issue #25, ADR 0009).
+  # EN: Active-company stock reconstruction.
+  # ===========================================================================
+
+  - name: int_cnpj_matriz_intervalo
+    description: >
+      Uma linha por matriz do retrato mais recente que pode ter estado ativa
+      em algum mês do SCR, com o intervalo ativo e o intervalo MEI,
+      semiabertos. Fim nulo quer dizer que continua.
+    columns:
+      - name: cnpj_basico
+        data_tests: [not_null, unique]
+      - name: inicio_ativo
+        data_tests: [not_null]
+
+  - name: int_cnpj_empresas_ativas_mensal
+    description: >
+      Estoque de matrizes ativas em cada fim de mês do SCR, reconstruído por
+      eventos a partir de int_cnpj_matriz_intervalo.
+    columns:
+      - name: data_base
+        data_tests: [not_null]
+      - name: uf
+        data_tests: [not_null]
+      - name: empresas_ativas
+        data_tests: [not_null]
+
+  - name: int_cnpj_validacao_reconstrucao
+    description: >
+      Contagem real contra reconstruída de matrizes ativas, por retrato e UF,
+      na data de extração de cada retrato. No retrato mais recente a
+      diferença precisa ser zero (teste cnpj_reconstrucao_exata_no_retrato_do_modelo).
+    columns:
+      - name: empresas_ativas_real
+        data_tests: [not_null]

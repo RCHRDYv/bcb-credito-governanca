@@ -1,0 +1,11 @@
+conceito,codigo,rotulo,fonte
+porte_da_empresa_na_receita,00,Não informado,"Leiaute dos dados abertos do CNPJ, tabela Empresas"
+porte_da_empresa_na_receita,01,Microempresa,"Leiaute dos dados abertos do CNPJ, tabela Empresas"
+porte_da_empresa_na_receita,03,Empresa de pequeno porte,"Leiaute dos dados abertos do CNPJ, tabela Empresas"
+porte_da_empresa_na_receita,05,Demais,"Leiaute dos dados abertos do CNPJ, tabela Empresas"
+grupo_de_natureza_juridica,0,Natureza jurídica não informada,Tabela de Natureza Jurídica da CONCLA/IBGE; código no campo natureza_juridica da tabela Empresas do CNPJ
+grupo_de_natureza_juridica,1,Administração pública,Tabela de Natureza Jurídica da CONCLA/IBGE; código no campo natureza_juridica da tabela Empresas do CNPJ
+grupo_de_natureza_juridica,2,Entidades empresariais,Tabela de Natureza Jurídica da CONCLA/IBGE; código no campo natureza_juridica da tabela Empresas do CNPJ
+grupo_de_natureza_juridica,3,Entidades sem fins lucrativos,Tabela de Natureza Jurídica da CONCLA/IBGE; código no campo natureza_juridica da tabela Empresas do CNPJ
+grupo_de_natureza_juridica,4,Pessoas físicas,Tabela de Natureza Jurídica da CONCLA/IBGE; código no campo natureza_juridica da tabela Empresas do CNPJ
+grupo_de_natureza_juridica,5,Organizações internacionais e outras instituições extraterritoriais,Tabela de Natureza Jurídica da CONCLA/IBGE; código no campo natureza_juridica da tabela Empresas do CNPJ

@@ -154,6 +154,7 @@ seeds:
         taxonomia: string
         aplica_a: string
         significado: string
+        codigo_ibge: string
         aviso: string
         definicao_da_dimensao: string
     columns:
@@ -168,6 +169,11 @@ seeds:
       - name: valor
         description: "Rótulo exato do valor no dado."
         data_tests: [not_null]
+      - name: codigo_ibge
+        description: >
+          Código de duas posições do IBGE, só nas UFs. É a chave pela qual a
+          população do SIDRA chega à UF. Texto, e não número, para não perder
+          o formato oficial.
       - name: valor_desambiguado
         description: >
           Chave da dimensão. Igual ao valor nas dimensões não polimórficas, e
@@ -221,4 +227,29 @@ seeds:
         data_tests: [not_null]
       - name: depois
         description: "Como a série se comporta a partir da quebra."
+        data_tests: [not_null]
+
+  - name: ontologia_fonte_externa_valor
+    description: >
+      Os códigos enumerados das fontes externas, gerados de
+      ontology/fontes_externas.yml: o porte da empresa na Receita e o grupo de
+      natureza jurídica. É de onde as dimensões dim_porte_receita e
+      dim_natureza_juridica tiram os rótulos.
+    config:
+      column_types:
+        conceito: string
+        codigo: string
+        rotulo: string
+        fonte: string
+    columns:
+      - name: conceito
+        description: "Id do conceito na ontologia a que o código pertence."
+        data_tests: [not_null]
+      - name: codigo
+        description: >
+          Código como aparece no dado da Receita. Texto, e não número: o porte
+          é "01", e como número viraria 1 e não casaria com o dado.
+        data_tests: [not_null]
+      - name: rotulo
+        description: "Rótulo do código, como no leiaute oficial."
         data_tests: [not_null]

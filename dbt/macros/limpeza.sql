@@ -87,3 +87,26 @@
        sentinel is exactly the kind of change that needs to be seen.
    --------------------------------------------------------------------------- #}
 {% macro contagem_sem_sentinela(coluna, sentinela) %}cast(nullif(trim({{ coluna }}), '{{ sentinela }}') as bigint){% endmacro %}
+
+{# ---------------------------------------------------------------------------
+   PT: Data do CNPJ aberto da Receita, publicada como texto AAAAMMDD. A
+       Receita marca data ausente de dois jeitos, conforme a tabela, medido
+       sobre o bronze inteiro em 2026-09-24:
+       - "0" em Estabelecimentos: 384.874 linhas em data_situacao_cadastral;
+       - "00000000" no Simples: 30.484.208 linhas em data_exclusao_mei,
+         25.028.817 em data_exclusao_simples, 13.313.968 em data_opcao_mei e
+         2 em data_opcao_simples.
+       Nenhum outro valor fora de AAAAMMDD válido existe. Só os dois
+       marcadores viram nulo, e a conversão continua estrita: um terceiro
+       marcador, ou uma data malformada, faz o modelo falhar em vez de virar
+       nulo escondido. Foi assim que o "00000000" apareceu: observado no SQL
+       warehouse do Databricks em 2026-09-24, com erro CANNOT_PARSE_TIMESTAMP.
+       O comportamento estrito depende do modo ANSI, que é o padrão do SQL
+       warehouse. Com o ANSI desligado, to_date devolveria nulo em silêncio.
+   EN: Date from Receita's open CNPJ data, published as YYYYMMDD text. Receita
+       marks a missing date in two ways depending on the table: "0" in
+       Establishments and "00000000" in Simples. Only those two become null;
+       the conversion stays strict, so a third marker or a malformed date
+       fails the model instead of becoming a hidden null.
+   --------------------------------------------------------------------------- #}
+{% macro data_da_receita(coluna) %}to_date(case when trim({{ coluna }}) in ('0', '00000000') then null else trim({{ coluna }}) end, 'yyyyMMdd'){% endmacro %}

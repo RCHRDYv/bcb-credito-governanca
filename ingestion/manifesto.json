@@ -246,5 +246,873 @@
       "url": "https://www.bcb.gov.br/pda/desig/scrdata_2026.zip",
       "versao": "v2"
     }
+  },
+  "cnpj": {
+    "2024-06/Estabelecimentos0.zip": {
+      "bytes": 1316635578,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y0.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 18163911,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos0-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos0-parte01.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos0-parte02.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos0-parte03.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos0-parte04.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos0-parte05.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos0-parte06.parquet": 163911
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:16:37 GMT",
+      "retrato": "2024-06",
+      "sha256": "b75516903ea26b6346affd8c690637c1cbf43267e8866565fcd8fc1265ca7d42",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos0.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos0.zip"
+    },
+    "2024-06/Estabelecimentos1.zip": {
+      "bytes": 338703452,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y1.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos1-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos1-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:47:33 GMT",
+      "retrato": "2024-06",
+      "sha256": "4587eac766cb0c442a672911f8bc315677b57958657e95efada541d7b032ce76",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos1.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos1.zip"
+    },
+    "2024-06/Estabelecimentos2.zip": {
+      "bytes": 338009442,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y2.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos2-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos2-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:23:33 GMT",
+      "retrato": "2024-06",
+      "sha256": "ce62aec353a966a11d4ae930bf720ff7ecf9785c0176e037f9b801f93be318e0",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos2.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos2.zip"
+    },
+    "2024-06/Estabelecimentos3.zip": {
+      "bytes": 337158561,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y3.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos3-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos3-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:29:01 GMT",
+      "retrato": "2024-06",
+      "sha256": "3d5971b3a4d37bc8b267605f60c47bac8b422ab00ce48fba13fa40947344e20f",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos3.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos3.zip"
+    },
+    "2024-06/Estabelecimentos4.zip": {
+      "bytes": 354795724,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y4.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos4-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos4-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:30:31 GMT",
+      "retrato": "2024-06",
+      "sha256": "480b5aace45bb9b51e352bf9ac75f747bdfd552db19641dd35e0bc0680b0735e",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos4.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos4.zip"
+    },
+    "2024-06/Estabelecimentos5.zip": {
+      "bytes": 350855018,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y5.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos5-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos5-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:35:50 GMT",
+      "retrato": "2024-06",
+      "sha256": "2d0009662f4ff25016e4afead744b08f234e2dcecb0e0e7fc092128fb10d3c77",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos5.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos5.zip"
+    },
+    "2024-06/Estabelecimentos6.zip": {
+      "bytes": 338662514,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y6.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos6-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos6-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:04:20 GMT",
+      "retrato": "2024-06",
+      "sha256": "7defbed437168a1c7727662b3a350bf12e0928d122f61805c5712eef47329474",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos6.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos6.zip"
+    },
+    "2024-06/Estabelecimentos7.zip": {
+      "bytes": 335773415,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y7.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos7-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos7-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:10:46 GMT",
+      "retrato": "2024-06",
+      "sha256": "26554e73f53f372143ad59d15db559743264f26ac8524f808cfacdb0beb57ded",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos7.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos7.zip"
+    },
+    "2024-06/Estabelecimentos8.zip": {
+      "bytes": 340939928,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y8.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos8-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos8-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:17:11 GMT",
+      "retrato": "2024-06",
+      "sha256": "62309c58cc532051974fc54426d33225174c55a1a35228fd5a950c8cce914279",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos8.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos8.zip"
+    },
+    "2024-06/Estabelecimentos9.zip": {
+      "bytes": 361783240,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y9.D40608.ESTABELE",
+        "data_extracao": "2024-06-08",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2024-06/Estabelecimentos9-parte00.parquet": 3000000,
+          "estabelecimentos/2024-06/Estabelecimentos9-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 09 Jun 2024 23:23:06 GMT",
+      "retrato": "2024-06",
+      "sha256": "9a5e1963785a0c92622a6e8c4042383358de62f80d294addcebc0628c5fd547f",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2024-06-09/Estabelecimentos9.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2024-06/Estabelecimentos9.zip"
+    },
+    "2025-06/Estabelecimentos0.zip": {
+      "bytes": 1729374214,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y0.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 23568460,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos0-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos0-parte01.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos0-parte02.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos0-parte03.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos0-parte04.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos0-parte05.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos0-parte06.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos0-parte07.parquet": 2568460
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:53:42 GMT",
+      "retrato": "2025-06",
+      "sha256": "3d3a63e9e3f1632de27587aede3a9e49f646fb8813c2a1049f1e9596e2abc026",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos0.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos0.zip"
+    },
+    "2025-06/Estabelecimentos1.zip": {
+      "bytes": 339988390,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y1.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos1-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos1-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:54:04 GMT",
+      "retrato": "2025-06",
+      "sha256": "2e40da819f3bcc7fc1d1154bb7f2cc1567fd663aaf44f6934e4c1ef2d62a3ec2",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos1.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos1.zip"
+    },
+    "2025-06/Estabelecimentos2.zip": {
+      "bytes": 336019485,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y2.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos2-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos2-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:54:26 GMT",
+      "retrato": "2025-06",
+      "sha256": "fdd54e406c565115610881cdbf0183316381a9eccc332ec89b34d6876fd0a14f",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos2.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos2.zip"
+    },
+    "2025-06/Estabelecimentos3.zip": {
+      "bytes": 348364533,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y3.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos3-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos3-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:54:48 GMT",
+      "retrato": "2025-06",
+      "sha256": "713b9d0d1083d752e7a821070bd1ad593f9c32e481d73e4d067989a6f7770d6e",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos3.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos3.zip"
+    },
+    "2025-06/Estabelecimentos4.zip": {
+      "bytes": 358775708,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y4.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos4-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos4-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:55:11 GMT",
+      "retrato": "2025-06",
+      "sha256": "5f69794b62aa4e44ee01fa9cba20f0553917426752a21235b293f898275e5066",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos4.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos4.zip"
+    },
+    "2025-06/Estabelecimentos5.zip": {
+      "bytes": 336576483,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y5.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos5-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos5-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:55:33 GMT",
+      "retrato": "2025-06",
+      "sha256": "6f9d62a1009828521508c1ab1324622776f4bcdd72fc0159a6bc81964f5c4182",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos5.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos5.zip"
+    },
+    "2025-06/Estabelecimentos6.zip": {
+      "bytes": 335549159,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y6.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos6-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos6-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:55:55 GMT",
+      "retrato": "2025-06",
+      "sha256": "ae4781711466f0eb5839d3b01e46f264e00dc72e4fac047f8937bb8133c56fd3",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos6.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos6.zip"
+    },
+    "2025-06/Estabelecimentos7.zip": {
+      "bytes": 364325007,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y7.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos7-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos7-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:56:19 GMT",
+      "retrato": "2025-06",
+      "sha256": "6a8488f8a8d0c0f68b1814313bc107171f90c43671e2fc6322d4b5d0fbb000a6",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos7.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos7.zip"
+    },
+    "2025-06/Estabelecimentos8.zip": {
+      "bytes": 341782938,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y8.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos8-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos8-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:56:41 GMT",
+      "retrato": "2025-06",
+      "sha256": "1eb733425c61027e8cd7842afbe9a91fd93a9e717bfebf58f0f9abca05dfed06",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos8.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos8.zip"
+    },
+    "2025-06/Estabelecimentos9.zip": {
+      "bytes": 335980226,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y9.D50614.ESTABELE",
+        "data_extracao": "2025-06-14",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2025-06/Estabelecimentos9-parte00.parquet": 3000000,
+          "estabelecimentos/2025-06/Estabelecimentos9-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Sun, 15 Jun 2025 17:57:03 GMT",
+      "retrato": "2025-06",
+      "sha256": "606a14069da4c498002265ef5931d2ba7a1deb37891dd01ed8ae20483620e519",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2025-06-15/Estabelecimentos9.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2025-06/Estabelecimentos9.zip"
+    },
+    "2026-09/Cnaes.zip": {
+      "bytes": 22078,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "F.K03200$Z.D60912.CNAECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 1359,
+        "partes": {
+          "cnaes/2026-09/Cnaes-parte00.parquet": 1359
+        },
+        "tabela": "cnaes"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:22 GMT",
+      "retrato": "2026-09",
+      "sha256": "6036941a40ff0ec664c61d844f77d5c0189fa149e9a4cc068a26d367cf764dac",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Cnaes.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Cnaes.zip"
+    },
+    "2026-09/Empresas0.zip": {
+      "bytes": 563070974,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y0.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 29631852,
+        "partes": {
+          "empresas/2026-09/Empresas0-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte01.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte02.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte03.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte04.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte05.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte06.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte07.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte08.parquet": 3000000,
+          "empresas/2026-09/Empresas0-parte09.parquet": 2631852
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:28 GMT",
+      "retrato": "2026-09",
+      "sha256": "07c81e64b8a19ce2bbb4c6ee70318a902e741c1c404f4c25dd3f129a89c3ede9",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas0.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas0.zip"
+    },
+    "2026-09/Empresas1.zip": {
+      "bytes": 77897750,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y1.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas1-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas1-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:29 GMT",
+      "retrato": "2026-09",
+      "sha256": "96654b30a70af095291a7c028f813c680e8ac04d7b80c49a19671f07fad46d75",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas1.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas1.zip"
+    },
+    "2026-09/Empresas2.zip": {
+      "bytes": 79123643,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y2.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas2-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas2-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:30 GMT",
+      "retrato": "2026-09",
+      "sha256": "0b8d79747de0f83cebf2c13abacdd9334cc4781b2f7622e7ef649b65762fdfce",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas2.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas2.zip"
+    },
+    "2026-09/Empresas3.zip": {
+      "bytes": 85104766,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y3.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas3-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas3-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:31 GMT",
+      "retrato": "2026-09",
+      "sha256": "a3988fba9f1fd8d8177fc75097eca384666de465831e6c49185406253e880398",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas3.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas3.zip"
+    },
+    "2026-09/Empresas4.zip": {
+      "bytes": 90228407,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y4.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas4-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas4-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:32 GMT",
+      "retrato": "2026-09",
+      "sha256": "498c690d52e5d071784269f5a6fa8aafbe8f8b810ca80c85ea2cb49dbe3af5ce",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas4.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas4.zip"
+    },
+    "2026-09/Empresas5.zip": {
+      "bytes": 97321360,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y5.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas5-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas5-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:33 GMT",
+      "retrato": "2026-09",
+      "sha256": "d0d6bb62a16de168dfdbe11337dff566f924bf046653ae0827d9e66a4ca2e02b",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas5.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas5.zip"
+    },
+    "2026-09/Empresas6.zip": {
+      "bytes": 94209872,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y6.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas6-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas6-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:34 GMT",
+      "retrato": "2026-09",
+      "sha256": "62de596b67a6407bd1a10cb4fdb897ad12909273327be2135eaae94a8f82e8e5",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas6.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas6.zip"
+    },
+    "2026-09/Empresas7.zip": {
+      "bytes": 98698360,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y7.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas7-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas7-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:35 GMT",
+      "retrato": "2026-09",
+      "sha256": "c4b093f30168bea25536fc1f5b96a22ff39ae82fe157d269d9e13744f7ede377",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas7.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas7.zip"
+    },
+    "2026-09/Empresas8.zip": {
+      "bytes": 98765405,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y8.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas8-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas8-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:36 GMT",
+      "retrato": "2026-09",
+      "sha256": "64042f388d58714e6489260cb8b7f7e31fe878fd63bdcd0798c42f0ad27ca25c",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas8.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas8.zip"
+    },
+    "2026-09/Empresas9.zip": {
+      "bytes": 94336829,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y9.D60912.EMPRECSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 4494860,
+        "partes": {
+          "empresas/2026-09/Empresas9-parte00.parquet": 3000000,
+          "empresas/2026-09/Empresas9-parte01.parquet": 1494860
+        },
+        "tabela": "empresas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:37 GMT",
+      "retrato": "2026-09",
+      "sha256": "dd8d13011f95acc5fb2c1ee0d51ad6969310164371380d40575c3fabbae45f78",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Empresas9.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Empresas9.zip"
+    },
+    "2026-09/Estabelecimentos0.zip": {
+      "bytes": 2243389254,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y0.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 30585232,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos0-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte01.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte02.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte03.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte04.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte05.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte06.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte07.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte08.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte09.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos0-parte10.parquet": 585232
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:23:59 GMT",
+      "retrato": "2026-09",
+      "sha256": "7a9cbce08740f54768dcde6c89a2041db828ff7ac7463c952db419891abadf98",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos0.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos0.zip"
+    },
+    "2026-09/Estabelecimentos1.zip": {
+      "bytes": 341841240,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y1.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos1-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos1-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:03 GMT",
+      "retrato": "2026-09",
+      "sha256": "8954bb9b76d399d9921ad99009bf0ce2434e19d2c04c180ca1ba4c78308c6165",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos1.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos1.zip"
+    },
+    "2026-09/Estabelecimentos2.zip": {
+      "bytes": 336278618,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y2.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos2-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos2-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:06 GMT",
+      "retrato": "2026-09",
+      "sha256": "a30c3090c3b93ace16b0080d7e14dfc37e41c8a81d1d4a12194c5712cbf6d8ed",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos2.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos2.zip"
+    },
+    "2026-09/Estabelecimentos3.zip": {
+      "bytes": 368000820,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y3.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos3-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos3-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:10 GMT",
+      "retrato": "2026-09",
+      "sha256": "d457960b349b542ac235505a4df32c59fd14c822ef1ef4fa0f6e3b0e4e3dc37e",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos3.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos3.zip"
+    },
+    "2026-09/Estabelecimentos4.zip": {
+      "bytes": 340870490,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y4.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos4-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos4-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:14 GMT",
+      "retrato": "2026-09",
+      "sha256": "c144b469c93ed53d905d9a7ea563051e1171d33cfea22ccae7ef18c2ffb0c6c0",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos4.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos4.zip"
+    },
+    "2026-09/Estabelecimentos5.zip": {
+      "bytes": 335355867,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y5.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos5-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos5-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:17 GMT",
+      "retrato": "2026-09",
+      "sha256": "77a50fe829945f788a18e89390c1577c6cded6f0983007cb9314e9a9ffa20581",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos5.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos5.zip"
+    },
+    "2026-09/Estabelecimentos6.zip": {
+      "bytes": 369173589,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y6.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos6-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos6-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:21 GMT",
+      "retrato": "2026-09",
+      "sha256": "89ec562727018972033ffd14cbfcc23221e8aa3125af846ea1bf86bfb109c6fa",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos6.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos6.zip"
+    },
+    "2026-09/Estabelecimentos7.zip": {
+      "bytes": 339164748,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y7.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos7-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos7-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:25 GMT",
+      "retrato": "2026-09",
+      "sha256": "07868cda860215dca2368afce06d117b27a6756a8b33ffd0ed562432dfef5f62",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos7.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos7.zip"
+    },
+    "2026-09/Estabelecimentos8.zip": {
+      "bytes": 340381627,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y8.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos8-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos8-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:29 GMT",
+      "retrato": "2026-09",
+      "sha256": "bebf369fbe37437fd61f804ec7e24f541f831fb0fcb3e0564de867377c2da52d",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos8.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos8.zip"
+    },
+    "2026-09/Estabelecimentos9.zip": {
+      "bytes": 366879953,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "K3241.K03200Y9.D60912.ESTABELE",
+        "data_extracao": "2026-09-12",
+        "linhas": 4753435,
+        "partes": {
+          "estabelecimentos/2026-09/Estabelecimentos9-parte00.parquet": 3000000,
+          "estabelecimentos/2026-09/Estabelecimentos9-parte01.parquet": 1753435
+        },
+        "tabela": "estabelecimentos"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:33 GMT",
+      "retrato": "2026-09",
+      "sha256": "45bf199ac5b4adc3b1b99293024902406f13f93ba08389df3c7c27475323212f",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Estabelecimentos9.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Estabelecimentos9.zip"
+    },
+    "2026-09/Naturezas.zip": {
+      "bytes": 1563,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "F.K03200$Z.D60912.NATJUCSV",
+        "data_extracao": "2026-09-12",
+        "linhas": 91,
+        "partes": {
+          "naturezas/2026-09/Naturezas-parte00.parquet": 91
+        },
+        "tabela": "naturezas"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:33 GMT",
+      "retrato": "2026-09",
+      "sha256": "d67cb998fd3f2823d383d1f7cbd4f81cc29f297134568cf824fa96802339303a",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Naturezas.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Naturezas.zip"
+    },
+    "2026-09/Simples.zip": {
+      "bytes": 308027792,
+      "conferencia_com_a_receita": "conferido",
+      "conversao": {
+        "arquivo_interno": "F.K03200$W.SIMPLES.CSV.D60912",
+        "data_extracao": "2026-09-12",
+        "linhas": 50396768,
+        "partes": {
+          "simples/2026-09/Simples-parte00.parquet": 3000000,
+          "simples/2026-09/Simples-parte01.parquet": 3000000,
+          "simples/2026-09/Simples-parte02.parquet": 3000000,
+          "simples/2026-09/Simples-parte03.parquet": 3000000,
+          "simples/2026-09/Simples-parte04.parquet": 3000000,
+          "simples/2026-09/Simples-parte05.parquet": 3000000,
+          "simples/2026-09/Simples-parte06.parquet": 3000000,
+          "simples/2026-09/Simples-parte07.parquet": 3000000,
+          "simples/2026-09/Simples-parte08.parquet": 3000000,
+          "simples/2026-09/Simples-parte09.parquet": 3000000,
+          "simples/2026-09/Simples-parte10.parquet": 3000000,
+          "simples/2026-09/Simples-parte11.parquet": 3000000,
+          "simples/2026-09/Simples-parte12.parquet": 3000000,
+          "simples/2026-09/Simples-parte13.parquet": 3000000,
+          "simples/2026-09/Simples-parte14.parquet": 3000000,
+          "simples/2026-09/Simples-parte15.parquet": 3000000,
+          "simples/2026-09/Simples-parte16.parquet": 2396768
+        },
+        "tabela": "simples"
+      },
+      "last_modified": "Fri, 18 Sep 2026 00:24:36 GMT",
+      "retrato": "2026-09",
+      "sha256": "d17992372f1576ca9c9c5e0696e7c92f8dbb58d3b9ad6c5482c7dcbfc04e3090",
+      "url": "https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-09-14/Simples.zip",
+      "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Simples.zip"
+    }
+  },
+  "ibge": {
+    "populacao_6579.json": {
+      "bytes": 22483,
+      "linhas": 81,
+      "sha256": "96f4e06070eed3a7b98cc35b4c389be21c0abb482196d0c79ba773c39aa53736",
+      "url": "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2024,2025,2026"
+    }
   }
 }

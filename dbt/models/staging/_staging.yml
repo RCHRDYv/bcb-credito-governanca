@@ -286,3 +286,77 @@ models:
       - name: sha256_zip
         description: "Identidade do ZIP de origem."
         data_tests: [not_null]
+
+  # ===========================================================================
+  # PT: Fontes externas por UF (issue #25). Mesma regra: 1:1 com o bronze,
+  #     só com as colunas usadas. Definições em ontology/fontes_externas.yml.
+  # EN: External sources by state. Same rule: 1:1 with bronze, only the
+  #     columns used.
+  # ===========================================================================
+
+  - name: stg_cnpj_estabelecimentos
+    description: >
+      Estabelecimentos do CNPJ aberto nos três retratos, matrizes e filiais,
+      em qualquer situação. Contato e endereço ficam no bronze.
+    columns:
+      - name: retrato
+        description: >
+          Mês do retrato. Os retratos esperados ficam em ingestion/fontes.py, e
+          não são repetidos aqui. O teste cnpj_retrato_do_modelo_completo
+          confere que o retrato usado pelo modelo tem as três tabelas.
+        data_tests: [not_null]
+      - name: cnpj_basico
+        data_tests: [not_null]
+      - name: identificador_matriz_filial
+        description: "1 = matriz, 2 = filial."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["1", "2"]
+      - name: situacao_cadastral
+        description: "01 nula, 02 ativa, 03 suspensa, 04 inapta, 08 baixada."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["01", "02", "03", "04", "08"]
+      - name: data_situacao_cadastral
+        description: "Data da última mudança de situação. Nula quando a Receita publica 0."
+      - name: data_inicio_atividade
+        description: "Data de início da atividade do estabelecimento."
+      - name: uf
+        description: "UF do estabelecimento. EX é exterior."
+        data_tests: [not_null]
+
+  - name: stg_cnpj_empresas
+    description: "Natureza jurídica e porte de cada empresa, retrato 2026-09. A razão social fica no bronze."
+    columns:
+      - name: cnpj_basico
+        data_tests: [not_null]
+      - name: porte_empresa
+        description: "Ver ontology/fontes_externas.yml, porte_da_empresa_na_receita. Não equivale ao porte do SCR."
+
+  - name: stg_cnpj_simples
+    description: "Opção pelo Simples e pelo MEI, com datas, retrato 2026-09."
+    columns:
+      - name: cnpj_basico
+        data_tests: [not_null]
+      - name: opcao_mei
+        description: "S, N ou vazio."
+
+  - name: stg_ibge_populacao
+    description: "População residente estimada por UF e ano, tabela 6579 do SIDRA."
+    columns:
+      - name: ano
+        data_tests: [not_null]
+      - name: codigo_ibge_uf
+        data_tests: [not_null]
+      - name: codigo_variavel
+        description: "Sempre 9324, população residente estimada."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["9324"]
+      - name: populacao
+        data_tests: [not_null]

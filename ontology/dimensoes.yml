@@ -290,34 +290,39 @@ dimensoes:
     correspondencia_v1:
       tipo: exata
       coluna: uf
+    # PT: O código de duas posições do IBGE é a chave que as fontes externas
+    #     usam (a tabela 6579 do SIDRA identifica a UF só por código e nome).
+    #     Conferido contra a resposta da própria tabela em 2026-09-24.
+    # EN: IBGE's two-digit code is the key external sources use.
+    codigo_ibge_fonte: "IBGE, Divisão Territorial Brasileira; conferido contra a tabela 6579 do SIDRA em 2026-09-24"
     valores:
-      - {rotulo_no_dado: "AC", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "AL", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "AM", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "AP", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "BA", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "CE", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "DF", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "ES", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "GO", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "MA", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "MG", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "MS", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "MT", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "PA", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "PB", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "PE", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "PI", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "PR", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "RJ", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "RN", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "RO", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "RR", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "RS", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "SC", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "SE", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "SP", aplica_a: "PF e PJ"}
-      - {rotulo_no_dado: "TO", aplica_a: "PF e PJ"}
+      - {rotulo_no_dado: "AC", aplica_a: "PF e PJ", codigo_ibge: "12", significado: "Acre"}
+      - {rotulo_no_dado: "AL", aplica_a: "PF e PJ", codigo_ibge: "27", significado: "Alagoas"}
+      - {rotulo_no_dado: "AM", aplica_a: "PF e PJ", codigo_ibge: "13", significado: "Amazonas"}
+      - {rotulo_no_dado: "AP", aplica_a: "PF e PJ", codigo_ibge: "16", significado: "Amapá"}
+      - {rotulo_no_dado: "BA", aplica_a: "PF e PJ", codigo_ibge: "29", significado: "Bahia"}
+      - {rotulo_no_dado: "CE", aplica_a: "PF e PJ", codigo_ibge: "23", significado: "Ceará"}
+      - {rotulo_no_dado: "DF", aplica_a: "PF e PJ", codigo_ibge: "53", significado: "Distrito Federal"}
+      - {rotulo_no_dado: "ES", aplica_a: "PF e PJ", codigo_ibge: "32", significado: "Espírito Santo"}
+      - {rotulo_no_dado: "GO", aplica_a: "PF e PJ", codigo_ibge: "52", significado: "Goiás"}
+      - {rotulo_no_dado: "MA", aplica_a: "PF e PJ", codigo_ibge: "21", significado: "Maranhão"}
+      - {rotulo_no_dado: "MG", aplica_a: "PF e PJ", codigo_ibge: "31", significado: "Minas Gerais"}
+      - {rotulo_no_dado: "MS", aplica_a: "PF e PJ", codigo_ibge: "50", significado: "Mato Grosso do Sul"}
+      - {rotulo_no_dado: "MT", aplica_a: "PF e PJ", codigo_ibge: "51", significado: "Mato Grosso"}
+      - {rotulo_no_dado: "PA", aplica_a: "PF e PJ", codigo_ibge: "15", significado: "Pará"}
+      - {rotulo_no_dado: "PB", aplica_a: "PF e PJ", codigo_ibge: "25", significado: "Paraíba"}
+      - {rotulo_no_dado: "PE", aplica_a: "PF e PJ", codigo_ibge: "26", significado: "Pernambuco"}
+      - {rotulo_no_dado: "PI", aplica_a: "PF e PJ", codigo_ibge: "22", significado: "Piauí"}
+      - {rotulo_no_dado: "PR", aplica_a: "PF e PJ", codigo_ibge: "41", significado: "Paraná"}
+      - {rotulo_no_dado: "RJ", aplica_a: "PF e PJ", codigo_ibge: "33", significado: "Rio de Janeiro"}
+      - {rotulo_no_dado: "RN", aplica_a: "PF e PJ", codigo_ibge: "24", significado: "Rio Grande do Norte"}
+      - {rotulo_no_dado: "RO", aplica_a: "PF e PJ", codigo_ibge: "11", significado: "Rondônia"}
+      - {rotulo_no_dado: "RR", aplica_a: "PF e PJ", codigo_ibge: "14", significado: "Roraima"}
+      - {rotulo_no_dado: "RS", aplica_a: "PF e PJ", codigo_ibge: "43", significado: "Rio Grande do Sul"}
+      - {rotulo_no_dado: "SC", aplica_a: "PF e PJ", codigo_ibge: "42", significado: "Santa Catarina"}
+      - {rotulo_no_dado: "SE", aplica_a: "PF e PJ", codigo_ibge: "28", significado: "Sergipe"}
+      - {rotulo_no_dado: "SP", aplica_a: "PF e PJ", codigo_ibge: "35", significado: "São Paulo"}
+      - {rotulo_no_dado: "TO", aplica_a: "PF e PJ", codigo_ibge: "17", significado: "Tocantins"}
 
   - id: dim_segmento
     coluna: segmento

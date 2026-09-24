@@ -62,13 +62,19 @@ perguntas:
   # PT: Expansão geográfica e priorização
   # EN: Geographic expansion and prioritisation
   # ---------------------------------------------------------------------------
-  Q11: {modelos: [fct_carteira, dim_uf], depende_de: ["#25"]}
-  Q12: {modelos: [fct_carteira, dim_uf, dim_tempo], depende_de: ["#25"]}
+  Q11:
+    modelos: [fct_carteira, fct_populacao, dim_uf]
+    limite: "População é estimativa anual do IBGE, com referência em 1º de julho, aplicada a todos os meses do ano."
+  Q12:
+    modelos: [fct_carteira, fct_populacao, dim_uf, dim_tempo]
+    limite: "Doze meses atravessam dois anos de estimativa de população, e o ajuste usa a de cada ano."
   Q13: {modelos: [fct_carteira, dim_uf], depende_de: ["#38"]}
   Q14:
-    modelos: [fct_carteira, dim_uf]
-    depende_de: ["#25"]
-    limite: "UF é domicílio da pessoa ou sede da empresa, não local da operação (dim_uf.definicao_da_uf)."
+    modelos: [fct_carteira, fct_empresas_ativas, dim_uf, dim_natureza_juridica]
+    limite: >
+      UF é domicílio da pessoa ou sede da empresa, não local da operação
+      (dim_uf.definicao_da_uf). O número de empresas é reconstruído de um
+      retrato do CNPJ, com erro medido (ADR 0009).
   Q15: {modelos: [fct_carteira, dim_uf], depende_de: ["#38"]}
 
   # ---------------------------------------------------------------------------
@@ -155,8 +161,7 @@ telas:
 
   tela_1:
     titulo: "Onde está o crédito PJ hoje, e onde ele é escasso por empresa ativa"
-    modelos: [mrt_carteira_mensal]
-    depende_de: ["#25"]
+    modelos: [mrt_carteira_mensal, mrt_carteira_por_uf]
   tela_2:
     titulo: "Onde o risco está piorando, com a distinção entre inadimplência e ativo problemático"
     modelos: [mrt_carteira_mensal]
@@ -166,5 +171,5 @@ telas:
     limite: "Movida para a v0.2 em 2026-09-24. O histórico já está em mrt_carteira_mensal."
   tela_4:
     titulo: "A recomendação, com o custo de errar e o que o dado não permite afirmar"
-    modelos: [mrt_limites_do_dado, mrt_reconciliacao_versoes]
+    modelos: [mrt_limites_do_dado, mrt_reconciliacao_versoes, mrt_erro_da_reconstrucao]
     depende_de: ["#26"]
