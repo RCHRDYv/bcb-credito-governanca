@@ -62,6 +62,7 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 | Dashboard consultando o banco | Não. Exportação estática de JSON | Credencial em JavaScript é pública. Dado mensal não precisa de tempo real |
 | Onde a IA roda | Hugging Face Spaces | Databricks não serve aplicação pública |
 | Credenciais | OAuth, nada em disco | Ver [ADR 0001](adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) |
+| Diagramas de arquitetura | Mermaid dentro do markdown, sem imagem exportada | O diagrama muda na mesma PR que o modelo. Ver [ADR 0008](adr/0008-diagramas-como-codigo-em-mermaid.md) |
 
 ## Estrutura
 
@@ -87,14 +88,15 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 
 ## Arquitetura de documentação
 
-Sete artefatos, cada um com um público e uma origem versionada. A coluna de situação diz o que já existe, para a tabela não descrever como pronto o que ainda é plano:
+Oito artefatos, cada um com um público e uma origem versionada. A coluna de situação diz o que já existe, para a tabela não descrever como pronto o que ainda é plano:
 
 | Artefato | Público | Origem | Situação |
 |---|---|---|---|
 | Problema de negócio | Qualquer leitor | README | Entregue |
 | Glossário de negócio | Negócio | `ontology/modalidades.yml`, `ontology/dimensoes.yml`, `ontology/metricas.yml` | Entregue |
-| Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para staging e seeds |
-| ADR | Técnico sênior | `docs/adr/` | Entregue, seis decisões |
+| Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para seeds, staging, intermediate e marts |
+| ADR | Técnico sênior | `docs/adr/` | Entregue, oito decisões |
+| Diagramas de arquitetura | Ambos | Mermaid no `README.md` e em [`docs/arquitetura.md`](arquitetura.md) | Entregue |
 | Linhagem | Ambos | Gerada pelo `dbt docs` | v0.2 |
 | Contrato de dados | Consumidor | `ontology/contratos.yml` | v0.2 |
 | Runbook | Operação | `docs/runbook.md` | v0.2 |
