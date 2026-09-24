@@ -95,3 +95,11 @@ SELECT
   *,
   current_timestamp() AS ingerido_em
 FROM read_files('{volume}/sgs/*/*.parquet', format => 'parquet');
+
+CREATE OR REPLACE TABLE {catalogo}.{schema}.bronze_pix_municipio
+COMMENT 'PIX por município do BCB (recurso TransacoesPixPorMunicipio, issue 36), uma linha por mês e município, como a API devolveu, todas as colunas como texto. Valor e quantidade por pagador e recebedor e por PF e PJ. Só o PIX liquidado no SPI, e só meses fechados. A linha com Municipio N/D reúne o que não tem município informado.'
+AS
+SELECT
+  *,
+  current_timestamp() AS ingerido_em
+FROM read_files('{volume}/pix/*/*.parquet', format => 'parquet');

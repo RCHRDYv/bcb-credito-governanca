@@ -133,3 +133,13 @@ sources:
             data_tests: [not_null]
           - name: valor
             data_tests: [not_null]
+
+      - name: bronze_pix_municipio
+        description: >
+          PIX por município do BCB (TransacoesPixPorMunicipio), uma linha por
+          mês e município, como a API devolveu. Só meses fechados, e só o PIX
+          liquidado no SPI. A linha com Municipio N/D reúne o que não tem
+          município informado.
+        columns:
+          - name: AnoMes
+            data_tests: [not_null]

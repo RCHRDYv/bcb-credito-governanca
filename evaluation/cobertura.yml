@@ -106,9 +106,21 @@ perguntas:
   # PT: PIX e mudança estrutural
   # EN: PIX and structural change
   # ---------------------------------------------------------------------------
-  Q22: {depende_de: ["#36"]}
-  Q23: {modelos: [fct_carteira, dim_modalidade, dim_tempo], depende_de: ["#36"]}
-  Q24: {modelos: [fct_carteira, dim_uf], depende_de: ["#36"]}
+  Q22:
+    modelos: [fct_pix, dim_tempo]
+    limite: >
+      Só o PIX liquidado no SPI; o liquidado nos livros do participante não
+      está no dado. Pagador e recebedor somam o mesmo no total do país, e
+      somar os dois dobra o volume. O recorte comum aos fatos tem 31 meses.
+  Q23:
+    modelos: [fct_carteira, fct_pix, dim_modalidade, dim_tempo]
+    limite: "Coincidência no tempo não é causa, e 31 meses são pouca série."
+  Q24:
+    modelos: [fct_carteira, fct_pix, dim_uf]
+    limite: >
+      PIX é fluxo do mês e carteira é saldo, então a razão compara grandezas
+      de natureza diferente. Por UF, o valor depende do lado (pagador ou
+      recebedor), e a resposta precisa dizer qual usa.
 
   # ---------------------------------------------------------------------------
   # PT: Contexto econômico

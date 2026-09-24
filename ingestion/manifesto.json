@@ -1115,6 +1115,15 @@
       "url": "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2024,2025,2026"
     }
   },
+  "pix": {
+    "pix_municipio.json": {
+      "data_extracao": "2026-09-24",
+      "linhas": 178253,
+      "meses": 32,
+      "sha256": "838dd4ef119564191db7fd35541a95be52125c7d47e063fe2acd1cb65af9527b",
+      "url_do_primeiro_mes": "https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/odata/TransacoesPixPorMunicipio(DataBase=@DataBase)?%40DataBase=%27202401%27&%24filter=AnoMes%20eq%20202401&%24top=10000&%24format=json"
+    }
+  },
   "sgs": {
     "selic_meta_432.json": {
       "bytes": 37925,

@@ -282,3 +282,24 @@ SERIES_SGS = (
 SGS_DATA_INICIAL = f"01/01/{ANOS[0]}"
 DIR_RAW_SGS = DIR_RAW / "sgs"
 DIR_LANDING_SGS = DIR_LANDING / "sgs"
+
+# -----------------------------------------------------------------------------
+# PT: PIX por município, recurso TransacoesPixPorMunicipio do serviço OData
+#     Pix_DadosAbertos do BCB (issue #36). Público, sem login. O parâmetro
+#     DataBase é "a partir de", e não o mês exato, e o mês corrente vem
+#     incompleto: a consulta pede do início do recorte até o último mês
+#     fechado, por filtro, e pagina, porque passa de 100 mil linhas.
+# EN: PIX by municipality, from BCB's Pix_DadosAbertos OData service. The
+#     DataBase parameter means "from", not the exact month, and the current
+#     month is partial: the query asks from the scope start to the last
+#     closed month through a filter, and pages through the result.
+# -----------------------------------------------------------------------------
+
+PIX_URL = (
+    "https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/odata/"
+    "TransacoesPixPorMunicipio(DataBase=@DataBase)"
+)
+PIX_INICIO = f"{ANOS[0]}01"  # PT: AAAAMM / EN: YYYYMM
+PIX_PAGINA = 10_000  # PT: limite por consulta, acima dos 5.572 municípios de um mês / EN: per-query limit
+DIR_RAW_PIX = DIR_RAW / "pix"
+DIR_LANDING_PIX = DIR_LANDING / "pix"

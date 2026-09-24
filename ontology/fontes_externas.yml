@@ -88,6 +88,27 @@ fontes:
     confianca: verbatim
     fonte: "API do SGS, consulta de 2026-09-24"
 
+  - id: pix_municipio
+    prefLabel_pt: "Transações Pix por município, API do BCB"
+    prefLabel_en: "Pix transactions by municipality, BCB API"
+    publicador: "Banco Central do Brasil"
+    endereco: "https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/odata/TransacoesPixPorMunicipio(DataBase=@DataBase)"
+    documentacao: "https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/documentacao"
+    periodicidade: "mensal"
+    formato: >
+      JSON OData, uma linha por mês e município, com valor, quantidade e
+      pessoas por pagador e recebedor e por PF e PJ, e os códigos IBGE de
+      município e UF. O parâmetro DataBase é "a partir de", e o recurso não
+      aceita paginação.
+    data_de_referencia: "O mês (AnoMes). O mês corrente vem incompleto e não entra."
+    municipio: >
+      O recurso não define o município. O recurso irmão, EstatisticasTransacoesPix,
+      define a região como a do "domicílio do usuário pagador" ou recebedor.
+      Por analogia, o município é o domicílio do usuário, o que o torna
+      comparável à UF do SCR (domicílio ou sede), com confiança inferida.
+    confianca: parafraseado
+    fonte: "Documentação da API Pix_DadosAbertos e medição de 2026-09-24"
+
 conceitos:
 
   - id: empresa_ativa
@@ -227,6 +248,29 @@ conceitos:
       da meta, mas não é a mesma coisa: em set/2026, 13,82% contra meta de
       13,75%. Trocar uma pela outra muda a resposta sem nenhum erro aparente.
 
+  - id: volume_de_pix
+    notation: valor
+    prefLabel_pt: "Volume financeiro de PIX"
+    prefLabel_en: "Pix financial volume"
+    definition: >
+      Soma em reais das transações Pix liquidadas no SPI no mês, pelo lado do
+      pagador ou do recebedor.
+    confianca: parafraseado
+    fonte: "Documentação da API Pix_DadosAbertos, recursos TransacoesPixPorMunicipio e EstatisticasTransacoesPix"
+    scopeNote: >
+      Não inclui o PIX liquidado nos livros do próprio participante, isto é,
+      entre contas da mesma instituição, que não vai ao SPI. A documentação
+      diz isso no recurso de estatísticas gerais, e o total nacional do
+      recurso por município é idêntico ao dele (R$ 3.174,5 bi em ago/2026 nos
+      dois, medido em 2026-09-24). O volume publicado fica abaixo do volume
+      real de PIX.
+    armadilha: >
+      Três leituras erradas, todas plausíveis: somar pagador e recebedor, que
+      conta cada transação duas vezes; tratar o PIX como estoque, quando é o
+      que circulou no mês, ao contrário da carteira de crédito, que é saldo;
+      e incluir o mês corrente, que vem incompleto (set/2026 somava R$ 2,5 tri
+      contra cerca de R$ 3,2 tri nos meses cheios).
+
 avisos:
 
   - id: data_do_retrato_nao_e_fim_de_mes
@@ -287,3 +331,45 @@ avisos:
       alguma data depois dela.
     confianca: verbatim
     fonte: "API do SGS, consulta de 2026-09-24"
+
+  - id: pix_por_uf_depende_do_lado
+    gravidade: alta
+    descricao: >
+      No total do país, pagador e recebedor somam o mesmo valor, porque todo
+      PIX tem os dois. Por UF eles diferem, porque o dinheiro atravessa
+      estados. "Volume de PIX por UF" não tem um número só.
+    consequencia: >
+      A resposta da Q24 precisa dizer qual lado usa. O fato guarda os dois, e
+      um teste confere a igualdade nacional mês a mês.
+    confianca: verbatim
+    fonte: "Medição no dado, 2026-09-24"
+
+  - id: pix_municipios_que_entram_e_nao_informado
+    gravidade: baixa
+    descricao: >
+      O conjunto de municípios cresce com o tempo: Campo Grande e Januário
+      Cicco (RN) só aparecem a partir de abr/2025, e Boa Esperança do Norte
+      (MT), município novo, a partir de out/2025. Uma linha "N/D" reúne o que
+      não tem município informado, R$ 7,7 bi em ago/2026, cerca de 0,2% do
+      total.
+    consequencia: >
+      A linha sem município entra no total nacional e fica fora do recorte
+      por UF. A ingestão falha se algum município sumir de um mês para o
+      seguinte, e lista os que entram.
+    confianca: verbatim
+    fonte: "Medição no dado, 2026-09-24"
+
+  - id: pix_pagador_diferente_de_recebedor_em_dois_meses
+    gravidade: baixa
+    descricao: >
+      No total do país, o valor pago é igual ao recebido em 30 dos 32 meses
+      publicados, centavo a centavo. Em ago/2025 o pago supera o recebido em
+      R$ 1.205.108,81 (502 transações) e em set/2025 em R$ 1.124.436,09 (627
+      transações), sobre cerca de R$ 2,6 tri por mês. A diferença já vem nos
+      JSONs da API.
+    consequencia: >
+      Irrelevante para qualquer total, mas é defeito do dado publicado, e não
+      do projeto. O teste fct_pix_pagador_igual_recebedor avisa com esses dois
+      meses e falha se aparecer um terceiro.
+    confianca: verbatim
+    fonte: "Medição nos JSONs brutos da API, 2026-09-24"
