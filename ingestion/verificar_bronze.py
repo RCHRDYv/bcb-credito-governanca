@@ -10,7 +10,8 @@ PT: Etapa 5. Prova que o bronze no Databricks é o dado publicado pelo BCB,
     3. Reconciliação V1 contra V2 na carteira ativa. É informativa e não
        reprova: as duas versões divergem de fato (docs/analise-v1-v2.md).
     4. Linhas por arquivo das fontes externas (CNPJ da Receita e população
-       do IBGE, issue #25) iguais às do manifesto.
+       do IBGE, issue #25) iguais às do manifesto, e cada ZIP do CNPJ
+       conferido contra a Receita, e não só contra o espelho.
 
     Sai com código 1 se a checagem 1, a 2 ou a 4 falhar.
 
@@ -92,8 +93,21 @@ def checar_fontes_externas(w, wid: str, dados: dict) -> list[str]:
     falhas = [f"{t} {arq}: esperado {n:,}, bronze {obtido.get((t, arq), 0):,}"
               for (t, arq), n in esperado.items() if obtido.get((t, arq)) != n]
     falhas += [f"{t} {arq}: no bronze mas fora do manifesto" for t, arq in obtido.keys() - esperado.keys()]
+    # PT: O bronze só confere com a fonte se cada ZIP do CNPJ foi conferido
+    #     contra a Receita, e não só contra o espelho de onde veio. Com a
+    #     Receita fora do ar, o download segue e marca "pendente", mas esta
+    #     verificação não passa até a conferência ser feita (ADR 0009).
+    #     Apontado pela revisão do Copilot na PR #42.
+    # EN: Bronze only matches the source if every CNPJ ZIP was checked
+    #     against Receita, not just the mirror. With Receita down, download
+    #     proceeds and marks "pendente", but this check fails until verified.
+    pendentes = [chave for chave, reg in dados.get("cnpj", {}).items()
+                 if reg.get("conferencia_com_a_receita") != "conferido"]
+    falhas += [f"cnpj {chave}: sem conferência com a Receita, só com o espelho" for chave in pendentes]
+
     total = sum(esperado.values())
-    print(f"  4. fontes externas: {len(esperado)} arquivos, {total:,} linhas conferidas, {len(falhas)} divergências")
+    print(f"  4. fontes externas: {len(esperado)} arquivos, {total:,} linhas conferidas, "
+          f"{len(pendentes)} sem conferência com a Receita, {len(falhas)} divergências")
     return falhas
 
 

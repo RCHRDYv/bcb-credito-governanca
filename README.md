@@ -199,7 +199,7 @@ Do diretório `dbt/`, com o mesmo OAuth do CLI e um `~/.dbt/profiles.yml` copiad
 uv run dbt build
 ```
 
-O comando carrega os seeds, cria as views de staging e de intermediate, as tabelas da camada gold e roda os testes. Hoje são 262 verificações, e duas avisam de propósito, cada uma por um defeito do próprio dado publicado. A identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024 do arquivo do BCB, e a tabela Empresas da Receita traz uma empresa repetida. Os dois testes avisam com um caso e falham com dois, para que uma segunda ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+O comando carrega os seeds, cria as views de staging e de intermediate, as tabelas da camada gold e roda os testes. Hoje são 267 verificações, e duas avisam de propósito, cada uma por um defeito do próprio dado publicado. A identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024 do arquivo do BCB, e a tabela Empresas da Receita traz uma empresa repetida. Os dois testes avisam com um caso e falham com dois, para que uma segunda ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
 
 A camada intermediária resolve as dimensões: ela traz o código do Anexo 3 que o dado publicado não tem, desfaz a ambiguidade das duas colunas polimórficas no formato que a V1 usava, e liga cada linha à modalidade correspondente da V1 pela tabela oficial de equivalência. Os testes de relacionamento provam que nenhuma linha fica sem dimensão, e um teste de contagem e soma prova que as junções não multiplicam linha.
 

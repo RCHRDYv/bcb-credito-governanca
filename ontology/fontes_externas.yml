@@ -114,7 +114,8 @@ conceitos:
       coisas se perdem: estados intermediários (uma empresa que passou de
       inapta para baixada depois de D conta como ativa em D, e talvez já
       estivesse inapta) e mudança de UF da matriz. O erro é medido contra
-      retratos reais antigos e declarado no ADR 0009.
+      retratos reais antigos e publicado no ADR 0009. É medição em dois
+      pontos, e não garantia para outros meses ou UFs.
 
   - id: populacao_residente_estimada
     notation: populacao

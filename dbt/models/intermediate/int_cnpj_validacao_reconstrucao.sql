@@ -13,10 +13,11 @@
 --     também vai um dia além do nome. Comparar na data do nome deixaria essas
 --     empresas de fora e criaria uma diferença que não é do método.
 --
---     No retrato mais recente, as duas precisam ser iguais, por construção:
---     é a prova de que a regra do intervalo está certa. Nos retratos antigos,
---     a diferença é o erro da reconstrução, e é esse número que vira limite
---     declarado.
+--     No retrato mais recente, as duas precisam ser iguais, por construção.
+--     Esse zero prova que a implementação reproduz a regra, e não que o
+--     passado está certo: o retrato que constrói é o mesmo que confere. O
+--     passado é medido pelos retratos antigos, que são observações reais e
+--     independentes, e a diferença neles é o erro medido da reconstrução.
 --
 -- EN: Measures the active-company stock reconstruction error. For each
 --     downloaded snapshot, it compares, by state and on that snapshot's

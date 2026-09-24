@@ -300,11 +300,11 @@ models:
       em qualquer situação. Contato e endereço ficam no bronze.
     columns:
       - name: retrato
-        data_tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ["2024-06", "2025-06", "2026-09"]
+        description: >
+          Mês do retrato. Os retratos esperados ficam em ingestion/fontes.py, e
+          não são repetidos aqui. O teste cnpj_retrato_do_modelo_completo
+          confere que o retrato usado pelo modelo tem as três tabelas.
+        data_tests: [not_null]
       - name: cnpj_basico
         data_tests: [not_null]
       - name: identificador_matriz_filial

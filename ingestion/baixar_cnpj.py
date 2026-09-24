@@ -283,17 +283,38 @@ def processar(arquivo: ArquivoRemoto, registro: dict, oficiais: dict[str, int] |
     if situacao == "pendente" and registro.get("conferencia_com_a_receita") == "conferido":
         situacao = "conferido"
 
+    # PT: A data do servidor entra na conferência, como em ingestion/baixar.py.
+    #     Sem ela, uma republicação com o mesmo tamanho passaria em silêncio:
+    #     o hash local e o registrado seriam os dois do arquivo antigo.
+    #     Apontado pela revisão do Copilot na PR #42.
+    # EN: The server date is part of the check, as in ingestion/baixar.py.
+    #     Without it, a same-size republication would pass silently: the local
+    #     and recorded hashes would both be the old file's.
     em_dia = (
         arquivo.destino.exists()
         and arquivo.destino.stat().st_size == arquivo.bytes
         and registro.get("bytes") == arquivo.bytes
+        and registro.get("last_modified") == arquivo.last_modified
         and registro.get("sha256") == sha256(arquivo.destino)
     )
     if em_dia:
         return {**registro, "conferencia_com_a_receita": situacao}
 
+    # PT: Arquivo local que não é o publicado hoje sai do caminho antes do
+    #     download, e só é apagado quando o novo está completo. Um .part
+    #     antigo também sai, para a retomada não emendar bytes de duas
+    #     versões diferentes.
+    # EN: A local file that is not today's publication is moved aside before
+    #     downloading and only deleted once the new one is complete. A stale
+    #     .part goes too, so resuming never splices two versions.
+    antigo = arquivo.destino.with_suffix(".antigo")
+    if registro and arquivo.destino.exists():
+        arquivo.destino.with_suffix(".part").unlink(missing_ok=True)
+        arquivo.destino.replace(antigo)
+
     if not (arquivo.destino.exists() and arquivo.destino.stat().st_size == arquivo.bytes):
         baixar_com_retomada(arquivo)
+    antigo.unlink(missing_ok=True)
 
     novo_hash = sha256(arquivo.destino)
     if registro and registro.get("sha256") != novo_hash:

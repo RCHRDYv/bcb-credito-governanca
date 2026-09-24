@@ -99,7 +99,10 @@
        Nenhum outro valor fora de AAAAMMDD válido existe. Só os dois
        marcadores viram nulo, e a conversão continua estrita: um terceiro
        marcador, ou uma data malformada, faz o modelo falhar em vez de virar
-       nulo escondido. Foi assim que o "00000000" apareceu.
+       nulo escondido. Foi assim que o "00000000" apareceu: observado no SQL
+       warehouse do Databricks em 2026-09-24, com erro CANNOT_PARSE_TIMESTAMP.
+       O comportamento estrito depende do modo ANSI, que é o padrão do SQL
+       warehouse. Com o ANSI desligado, to_date devolveria nulo em silêncio.
    EN: Date from Receita's open CNPJ data, published as YYYYMMDD text. Receita
        marks a missing date in two ways depending on the table: "0" in
        Establishments and "00000000" in Simples. Only those two become null;

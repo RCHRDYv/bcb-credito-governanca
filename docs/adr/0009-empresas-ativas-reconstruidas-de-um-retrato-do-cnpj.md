@@ -42,7 +42,7 @@ A implementação trata isso como intervalos. Cada matriz vira um intervalo semi
 - **Porte e natureza jurídica no passado.** A Receita só publica os de hoje.
 - **Matriz fora do ar sem data de saída.** Uma matriz não ativa com data de mudança ausente (a Receita publica "0") não tem como ser situada, e ficaria fora. No retrato de set/2026 não há nenhum caso, e o QA confere isso a cada execução.
 
-**Por isso o erro é medido, e não suposto.** Também foram baixados os Estabelecimentos de dois retratos antigos, jun/2024 e jun/2025. Em cada um, a contagem real de matrizes ativas por UF é comparada com a reconstruída na data de corte daquele retrato (`mrt_erro_da_reconstrucao`). No retrato mais recente, as duas precisam ser iguais, e um teste confere isso: é a prova de que a regra do intervalo está certa antes de ser usada para o passado.
+**Por isso o erro é medido, e não suposto.** Também foram baixados os Estabelecimentos de dois retratos antigos, jun/2024 e jun/2025. Em cada um, a contagem real de matrizes ativas por UF é comparada com a reconstruída na data de corte daquele retrato (`mrt_erro_da_reconstrucao`). São dois papéis diferentes. No retrato mais recente, as duas contagens precisam ser iguais, e um teste confere isso. Esse zero prova só que a implementação reproduz a regra, porque o retrato que constrói é o mesmo que confere: ele não diz nada sobre o passado. Quem mede o passado são os dois retratos antigos, que são observações reais e independentes da reconstrução.
 
 **A data de corte não é a do nome do arquivo.** O nome traz uma data, como "D60912", mas o retrato de set/2026 tem 226 matrizes abertas em 13/09, um dia depois. O de jun/2025 também vai um dia além do nome. A data de corte usada é a mais recente que aparece no próprio retrato. Na primeira medição, com a data do nome, sobravam 67 empresas de diferença no retrato mais recente. Com a data de corte, a diferença é zero em todas as UFs.
 
@@ -54,7 +54,7 @@ A implementação trata isso como intervalos. Cada matriz vira um intervalo semi
 | jun/2025 | 15 meses | 24.785.601 | 24.840.786 | +0,22% | de -1,35% (AP) a +1,04% (PE) |
 | set/2026 | o próprio | 26.856.762 | 26.856.762 | 0 | 0 em todas |
 
-O erro no total é pequeno e positivo, como a regra prevê: empresas que passaram por inapta antes de serem baixadas contam como ativas por mais tempo do que estiveram. Por UF, os maiores erros são negativos e ficam em estados do Norte (AC, AM, AP, RR), onde a reconstrução conta menos que o real. Isso é compatível com matrizes que mudaram de UF depois do retrato antigo, e a reconstrução as põe na UF de hoje. **O limite declarado é de até 2,3% por UF para meses com dois anos de distância do retrato.**
+O erro no total é pequeno e positivo, como a regra prevê: empresas que passaram por inapta antes de serem baixadas contam como ativas por mais tempo do que estiveram. Por UF, os maiores erros são negativos e ficam em estados do Norte (AC, AM, AP, RR), onde a reconstrução conta menos que o real. Isso é compatível com matrizes que mudaram de UF depois do retrato antigo, e a reconstrução as põe na UF de hoje. **O erro medido chega a 2,3% por UF a 27 meses de distância do retrato.** É medição em dois pontos, e não garantia: outros meses, outras UFs ou um retrato futuro podem errar mais. Por isso o mart da tela 1 traz em cada linha o retrato de onde veio o número e a distância até ele (`retrato_do_cnpj` e `meses_ate_o_retrato`), e o erro fica publicado por UF em `mrt_erro_da_reconstrucao`.
 
 **Dois defeitos do dado publicado, tratados de forma explícita** e registrados em `ontology/fontes_externas.yml`:
 
@@ -72,7 +72,7 @@ O espelho é só o meio de transporte, e isso é verificado duas vezes:
 
 ### 5. O bronze guarda o dado inteiro, e o staging só o que é usado
 
-Decidido com o Yuri: as tabelas da Receita entram no bronze como publicadas, no padrão do ADR 0004. Elas trazem nome fantasia, endereço, telefone e e-mail, que no caso do MEI são dados de uma pessoa. O staging seleciona só as colunas usadas, então esses campos param no bronze e não chegam a nenhuma tabela consultada. A tabela de Sócios, com nome e CPF parcial, não é ingerida: nenhuma pergunta a usa.
+Decidido com o Yuri: as tabelas da Receita entram no bronze como publicadas, no padrão do ADR 0004. Elas trazem nome fantasia, endereço, telefone e e-mail, que no caso do MEI são dados de uma pessoa. O staging seleciona só as colunas usadas, então esses campos param no bronze e não chegam a nenhuma tabela consultada. O acesso ao bronze do CNPJ fica restrito ao dono do workspace, e ele não é compartilhado com quem consome os marts, mesmo sendo dado público na origem. A tabela de Sócios, com nome e CPF parcial, não é ingerida: nenhuma pergunta a usa.
 
 ## Alternativas descartadas
 
@@ -90,11 +90,11 @@ Decidido com o Yuri: as tabelas da Receita entram no bronze como publicadas, no 
 
 **Positivas.**
 - O indicador de espaço tem denominador mensal com cerca de 17 GB de download, e não 210 GB.
-- O erro do método é um número publicado por UF, e não uma suposição: até 2,3% por UF e 0,2% no total do país, a dois anos de distância.
+- O erro do método é um número medido e publicado por UF, e não uma suposição: nos dois retratos antigos, até 2,3% por UF e 0,2% no total do país.
 - O porte da Receita e o grupo de natureza jurídica ficam disponíveis, com aviso explícito de que o porte não equivale ao do SCR.
 
 **Negativas, e são reais.**
-- **O estoque de meses passados é aproximado.** No total do país o erro fica em 0,2% nas duas distâncias medidas, mas por UF ele cresce com a distância até o retrato: 1,35% a 15 meses e 2,3% a 27. O limite fica declarado na tela 4.
+- **O estoque de meses passados é aproximado.** No total do país o erro fica em 0,2% nas duas distâncias medidas, mas por UF ele cresce com a distância até o retrato: 1,35% a 15 meses e 2,3% a 27. O erro medido fica publicado na tela 4 e a distância de cada mês ao retrato vai em coluna, na tela 1.
 - **Porte e natureza jurídica são os de hoje** aplicados ao passado.
 - **Depender de um espelho de terceiros** para o transporte. Se ele sair do ar ou divergir, a conferência contra a Receita pega a divergência, mas o download volta a depender do servidor oficial.
 - **A escolha do denominador fica para a #26:** com ou sem MEI, e quais grupos de natureza jurídica. O fato guarda todas as combinações.

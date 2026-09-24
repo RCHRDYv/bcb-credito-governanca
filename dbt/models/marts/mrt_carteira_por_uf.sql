@@ -10,6 +10,11 @@
 --     MEI no mês. A população é a estimativa do ano da data-base, sem
 --     interpolar.
 --
+--     O número de empresas é reconstruído de um retrato só do CNPJ, e não
+--     observado mês a mês (ADR 0009). Para que ninguém o leia como contagem
+--     observada, cada linha diz de qual retrato ele vem e a quantos meses
+--     dele está. O erro medido cresce com essa distância.
+--
 --     A mediana nacional e a comparação entre UFs ficam na camada de
 --     decisão, que lê daqui.
 --
@@ -32,6 +37,12 @@ with carteira as (
         sum(case when cliente = 'PJ' then carteira_inadimplencia end) as carteira_inadimplida_pj
     from {{ ref('fct_carteira') }}
     group by data_base, uf
+
+),
+
+retrato as (
+
+    select max(retrato) as retrato_do_cnpj from {{ ref('stg_cnpj_empresas') }}
 
 ),
 
@@ -59,6 +70,12 @@ select
     e.empresas_ativas_sem_mei,
     p.populacao,
 
+    -- PT: de onde vem o denominador de empresas, e a que distância
+    -- EN: where the company denominator comes from, and how far
+    r.retrato_do_cnpj,
+    cast(months_between(to_date(concat(r.retrato_do_cnpj, '-01')), trunc(c.data_base, 'MM')) as int)
+        as meses_ate_o_retrato,
+
     c.carteira_pj / e.empresas_ativas as carteira_pj_por_empresa_ativa,
     c.carteira_pj / e.empresas_ativas_sem_mei as carteira_pj_por_empresa_ativa_sem_mei,
     c.carteira_total / p.populacao as carteira_por_habitante,
@@ -70,3 +87,4 @@ left join empresas as e
     on e.data_base = c.data_base and e.uf = c.uf
 left join {{ ref('fct_populacao') }} as p
     on p.ano = year(c.data_base) and p.uf = c.uf
+cross join retrato as r

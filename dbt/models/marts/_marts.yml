@@ -361,6 +361,25 @@ models:
         data_tests: [not_null]
       - name: uf
         data_tests: [not_null]
+      # PT: Os denominadores vêm de left join. Sem estes testes, um mês ou uma
+      #     UF sem denominador viraria razão nula no dashboard, sem erro.
+      #     Apontado pela revisão do Copilot na PR #42.
+      # EN: Denominators come from left joins; without these tests a missing
+      #     one would become a null ratio on the dashboard with no error.
+      - name: empresas_ativas
+        data_tests: [not_null]
+      - name: empresas_ativas_sem_mei
+        data_tests: [not_null]
+      - name: populacao
+        data_tests: [not_null]
+      - name: retrato_do_cnpj
+        description: "Retrato do CNPJ de onde o número de empresas foi reconstruído."
+        data_tests: [not_null]
+      - name: meses_ate_o_retrato
+        description: >
+          Distância, em meses, entre a data-base e o retrato. O erro medido da
+          reconstrução cresce com ela (ADR 0009).
+        data_tests: [not_null]
 
   - name: mrt_erro_da_reconstrucao
     description: >
