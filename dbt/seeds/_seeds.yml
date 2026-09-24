@@ -155,6 +155,7 @@ seeds:
         aplica_a: string
         significado: string
         aviso: string
+        definicao_da_dimensao: string
     columns:
       - name: dimensao
         description: "Nome da coluna do dado a que o valor pertence."
@@ -176,6 +177,12 @@ seeds:
         description: >
           A qual taxonomia o valor pertence. É o que distingue faixa de renda de
           porte de empresa dentro da mesma coluna.
+        data_tests: [not_null]
+      - name: definicao_da_dimensao
+        description: >
+          Definição normativa da dimensão a que o valor pertence, a mesma em
+          todos os valores dela. É por esta coluna que o aviso da UF como
+          domicílio ou sede chega ao mart.
         data_tests: [not_null]
       - name: aplica_a
         description: "Tipos de cliente em que o valor ocorre no dado, medido."

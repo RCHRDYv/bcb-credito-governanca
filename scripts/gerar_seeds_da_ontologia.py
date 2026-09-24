@@ -166,6 +166,13 @@ def linhas_de_dimensao(dados: dict) -> list[dict[str, str]]:
                         "aplica_a": valor.get("aplica_a", ""),
                         "significado": texto(valor.get("significado")),
                         "aviso": texto(valor.get("aviso")),
+                        # PT: a definição normativa da dimensão inteira. É onde
+                        #     mora, por exemplo, o aviso de que UF é domicílio
+                        #     ou sede, e não local da operação.
+                        # EN: the whole dimension's normative definition, where
+                        #     e.g. the "state is domicile or headquarters" note
+                        #     lives.
+                        "definicao_da_dimensao": texto(dimensao.get("definition")),
                     }
                 )
     return linhas
