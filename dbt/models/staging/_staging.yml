@@ -360,3 +360,13 @@ models:
                 values: ["9324"]
       - name: populacao
         data_tests: [not_null]
+
+  - name: stg_sgs_series
+    description: "Séries do SGS do BCB, com data e valor tipados. Hoje só a meta da Selic, série 432, em % ao ano."
+    columns:
+      - name: codigo_serie
+        data_tests: [not_null]
+      - name: data
+        data_tests: [not_null]
+      - name: valor
+        data_tests: [not_null]

@@ -10,7 +10,8 @@ PT: Etapa 5. Prova que o bronze no Databricks é o dado publicado pelo BCB,
     3. Reconciliação V1 contra V2 na carteira ativa. É informativa e não
        reprova: as duas versões divergem de fato (docs/analise-v1-v2.md).
     4. Linhas por arquivo das fontes externas (CNPJ da Receita e população
-       do IBGE, issue #25) iguais às do manifesto, e cada ZIP do CNPJ
+       do IBGE, issue #25, e séries do SGS, issue #37) iguais às do
+       manifesto, e cada ZIP do CNPJ
        conferido contra a Receita, e não só contra o espelho.
 
     Sai com código 1 se a checagem 1, a 2 ou a 4 falhar.
@@ -83,10 +84,14 @@ def checar_fontes_externas(w, wid: str, dados: dict) -> list[str]:
             esperado[(conv["tabela"], f"{chave}/{conv['arquivo_interno']}")] = conv["linhas"]
     for nome, reg in dados.get("ibge", {}).items():
         esperado[("ibge_populacao", nome)] = reg["linhas"]
+    for nome, reg in dados.get("sgs", {}).items():
+        esperado[("sgs_series", nome)] = reg["linhas"]
 
     obtido: dict[tuple[str, str], int] = {}
     for tabela in sorted({t for t, _ in esperado}):
-        nome_bronze = tabela if tabela.startswith("ibge") else f"cnpj_{tabela}"
+        # PT: as tabelas do CNPJ são registradas sem o prefixo da fonte.
+        # EN: CNPJ tables are recorded without the source prefix.
+        nome_bronze = tabela if tabela.startswith(("ibge_", "sgs_")) else f"cnpj_{tabela}"
         sql = f"SELECT arquivo_origem, count(*) FROM {CATALOGO}.{SCHEMA}.bronze_{nome_bronze} GROUP BY 1"
         obtido.update({(tabela, arq): int(n) for arq, n in executar_sql(w, wid, sql)})
 

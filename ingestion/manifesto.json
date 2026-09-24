@@ -1114,5 +1114,16 @@
       "sha256": "96f4e06070eed3a7b98cc35b4c389be21c0abb482196d0c79ba773c39aa53736",
       "url": "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2024,2025,2026"
     }
+  },
+  "sgs": {
+    "selic_meta_432.json": {
+      "bytes": 37925,
+      "codigo": 432,
+      "data_extracao": "2026-09-24",
+      "descricao": "Meta da taxa Selic definida pelo Copom, % a.a., diária",
+      "linhas": 998,
+      "sha256": "35e0332805b55c7b08b785950c7d1dbe7c927223e52ca11d27f112b890e6675c",
+      "url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json&dataInicial=01/01/2024&dataFinal=24/09/2026"
+    }
   }
 }
