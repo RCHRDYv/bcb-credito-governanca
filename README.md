@@ -75,12 +75,13 @@ flowchart LR
         equiv["Equivalência oficial<br/>entre versões"]
         cnpj["CNPJ da Receita"]
         ibge["População do IBGE"]
+        sgs["Selic do SGS"]
     end
 
     subgraph bronze["Bronze"]
         b2["bronze_scr_v2"]
         b1["bronze_scr_v1"]
-        bext["bronze_cnpj_*<br/>bronze_ibge_populacao"]
+        bext["bronze_cnpj_*<br/>bronze_ibge_populacao<br/>bronze_sgs_series"]
     end
 
     seeds["Seeds gerados"]
@@ -89,7 +90,7 @@ flowchart LR
         s2["stg_scr_v2"]
         s1["stg_scr_v1"]
         conf["int_scr_v2_conformado<br/>int_dim_*"]
-        sext["stg_cnpj_*<br/>stg_ibge_populacao"]
+        sext["stg_cnpj_*<br/>stg_ibge_populacao<br/>stg_sgs_series"]
         rec["int_cnpj_*<br/>reconstrução mensal"]
     end
 
@@ -109,7 +110,7 @@ flowchart LR
     seeds --> estrela
     conf --> estrela
     s1 --> estrela
-    cnpj & ibge -- "ingestion/" --> bext --> sext --> rec --> estrela
+    cnpj & ibge & sgs -- "ingestion/" --> bext --> sext --> rec --> estrela
     sext --> estrela
     estrela --> apres
     estrela --> ia & gab
@@ -149,6 +150,7 @@ uv run python -m ingestion.converter_parquet  # CSV para Parquet só texto, com 
 uv run python -m ingestion.baixar_cnpj        # CNPJ da Receita, três retratos, cerca de 16 GB
 uv run python -m ingestion.converter_cnpj     # CNPJ para Parquet só texto, em partes
 uv run python -m ingestion.baixar_ibge        # população por UF, SIDRA 6579
+uv run python -m ingestion.baixar_sgs         # meta da Selic, série 432 do SGS
 uv run python -m ingestion.enviar_volume      # schema, volume e envio ao Unity Catalog
 uv run python -m ingestion.criar_bronze       # tabelas bronze do SCR e das fontes externas
 uv run python -m ingestion.verificar_bronze   # prova que o bronze é o dado publicado
@@ -199,7 +201,7 @@ Do diretório `dbt/`, com o mesmo OAuth do CLI e um `~/.dbt/profiles.yml` copiad
 uv run dbt build
 ```
 
-O comando carrega os seeds, cria as views de staging e de intermediate, as tabelas da camada gold e roda os testes. Hoje são 267 verificações, e duas avisam de propósito, cada uma por um defeito do próprio dado publicado. A identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024 do arquivo do BCB, e a tabela Empresas da Receita traz uma empresa repetida. Os dois testes avisam com um caso e falham com dois, para que uma segunda ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+O comando carrega os seeds, cria as views de staging e de intermediate, as tabelas da camada gold e roda os testes. Hoje são 281 verificações, e duas avisam de propósito, cada uma por um defeito do próprio dado publicado. A identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024 do arquivo do BCB, e a tabela Empresas da Receita traz uma empresa repetida. Os dois testes avisam com um caso e falham com dois, para que uma segunda ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
 
 A camada intermediária resolve as dimensões: ela traz o código do Anexo 3 que o dado publicado não tem, desfaz a ambiguidade das duas colunas polimórficas no formato que a V1 usava, e liga cada linha à modalidade correspondente da V1 pela tabela oficial de equivalência. Os testes de relacionamento provam que nenhuma linha fica sem dimensão, e um teste de contagem e soma prova que as junções não multiplicam linha.
 
@@ -232,6 +234,7 @@ uv run python -m scripts.analises.qa_staging
 | [ADR 0007](docs/adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md) | A camada gold tem duas famílias, e a IA consulta só o esquema estrela |
 | [ADR 0008](docs/adr/0008-diagramas-como-codigo-em-mermaid.md) | Os diagramas de arquitetura são código, escritos em Mermaid |
 | [ADR 0009](docs/adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md) | Empresas ativas por UF, reconstruídas mês a mês de um único retrato do CNPJ |
+| [ADR 0010](docs/adr/0010-selic-e-a-meta-do-copom-vigente-no-fim-do-mes.md) | A Selic do projeto é a meta do Copom, vigente no último dia do mês |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Cobertura da camada gold](evaluation/cobertura.yml) | Para cada pergunta e cada tela, os modelos que a respondem ou a issue que a bloqueia |

@@ -10,7 +10,7 @@ No diagrama da ontologia, a seta pontilhada liga uma verificação àquilo que e
 
 `fct_carteira` guarda o grão cheio da V2. `fct_carteira_v1` é o fato legado, agregado, e existe para que as perguntas de comparação entre versões tenham dado da V1. Ele se liga só ao tempo e à UF, porque a taxonomia da V1 não é a das dimensões.
 
-Os denominadores por UF vêm das fontes externas ([ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md)). `fct_empresas_ativas` conta matrizes ativas no fim de cada mês, e `fct_populacao` tem uma estimativa por ano, então a junção com a carteira é pelo ano da data-base. `dim_porte_receita` não se liga à `dim_porte`, de propósito: os dois portes têm critérios diferentes.
+Os denominadores por UF vêm das fontes externas ([ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md)). `fct_empresas_ativas` conta matrizes ativas no fim de cada mês, e `fct_populacao` tem uma estimativa por ano, então a junção com a carteira é pelo ano da data-base. `dim_porte_receita` não se liga à `dim_porte`, de propósito: os dois portes têm critérios diferentes. `fct_selic` tem uma linha por mês, com a meta do Copom vigente no último dia ([ADR 0010](adr/0010-selic-e-a-meta-do-copom-vigente-no-fim-do-mes.md)).
 
 ```mermaid
 erDiagram
@@ -27,6 +27,7 @@ erDiagram
     dim_porte_receita ||--o{ fct_empresas_ativas : porte_empresa
     dim_natureza_juridica ||--o{ fct_empresas_ativas : grupo_natureza_juridica
     dim_uf ||--o{ fct_populacao : uf
+    dim_tempo ||--|| fct_selic : data_base
 
     fct_carteira {
         date data_base FK
@@ -67,6 +68,12 @@ erDiagram
         string grupo_natureza_juridica FK
         boolean mei
         bigint empresas_ativas "reconstruído de um retrato, ADR 0009"
+    }
+
+    fct_selic {
+        date data_base FK
+        decimal selic_meta "meta do Copom, % a.a., ADR 0010"
+        date data_do_valor
     }
 
     fct_populacao {
