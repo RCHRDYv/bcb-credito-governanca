@@ -67,6 +67,16 @@ def checar_estrutura(dados: dict) -> list[str]:
             if "aplica_a" in v and v["aplica_a"] not in CLIENTES_VALIDOS:
                 erros.append(f"{d['id']}: aplica_a inválido '{v['aplica_a']}' em '{v['rotulo_no_dado']}'")
 
+        # PT: O código IBGE liga as fontes externas à UF: se faltar em uma
+        #     UF ou se repetir, a junção perde ou duplica linhas em silêncio.
+        # EN: The IBGE code links external sources to states: a missing or
+        #     repeated code silently drops or duplicates rows in the join.
+        if d.get("coluna") == "uf":
+            codigos = [str(v.get("codigo_ibge", "")) for v in d.get("valores", [])]
+            erros += [f"uf: sem codigo_ibge em '{v['rotulo_no_dado']}'"
+                      for v in d["valores"] if not str(v.get("codigo_ibge", "")).isdigit()]
+            erros += [f"uf: codigo_ibge repetido '{c}'" for c, n in Counter(codigos).items() if n > 1]
+
     enumeradas = [d["id"] for d in dados["dimensoes"] if d.get("valores")]
     print(f"  1. estrutura: {len(dimensoes)} dimensões, {len(enumeradas)} com valores enumerados, {len(erros)} problemas")
     return erros + checar_quebras(dados)

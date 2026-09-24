@@ -1,0 +1,207 @@
+# =============================================================================
+# PT: Ontologia das fontes externas por UF: o número de empresas ativas, do
+#     CNPJ aberto da Receita Federal, e a população residente estimada, do
+#     IBGE. Elas são os denominadores das perguntas Q11, Q12 e Q14 e do
+#     indicador de espaço da camada de decisão (issue #25).
+#
+#     Existe pelo mesmo motivo das outras: cada denominador tem uma armadilha
+#     que o nome da coluna não mostra. A principal é que a UF do SCR é a da
+#     sede da empresa, e o CNPJ aberto lista estabelecimentos, com as filiais
+#     no estado onde funcionam.
+#
+# EN: Ontology of the external sources by state: active companies, from
+#     Receita Federal's open CNPJ data, and estimated resident population,
+#     from IBGE. They are the denominators of Q11, Q12 and Q14 and of the
+#     decision layer's room-to-grow indicator. The main trap: the SCR's state
+#     is the company's headquarters, while the open CNPJ data lists
+#     establishments, with branches in the state where they operate.
+#
+# PT: Estrutura SKOS conforme ADR 0002, com os mesmos níveis de confiança:
+#   verbatim      = definição transcrita literalmente da fonte
+#   parafraseado  = redação própria, sentido diretamente amparado na fonte
+#   inferido      = conclusão a partir de contexto, não declarada na fonte
+#   lacuna        = não encontrado em nenhum documento consultado
+# EN: SKOS structure per ADR 0002, with the same confidence levels.
+#
+# PT: Validação de estrutura: uv run python -m scripts.validar_fontes_externas
+# EN: Structure validation: uv run python -m scripts.validar_fontes_externas
+# =============================================================================
+
+esquema:
+  id: fontes-externas-uf
+  titulo: "Denominadores por UF: empresas ativas e população"
+  data_leitura: "2026-09-24"
+
+fontes:
+
+  - id: cnpj_aberto
+    prefLabel_pt: "Dados abertos do CNPJ"
+    prefLabel_en: "Open CNPJ data"
+    publicador: "Receita Federal do Brasil"
+    endereco: "https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9"
+    leiaute: "https://www.gov.br/receitafederal/dados/cnpj-metadados.pdf"
+    periodicidade: "mensal, um retrato completo do cadastro por mês desde mai/2023"
+    formato: >
+      ZIPs com CSV sem cabeçalho, separado por ponto e vírgula, com aspas, em
+      latin-1. Cada tabela vem dividida em vários arquivos.
+    data_de_referencia: >
+      O nome do arquivo interno de cada ZIP traz uma data (por exemplo,
+      "D60912" é 12/09/2026), registrada por linha no bronze, na coluna
+      data_extracao. Ela não é o corte efetivo: o retrato de set/2026 tem 226
+      matrizes abertas em 13/09, e o de jun/2025 também vai um dia além do
+      nome. A data de corte usada na validação é a mais recente que aparece
+      no próprio retrato. Nenhuma das duas coincide com o fim do mês.
+    transporte: >
+      Os arquivos são baixados do espelho público da Casa dos Dados
+      (https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/), e não do
+      servidor da Receita, que em 2026-09-24 entregava cerca de 4 MB/s com
+      quedas e depois saiu do ar. A fonte continua sendo a Receita: 613 MB
+      baixados do servidor oficial antes da queda são idênticos byte a byte
+      aos do espelho, e o tamanho de cada arquivo é conferido contra a
+      listagem oficial sempre que ela responde (campo
+      conferencia_com_a_receita no manifesto). Ver ADR 0009.
+    confianca: verbatim
+    fonte: "Leiaute dos dados abertos do CNPJ (Receita Federal); listagem do servidor em 2026-09-24"
+
+  - id: sidra_6579
+    prefLabel_pt: "Estimativas de população, tabela 6579 do SIDRA"
+    prefLabel_en: "Population estimates, SIDRA table 6579"
+    publicador: "IBGE"
+    endereco: "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2024,2025,2026"
+    periodicidade: "anual"
+    formato: "JSON da API do SIDRA, com a primeira linha trazendo o dicionário das colunas"
+    data_de_referencia: "1º de julho de cada ano"
+    confianca: verbatim
+    fonte: "Resposta da API do SIDRA em 2026-09-24"
+
+conceitos:
+
+  - id: empresa_ativa
+    notation: empresas_ativas
+    prefLabel_pt: "Empresa ativa"
+    prefLabel_en: "Active company"
+    definition: >
+      Estabelecimento matriz com situação cadastral 2 (ativa) no CNPJ. Conta
+      uma vez cada empresa, na UF da matriz.
+    confianca: parafraseado
+    fonte: "Leiaute dos dados abertos do CNPJ: identificador matriz/filial (1 = matriz) e situação cadastral (2 = ativa)"
+    scopeNote: >
+      A contagem é de matrizes, e não de estabelecimentos, porque no SCR a UF
+      de pessoa jurídica é a da sede (avisos_gerais.uf_e_domicilio_ou_sede em
+      ontology/dimensoes.yml). Contar filiais poria no denominador de uma UF
+      empresas cuja carteira de crédito o SCR registra em outra.
+    armadilha: >
+      O CNPJ aberto é uma tabela de estabelecimentos. Contar linhas ativas por
+      UF sem filtrar matriz infla os estados onde grandes redes têm filiais, e
+      o resultado ainda parece plausível.
+
+  - id: estoque_reconstruido
+    notation: empresas_ativas
+    prefLabel_pt: "Estoque de empresas ativas reconstruído no fim do mês"
+    prefLabel_en: "Stock of active companies rebuilt at month end"
+    definition: >
+      Número de matrizes ativas no último dia de um mês passado, calculado a
+      partir de um único retrato recente do CNPJ. Uma matriz conta como ativa
+      no fim do mês D se começou a atividade até D e, além disso, está ativa
+      hoje com a última mudança de situação até D, ou não está ativa hoje e
+      mudou de situação depois de D.
+    confianca: inferido
+    fonte: "Método do projeto, ADR 0009"
+    scopeNote: >
+      O retrato guarda só a situação atual e a data da última mudança. Duas
+      coisas se perdem: estados intermediários (uma empresa que passou de
+      inapta para baixada depois de D conta como ativa em D, e talvez já
+      estivesse inapta) e mudança de UF da matriz. O erro é medido contra
+      retratos reais antigos e declarado no ADR 0009.
+
+  - id: populacao_residente_estimada
+    notation: populacao
+    prefLabel_pt: "População residente estimada"
+    prefLabel_en: "Estimated resident population"
+    definition: "População residente estimada, em pessoas, por unidade da federação, com data de referência em 1º de julho."
+    confianca: parafraseado
+    fonte: "IBGE, tabela 6579 do SIDRA, variável 9324"
+    scopeNote: >
+      Um valor por ano. O projeto aplica a estimativa de um ano a todos os
+      meses desse ano, sem interpolar: a variação dentro do ano é pequena
+      diante da da carteira, e interpolar seria inventar um dado que o IBGE
+      não publica. O IBGE revisa estimativas de anos anteriores, e a revisão
+      aparece como sha256 novo no manifesto da ingestão.
+
+  - id: porte_da_empresa_na_receita
+    notation: porte_receita
+    prefLabel_pt: "Porte da empresa no CNPJ"
+    prefLabel_en: "Company size in the CNPJ register"
+    definition: "Código do porte da empresa: 00 não informado, 01 microempresa, 03 empresa de pequeno porte, 05 demais."
+    confianca: verbatim
+    fonte: "Leiaute dos dados abertos do CNPJ, tabela Empresas"
+    scopeNote: >
+      Não é equivalente ao porte de pessoa jurídica do SCR, que tem Micro,
+      Pequeno, Médio e Grande. "Demais" junta médio e grande, e os critérios
+      das duas classificações não são os mesmos. Cruzar os dois pelo nome
+      parecido é erro.
+    armadilha: >
+      "Micro" existe nas duas fontes, e a tentação é tratar como a mesma
+      categoria. Não há tabela oficial de correspondência.
+    valores:
+      - {codigo: "00", rotulo: "Não informado"}
+      - {codigo: "01", rotulo: "Microempresa"}
+      - {codigo: "03", rotulo: "Empresa de pequeno porte"}
+      - {codigo: "05", rotulo: "Demais"}
+
+  - id: grupo_de_natureza_juridica
+    notation: grupo_natureza_juridica
+    prefLabel_pt: "Grupo de natureza jurídica"
+    prefLabel_en: "Legal nature group"
+    definition: >
+      Primeiro dígito do código de natureza jurídica da empresa, que separa
+      administração pública, entidades empresariais, entidades sem fins
+      lucrativos, pessoas físicas e organizações internacionais.
+    confianca: parafraseado
+    fonte: "Tabela de Natureza Jurídica da CONCLA/IBGE; código no campo natureza_juridica da tabela Empresas do CNPJ"
+    scopeNote: >
+      Nem todo CNPJ ativo é empresa no sentido de quem toma crédito para
+      produzir: há órgãos públicos, igrejas, condomínios e associações. O
+      fato de empresas guarda o grupo para a camada de decisão escolher o
+      denominador (issue #26).
+    valores:
+      - {codigo: "1", rotulo: "Administração pública"}
+      - {codigo: "2", rotulo: "Entidades empresariais"}
+      - {codigo: "3", rotulo: "Entidades sem fins lucrativos"}
+      - {codigo: "4", rotulo: "Pessoas físicas"}
+      - {codigo: "5", rotulo: "Organizações internacionais e outras instituições extraterritoriais"}
+
+  - id: mei
+    notation: mei
+    prefLabel_pt: "Microempreendedor individual"
+    prefLabel_en: "Individual micro-entrepreneur"
+    definition: >
+      Empresa com opção pelo MEI na tabela do Simples do CNPJ, com data de
+      entrada e, quando houver, data de saída.
+    confianca: parafraseado
+    fonte: "Leiaute dos dados abertos do CNPJ, tabela Simples: opção pelo MEI, data de opção e data de exclusão"
+    scopeNote: >
+      MEI tem CNPJ, e o projeto supõe que o crédito tomado por ele com o CNPJ
+      entra como pessoa jurídica no SCR. A metodologia do SCR.data não trata
+      do MEI, então essa parte é inferência. Incluir ou não o MEI no
+      denominador muda o indicador de espaço. A escolha é da camada de
+      decisão (issue #26), e o fato de empresas guarda as duas contagens.
+
+avisos:
+
+  - id: data_do_retrato_nao_e_fim_de_mes
+    gravidade: baixa
+    descricao: >
+      O retrato do CNPJ é extraído num dia qualquer do mês, e o SCR é de fim
+      de mês. O estoque de um fim de mês é reconstruído a partir das datas de
+      cada CNPJ, e não lido diretamente de um retrato.
+    confianca: verbatim
+    fonte: "Nome dos arquivos internos dos ZIPs da Receita"
+
+  - id: uf_exterior_no_cnpj
+    gravidade: baixa
+    descricao: >
+      O CNPJ tem estabelecimentos com UF "EX", no exterior. Eles ficam fora da
+      contagem por UF, porque o SCR não tem essa UF.
+    confianca: verbatim
+    fonte: "Leiaute dos dados abertos do CNPJ: nome da cidade no exterior e código do país"

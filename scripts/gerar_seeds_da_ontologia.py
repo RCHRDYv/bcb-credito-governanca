@@ -7,7 +7,7 @@ PT: Gera os seeds de dimensão a partir da ontologia.
     do modelo, não documentação sobre ele, e por isso deriva entre o que está
     documentado e o que está no dado deixa de ser possível por construção.
 
-    Três seeds saem daqui:
+    Quatro seeds saem daqui:
 
     1. **ontologia_modalidade.csv**, um registro por par de modalidade e
        submodalidade, com o código do Anexo 3, os nomes oficiais, a definição
@@ -25,6 +25,11 @@ PT: Gera os seeds de dimensão a partir da ontologia.
        daqui que a dim_tempo tira as colunas de aviso, sem nenhuma data
        de quebra escrita à mão no SQL.
 
+    4. **ontologia_fonte_externa_valor.csv**, um registro por código
+       enumerado das fontes externas (`ontology/fontes_externas.yml`), como
+       o porte da empresa na Receita. É de onde saem os rótulos das
+       dimensões dim_porte_receita e dim_natureza_juridica.
+
     Nada aqui interpreta texto. O nome da taxonomia de cada coluna polimórfica
     vem do campo `taxonomia_por_cliente` da ontologia, e não de uma leitura da
     frase da definição.
@@ -34,11 +39,12 @@ EN: Generates the dimension seeds from the ontology. This is the project's
     not hand-written, they are generated from the ontology files, which makes
     drift between documentation and data impossible by construction.
 
-    Two seeds: one record per modality and sub-modality pair, with the Annex 3
-    code, official names, normative definition and its confidence level; and
-    one record per enumerated dimension value, with the polymorphic columns
-    expanded per client type and given a disambiguated label in the format V1
-    used ("PF - Micro"), restoring what V2 removed.
+    Four seeds: one record per modality and sub-modality pair, with the
+    Annex 3 code, official names, normative definition and its confidence
+    level; one record per enumerated dimension value, with the polymorphic
+    columns expanded per client type and given a disambiguated label in the
+    format V1 used ("PF - Micro"), restoring what V2 removed; one record per
+    dated series break; and one record per enumerated external source code.
 
     Nothing here parses prose. Each polymorphic column's taxonomy name comes
     from the ontology's `taxonomia_por_cliente` field.
@@ -60,6 +66,8 @@ ONTOLOGIA_DIMENSOES = RAIZ / "ontology" / "dimensoes.yml"
 SEED_MODALIDADE = RAIZ / "dbt" / "seeds" / "ontologia_modalidade.csv"
 SEED_DIMENSAO = RAIZ / "dbt" / "seeds" / "ontologia_dimensao.csv"
 SEED_QUEBRA = RAIZ / "dbt" / "seeds" / "ontologia_quebra.csv"
+ONTOLOGIA_FONTES_EXTERNAS = RAIZ / "ontology" / "fontes_externas.yml"
+SEED_FONTE_EXTERNA = RAIZ / "dbt" / "seeds" / "ontologia_fonte_externa_valor.csv"
 
 CLIENTES = ("PF", "PJ")
 
@@ -165,6 +173,11 @@ def linhas_de_dimensao(dados: dict) -> list[dict[str, str]]:
                         "taxonomia": taxonomias.get(cliente) or texto(dimensao["prefLabel_pt"]),
                         "aplica_a": valor.get("aplica_a", ""),
                         "significado": texto(valor.get("significado")),
+                        # PT: código oficial usado pelas fontes externas; só a
+                        #     UF tem, e nas outras dimensões fica vazio.
+                        # EN: official code used by external sources; only
+                        #     states have one.
+                        "codigo_ibge": texto(valor.get("codigo_ibge")),
                         "aviso": texto(valor.get("aviso")),
                         # PT: a definição normativa da dimensão inteira. É onde
                         #     mora, por exemplo, o aviso de que UF é domicílio
@@ -206,6 +219,32 @@ def linhas_de_quebra(dados: dict) -> list[dict[str, str]]:
             "fonte": texto(q["fonte"]),
         }
         for q in data_base.get("quebras", [])
+    ]
+
+
+# -----------------------------------------------------------------------------
+# PT: Seed 4, códigos das fontes externas
+# EN: Seed 4, external source codes
+# -----------------------------------------------------------------------------
+
+def linhas_de_fonte_externa(dados: dict) -> list[dict[str, str]]:
+    """
+    PT: Um registro por código enumerado das fontes externas, como o porte
+        da empresa na Receita. É daqui que os modelos tiram os rótulos, sem
+        nenhum `case` escrito à mão no SQL.
+    EN: One record per enumerated external source code, such as Receita's
+        company size. Models take their labels from here, with no
+        hand-written `case` in SQL.
+    """
+    return [
+        {
+            "conceito": conceito["id"],
+            "codigo": str(valor["codigo"]),
+            "rotulo": texto(valor["rotulo"]),
+            "fonte": texto(conceito["fonte"]),
+        }
+        for conceito in dados["conceitos"]
+        for valor in conceito.get("valores", [])
     ]
 
 
@@ -258,6 +297,13 @@ def main() -> None:
     print(f"  {len(quebras)} quebras em {SEED_QUEBRA.relative_to(RAIZ)}")
     for q in quebras:
         print(f"    {q['data']}: {q['id']}")
+
+    externos = linhas_de_fonte_externa(carregar(ONTOLOGIA_FONTES_EXTERNAS))
+    escrever(SEED_FONTE_EXTERNA, externos)
+    print()
+    print(f"  {len(externos)} códigos em {SEED_FONTE_EXTERNA.relative_to(RAIZ)}")
+    for conceito in dict.fromkeys(l["conceito"] for l in externos):
+        print(f"    {conceito}: {sum(1 for l in externos if l['conceito'] == conceito)}")
 
 
 if __name__ == "__main__":

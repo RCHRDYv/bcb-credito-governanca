@@ -98,6 +98,14 @@ jobs:
       - name: Ontologia de dimensões (estrutura)
         run: uv run python -m scripts.validar_dimensoes --estrutura
 
+      # PT: Estrutura da ontologia das fontes externas (issue #25): ids
+      #     únicos, fonte e confiança em tudo, códigos sem repetição, e cada
+      #     fonte com data de referência declarada.
+      # EN: External sources ontology structure: unique ids, source and
+      #     confidence everywhere, no repeated codes, reference date declared.
+      - name: Ontologia das fontes externas (estrutura)
+        run: uv run python -m scripts.validar_fontes_externas
+
       # PT: Estrutura do seed: chave única e regras com valor permitido.
       # EN: Seed structure: unique key and rules with allowed values.
       - name: Seed de correspondência (estrutura)
