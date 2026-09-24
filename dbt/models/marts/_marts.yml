@@ -187,3 +187,91 @@ models:
       - name: origem_da_modalidade_v1
         description: "oficial, oficial_ambigua ou inferida_pelo_projeto."
         data_tests: [not_null]
+
+  - name: fct_carteira_v1
+    description: >
+      Fato legado da V1, agregado por mês, UF, modalidade da V1 e origem. Existe
+      para que as perguntas que comparam as duas versões sejam respondíveis
+      pelo esquema estrela, que é o que a IA consulta (ADR 0007).
+    columns:
+      - name: data_base
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_tempo')
+                field: data_base
+      - name: uf
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_uf')
+                field: uf
+      - name: modalidade_v1
+        description: "Rótulo da modalidade na taxonomia da V1, com o prefixo PF ou PJ."
+        data_tests: [not_null]
+      - name: carteira_inadimplida_arrastada
+        description: >
+          Mesma definição de carteira_inadimplencia da V2, com o nome antigo. O
+          nome fica de propósito: a renomeação sem mudança de conceito é uma das
+          armadilhas que o experimento mede.
+        data_tests: [not_null]
+
+  # ---------------------------------------------------------------------------
+  # PT: Marts de apresentação. Alimentam o dashboard e ficam fora do
+  #     experimento, porque pré-respondem perguntas (ADR 0007).
+  # EN: Presentation marts. They feed the dashboard and stay out of the
+  #     experiment, because they pre-answer questions.
+  # ---------------------------------------------------------------------------
+
+  - name: mrt_carteira_mensal
+    description: >
+      Telas 1 e 2 do dashboard, e o histórico da tela 3 na v0.2. Grão: mês,
+      cliente, UF e modalidade. Taxas como razão de somas, comparações no tempo
+      pela data exata, e a janela que cruza a mudança do ativo problemático
+      marcada.
+    columns:
+      - name: data_base
+        data_tests: [not_null]
+      - name: taxa_inadimplencia
+        description: "Carteira inadimplida dividida pela carteira ativa, ambas somadas no grão. Nunca média de taxas."
+      - name: distancia_ap_inadimplencia
+        description: >
+          Taxa de ativo problemático menos taxa de inadimplência. Muda de
+          definição em jan/2025, junto com o ativo problemático.
+      - name: variacao_taxa_inadimplencia_6m
+        description: "Diferença em pontos da taxa contra seis meses antes, pela data exata."
+      - name: janela_6m_cruza_quebra_ativo_problematico
+        description: >
+          Verdadeiro quando a janela de seis meses contém a mudança de critério
+          do ativo problemático. As mesmas janelas contêm o salto da carteira
+          inadimplida em jan/2025, em investigação na #20.
+        data_tests: [not_null]
+
+  - name: mrt_reconciliacao_versoes
+    description: >
+      V1 publicada contra a V1 reconstruída a partir da V2, por mês, modalidade
+      da V1 e origem. Serve à investigação da #19 e ao dashboard.
+    columns:
+      - name: data_base
+        data_tests: [not_null]
+      - name: diferenca_relativa
+        description: "V2 conformada sobre V1 publicada, menos um. Não é uniforme por modalidade."
+
+  - name: mrt_limites_do_dado
+    description: >
+      Tela 4 do dashboard. A fronteira do dado como número medido por mês:
+      contagem suprimida, conformação ambígua, diferença entre versões e o
+      regime das quebras.
+    columns:
+      - name: data_base
+        data_tests: [not_null, unique]
+      - name: parcela_carteira_contagem_suprimida
+        description: "Parte da carteira do mês sem número de operações divulgado."
+        data_tests: [not_null]
+      - name: operacoes_limite_inferior
+        description: "Soma das contagens divulgadas. É limite inferior, e não total."
+      - name: diferenca_v2_sobre_v1
+        description: "Diferença de universo entre as duas publicações no mês."
+        data_tests: [not_null]
