@@ -231,8 +231,12 @@ def montar_linhas() -> tuple[list[dict], list[str]]:
 def main() -> None:
     linhas, avisos = montar_linhas()
     SEED.parent.mkdir(parents=True, exist_ok=True)
+    # PT: lineterminator LF explícito: o padrão do módulo csv é CRLF, e o seed
+    #     precisa sair igual em qualquer sistema. Ver .gitattributes.
+    # EN: explicit LF line terminator: the csv module defaults to CRLF, and the
+    #     seed must come out identical on any operating system.
     with SEED.open("w", encoding="utf-8", newline="\n") as f:
-        escritor = csv.DictWriter(f, fieldnames=list(linhas[0]))
+        escritor = csv.DictWriter(f, fieldnames=list(linhas[0]), lineterminator="\n")
         escritor.writeheader()
         escritor.writerows(linhas)
 

@@ -1,0 +1,16 @@
+# =============================================================================
+# PT: Os seeds do dbt são gerados por script e conferidos no CI: ele regera o
+#     arquivo e falha se o resultado diferir do que está versionado. Para essa
+#     comparação valer, a terminação de linha precisa ser a mesma em qualquer
+#     sistema, e não a do sistema de quem rodou o gerador por último. Os
+#     scripts escrevem LF, e esta linha garante que o git entregue LF no
+#     checkout, inclusive em Windows.
+#
+# EN: The dbt seeds are script-generated and checked in CI, which regenerates
+#     the file and fails if the result differs from what is committed. For that
+#     comparison to hold, the line ending must be the same on every system
+#     rather than whichever the last person's machine used. The scripts write
+#     LF, and this line makes git check out LF everywhere, Windows included.
+# =============================================================================
+
+*.csv text eol=lf
