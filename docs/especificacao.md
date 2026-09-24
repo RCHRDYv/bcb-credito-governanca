@@ -6,7 +6,7 @@ Documentação de negócio estruturada e ontologia tornam dado corporativo confi
 
 A pergunta central: uma IA consegue responder corretamente perguntas de negócio sobre crédito brasileiro a partir do dado cru do Banco Central? E quanto essa taxa de acerto muda quando existe uma camada semântica e uma ontologia derivada dos normativos oficiais?
 
-**Posicionamento:** demonstração, não descoberta. Ver [`referencias.md`](referencias.md).
+**Posicionamento, revisto em 2026-09-24:** a comparação entre esquema cru e ontologia replica um efeito conhecido (ver [`referencias.md`](referencias.md)). A pergunta de descoberta é outra: vale o trabalho de curar uma ontologia, se os mesmos documentos de onde ela foi destilada podem ser recuperados por RAG? Ver [ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md).
 
 ## Fonte de dados
 
@@ -73,8 +73,8 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 |---|---|---|
 | Fonte da verdade da ontologia | Arquivo YAML versionado | Evita deriva entre duas superfícies de autoria |
 | Documentação para humano | Gerada do YAML, publicada com `dbt docs` | Público e navegável, sem exigir login |
-| Dashboard consultando o banco | Não. Exportação estática de JSON | Credencial em JavaScript é pública. Dado mensal não precisa de tempo real |
-| Onde a IA roda | Hugging Face Spaces | Databricks não serve aplicação pública |
+| Dashboard consultando o banco | Não. O esquema estrela é exportado em Parquet para dentro da aplicação, e consultado por DuckDB | Nenhuma credencial fora da máquina do Yuri. Dado mensal não precisa de tempo real ([ADR 0012](adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md)) |
+| Onde a IA roda | Experimento: modelos abertos, locais. Aplicação pública: modelo pequeno no plano gratuito de CPU do Hugging Face Spaces | Custo zero, e o Databricks não serve aplicação pública ([ADR 0012](adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md)) |
 | Credenciais | OAuth, nada em disco | Ver [ADR 0001](adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) |
 | Diagramas de arquitetura | Mermaid dentro do markdown, sem imagem exportada | O diagrama muda na mesma PR que o modelo. Ver [ADR 0008](adr/0008-diagramas-como-codigo-em-mermaid.md) |
 
@@ -85,7 +85,7 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 ├── ontology/      Ontologia, glossário e contratos, com citação normativa
 ├── dbt/           staging → intermediate → marts
 ├── evaluation/    Perguntas pré-registradas, gabarito, análise estatística
-├── dashboard/     Visualização estática
+├── dashboard/     Aplicação do Hugging Face Spaces: dashboard e, na v0.3, a caixa de pergunta
 ├── scripts/       Utilitários e verificadores
 └── docs/adr/      Decisões de arquitetura
 ```
@@ -193,9 +193,12 @@ As perguntas que sustentam a decisão são as mesmas do gabarito. Isso liga as d
 
 - **Condição A:** o modelo recebe apenas o esquema cru, sem descrição
 - **Condição B:** esquema mais ontologia, descrições e regras de negócio
-- **O que as duas condições consultam:** o esquema estrela da camada gold, e só ele. Os marts de apresentação ficam de fora, porque já trazem taxas e diferenças calculadas e desarmariam as armadilhas nas duas condições por igual ([ADR 0007](adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md))
+- **Condição C, acrescentada em 2026-09-24:** esquema mais trechos dos documentos do BCB recuperados por busca (RAG), sem a ontologia
+- **Condição D, acrescentada em 2026-09-24:** esquema, ontologia e trechos recuperados
+- **A e B não mudam.** C e D são extensão registrada antes de qualquer execução, e as hipóteses de cada comparação estão no [ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md). O corpus do RAG são os documentos que a ontologia cita, então B e C têm acesso ao mesmo conhecimento, curado ou cru
+- **O que as quatro condições consultam:** o esquema estrela da camada gold, e só ele. Os marts de apresentação ficam de fora, porque já trazem taxas e diferenças calculadas e desarmariam as armadilhas em todas as condições por igual ([ADR 0007](adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md))
 - **Métrica:** acerto da resposta final contra gabarito calculado por SQL
-- **Teste:** McNemar, apropriado para dado binário pareado, com tamanho de efeito reportado
+- **Teste:** Q de Cochran para as quatro condições pareadas, e McNemar entre pares, com correção de Holm para comparações múltiplas. O McNemar é o apropriado para dado binário pareado, e o tamanho de efeito é sempre reportado
 
 **O que conta como acerto, definido em 2026-09-22.** O conjunto v2 das perguntas ([`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml)) declara, por pergunta, o tipo de acerto esperado:
 
@@ -224,7 +227,7 @@ A ordem importa: perguntas antes de modelagem, porque são elas que determinam o
 3. Ingestão
 4. Modelos dbt com testes
 5. Gabarito via SQL
-6. Exportação estática e dashboard
+6. Exportação do esquema estrela e aplicação com o dashboard
 7. Publicar
 
 ## Versões
@@ -232,6 +235,6 @@ A ordem importa: perguntas antes de modelagem, porque são elas que determinam o
 | Versão | Escopo |
 |---|---|
 | **v0.1** | Ingestão, ontologia, dbt, gabarito, dashboard que conta a decisão |
-| **v0.2** | `dbt docs` publicado, contratos de dados, emissão SKOS, previsão e agrupamento de UFs |
-| **v0.3** | Camada de IA, suíte de avaliação, análise estatística |
-| **v0.4** | LLMOps: versionamento de prompt, tracing, reavaliação automática mensal quando o BCB publica dado novo |
+| **v0.2** | `dbt docs` publicado, contratos de dados, emissão SKOS, previsão e agrupamento de UFs, renda do IBGE, exportação do esquema estrela para Parquet e DuckDB, corpus e índice do RAG, registro das hipóteses e das condições C e D |
+| **v0.3** | Experimento 2x2 com dois modelos locais, assistente com resposta auditável, caixa de pergunta na aplicação pública, análise estatística |
+| **v0.4** | LLMOps: versionamento de prompt, tracing, reavaliação automática mensal quando o BCB publica dado novo, e publicação no Hugging Face do dataset da gold e dos resultados |

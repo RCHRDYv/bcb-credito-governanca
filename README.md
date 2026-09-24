@@ -4,9 +4,9 @@ Este projeto responde a duas perguntas sobre os mesmos dados públicos de crédi
 
 **De negócio:** uma financeira quer crescer em crédito para pessoa jurídica. Em quais modalidades e estados vale aumentar exposição, e onde o risco está piorando rápido demais para isso?
 
-**De método:** quanto uma camada semântica e uma ontologia melhoram a acurácia de um LLM ao responder as perguntas de que essa decisão depende?
+**De método:** quanto uma ontologia curada melhora a acurácia de um LLM ao responder as perguntas de que essa decisão depende, e se ela vale mais do que os próprios documentos de onde foi destilada, recuperados por busca num RAG?
 
-*Two questions over the same public Brazilian Central Bank credit data: where a lender should grow and where risk is deteriorating, and how much a semantic layer plus an ontology improve an LLM's accuracy on the questions that decision depends on.*
+*Two questions over the same public Brazilian Central Bank credit data: where a lender should grow and where risk is deteriorating, and how much a curated ontology improves an LLM's accuracy on the questions that decision depends on, compared with retrieving the very documents it was distilled from.*
 
 > **Status:** v0.1 em construção. Este aviso será substituído por resultados conforme cada versão for publicada.
 
@@ -26,9 +26,11 @@ Este projeto mede esse efeito com dado público real, e com método que qualquer
 
 ## O que este projeto é, e o que não é
 
-**Não é** descoberta científica. O efeito de metadado sobre acurácia de text-to-SQL já está estabelecido na literatura (ver `docs/referencias.md`) e já é premissa de produtos comerciais como Databricks Genie, Snowflake Cortex Analyst e a camada semântica do dbt.
+**Uma parte é replicação.** O efeito de metadado sobre acurácia de text-to-SQL já está estabelecido na literatura (ver `docs/referencias.md`) e já é premissa de produtos comerciais como Databricks Genie, Snowflake Cortex Analyst e a camada semântica do dbt. Medi-lo aqui é replicação transparente em domínio novo: dado regulatório brasileiro, em português, com deriva de taxonomia verdadeira e documentada.
 
-**É** uma demonstração transparente desse efeito em domínio novo: dado regulatório brasileiro, em português, com deriva de taxonomia verdadeira e documentada. Replicação em contexto real, com método aberto.
+**A outra parte busca uma descoberta.** Vale o trabalho de curar uma ontologia, se os mesmos documentos de onde ela foi destilada podem ser recuperados por busca num RAG? O experimento compara quatro condições (só o esquema, só a ontologia, só os documentos e as duas camadas juntas), com hipóteses de direção registradas antes de qualquer execução ([ADR 0013](docs/adr/0013-experimento-2x2-ontologia-contra-documentos.md)). É a pergunta que decide entre montar uma camada semântica e jogar documentos num RAG. O resultado vale para este domínio, com tamanho de efeito, e não como lei geral.
+
+O mesmo desenho vira ferramenta: um assistente para pessoas de negócio, dentro do dashboard, que responde com o número, o SQL que o produziu, os conceitos da ontologia usados e a ressalva que o torna interpretável ([ADR 0012](docs/adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md)).
 
 ## Por que os dados do SCR
 
@@ -137,7 +139,7 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | `ontology/` | Ontologia, glossário e contratos de dados, com citação normativa |
 | `dbt/` | Camada semântica: staging, intermediate, marts, testes |
 | `evaluation/` | Perguntas de negócio, gabarito e análise estatística |
-| `dashboard/` | Visualização estática |
+| `dashboard/` | Aplicação do dashboard, para o Hugging Face Spaces |
 | `scripts/` | Utilitários e verificadores |
 | `docs/adr/` | Registro de decisões de arquitetura |
 
@@ -238,6 +240,8 @@ uv run python -m scripts.analises.qa_staging
 | [ADR 0009](docs/adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md) | Empresas ativas por UF, reconstruídas mês a mês de um único retrato do CNPJ |
 | [ADR 0010](docs/adr/0010-selic-e-a-meta-do-copom-vigente-no-fim-do-mes.md) | A Selic do projeto é a meta do Copom, vigente no último dia do mês |
 | [ADR 0011](docs/adr/0011-pix-por-municipio-so-liquidado-no-spi.md) | O PIX do projeto é o liquidado no SPI, por mês fechado, com os dois lados guardados |
+| [ADR 0012](docs/adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md) | A camada de IA é um assistente de dados com modelo aberto, e a aplicação pública roda a custo zero |
+| [ADR 0013](docs/adr/0013-experimento-2x2-ontologia-contra-documentos.md) | O experimento vira 2x2, ontologia contra documentos, e passa a buscar uma descoberta |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Cobertura da camada gold](evaluation/cobertura.yml) | Para cada pergunta e cada tela, os modelos que a respondem ou a issue que a bloqueia |
@@ -287,11 +291,13 @@ O raciocínio completo, com as alternativas descartadas, está em [`docs/adr/000
 **Two questions over the same data.**
 
 - **Business:** a lender wants to grow its corporate loan book. Which credit modalities and which states are worth more exposure, and where is risk deteriorating too fast for that?
-- **Method:** how much do a semantic layer and an ontology improve an LLM's accuracy on the questions that decision depends on?
+- **Method:** how much does a curated ontology improve an LLM's accuracy on the questions that decision depends on, and is it worth more than the very documents it was distilled from, retrieved through RAG?
 
 The project ends in a recommendation, with the list of what this data cannot support stated next to it, rather than in a dashboard of indicators.
 
-This is a **demonstration, not a discovery**. The effect of metadata on text-to-SQL accuracy is established in the literature and already underpins commercial products. What this project adds is a transparent, auditable replication in a new domain: Brazilian regulatory credit data, in Portuguese, with genuine and officially documented taxonomy drift.
+**Part of it is replication.** The effect of metadata on text-to-SQL accuracy is established in the literature and already underpins commercial products; measuring it here is a transparent replication in a new domain: Brazilian regulatory credit data, in Portuguese, with genuine and officially documented taxonomy drift.
+
+**The other part seeks a finding.** Is curating an ontology worth the effort when the documents it was distilled from can be retrieved through RAG? The experiment compares four conditions (schema only, ontology only, documents only, and both), with directional hypotheses registered before any run. The result holds for this domain, reported with effect sizes, not as a general law. The same design becomes a tool: an assistant for business users, inside the dashboard, that answers with the number, the SQL behind it, the ontology concepts used and the caveat that makes it interpretable.
 
 The dataset is the Brazilian Central Bank's credit registry (SCR), published monthly with breakdowns by state, credit modality, company size, sector and client type. It was chosen because its messiness is real rather than manufactured: undocumented sentinel values, delimiters inside quoted fields, Brazilian decimal notation, UTF-8 with a BOM that opens "fine" as latin-1 while corrupting every accent, and two similarly named metrics with different regulatory definitions.
 
