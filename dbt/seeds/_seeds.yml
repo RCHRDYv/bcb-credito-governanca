@@ -184,3 +184,34 @@ seeds:
           - accepted_values:
               arguments:
                 values: ["PF", "PJ", "PF e PJ"]
+
+  - name: ontologia_quebra
+    description: >
+      As quebras datadas da série, geradas da lista quebras da dimensão
+      data_base em ontology/dimensoes.yml. É a fonte das colunas de aviso da
+      dim_tempo, e é por isso que nenhuma data de quebra fica escrita à mão no
+      SQL dos marts.
+    config:
+      column_types:
+        id: string
+        data: string
+        afeta: string
+        descricao: string
+        antes: string
+        depois: string
+        consequencia: string
+        confianca: string
+        fonte: string
+    columns:
+      - name: id
+        description: "Identificador estável da quebra, usado pelos modelos que precisam de uma quebra específica."
+        data_tests: [not_null, unique]
+      - name: data
+        description: "Primeiro mês afetado, como último dia do mês, no mesmo formato de data_base."
+        data_tests: [not_null, unique]
+      - name: antes
+        description: "Como a série se comportava antes da quebra."
+        data_tests: [not_null]
+      - name: depois
+        description: "Como a série se comporta a partir da quebra."
+        data_tests: [not_null]

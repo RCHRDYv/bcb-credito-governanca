@@ -211,11 +211,70 @@ dimensoes:
       É sempre o último dia do mês de referência, e o arquivo mensal traz uma
       única data-base. A série tem quebras que atravessam esta dimensão e que
       não são visíveis nela: a mudança de critério do ativo problemático em
-      janeiro de 2025 e a divergência de universo entre as duas versões. Ver
-      ontology/metricas.yml e docs/analise-v1-v2.md.
+      janeiro de 2025, a publicação mais grossa a partir de julho de 2025 e o
+      degrau na divergência entre as duas versões em setembro de 2025. As três
+      estão na lista quebras, logo abaixo.
     correspondencia_v1:
       tipo: exata
       coluna: data_base
+    # PT: As quebras da série, em lista estruturada para serem lidas por
+    #     máquina. Elas estavam registradas só em prosa, espalhadas por três
+    #     documentos. Daqui saem as colunas de aviso da dim_tempo, pelo seed
+    #     gerado em scripts/gerar_seeds_da_ontologia.py, e assim nenhuma data
+    #     de quebra fica escrita à mão no SQL.
+    #     A data é sempre o último dia do mês, porque é assim que data_base
+    #     aparece no dado e a junção é por igualdade. O validador confere isso.
+    # EN: The series breaks, as a structured list readable by machine. They
+    #     used to live only in prose, across three documents. The dim_tempo
+    #     warning columns come from here through the generated seed, so no
+    #     break date is hand-written in SQL. The date is always the last day
+    #     of the month, as data_base appears in the data.
+    quebras:
+      - id: criterio_ativo_problematico
+        data: "2025-01-31"
+        afeta: ["ativo_problematico"]
+        descricao: >
+          O ativo problemático muda de critério. Até dezembro de 2024 o BCB
+          combinava atraso acima de 90 dias, reestruturação e classificação de
+          risco E a H. A partir de janeiro de 2025 valem só as operações que a
+          própria instituição classifica com a característica especial 19.
+        antes: "Atraso acima de 90 dias, reestruturação e risco E a H"
+        depois: "Característica especial 19, informada pela instituição"
+        consequencia: >
+          Comparar ativo_problematico entre dez/2024 e jan/2025 compara duas
+          definições. O dado não permite separar o efeito da definição do
+          efeito de piora real.
+        confianca: verbatim
+        fonte: "Metodologia V2, seção 2.d; Resolução CMN 4.966; IN BCB 531. Ver docs/cadeia-normativa.md, seção 1"
+
+      - id: granularidade_da_publicacao
+        data: "2025-07-31"
+        afeta: ["contagem de recortes", "tcb (V1)"]
+        descricao: >
+          A publicação fica mais grossa. A V1 deixa de publicar a coluna tcb, e
+          a V2 passa a publicar a mesma carteira em menos recortes, com a perda
+          concentrada em instituição de pagamento, fintech e outros.
+        antes: "Recortes no detalhe original, tcb publicado na V1"
+        depois: "Menos recortes para a mesma carteira, tcb descontinuado na V1"
+        consequencia: >
+          Totais e percentuais atravessam a quebra. Contagem de recortes e
+          valor médio por recorte não atravessam.
+        confianca: verbatim
+        fonte: "dado; docs/analise-v1-v2.md, seção 7"
+
+      - id: divergencia_entre_versoes
+        data: "2025-09-30"
+        afeta: ["comparação entre V1 e V2"]
+        descricao: >
+          A diferença da carteira ativa da V2 sobre a da V1 muda de patamar. A
+          IN BCB 659, de 08/09/2025, coincide no tempo, sem causa verificada.
+        antes: "V2 de 3,95% a 4,88% acima da V1"
+        depois: "V2 de 5,41% a 5,94% acima da V1"
+        consequencia: >
+          Qualquer comparação entre as duas versões precisa declarar em qual
+          patamar está, e a ressalva por modalidade vale nos dois.
+        confianca: verbatim
+        fonte: "dado; docs/analise-v1-v2.md, seção 6"
 
   - id: dim_uf
     coluna: uf

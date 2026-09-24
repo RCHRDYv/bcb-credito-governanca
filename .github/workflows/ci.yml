@@ -116,7 +116,7 @@ jobs:
       - name: Seeds da ontologia em dia
         run: |
           uv run python -m scripts.gerar_seeds_da_ontologia
-          git diff --exit-code dbt/seeds/ontologia_modalidade.csv dbt/seeds/ontologia_dimensao.csv
+          git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 
       # PT: Integridade do pré-registro: o conjunto v2 das perguntas precisa
       #     conter os 30 enunciados originais sem uma palavra alterada.
