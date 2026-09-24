@@ -7,7 +7,7 @@ PT: Gera os seeds de dimensão a partir da ontologia.
     do modelo, não documentação sobre ele, e por isso deriva entre o que está
     documentado e o que está no dado deixa de ser possível por construção.
 
-    Dois seeds saem daqui:
+    Três seeds saem daqui:
 
     1. **ontologia_modalidade.csv**, um registro por par de modalidade e
        submodalidade, com o código do Anexo 3, os nomes oficiais, a definição
@@ -20,6 +20,10 @@ PT: Gera os seeds de dimensão a partir da ontologia.
        tipo de cliente e ganham um rótulo desambiguado no formato que a V1
        usava ("PF - Micro"), o que devolve ao dado a informação que a V2
        removeu. Ver avisos_gerais.colunas_polimorficas.
+
+    3. **ontologia_quebra.csv**, um registro por quebra datada da série. É
+       daqui que a dim_tempo tira as colunas de aviso, sem nenhuma data
+       de quebra escrita à mão no SQL.
 
     Nada aqui interpreta texto. O nome da taxonomia de cada coluna polimórfica
     vem do campo `taxonomia_por_cliente` da ontologia, e não de uma leitura da
@@ -55,6 +59,7 @@ ONTOLOGIA_MODALIDADES = RAIZ / "ontology" / "modalidades.yml"
 ONTOLOGIA_DIMENSOES = RAIZ / "ontology" / "dimensoes.yml"
 SEED_MODALIDADE = RAIZ / "dbt" / "seeds" / "ontologia_modalidade.csv"
 SEED_DIMENSAO = RAIZ / "dbt" / "seeds" / "ontologia_dimensao.csv"
+SEED_QUEBRA = RAIZ / "dbt" / "seeds" / "ontologia_quebra.csv"
 
 CLIENTES = ("PF", "PJ")
 
@@ -161,9 +166,47 @@ def linhas_de_dimensao(dados: dict) -> list[dict[str, str]]:
                         "aplica_a": valor.get("aplica_a", ""),
                         "significado": texto(valor.get("significado")),
                         "aviso": texto(valor.get("aviso")),
+                        # PT: a definição normativa da dimensão inteira. É onde
+                        #     mora, por exemplo, o aviso de que UF é domicílio
+                        #     ou sede, e não local da operação.
+                        # EN: the whole dimension's normative definition, where
+                        #     e.g. the "state is domicile or headquarters" note
+                        #     lives.
+                        "definicao_da_dimensao": texto(dimensao.get("definition")),
                     }
                 )
     return linhas
+
+
+# -----------------------------------------------------------------------------
+# PT: Seed 3, quebras da série
+# EN: Seed 3, series breaks
+# -----------------------------------------------------------------------------
+
+def linhas_de_quebra(dados: dict) -> list[dict[str, str]]:
+    """
+    PT: Um registro por quebra datada da série, lido da lista `quebras` da
+        dimensão data_base. É daqui que a dim_tempo tira as colunas de aviso,
+        e é por isso que nenhuma data de quebra fica escrita à mão no SQL.
+    EN: One record per dated series break, read from the data_base dimension's
+        `quebras` list. The dim_tempo warning columns come from here, which is
+        why no break date is hand-written in SQL.
+    """
+    data_base = next(d for d in dados["dimensoes"] if d["coluna"] == "data_base")
+    return [
+        {
+            "id": q["id"],
+            "data": q["data"],
+            "afeta": "; ".join(q["afeta"]),
+            "descricao": texto(q["descricao"]),
+            "antes": texto(q["antes"]),
+            "depois": texto(q["depois"]),
+            "consequencia": texto(q["consequencia"]),
+            "confianca": q["confianca"],
+            "fonte": texto(q["fonte"]),
+        }
+        for q in data_base.get("quebras", [])
+    ]
 
 
 # -----------------------------------------------------------------------------
@@ -208,6 +251,13 @@ def main() -> None:
         do_grupo = [l for l in dimensoes if l["dimensao"] == coluna]
         expandidos = sum(1 for l in do_grupo if l["cliente"])
         print(f"    {coluna}: {len(do_grupo)} registros" + (f", expandidos por cliente" if expandidos else ""))
+
+    quebras = linhas_de_quebra(carregar(ONTOLOGIA_DIMENSOES))
+    escrever(SEED_QUEBRA, quebras)
+    print()
+    print(f"  {len(quebras)} quebras em {SEED_QUEBRA.relative_to(RAIZ)}")
+    for q in quebras:
+        print(f"    {q['data']}: {q['id']}")
 
 
 if __name__ == "__main__":

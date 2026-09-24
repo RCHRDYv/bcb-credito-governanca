@@ -1,0 +1,277 @@
+# =============================================================================
+# PT: Contrato da camada gold. Ela tem duas famílias, com papéis diferentes, e
+#     o raciocínio está no ADR 0007:
+#
+#     - esquema estrela (dim_* e fct_carteira): responde às 41 perguntas e é o
+#       que a IA consulta no experimento, nas duas condições;
+#     - marts de apresentação (mrt_*): agregados no grão das telas do
+#       dashboard, com as taxas calculadas uma vez e os avisos em coluna. Ficam
+#       fora do experimento, porque pré-respondem perguntas.
+#
+#     As descrições apontam para a ontologia, que é a fonte da verdade, e não
+#     repetem a definição de negócio.
+#
+# EN: The gold layer's contract. Two families with different roles (ADR 0007):
+#     the star schema, which answers the 41 questions and is what the AI queries
+#     in both experiment conditions; and the presentation marts, aggregated at
+#     each dashboard screen's grain, kept out of the experiment because they
+#     pre-answer questions.
+# =============================================================================
+
+version: 2
+
+models:
+
+  # ---------------------------------------------------------------------------
+  # PT: Esquema estrela
+  # EN: Star schema
+  # ---------------------------------------------------------------------------
+
+  - name: dim_tempo
+    description: >
+      Um registro por data-base, com as quebras da série em coluna. As datas
+      das quebras vêm do seed ontologia_quebra, gerado da ontologia.
+    columns:
+      - name: data_base
+        description: "Último dia do mês de referência. Chave da dimensão."
+        data_tests: [not_null, unique]
+      - name: criterio_ativo_problematico
+        description: >
+          Qual critério de ativo problemático vale no mês. Muda em jan/2025, e
+          comparar os dois lados da data compara duas definições.
+        data_tests: [not_null]
+      - name: ativo_problematico_comparavel_com_mes_anterior
+        description: "Falso só no mês da mudança de critério do ativo problemático."
+        data_tests: [not_null]
+      - name: granularidade_da_publicacao
+        description: >
+          Muda em jul/2025, quando a publicação fica mais grossa. Totais
+          atravessam a data; contagem de recortes e média por recorte, não.
+        data_tests: [not_null]
+      - name: divergencia_entre_versoes
+        description: "Patamar da diferença entre a V2 e a V1, que muda em set/2025."
+        data_tests: [not_null]
+      - name: quebras_no_mes
+        description: "Ids das quebras que começam exatamente neste mês, ou nulo."
+
+  - name: dim_modalidade
+    description: >
+      Os 66 pares de modalidade e submodalidade, gerados de
+      ontology/modalidades.yml. Chave é o código do Anexo 3.
+    columns:
+      - name: codigo_submodalidade
+        description: "Código do Anexo 3, com zero à esquerda. Chave da dimensão."
+        data_tests: [not_null, unique]
+      - name: submodalidade
+        description: "Rótulo exato do dado. Cinco rótulos se repetem entre modalidades."
+        data_tests: [not_null]
+      - name: definicao
+        description: "Definição normativa. Nula nas quatro submodalidades marcadas como lacuna."
+
+  - name: dim_uf
+    description: "As 27 UFs. A definição avisa que UF é domicílio ou sede, não local da operação."
+    columns:
+      - name: uf
+        description: "Sigla da UF. Chave da dimensão."
+        data_tests: [not_null, unique]
+      - name: definicao_da_uf
+        description: "Definição normativa da dimensão, com o aviso de domicílio ou sede."
+        data_tests: [not_null]
+
+  - name: dim_segmento
+    description: "Os 8 segmentos de instituição financeira da V2."
+    columns:
+      - name: segmento
+        description: "Rótulo do segmento. Chave da dimensão."
+        data_tests: [not_null, unique]
+
+  - name: dim_porte
+    description: "Porte desambiguado pelo tipo de cliente, 14 registros para 13 valores."
+    columns:
+      - name: porte_desambiguado
+        description: "Chave da dimensão, no formato que a V1 usava."
+        data_tests: [not_null, unique]
+      - name: porte
+        description: "Rótulo ambíguo do dado. Agrupar por ele mistura faixa de renda com porte de empresa."
+        data_tests: [not_null]
+      - name: taxonomia
+        description: "A qual das duas taxonomias o registro pertence."
+        data_tests: [not_null]
+
+  - name: dim_cnae_ocupacao
+    description: "Atividade econômica desambiguada pelo tipo de cliente, 30 registros."
+    columns:
+      - name: cnae_ocupacao_desambiguado
+        description: "Chave da dimensão, no formato que a V1 usava."
+        data_tests: [not_null, unique]
+      - name: taxonomia
+        description: "Seção do CNAE para PJ, natureza da ocupação para PF."
+        data_tests: [not_null]
+
+  - name: fct_carteira
+    description: >
+      O fato no grão cheio da V2, um registro por recorte publicado. Só chaves e
+      medidas. É o que a IA consulta no experimento (ADR 0007).
+    columns:
+      - name: data_base
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_tempo')
+                field: data_base
+      - name: uf
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_uf')
+                field: uf
+      - name: segmento
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_segmento')
+                field: segmento
+      - name: codigo_submodalidade
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_modalidade')
+                field: codigo_submodalidade
+      - name: porte_desambiguado
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_porte')
+                field: porte_desambiguado
+      - name: cnae_ocupacao_desambiguado
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_cnae_ocupacao')
+                field: cnae_ocupacao_desambiguado
+      - name: cliente
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["PF", "PJ"]
+      - name: origem
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Sem destinação específica", "Com destinação específica"]
+      - name: numero_de_operacoes
+        description: "Nula onde o arquivo trazia -1. Soma sobre linhas suprimidas é limite inferior."
+      - name: contagem_suprimida
+        description: "Verdadeiro onde a contagem não foi divulgada, 26,7% das linhas e 6,71% da carteira."
+        data_tests: [not_null]
+      - name: carteira_ativa
+        description: "Ver ontology/metricas.yml, carteira_ativa."
+        data_tests: [not_null]
+      - name: carteira_inadimplencia
+        description: "Valor em reais, não percentual. A taxa é razão de somas com carteira_ativa."
+        data_tests: [not_null]
+      - name: ativo_problematico
+        description: "Muda de critério em jan/2025. Ver dim_tempo.criterio_ativo_problematico."
+        data_tests: [not_null]
+      - name: modalidade_v1_efetiva
+        description: "Modalidade correspondente da V1. Ver origem_da_modalidade_v1."
+        data_tests: [not_null]
+      - name: origem_da_modalidade_v1
+        description: "oficial, oficial_ambigua ou inferida_pelo_projeto."
+        data_tests: [not_null]
+
+  - name: fct_carteira_v1
+    description: >
+      Fato legado da V1, agregado por mês, UF, modalidade da V1 e origem. Existe
+      para que as perguntas que comparam as duas versões sejam respondíveis
+      pelo esquema estrela, que é o que a IA consulta (ADR 0007).
+    columns:
+      - name: data_base
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_tempo')
+                field: data_base
+      - name: uf
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_uf')
+                field: uf
+      - name: modalidade_v1
+        description: "Rótulo da modalidade na taxonomia da V1, com o prefixo PF ou PJ."
+        data_tests: [not_null]
+      - name: carteira_inadimplida_arrastada
+        description: >
+          Mesma definição de carteira_inadimplencia da V2, com o nome antigo. O
+          nome fica de propósito: a renomeação sem mudança de conceito é uma das
+          armadilhas que o experimento mede.
+        data_tests: [not_null]
+
+  # ---------------------------------------------------------------------------
+  # PT: Marts de apresentação. Alimentam o dashboard e ficam fora do
+  #     experimento, porque pré-respondem perguntas (ADR 0007).
+  # EN: Presentation marts. They feed the dashboard and stay out of the
+  #     experiment, because they pre-answer questions.
+  # ---------------------------------------------------------------------------
+
+  - name: mrt_carteira_mensal
+    description: >
+      Telas 1 e 2 do dashboard, e o histórico da tela 3 na v0.2. Grão: mês,
+      cliente, UF e modalidade. Taxas como razão de somas, comparações no tempo
+      pela data exata, e a janela que cruza a mudança do ativo problemático
+      marcada.
+    columns:
+      - name: data_base
+        data_tests: [not_null]
+      - name: taxa_inadimplencia
+        description: "Carteira inadimplida dividida pela carteira ativa, ambas somadas no grão. Nunca média de taxas."
+      - name: distancia_ap_inadimplencia
+        description: >
+          Taxa de ativo problemático menos taxa de inadimplência. Muda de
+          definição em jan/2025, junto com o ativo problemático.
+      - name: variacao_taxa_inadimplencia_6m
+        description: "Diferença em pontos da taxa contra seis meses antes, pela data exata."
+      - name: janela_6m_cruza_quebra_ativo_problematico
+        description: >
+          Verdadeiro quando a janela de seis meses contém a mudança de critério
+          do ativo problemático. As mesmas janelas contêm o salto da carteira
+          inadimplida em jan/2025, em investigação na #20.
+        data_tests: [not_null]
+
+  - name: mrt_reconciliacao_versoes
+    description: >
+      V1 publicada contra a V1 reconstruída a partir da V2, por mês, modalidade
+      da V1 e origem. Serve à investigação da #19 e ao dashboard.
+    columns:
+      - name: data_base
+        data_tests: [not_null]
+      - name: diferenca_relativa
+        description: "V2 conformada sobre V1 publicada, menos um. Não é uniforme por modalidade."
+
+  - name: mrt_limites_do_dado
+    description: >
+      Tela 4 do dashboard. A fronteira do dado como número medido por mês:
+      contagem suprimida, conformação ambígua, diferença entre versões e o
+      regime das quebras.
+    columns:
+      - name: data_base
+        data_tests: [not_null, unique]
+      - name: parcela_carteira_contagem_suprimida
+        description: "Parte da carteira do mês sem número de operações divulgado."
+        data_tests: [not_null]
+      - name: operacoes_limite_inferior
+        description: "Soma das contagens divulgadas. É limite inferior, e não total."
+      - name: diferenca_v2_sobre_v1
+        description: "Diferença de universo entre as duas publicações no mês."
+        data_tests: [not_null]

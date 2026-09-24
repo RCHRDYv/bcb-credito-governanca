@@ -54,6 +54,20 @@ Dashboard   Interface de IA + avaliação medida
 da decisão  (com e sem ontologia)
 ```
 
+### Arquitetura medalhão
+
+As camadas seguem a arquitetura medalhão, com o nome que cada uma tem no dbt:
+
+| Medalhão | Camada no projeto | O que faz | Onde está |
+|---|---|---|---|
+| **Bronze** | Tabelas bronze | O dado exatamente como o BCB publica, todo em texto, com linhagem por arquivo | `ingestion/`, [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md) |
+| **Silver** | Staging | Corrige a forma e preserva o conteúdo: tipos, trim, sentinelas | `dbt/models/staging/`, [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md) |
+| **Silver** | Intermediate | Resolve as dimensões: código da submodalidade, colunas polimórficas desambiguadas e conformação com a V1 | `dbt/models/intermediate/` |
+| **Gold** | Esquema estrela | Responde às perguntas. É o que a IA consulta no experimento | `dbt/models/marts/`, `dim_*` e `fct_*` |
+| **Gold** | Apresentação | Agregado no grão das telas do dashboard, com as taxas calculadas uma vez | `dbt/models/marts/`, `mrt_*` |
+
+A camada gold tem duas famílias porque perguntas e dashboard puxam em direções opostas, e porque aquilo que a IA consulta define o que o experimento mede. O raciocínio está no [ADR 0007](docs/adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md).
+
 **Decisão de desenho central:** a dimensão de modalidade não é escrita à mão no dbt, ela é **gerada a partir de `ontology/modalidades.yml`**. A ontologia é fonte do modelo, não documentação sobre ele. Assim, divergência entre documentação e dado se torna estruturalmente impossível.
 
 As decisões de arquitetura e suas alternativas descartadas estão registradas em `docs/adr/`.
@@ -110,6 +124,7 @@ uv run python -m scripts.validar_modalidades --estrutura
 uv run python -m scripts.validar_dimensoes --estrutura
 uv run python -m scripts.validar_correspondencia --estrutura
 uv run python -m scripts.validar_perguntas
+uv run python -m scripts.validar_cobertura
 ```
 
 Para conferir a ontologia de dimensões contra o dado, incluindo se cada valor ocorre nos tipos de cliente que a ontologia declara:
@@ -126,9 +141,11 @@ Do diretório `dbt/`, com o mesmo OAuth do CLI e um `~/.dbt/profiles.yml` copiad
 uv run dbt build
 ```
 
-O comando carrega os seeds, cria as views de staging e de intermediate e roda os testes. Hoje são 113 verificações, e uma delas avisa de propósito: a identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024, que vem assim do arquivo publicado pelo BCB. O teste avisa com uma linha e falha com duas, para que uma segunda ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+O comando carrega os seeds, cria as views de staging e de intermediate, as tabelas da camada gold e roda os testes. Hoje são 192 verificações, e uma delas avisa de propósito: a identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024, que vem assim do arquivo publicado pelo BCB. O teste avisa com uma linha e falha com duas, para que uma segunda ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
 
 A camada intermediária resolve as dimensões: ela traz o código do Anexo 3 que o dado publicado não tem, desfaz a ambiguidade das duas colunas polimórficas no formato que a V1 usava, e liga cada linha à modalidade correspondente da V1 pela tabela oficial de equivalência. Os testes de relacionamento provam que nenhuma linha fica sem dimensão, e um teste de contagem e soma prova que as junções não multiplicam linha.
+
+A camada gold reproduz todo número já publicado nos documentos do projeto, e um teste confere mês a mês que o dashboard e a IA veem os mesmos totais. A matriz em [`evaluation/cobertura.yml`](evaluation/cobertura.yml) diz, para cada pergunta e cada tela, os modelos que a respondem ou a issue que ainda a bloqueia: hoje, 30 das 41 perguntas são respondíveis só com o SCR.
 
 Para o QA da camada, por caminhos diferentes dos testes do dbt, incluindo a conferência das linhas contra o manifesto medido fora do Databricks e a varredura da cardinalidade mês a mês:
 
@@ -154,8 +171,10 @@ uv run python -m scripts.analises.qa_staging
 | [ADR 0004](docs/adr/0004-ingestao-em-camada-bronze.md) | Ingestão em camada bronze: ZIP local, Parquet só texto, volume do Unity Catalog |
 | [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md) | O projeto termina numa recomendação, com a fronteira do dado declarada |
 | [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md) | O staging corrige a forma e preserva o conteúdo, incluindo o tratamento assimétrico dos dois sentinelas |
+| [ADR 0007](docs/adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md) | A camada gold tem duas famílias, e a IA consulta só o esquema estrela |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
+| [Cobertura da camada gold](evaluation/cobertura.yml) | Para cada pergunta e cada tela, os modelos que a respondem ou a issue que a bloqueia |
 
 ## Planejado versus entregue
 

@@ -25,8 +25,10 @@ Uso / Usage:
 
 from __future__ import annotations
 
+import calendar
 import sys
 from collections import Counter
+from datetime import date
 from pathlib import Path
 
 import yaml
@@ -34,6 +36,7 @@ import yaml
 ARQUIVO = Path(__file__).resolve().parents[1] / "ontology" / "dimensoes.yml"
 CONFIANCAS = {"verbatim", "parafraseado", "inferido", "lacuna"}
 CLIENTES_VALIDOS = {"PF", "PJ", "PF e PJ"}
+CAMPOS_DA_QUEBRA = ("id", "data", "afeta", "descricao", "antes", "depois", "consequencia", "confianca", "fonte")
 
 
 def carregar() -> dict:
@@ -66,6 +69,43 @@ def checar_estrutura(dados: dict) -> list[str]:
 
     enumeradas = [d["id"] for d in dados["dimensoes"] if d.get("valores")]
     print(f"  1. estrutura: {len(dimensoes)} dimensões, {len(enumeradas)} com valores enumerados, {len(erros)} problemas")
+    return erros + checar_quebras(dados)
+
+
+def checar_quebras(dados: dict) -> list[str]:
+    """
+    PT: Confere a lista de quebras da série. A checagem que mais importa é a da
+        data: ela precisa ser o último dia do mês, porque a dim_tempo junta
+        pela igualdade com data_base, e uma quebra datada no dia 1 nunca
+        casaria, sem erro nenhum.
+    EN: Checks the series-break list. The check that matters most is the date:
+        it must be the last day of the month, because dim_tempo joins on
+        equality with data_base, and a break dated on the 1st would silently
+        never match.
+    """
+    erros = []
+    data_base = next((d for d in dados["dimensoes"] if d.get("coluna") == "data_base"), {})
+    quebras = data_base.get("quebras", [])
+
+    repetidos = [v for v, n in Counter(q.get("id") for q in quebras).items() if n > 1]
+    erros += [f"quebra com id repetido: {v}" for v in repetidos]
+
+    for q in quebras:
+        faltando = [c for c in CAMPOS_DA_QUEBRA if not q.get(c)]
+        if faltando:
+            erros.append(f"quebra {q.get('id')}: campos vazios {faltando}")
+        if q.get("confianca") not in CONFIANCAS:
+            erros.append(f"quebra {q.get('id')}: confianca inválida '{q.get('confianca')}'")
+        try:
+            dia = date.fromisoformat(str(q.get("data")))
+        except ValueError:
+            erros.append(f"quebra {q.get('id')}: data inválida '{q.get('data')}'")
+            continue
+        ultimo = calendar.monthrange(dia.year, dia.month)[1]
+        if dia.day != ultimo:
+            erros.append(f"quebra {q.get('id')}: {dia} não é o último dia do mês, e nunca casaria com data_base")
+
+    print(f"     quebras da série: {len(quebras)}, {len(erros)} problemas")
     return erros
 
 
