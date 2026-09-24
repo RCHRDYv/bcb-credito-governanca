@@ -9,13 +9,16 @@ PT: Etapa 5. Prova que o bronze no Databricks é o dado publicado pelo BCB,
        iguais aos calculados localmente sobre os mesmos Parquets.
     3. Reconciliação V1 contra V2 na carteira ativa. É informativa e não
        reprova: as duas versões divergem de fato (docs/analise-v1-v2.md).
+    4. Linhas por arquivo das fontes externas (CNPJ da Receita e população
+       do IBGE, issue #25) iguais às do manifesto.
 
-    Sai com código 1 se a checagem 1 ou a 2 falhar.
+    Sai com código 1 se a checagem 1, a 2 ou a 4 falhar.
 
 EN: Step 5. Proves that bronze on Databricks is the data the BCB published,
     with nothing lost or altered, and reports the V1 versus V2
     reconciliation. Checks 1 and 2 fail the run; check 3 is informational,
-    because the two versions do diverge.
+    because the two versions do diverge. Check 4 compares the external
+    sources' rows per file against the manifest and also fails the run.
 
 Uso / Usage:
     uv run python -m ingestion.verificar_bronze
@@ -60,6 +63,37 @@ def checar_linhas(w, wid: str, dados: dict) -> list[str]:
               for arq, n in esperado.items() if obtido.get(arq) != n]
     falhas += [f"{arq}: no bronze mas fora do manifesto" for arq in obtido.keys() - esperado.keys()]
     print(f"  1. linhas: {len(esperado)} arquivos conferidos, {len(falhas)} divergências")
+    return falhas
+
+
+def checar_fontes_externas(w, wid: str, dados: dict) -> list[str]:
+    """
+    PT: Linhas por arquivo das fontes externas contra o manifesto (issue
+        #25). No CNPJ, cada ZIP vira várias partes, e o manifesto guarda o
+        total de linhas por ZIP. No IBGE, há um arquivo só.
+    EN: Rows per file for the external sources against the manifest. Each
+        CNPJ ZIP becomes several parts, and the manifest keeps the total per
+        ZIP; IBGE has a single file.
+    """
+    esperado: dict[tuple[str, str], int] = {}
+    for chave, reg in dados.get("cnpj", {}).items():
+        conv = reg.get("conversao") or {}
+        if conv:
+            esperado[(conv["tabela"], f"{chave}/{conv['arquivo_interno']}")] = conv["linhas"]
+    for nome, reg in dados.get("ibge", {}).items():
+        esperado[("ibge_populacao", nome)] = reg["linhas"]
+
+    obtido: dict[tuple[str, str], int] = {}
+    for tabela in sorted({t for t, _ in esperado}):
+        nome_bronze = tabela if tabela.startswith("ibge") else f"cnpj_{tabela}"
+        sql = f"SELECT arquivo_origem, count(*) FROM {CATALOGO}.{SCHEMA}.bronze_{nome_bronze} GROUP BY 1"
+        obtido.update({(tabela, arq): int(n) for arq, n in executar_sql(w, wid, sql)})
+
+    falhas = [f"{t} {arq}: esperado {n:,}, bronze {obtido.get((t, arq), 0):,}"
+              for (t, arq), n in esperado.items() if obtido.get((t, arq)) != n]
+    falhas += [f"{t} {arq}: no bronze mas fora do manifesto" for t, arq in obtido.keys() - esperado.keys()]
+    total = sum(esperado.values())
+    print(f"  4. fontes externas: {len(esperado)} arquivos, {total:,} linhas conferidas, {len(falhas)} divergências")
     return falhas
 
 
@@ -131,6 +165,7 @@ def main() -> None:
     falhas_totais, por_versao = checar_totais(w, wid)
     falhas += falhas_totais
     reconciliar(por_versao)
+    falhas += checar_fontes_externas(w, wid, dados)
 
     if falhas:
         print("\nFALHOU / FAILED:")
