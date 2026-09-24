@@ -1,8 +1,8 @@
 # Referências
 
-PT: Este projeto é uma **demonstração**, não uma descoberta. O efeito que ele mede já está estabelecido na literatura e já é premissa de produtos comerciais. Esta página existe para deixar isso explícito e para dar ao leitor as fontes que sustentam a tese.
+PT: A comparação entre esquema cru e ontologia é **replicação**: o efeito de metadado sobre text-to-SQL já está estabelecido na literatura e já é premissa de produtos comerciais. Esta página existe para deixar isso explícito e para dar ao leitor as fontes que sustentam essa parte. A pergunta de descoberta do projeto, se a ontologia curada vale mais que os documentos de onde foi destilada, recuperados por RAG, foi acrescentada em 2026-09-24 e está no [ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md). O projeto não afirma que ela é inédita na literatura; afirma que é medida aqui com pré-registro.
 
-EN: This project is a **demonstration**, not a discovery. The effect it measures is already established in the literature and already underpins commercial products. This page exists to make that explicit and to give the reader the sources behind the thesis.
+EN: The raw schema versus ontology comparison is **replication**: the effect of metadata on text-to-SQL is established in the literature and underpins commercial products. This page gives the sources behind that part. The project's discovery question, whether a curated ontology beats retrieving its source documents through RAG, was added on 2026-09-24 (ADR 0013). The project does not claim it is new to the literature; it claims to measure it here with pre-registration.
 
 ## Literatura
 
