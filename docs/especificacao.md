@@ -81,7 +81,7 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 
 **intermediate:** dimensões conformadas entre fontes com granularidade e código diferentes. É onde mora o trabalho real desta base.
 
-**marts:** modelo dimensional voltado a negócio. `dim_modalidade`, `dim_uf`, `dim_tempo`, `fct_carteira_credito`, `fct_inadimplencia`.
+**marts:** duas famílias, com papéis diferentes ([ADR 0007](adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md)). O **esquema estrela** (`dim_tempo`, `dim_modalidade`, `dim_uf`, `dim_segmento`, `dim_porte`, `dim_cnae_ocupacao`, `fct_carteira` e o fato legado `fct_carteira_v1`) responde às perguntas e é o que a IA consulta no experimento. Os **marts de apresentação** (`mrt_carteira_mensal`, `mrt_reconciliacao_versoes`, `mrt_limites_do_dado`) são agregados no grão das telas do dashboard, com as taxas calculadas uma vez, e ficam fora do experimento porque pré-respondem perguntas.
 
 **Decisão que prova a tese estruturalmente:** `dim_modalidade` não é escrita à mão, é gerada por seed a partir de `ontology/modalidades.yml`. A ontologia é fonte do modelo, não documentação sobre ele.
 
@@ -166,7 +166,7 @@ Uma pergunta por tela, com o texto da conclusão junto do gráfico, e não uma g
 
 1. Onde está o crédito PJ hoje, e onde ele é escasso por empresa
 2. Onde o risco está piorando, com a distinção entre inadimplência e ativo problemático
-3. Para onde a carteira aponta nos próximos três meses, com intervalo
+3. Para onde a carteira aponta nos próximos três meses, com intervalo. **Movida para a v0.2 em 2026-09-24**, junto com a previsão da issue #27: a v0.1 conta a decisão sem ela, e a projeção só entra com backtest e erro publicado
 4. A recomendação, com o custo de errar e o que o dado não permite afirmar
 
 ### Relação com o experimento de IA
@@ -177,6 +177,7 @@ As perguntas que sustentam a decisão são as mesmas do gabarito. Isso liga as d
 
 - **Condição A:** o modelo recebe apenas o esquema cru, sem descrição
 - **Condição B:** esquema mais ontologia, descrições e regras de negócio
+- **O que as duas condições consultam:** o esquema estrela da camada gold, e só ele. Os marts de apresentação ficam de fora, porque já trazem taxas e diferenças calculadas e desarmariam as armadilhas nas duas condições por igual ([ADR 0007](adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md))
 - **Métrica:** acerto da resposta final contra gabarito calculado por SQL
 - **Teste:** McNemar, apropriado para dado binário pareado, com tamanho de efeito reportado
 
