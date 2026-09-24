@@ -74,6 +74,20 @@ fontes:
     confianca: verbatim
     fonte: "Resposta da API do SIDRA em 2026-09-24"
 
+  - id: sgs_432
+    prefLabel_pt: "Meta da Selic, série 432 do SGS"
+    prefLabel_en: "Selic target, SGS series 432"
+    publicador: "Banco Central do Brasil"
+    endereco: "https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json"
+    periodicidade: "diária, com a meta vigente em cada dia corrido"
+    formato: "JSON com data (DD/MM/AAAA) e valor (% ao ano, ponto decimal)"
+    data_de_referencia: >
+      A data de cada linha. A consulta termina na data da extração, porque
+      sem data final a API devolve datas no futuro
+      (avisos.selic_com_datas_no_futuro).
+    confianca: verbatim
+    fonte: "API do SGS, consulta de 2026-09-24"
+
 conceitos:
 
   - id: empresa_ativa
@@ -194,6 +208,25 @@ conceitos:
       denominador muda o indicador de espaço. A escolha é da camada de
       decisão (issue #26), e o fato de empresas guarda as duas contagens.
 
+  - id: selic_meta
+    notation: selic_meta
+    prefLabel_pt: "Meta da taxa Selic"
+    prefLabel_en: "Selic policy rate target"
+    definition: >
+      Meta para a taxa Selic definida pelo Copom, em % ao ano, vigente no
+      último dia de cada mês do SCR.
+    confianca: parafraseado
+    fonte: "SGS do BCB, série 432; escolha registrada na issue #37 e no ADR 0010"
+    scopeNote: >
+      É a meta, e não a taxa efetiva, porque a Q25 registrada em inglês pede
+      a "Selic policy rate", e a Q26 fala em variação da Selic, que são as
+      decisões do Copom. O mês recebe o valor vigente no último dia, e não a
+      média: num mês com reunião, a média seria uma taxa que nunca vigorou.
+    armadilha: >
+      A taxa Selic efetiva (série 4189, mensal) tem o mesmo nome e fica perto
+      da meta, mas não é a mesma coisa: em set/2026, 13,82% contra meta de
+      13,75%. Trocar uma pela outra muda a resposta sem nenhum erro aparente.
+
 avisos:
 
   - id: data_do_retrato_nao_e_fim_de_mes
@@ -241,3 +274,16 @@ avisos:
       cnpj_empresas_repetidas avisa com esse caso e falha se aparecer outro.
     confianca: verbatim
     fonte: "Medição no bronze, 2026-09-24"
+
+  - id: selic_com_datas_no_futuro
+    gravidade: media
+    descricao: >
+      Sem data final, a consulta à série 432 devolve datas no futuro: em
+      2026-09-24 ela ia até 04/11/2026, repetindo a meta vigente até a
+      próxima reunião do Copom.
+    consequencia: >
+      "O último valor da série" seria uma data que ainda não aconteceu. A
+      ingestão pede até a data da extração e recusa a resposta se vier
+      alguma data depois dela.
+    confianca: verbatim
+    fonte: "API do SGS, consulta de 2026-09-24"

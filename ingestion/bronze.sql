@@ -87,3 +87,11 @@ SELECT
   *,
   current_timestamp() AS ingerido_em
 FROM read_files('{volume}/ibge/populacao/*.parquet', format => 'parquet');
+
+CREATE OR REPLACE TABLE {catalogo}.{schema}.bronze_sgs_series
+COMMENT 'Séries do SGS do BCB, uma linha por dia e por série, como a API devolveu, todas as colunas como texto. Hoje só a meta da Selic definida pelo Copom (série 432, issue 37). Data no formato DD/MM/AAAA e valor com ponto decimal. A consulta termina na data da extração, registrada em data_extracao.'
+AS
+SELECT
+  *,
+  current_timestamp() AS ingerido_em
+FROM read_files('{volume}/sgs/*/*.parquet', format => 'parquet');

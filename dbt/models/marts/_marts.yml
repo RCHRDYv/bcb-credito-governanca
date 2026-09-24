@@ -391,3 +391,23 @@ models:
         data_tests: [not_null]
       - name: uf
         data_tests: [not_null]
+
+  - name: fct_selic
+    description: >
+      Meta da Selic definida pelo Copom, vigente no último dia de cada mês do
+      SCR, em % ao ano (issue #37, ADR 0010). É a meta, e não a taxa efetiva.
+    columns:
+      - name: data_base
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_tempo')
+                field: data_base
+      - name: selic_meta
+        description: "Meta da Selic em % ao ano. Ver ontology/fontes_externas.yml, selic_meta."
+        data_tests: [not_null]
+      - name: data_do_valor
+        description: "Dia de que o valor veio. Igual à data-base quando a série tem linha nesse dia."
+        data_tests: [not_null]

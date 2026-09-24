@@ -121,3 +121,15 @@ sources:
           - name: V
             description: "População, em pessoas, como texto."
             data_tests: [not_null]
+
+      - name: bronze_sgs_series
+        description: >
+          Séries do SGS do BCB, uma linha por dia e por série, como a API
+          devolveu. Hoje só a meta da Selic (série 432). Data em DD/MM/AAAA.
+        columns:
+          - name: codigo_serie
+            data_tests: [not_null]
+          - name: data
+            data_tests: [not_null]
+          - name: valor
+            data_tests: [not_null]

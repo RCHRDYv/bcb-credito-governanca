@@ -239,3 +239,46 @@ SIDRA_POPULACAO = "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/{a
 ANOS_POPULACAO = ANOS
 DIR_RAW_IBGE = DIR_RAW / "ibge"
 DIR_LANDING_IBGE = DIR_LANDING / "ibge"
+
+# -----------------------------------------------------------------------------
+# PT: Séries do SGS, o Sistema Gerenciador de Séries Temporais do BCB (issue
+#     #37). A API é pública, sem login, e devolve JSON. A consulta sempre
+#     leva data final, a da extração: sem ela, séries como a meta da Selic
+#     voltam com datas no futuro, porque o SGS repete a meta vigente até a
+#     próxima reunião do Copom (medido em 2026-09-24: a série ia até
+#     04/11/2026). Definições em ontology/fontes_externas.yml.
+# EN: SGS series, the BCB time series system. Public API, no login, JSON.
+#     Queries always carry an end date, the extraction date: without it,
+#     series like the Selic target come back with future dates, because SGS
+#     repeats the current target until the next Copom meeting.
+# -----------------------------------------------------------------------------
+
+SGS_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados?formato=json&dataInicial={inicio}&dataFinal={fim}"
+
+
+@dataclass(frozen=True)
+class SerieSgs:
+    """
+    PT: Uma série do SGS. O nome vira o nome do arquivo e da pasta; o código
+        é o do próprio SGS.
+    EN: One SGS series. The name becomes file and folder name; the code is
+        SGS's own.
+    """
+
+    nome: str
+    codigo: int
+    descricao: str
+
+
+# PT: A meta, e não a taxa efetiva: a Q25 registrada em inglês pede a "Selic
+#     policy rate". Escolha registrada na issue #37 e no ADR 0010.
+# EN: The target, not the effective rate: Q25 asks for the "Selic policy rate".
+SERIES_SGS = (
+    SerieSgs(nome="selic_meta", codigo=432, descricao="Meta da taxa Selic definida pelo Copom, % a.a., diária"),
+)
+
+# PT: Mesmo recorte do SCR (decisão 1.3 de docs/cadeia-normativa.md).
+# EN: Same scope as the SCR.
+SGS_DATA_INICIAL = f"01/01/{ANOS[0]}"
+DIR_RAW_SGS = DIR_RAW / "sgs"
+DIR_LANDING_SGS = DIR_LANDING / "sgs"

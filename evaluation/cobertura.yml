@@ -114,8 +114,17 @@ perguntas:
   # PT: Contexto econômico
   # EN: Economic context
   # ---------------------------------------------------------------------------
-  Q25: {modelos: [fct_carteira, dim_tempo], depende_de: ["#37"]}
-  Q26: {modelos: [fct_carteira, dim_tempo], depende_de: ["#37"]}
+  Q25:
+    modelos: [fct_carteira, fct_selic, dim_tempo]
+    limite: >
+      A pergunta pede três anos, e o recorte tem 31 meses, desde jan/2024. É
+      a meta do Copom, e não a taxa efetiva (fct_selic, ADR 0010).
+  Q26:
+    modelos: [fct_carteira, fct_selic, dim_tempo]
+    limite: >
+      31 meses e 15 decisões do Copom são pouca série para estimar defasagem
+      com confiança; a resposta precisa dizer isso. O ativo problemático muda
+      de critério em jan/2025, dentro da janela.
   Q27: {modelos: [fct_carteira, dim_tempo], depende_de: ["#27"]}
 
   # ---------------------------------------------------------------------------
