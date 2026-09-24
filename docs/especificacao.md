@@ -48,6 +48,18 @@ Todas verificadas no arquivo, e todas são material para a camada de staging e p
 6. **`carteira_inadimplencia` e `ativo_problematico` são colunas distintas**, com definição normativa diferente
 7. **As faixas de vencimento somam `carteira_a_vencer`**, o que rende um teste de qualidade natural
 
+### Fontes externas por UF: empresas ativas e população
+
+Os denominadores de Q11, Q12 e Q14 e do indicador de espaço (issue #25). Definições e armadilhas em [`ontology/fontes_externas.yml`](../ontology/fontes_externas.yml), e as decisões no [ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md).
+
+| Recurso | Fonte | Uso |
+|---|---|---|
+| CNPJ aberto | Receita Federal, retrato mensal completo do cadastro | Matrizes ativas por UF, porte, natureza jurídica e MEI |
+| Transporte do CNPJ | Espelho da Casa dos Dados, `https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/` | Download, com o tamanho de cada arquivo conferido contra a listagem da Receita |
+| População | IBGE, tabela 6579 do SIDRA, `https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2024,2025,2026` | População residente estimada por UF e ano |
+
+**Duas armadilhas que decidem o desenho.** A UF de pessoa jurídica no SCR é a da sede, então o denominador conta matrizes, e não estabelecimentos. E um retrato do CNPJ tem cerca de 7 GB: o estoque de cada fim de mês é reconstruído de um retrato só, pelas datas de cada CNPJ, com o erro medido contra dois retratos reais antigos.
+
 ### PIX: esse sim é OData
 
 Portal: https://dadosabertos.bcb.gov.br/

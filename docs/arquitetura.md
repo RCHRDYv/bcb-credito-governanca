@@ -10,6 +10,8 @@ No diagrama da ontologia, a seta pontilhada liga uma verificação àquilo que e
 
 `fct_carteira` guarda o grão cheio da V2. `fct_carteira_v1` é o fato legado, agregado, e existe para que as perguntas de comparação entre versões tenham dado da V1. Ele se liga só ao tempo e à UF, porque a taxonomia da V1 não é a das dimensões.
 
+Os denominadores por UF vêm das fontes externas ([ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md)). `fct_empresas_ativas` conta matrizes ativas no fim de cada mês, e `fct_populacao` tem uma estimativa por ano, então a junção com a carteira é pelo ano da data-base. `dim_porte_receita` não se liga à `dim_porte`, de propósito: os dois portes têm critérios diferentes.
+
 ```mermaid
 erDiagram
     dim_tempo ||--o{ fct_carteira : data_base
@@ -20,6 +22,11 @@ erDiagram
     dim_cnae_ocupacao ||--o{ fct_carteira : cnae_ocupacao_desambiguado
     dim_tempo ||--o{ fct_carteira_v1 : data_base
     dim_uf ||--o{ fct_carteira_v1 : uf
+    dim_tempo ||--o{ fct_empresas_ativas : data_base
+    dim_uf ||--o{ fct_empresas_ativas : uf
+    dim_porte_receita ||--o{ fct_empresas_ativas : porte_empresa
+    dim_natureza_juridica ||--o{ fct_empresas_ativas : grupo_natureza_juridica
+    dim_uf ||--o{ fct_populacao : uf
 
     fct_carteira {
         date data_base FK
@@ -39,7 +46,7 @@ erDiagram
         decimal carteira_inadimplencia
         decimal ativo_problematico
         string modalidade_v1_efetiva
-        string origem_da_modalidade_v1 "oficial ou inferida_pelo_projeto"
+        string origem_da_modalidade_v1 "oficial, oficial_ambigua ou inferida_pelo_projeto"
     }
 
     fct_carteira_v1 {
@@ -51,6 +58,21 @@ erDiagram
         decimal carteira_ativa
         decimal carteira_inadimplida_arrastada "mesmo conceito, com o nome da V1"
         decimal ativo_problematico
+    }
+
+    fct_empresas_ativas {
+        date data_base FK
+        string uf FK "UF da matriz"
+        string porte_empresa FK
+        string grupo_natureza_juridica FK
+        boolean mei
+        bigint empresas_ativas "reconstruído de um retrato, ADR 0009"
+    }
+
+    fct_populacao {
+        int ano "estimativa de 1º de julho"
+        string uf FK
+        bigint populacao
     }
 
     dim_tempo {
@@ -95,7 +117,20 @@ erDiagram
 
     dim_uf {
         string uf PK
+        string nome_da_uf
+        string codigo_ibge "chave das fontes externas"
         string definicao_da_uf "domicílio ou sede, não o local da operação"
+    }
+
+    dim_porte_receita {
+        string porte_empresa PK
+        string porte_receita
+        string aviso "não equivale à dim_porte"
+    }
+
+    dim_natureza_juridica {
+        string grupo_natureza_juridica PK
+        string natureza_juridica
     }
 
     dim_segmento {
