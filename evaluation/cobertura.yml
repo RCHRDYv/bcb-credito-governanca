@@ -1,0 +1,170 @@
+# =============================================================================
+# PT: Matriz de cobertura da camada gold. É o critério de pronto da issue #15:
+#     cada pergunta do experimento e cada tela do dashboard precisa ter os
+#     modelos que a respondem, ou a issue que ainda a bloqueia.
+#
+#     Arquivo separado de propósito: questions_v2.yml é pré-registro e não é
+#     tocado. Esta matriz diz COMO responder, e aquele arquivo diz O QUE foi
+#     perguntado, antes de qualquer resultado.
+#
+#     Três regras, conferidas por scripts/validar_cobertura.py no CI:
+#
+#     1. As perguntas citam só o esquema estrela (dim_* e fct_*), porque é o
+#        que a IA consulta no experimento, nas duas condições (ADR 0007). Uma
+#        pergunta que só um mart de apresentação respondesse seria impossível
+#        por construção para a IA.
+#     2. As telas citam os marts de apresentação (mrt_*), que é o que o
+#        dashboard exporta.
+#     3. Toda entrada tem modelos, ou depende de uma issue, ou as duas coisas:
+#        "depende_de" com modelos quer dizer que parte da resposta existe e o
+#        denominador ou a fonte complementar ainda não.
+#
+#     Campo "limite": o que a resposta precisa declarar mesmo quando o modelo
+#     existe. Não bloqueia, e vira ressalva no gabarito da issue #16.
+#
+# EN: Coverage matrix for the gold layer, issue #15's definition of done: every
+#     experiment question and dashboard screen must list the models that answer
+#     it, or the issue still blocking it. Questions cite only the star schema,
+#     which is what the AI queries (ADR 0007); screens cite the presentation
+#     marts. Kept separate from the pre-registered questions file on purpose.
+# =============================================================================
+
+perguntas:
+
+  # ---------------------------------------------------------------------------
+  # PT: Monitoramento e benchmark de mercado
+  # EN: Market monitoring and benchmark
+  # ---------------------------------------------------------------------------
+  Q01: {modelos: [fct_carteira, dim_tempo]}
+  Q02: {modelos: [fct_carteira, dim_modalidade, dim_tempo]}
+  Q03: {modelos: [fct_carteira, dim_tempo]}
+  Q04: {modelos: [fct_carteira, dim_segmento, dim_tempo]}
+  Q05: {modelos: [fct_carteira, dim_uf]}
+
+  # ---------------------------------------------------------------------------
+  # PT: Risco e inadimplência
+  # EN: Risk and default
+  # ---------------------------------------------------------------------------
+  Q06: {modelos: [fct_carteira, dim_modalidade]}
+  Q07: {modelos: [fct_carteira, dim_modalidade, dim_tempo]}
+  Q08:
+    modelos: [fct_carteira, dim_modalidade, dim_tempo]
+    limite: >
+      A pergunta pede a média de cinco anos, e o recorte do projeto começa em
+      jan/2024, com 31 meses. A resposta precisa dizer isso, ou a ingestão
+      precisa recuar a 2021.
+  Q09:
+    modelos: [fct_carteira, dim_modalidade, dim_tempo]
+    limite: "A distância entre as duas métricas muda de definição em jan/2025 (dim_tempo.criterio_ativo_problematico)."
+  Q10: {modelos: [fct_carteira, dim_modalidade, dim_tempo]}
+
+  # ---------------------------------------------------------------------------
+  # PT: Expansão geográfica e priorização
+  # EN: Geographic expansion and prioritisation
+  # ---------------------------------------------------------------------------
+  Q11: {modelos: [fct_carteira, dim_uf], depende_de: ["#25"]}
+  Q12: {modelos: [fct_carteira, dim_uf, dim_tempo], depende_de: ["#25"]}
+  Q13: {modelos: [fct_carteira, dim_uf], depende_de: ["#38"]}
+  Q14:
+    modelos: [fct_carteira, dim_uf]
+    depende_de: ["#25"]
+    limite: "UF é domicílio da pessoa ou sede da empresa, não local da operação (dim_uf.definicao_da_uf)."
+  Q15: {modelos: [fct_carteira, dim_uf], depende_de: ["#38"]}
+
+  # ---------------------------------------------------------------------------
+  # PT: Modalidade e produto
+  # EN: Modality and product
+  # ---------------------------------------------------------------------------
+  Q16:
+    modelos: [fct_carteira, dim_modalidade, dim_tempo]
+    limite: "A pergunta pede três anos, e o recorte tem 31 meses."
+  Q17:
+    modelos: [dim_modalidade]
+    limite: >
+      Abstenção. Só a definição do home equity (0211) declara garantia, e o
+      SCR.data não publica o campo de garantias. A dimensão é citada porque é
+      ela que prova a ausência.
+  Q18:
+    modelos: [fct_carteira, dim_modalidade]
+    limite: "Só calculável nas linhas com contagem divulgada, que deixam de fora 6,71% da carteira (fct_carteira.contagem_suprimida)."
+  Q19: {modelos: [fct_carteira, dim_modalidade]}
+
+  # ---------------------------------------------------------------------------
+  # PT: Concentração e competição
+  # EN: Concentration and competition
+  # ---------------------------------------------------------------------------
+  Q20: {modelos: [fct_carteira, dim_segmento, dim_tempo]}
+  Q21: {modelos: [fct_carteira, dim_segmento, dim_modalidade, dim_tempo]}
+
+  # ---------------------------------------------------------------------------
+  # PT: PIX e mudança estrutural
+  # EN: PIX and structural change
+  # ---------------------------------------------------------------------------
+  Q22: {depende_de: ["#36"]}
+  Q23: {modelos: [fct_carteira, dim_modalidade, dim_tempo], depende_de: ["#36"]}
+  Q24: {modelos: [fct_carteira, dim_uf], depende_de: ["#36"]}
+
+  # ---------------------------------------------------------------------------
+  # PT: Contexto econômico
+  # EN: Economic context
+  # ---------------------------------------------------------------------------
+  Q25: {modelos: [fct_carteira, dim_tempo], depende_de: ["#37"]}
+  Q26: {modelos: [fct_carteira, dim_tempo], depende_de: ["#37"]}
+  Q27: {modelos: [fct_carteira, dim_tempo], depende_de: ["#27"]}
+
+  # ---------------------------------------------------------------------------
+  # PT: Automação do trabalho repetitivo
+  # EN: Automating repetitive work
+  # ---------------------------------------------------------------------------
+  Q28: {modelos: [fct_carteira, dim_modalidade, dim_tempo]}
+  Q29: {modelos: [fct_carteira, dim_modalidade, dim_tempo]}
+  Q30:
+    modelos: [fct_carteira, fct_carteira_v1, dim_modalidade, dim_tempo]
+    limite: "A série reconstruída não reproduz os totais da V1, e a diferença não é uniforme por modalidade."
+
+  # ---------------------------------------------------------------------------
+  # PT: Armadilhas de classificação
+  # EN: Classification traps
+  # ---------------------------------------------------------------------------
+  Q31: {modelos: [fct_carteira, dim_modalidade]}
+  Q32: {modelos: [fct_carteira, dim_modalidade]}
+  Q33:
+    modelos: [fct_carteira, dim_porte]
+    limite: "Agrupar por dim_porte.porte, e não por porte_desambiguado, mistura duas taxonomias."
+  Q34: {modelos: [fct_carteira, dim_modalidade]}
+  Q35: {modelos: [fct_carteira, dim_modalidade]}
+
+  # ---------------------------------------------------------------------------
+  # PT: Limites do dado e comparabilidade
+  # EN: Data limits and comparability
+  # ---------------------------------------------------------------------------
+  Q36: {modelos: [fct_carteira]}
+  Q37:
+    modelos: [fct_carteira, dim_tempo]
+    limite: "A soma de numero_de_operacoes é limite inferior quando há contagem suprimida no grupo."
+  Q38: {modelos: [fct_carteira, dim_tempo]}
+  Q39: {modelos: [fct_carteira, fct_carteira_v1, dim_tempo]}
+  Q40: {modelos: [fct_carteira]}
+  Q41:
+    modelos: [fct_carteira]
+    limite: >
+      Abstenção. O fato não tem taxa, receita nem custo de captação, e é ele
+      que prova a ausência.
+
+telas:
+
+  tela_1:
+    titulo: "Onde está o crédito PJ hoje, e onde ele é escasso por empresa ativa"
+    modelos: [mrt_carteira_mensal]
+    depende_de: ["#25"]
+  tela_2:
+    titulo: "Onde o risco está piorando, com a distinção entre inadimplência e ativo problemático"
+    modelos: [mrt_carteira_mensal]
+  tela_3:
+    titulo: "Para onde a carteira aponta nos próximos três meses, com intervalo"
+    depende_de: ["#27"]
+    limite: "Movida para a v0.2 em 2026-09-24. O histórico já está em mrt_carteira_mensal."
+  tela_4:
+    titulo: "A recomendação, com o custo de errar e o que o dado não permite afirmar"
+    modelos: [mrt_limites_do_dado, mrt_reconciliacao_versoes]
+    depende_de: ["#26"]
