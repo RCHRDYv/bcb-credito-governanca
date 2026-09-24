@@ -66,6 +66,54 @@ As camadas seguem a arquitetura medalhão, com o nome que cada uma tem no dbt:
 | **Gold** | Esquema estrela | Responde às perguntas. É o que a IA consulta no experimento | `dbt/models/marts/`, `dim_*` e `fct_*` |
 | **Gold** | Apresentação | Agregado no grão das telas do dashboard, com as taxas calculadas uma vez | `dbt/models/marts/`, `mrt_*` |
 
+```mermaid
+flowchart LR
+    subgraph fontes["Fontes"]
+        v2["SCR.data V2"]
+        v1["SCR.data V1"]
+        onto["ontology/*.yml"]
+        equiv["Equivalência oficial<br/>entre versões"]
+    end
+
+    subgraph bronze["Bronze"]
+        b2["bronze_scr_v2"]
+        b1["bronze_scr_v1"]
+    end
+
+    seeds["Seeds gerados"]
+
+    subgraph silver["Silver"]
+        s2["stg_scr_v2"]
+        s1["stg_scr_v1"]
+        conf["int_scr_v2_conformado<br/>int_dim_*"]
+    end
+
+    subgraph gold["Gold"]
+        estrela["Esquema estrela<br/>dim_* e fct_*"]
+        apres["Apresentação<br/>mrt_*"]
+    end
+
+    ia["IA do experimento"]
+    gab["Gabarito #16"]
+    dash["Dashboard #17"]
+    dec["Camada de decisão #26"]
+
+    v2 -- "ingestion/" --> b2 --> s2 --> conf
+    v1 -- "ingestion/" --> b1 --> s1
+    onto & equiv --> seeds --> conf
+    seeds --> estrela
+    conf --> estrela
+    s1 --> estrela
+    estrela --> apres
+    estrela --> ia & gab
+    apres --> dash & dec
+
+    classDef planejado stroke-dasharray: 5 5
+    class ia,gab,dash,dec planejado
+```
+
+Tracejado é o que ainda não foi construído, com o número da issue. O esquema estrela, o caminho da ontologia até o modelo e as camadas de verificação estão desenhados em [`docs/arquitetura.md`](docs/arquitetura.md). Os diagramas são código, e não imagem, pelo motivo do [ADR 0008](docs/adr/0008-diagramas-como-codigo-em-mermaid.md).
+
 A camada gold tem duas famílias porque perguntas e dashboard puxam em direções opostas, e porque aquilo que a IA consulta define o que o experimento mede. O raciocínio está no [ADR 0007](docs/adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md).
 
 **Decisão de desenho central:** a dimensão de modalidade não é escrita à mão no dbt, ela é **gerada a partir de `ontology/modalidades.yml`**. A ontologia é fonte do modelo, não documentação sobre ele. Assim, divergência entre documentação e dado se torna estruturalmente impossível.
@@ -172,6 +220,7 @@ uv run python -m scripts.analises.qa_staging
 | [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md) | O projeto termina numa recomendação, com a fronteira do dado declarada |
 | [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md) | O staging corrige a forma e preserva o conteúdo, incluindo o tratamento assimétrico dos dois sentinelas |
 | [ADR 0007](docs/adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md) | A camada gold tem duas famílias, e a IA consulta só o esquema estrela |
+| [ADR 0008](docs/adr/0008-diagramas-como-codigo-em-mermaid.md) | Os diagramas de arquitetura são código, escritos em Mermaid |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Cobertura da camada gold](evaluation/cobertura.yml) | Para cada pergunta e cada tela, os modelos que a respondem ou a issue que a bloqueia |
@@ -231,7 +280,7 @@ The dataset is the Brazilian Central Bank's credit registry (SCR), published mon
 
 The ontology is distilled from the Central Bank's own official normative documents, with each definition citing its source, rather than authored from scratch. The modality dimension is generated from the versioned ontology file rather than hand-written in dbt, which makes drift between documentation and data structurally impossible.
 
-Architecture decisions and their discarded alternatives are recorded in `docs/adr/`. Methodological limitations are declared alongside results.
+Architecture decisions and their discarded alternatives are recorded in `docs/adr/`. Architecture diagrams are written as Mermaid code, so they change in the same pull request as the models they show: the medallion flow is in the Portuguese section above, and the star schema, the ontology-to-model path and the verification layers are in [`docs/arquitetura.md`](docs/arquitetura.md). Methodological limitations are declared alongside results.
 
 ## License
 
