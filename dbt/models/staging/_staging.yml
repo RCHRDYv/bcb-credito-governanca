@@ -370,3 +370,16 @@ models:
         data_tests: [not_null]
       - name: valor
         data_tests: [not_null]
+
+  - name: stg_pix_municipio
+    description: >
+      PIX por mês e município, com valores e contagens tipados e a data-base de
+      fim de mês. A linha N/D, sem município nem UF, fica, porque o total
+      nacional depende dela.
+    columns:
+      - name: data_base
+        data_tests: [not_null]
+      - name: valor_pagador_pf
+        data_tests: [not_null]
+      - name: valor_recebedor_pf
+        data_tests: [not_null]

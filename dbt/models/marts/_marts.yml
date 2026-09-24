@@ -411,3 +411,45 @@ models:
       - name: data_do_valor
         description: "Dia de que o valor veio. Igual à data-base quando a série tem linha nesse dia."
         data_tests: [not_null]
+
+  - name: fct_pix
+    description: >
+      PIX por mês, UF, lado e tipo de cliente (issue #36, ADR 0011). Só o PIX
+      liquidado no SPI. É fluxo do mês, e não saldo. Pagador e recebedor somam
+      o mesmo no total do país, e somar os dois lados conta cada transação
+      duas vezes. UF nula é a linha sem município informado, que só entra no
+      total nacional.
+    columns:
+      - name: data_base
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_tempo')
+                field: data_base
+      - name: uf
+        description: "UF do domicílio do usuário, por inferência (ontology/fontes_externas.yml, pix_municipio). Nula na linha sem município."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_uf')
+                field: uf
+      - name: lado
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["pagador", "recebedor"]
+      - name: cliente
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["PF", "PJ"]
+      - name: valor
+        description: "Valor em reais transacionado no mês. Ver ontology/fontes_externas.yml, volume_de_pix."
+        data_tests: [not_null]
+      - name: quantidade
+        data_tests: [not_null]
+      - name: pessoas
+        description: "Pessoas distintas no mês. Não soma entre lados nem entre meses."
