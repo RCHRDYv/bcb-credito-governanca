@@ -64,6 +64,24 @@ limites as (
 
 ),
 
+carteira_por_uf as (
+
+    select data_base,
+           sum(carteira_total) as carteira_ativa,
+           sum(empresas_ativas) as empresas_ativas
+    from {{ ref('mrt_carteira_por_uf') }}
+    group by data_base
+
+),
+
+fato_empresas as (
+
+    select data_base, sum(empresas_ativas) as empresas_ativas
+    from {{ ref('fct_empresas_ativas') }}
+    group by data_base
+
+),
+
 conferencias as (
 
     select f.data_base, 'mrt_carteira_mensal: carteira ativa' as conferencia,
@@ -99,6 +117,16 @@ conferencias as (
     select f.data_base, 'mrt_limites_do_dado: V1',
            l.carteira_v1, f.carteira_ativa
     from fato_v1 f left join limites l on l.data_base = f.data_base
+
+    union all
+    select f.data_base, 'mrt_carteira_por_uf: carteira ativa',
+           u.carteira_ativa, f.carteira_ativa
+    from fato_v2 f left join carteira_por_uf u on u.data_base = f.data_base
+
+    union all
+    select e.data_base, 'mrt_carteira_por_uf: empresas ativas',
+           u.empresas_ativas, e.empresas_ativas
+    from fato_empresas e left join carteira_por_uf u on u.data_base = e.data_base
 
 )
 

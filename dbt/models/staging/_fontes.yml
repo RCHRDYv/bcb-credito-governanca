@@ -59,3 +59,65 @@ sources:
           - name: arquivo_origem
             description: "ZIP e CSV de origem da linha, para linhagem."
             data_tests: [not_null]
+
+  # ===========================================================================
+  # PT: Fontes externas por UF (issue #25, ADR 0009): CNPJ aberto da Receita
+  #     e população do IBGE. Mesmo schema do SCR, criadas pelo mesmo
+  #     ingestion/criar_bronze.py. Definições em ontology/fontes_externas.yml.
+  # EN: External sources by state: Receita's open CNPJ data and IBGE
+  #     population. Definitions in ontology/fontes_externas.yml.
+  # ===========================================================================
+  - name: externas
+    description: "Fontes externas por UF, camada bronze. Linhagem por arquivo nas seções cnpj e ibge de ingestion/manifesto.json."
+    database: workspace
+    schema: bcb_scr
+    tables:
+
+      - name: bronze_cnpj_estabelecimentos
+        description: >
+          Tabela Estabelecimentos do CNPJ aberto, uma linha por estabelecimento
+          (matriz ou filial) em cada retrato. Três retratos: 2026-09 alimenta o
+          modelo, 2024-06 e 2025-06 medem o erro da reconstrução mensal.
+        columns:
+          - name: cnpj_basico
+            description: "Oito primeiros dígitos do CNPJ, que identificam a empresa."
+            data_tests: [not_null]
+          - name: identificador_matriz_filial
+            description: "1 = matriz, 2 = filial. Ver ontology/fontes_externas.yml, empresa_ativa."
+          - name: situacao_cadastral
+            description: "01 nula, 02 ativa, 03 suspensa, 04 inapta, 08 baixada."
+          - name: retrato
+            description: "Mês do retrato, AAAA-MM."
+            data_tests: [not_null]
+          - name: arquivo_origem
+            description: "Retrato, ZIP e arquivo interno de origem da linha, para linhagem."
+            data_tests: [not_null]
+
+      - name: bronze_cnpj_empresas
+        description: "Tabela Empresas do CNPJ aberto, retrato 2026-09. Uma linha por empresa."
+        columns:
+          - name: cnpj_basico
+            description: "Oito primeiros dígitos do CNPJ."
+            data_tests: [not_null]
+
+      - name: bronze_cnpj_simples
+        description: "Tabela Simples do CNPJ aberto, retrato 2026-09. Uma linha por empresa que já optou pelo Simples ou pelo MEI."
+        columns:
+          - name: cnpj_basico
+            description: "Oito primeiros dígitos do CNPJ."
+            data_tests: [not_null]
+
+      - name: bronze_cnpj_naturezas
+        description: "Domínio das naturezas jurídicas, retrato 2026-09."
+
+      - name: bronze_cnpj_cnaes
+        description: "Domínio da CNAE, retrato 2026-09."
+
+      - name: bronze_ibge_populacao
+        description: >
+          População residente estimada por UF, tabela 6579 do SIDRA, com os
+          nomes de campo da API (V = valor, D1C = código da UF, D3C = ano).
+        columns:
+          - name: V
+            description: "População, em pessoas, como texto."
+            data_tests: [not_null]

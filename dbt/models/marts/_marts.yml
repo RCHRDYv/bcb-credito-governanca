@@ -275,3 +275,100 @@ models:
       - name: diferenca_v2_sobre_v1
         description: "Diferença de universo entre as duas publicações no mês."
         data_tests: [not_null]
+
+  # ===========================================================================
+  # PT: Fontes externas por UF (issue #25). Dimensões e fatos entram no
+  #     esquema estrela, porque Q11, Q12 e Q14 os usam (ADR 0007).
+  # EN: External sources by state. Dimensions and facts join the star
+  #     schema, since Q11, Q12 and Q14 use them.
+  # ===========================================================================
+
+  - name: dim_porte_receita
+    description: "Porte da empresa no CNPJ, 4 registros, gerado da ontologia. Não equivale ao porte do SCR."
+    columns:
+      - name: porte_empresa
+        data_tests: [not_null, unique]
+
+  - name: dim_natureza_juridica
+    description: "Grupo de natureza jurídica, 6 registros, gerado da ontologia: os cinco grupos e o 0, não informada."
+    columns:
+      - name: grupo_natureza_juridica
+        data_tests: [not_null, unique]
+
+  - name: fct_empresas_ativas
+    description: >
+      Matrizes ativas no fim de cada mês do SCR, por UF, porte da Receita,
+      grupo de natureza jurídica e MEI. Reconstruído de um retrato só do CNPJ
+      (ADR 0009). Conta matrizes, porque no SCR a UF de pessoa jurídica é a
+      da sede.
+    columns:
+      - name: data_base
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_tempo')
+                field: data_base
+      - name: uf
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_uf')
+                field: uf
+      - name: porte_empresa
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_porte_receita')
+                field: porte_empresa
+      - name: grupo_natureza_juridica
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_natureza_juridica')
+                field: grupo_natureza_juridica
+      - name: mei
+        description: "Verdadeiro se a empresa era MEI no fim do mês."
+        data_tests: [not_null]
+      - name: empresas_ativas
+        data_tests: [not_null]
+
+  - name: fct_populacao
+    description: >
+      População residente estimada por UF e ano, IBGE. O grão é o ano; a
+      junção com a carteira mensal é pelo ano da data-base, sem interpolar.
+    columns:
+      - name: ano
+        data_tests: [not_null]
+      - name: uf
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_uf')
+                field: uf
+      - name: populacao
+        data_tests: [not_null]
+
+  - name: mrt_carteira_por_uf
+    description: >
+      Tela 1 do dashboard. Carteira por UF e mês, com os denominadores de
+      empresas ativas (com e sem MEI) e de população, e as razões já
+      calculadas como razão de somas. Fora do experimento (ADR 0007).
+    columns:
+      - name: data_base
+        data_tests: [not_null]
+      - name: uf
+        data_tests: [not_null]
+
+  - name: mrt_erro_da_reconstrucao
+    description: >
+      Tela 4 do dashboard. Erro da reconstrução do estoque de empresas ativas
+      por retrato e UF: contagem real contra a reconstruída do retrato mais
+      recente (ADR 0009).
+    columns:
+      - name: retrato
+        data_tests: [not_null]
+      - name: uf
+        data_tests: [not_null]

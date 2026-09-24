@@ -81,8 +81,10 @@ conceitos:
     prefLabel_pt: "Empresa ativa"
     prefLabel_en: "Active company"
     definition: >
-      Estabelecimento matriz com situação cadastral 2 (ativa) no CNPJ. Conta
-      uma vez cada empresa, na UF da matriz.
+      Empresa, identificada pelo CNPJ básico, com matriz em situação cadastral
+      2 (ativa). Conta uma vez cada CNPJ básico, na UF da matriz, mesmo no
+      caso raro de o cadastro trazer mais de uma matriz ativa
+      (avisos.empresa_com_defeito_de_cadastro).
     confianca: parafraseado
     fonte: "Leiaute dos dados abertos do CNPJ: identificador matriz/filial (1 = matriz) e situação cadastral (2 = ativa)"
     scopeNote: >
@@ -165,6 +167,10 @@ conceitos:
       fato de empresas guarda o grupo para a camada de decisão escolher o
       denominador (issue #26).
     valores:
+      # PT: "0" vem do código 0000 da tabela de domínio de naturezas da
+      #     própria Receita. Em set/2026, 5 empresas ativas o têm.
+      # EN: "0" comes from Receita's own domain code 0000.
+      - {codigo: "0", rotulo: "Natureza jurídica não informada"}
       - {codigo: "1", rotulo: "Administração pública"}
       - {codigo: "2", rotulo: "Entidades empresariais"}
       - {codigo: "3", rotulo: "Entidades sem fins lucrativos"}
@@ -205,3 +211,32 @@ avisos:
       contagem por UF, porque o SCR não tem essa UF.
     confianca: verbatim
     fonte: "Leiaute dos dados abertos do CNPJ: nome da cidade no exterior e código do país"
+
+  - id: dois_marcadores_de_data_ausente
+    gravidade: media
+    descricao: >
+      A Receita marca data ausente de dois jeitos, conforme a tabela: "0" em
+      Estabelecimentos e "00000000" no Simples. Medido sobre o bronze inteiro
+      em 2026-09-24: 384.874 linhas com "0" na data de situação, e 30.484.208
+      com "00000000" na data de saída do MEI.
+    consequencia: >
+      Converter só um dos dois marcadores faz a conversão estrita falhar, e
+      converter com tolerância a erro esconderia um terceiro marcador. A macro
+      data_da_receita trata exatamente os dois, e continua estrita para o
+      resto.
+    confianca: verbatim
+    fonte: "Medição no bronze, 2026-09-24"
+
+  - id: empresa_com_defeito_de_cadastro
+    gravidade: baixa
+    descricao: >
+      Uma empresa, CNPJ básico 08314885, tem duas matrizes ativas em SP no
+      retrato de set/2026 (três em jun/2025 e duas em jun/2024), e aparece
+      duas vezes na tabela Empresas do mesmo retrato, uma linha completa e
+      outra vazia, com natureza 0000. É o único caso nos três retratos.
+    consequencia: >
+      Empresa é o CNPJ básico, e conta uma vez. O intermediate fica com a
+      matriz ativa mais antiga e com a linha completa de Empresas. O teste
+      cnpj_empresas_repetidas avisa com esse caso e falha se aparecer outro.
+    confianca: verbatim
+    fonte: "Medição no bronze, 2026-09-24"

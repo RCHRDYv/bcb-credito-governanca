@@ -38,6 +38,28 @@ limites as (
     group by data_base
     having count(*) > 1
 
+),
+
+carteira_por_uf as (
+
+    select 'mrt_carteira_por_uf' as mart,
+           concat_ws(' | ', data_base, uf) as chave,
+           count(*) as linhas
+    from {{ ref('mrt_carteira_por_uf') }}
+    group by data_base, uf
+    having count(*) > 1
+
+),
+
+erro_da_reconstrucao as (
+
+    select 'mrt_erro_da_reconstrucao' as mart,
+           concat_ws(' | ', retrato, uf) as chave,
+           count(*) as linhas
+    from {{ ref('mrt_erro_da_reconstrucao') }}
+    group by retrato, uf
+    having count(*) > 1
+
 )
 
 select * from carteira_mensal
@@ -45,3 +67,7 @@ union all
 select * from reconciliacao
 union all
 select * from limites
+union all
+select * from carteira_por_uf
+union all
+select * from erro_da_reconstrucao
