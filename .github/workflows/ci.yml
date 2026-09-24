@@ -103,6 +103,21 @@ jobs:
       - name: Seed de correspondência (estrutura)
         run: uv run python -m scripts.validar_correspondencia --estrutura
 
+      # PT: As dimensões do modelo são geradas da ontologia, e não escritas à
+      #     mão. Esta verificação é o que sustenta essa afirmação: regera os
+      #     seeds e falha se o resultado diferir do que está versionado. Pega
+      #     duas coisas, as duas silenciosas: alguém editar o CSV direto, e
+      #     alguém mudar a ontologia sem regerar o seed.
+      # EN: The model's dimensions are generated from the ontology, not
+      #     hand-written. This check is what backs that claim: it regenerates
+      #     the seeds and fails if the result differs from what is committed. It
+      #     catches two silent mistakes: editing the CSV directly, and changing
+      #     the ontology without regenerating the seed.
+      - name: Seeds da ontologia em dia
+        run: |
+          uv run python -m scripts.gerar_seeds_da_ontologia
+          git diff --exit-code dbt/seeds/ontologia_modalidade.csv dbt/seeds/ontologia_dimensao.csv
+
       # PT: Integridade do pré-registro: o conjunto v2 das perguntas precisa
       #     conter os 30 enunciados originais sem uma palavra alterada.
       # EN: Pre-registration integrity: the v2 question set must carry the 30

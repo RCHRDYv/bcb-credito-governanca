@@ -132,6 +132,35 @@ Verificado em 2026-09-21, sobre os 31 meses de janeiro de 2024 a julho de 2026 e
 
 São cerca de R$ 250 a R$ 400 bilhões de diferença para a mesma medida, no mesmo mês, publicada pelo mesmo órgão. **O degrau de setembro de 2025 coincide com a IN BCB 659, de 08/09/2025**, que alterou domínios e subdomínios do Anexo 3 (modalidades). É coincidência temporal, não causa verificada.
 
+### A divergência não é uniforme por modalidade
+
+Medido em 2026-09-24, com a camada intermediária pronta: a série da V1 reconstruída a partir da V2, pela tabela oficial de equivalência, comparada com a V1 publicada no mesmo mês. Junho de 2026, em R$ bilhões.
+
+| Modalidade da V1 | V1 publicada | V2 conformada | Diferença |
+|---|---|---|---|
+| PF - Habitacional | 1.394,4 | 1.397,3 | +0,2% |
+| PJ - Capital de giro | 779,7 | 799,1 | +2,5% |
+| PF - Empréstimo com consignação em folha | 766,1 | 797,9 | +4,2% |
+| PF - Cartão de crédito | 718,1 | 745,9 | +3,9% |
+| PF - Rural e agroindustrial | 686,0 | 686,2 | 0,0% |
+| PJ - Financiamento de infraestrutura/desenvolvimento/projeto e outros créditos | 644,4 | 689,0 | +6,9% |
+| PF - Veículos | 403,9 | 418,3 | +3,6% |
+| PF - Empréstimo sem consignação em folha | 370,9 | 375,4 | +1,2% |
+| PJ - Investimento | 315,4 | 341,4 | +8,3% |
+| PF - Outros créditos | 262,2 | 264,3 | +0,8% |
+| **PJ - Comércio exterior** | 256,2 | 300,0 | **+17,1%** |
+| PJ - Operações com recebíveis | 212,6 | 222,2 | +4,5% |
+| **PJ - Outros créditos** | 207,1 | 378,4 | **+82,7%** |
+| PJ - Rural e agroindustrial | 88,0 | 91,0 | +3,5% |
+| PJ - Cheque especial e conta garantida | 66,5 | 67,0 | +0,7% |
+| PJ - Habitacional | 63,5 | 63,5 | 0,0% |
+
+**Quatorze das dezesseis modalidades ficam entre 0% e 8,3%**, compatível com a diferença de universo. Duas fogem completamente, e a conformação não as reproduz: "PJ - Comércio exterior" e, sobretudo, "PJ - Outros créditos".
+
+**Decomposição do caso extremo.** O que a equivalência oficial joga em "PJ - Outros créditos", em jun/2026: a submodalidade 0299, "Outros empréstimos", com R$ 226,2 bi, é maior sozinha que toda a modalidade publicada pela V1. Depois vêm o cartão de crédito lojista com cliente PJ (1304, R$ 45,8 bi), quatro submodalidades de financiamentos rurais com recursos livres (R$ 69,4 bi somadas) e o resto de "Outros créditos". Todas essas linhas carregam `regra = base`, ou seja, vêm da tabela oficial, sem inferência do projeto.
+
+**O que isso significa:** a tabela de equivalência é uma correspondência de taxonomia, e não uma receita para reproduzir os agregados publicados da V1. A junção é determinística e sem fan-out, provada por teste, e ainda assim o total reconstruído de uma modalidade pode ficar 83% acima do publicado. Onde a V1 classificava essas operações continua sendo pergunta aberta, e é material direto para a issue #19.
+
 **Consequências:**
 
 1. **A conformação do ADR 0003 continua válida para a taxonomia, mas não para os totais.** Reconstruir a série "no padrão V1" a partir do dado V2 produz a classificação da V1 com o universo da V2, cerca de 4% a 6% maior que a V1 publicada. O ADR 0003 recebeu nota sobre isso.

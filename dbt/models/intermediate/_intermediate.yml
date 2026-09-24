@@ -1,0 +1,154 @@
+# =============================================================================
+# PT: Contrato da camada intermediária. É onde a interpretação acontece, então é
+#     também onde os testes deixam de ser sobre forma e passam a ser sobre
+#     correspondência: toda linha do fato encontra sua dimensão, e a junção não
+#     multiplica linha.
+#
+#     Os testes de relacionamento são o critério de pronto da issue #14. Eles
+#     substituem a inspeção manual por uma verificação que roda em cada build:
+#     se o BCB publicar um rótulo novo, ou mudar um existente, o teste fica
+#     vermelho no mesmo dia em vez de o número sair errado em silêncio.
+#
+# EN: The intermediate layer's contract. This is where interpretation happens, so
+#     it is also where tests stop being about form and start being about
+#     correspondence: every fact row finds its dimension, and no join multiplies
+#     rows. The relationship tests are issue #14's definition of done: if the BCB
+#     publishes a new label, or changes an existing one, the test goes red the
+#     same day instead of the number going quietly wrong.
+# =============================================================================
+
+version: 2
+
+models:
+
+  - name: int_dim_modalidade
+    description: >
+      Dimensão de modalidade, 66 registros, um por par de modalidade e
+      submodalidade. Gerada de ontology/modalidades.yml, nunca escrita à mão.
+    columns:
+      - name: codigo_submodalidade
+        description: "Chave da dimensão, código do Anexo 3 com zero à esquerda."
+        data_tests: [not_null, unique]
+      - name: modalidade
+        description: "Rótulo exato do dado, usado na junção com o fato."
+        data_tests: [not_null]
+      - name: submodalidade
+        description: "Rótulo exato do dado. Sozinho não identifica: cinco rótulos repetem entre modalidades."
+        data_tests: [not_null]
+      - name: sem_definicao_oficial
+        description: >
+          Verdadeiro nas quatro submodalidades que existem no Anexo 3, ocorrem no
+          dado e nenhum documento define. A lacuna viaja com a dimensão em vez de
+          ficar só na ontologia.
+        data_tests: [not_null]
+
+  - name: int_dim_porte
+    description: >
+      Dimensão de porte com a ambiguidade da V2 desfeita, 14 registros para 13
+      valores. A chave é o par de cliente e valor, porque a coluna carrega duas
+      taxonomias.
+    columns:
+      - name: valor_desambiguado
+        description: "Chave da dimensão, no formato que a V1 usava."
+        data_tests: [not_null, unique]
+      - name: cliente
+        description: "PF ou PJ. Nunca nulo nesta dimensão, que é polimórfica."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["PF", "PJ"]
+      - name: taxonomia
+        description: "Faixa de rendimento em salários mínimos para PF, porte da empresa para PJ."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Faixa de rendimento em salários mínimos", "Porte da empresa"]
+
+  - name: int_dim_cnae_ocupacao
+    description: >
+      Dimensão de atividade econômica com a ambiguidade da V2 desfeita, 30
+      registros. Seção do CNAE para pessoa jurídica, natureza da ocupação para
+      pessoa física.
+    columns:
+      - name: valor_desambiguado
+        description: "Chave da dimensão, no formato que a V1 usava."
+        data_tests: [not_null, unique]
+      - name: cliente
+        description: "PF ou PJ. Nunca nulo nesta dimensão, que é polimórfica."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["PF", "PJ"]
+      - name: taxonomia
+        description: "Natureza da ocupação para PF, seção do CNAE para PJ."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Natureza da ocupação", "Seção do CNAE"]
+
+  - name: int_scr_v2_conformado
+    description: >
+      O fato da V2 com as dimensões resolvidas: código da submodalidade, as duas
+      colunas polimórficas desambiguadas por cliente e a modalidade
+      correspondente da V1 pelo seed oficial. Mesma quantidade de linhas do
+      staging, nenhuma filtrada e nenhuma agregada.
+    columns:
+
+      - name: codigo_submodalidade
+        description: >
+          Código do Anexo 3, obtido pela junção do par modalidade e
+          submodalidade com a ontologia. Nulo aqui significaria rótulo no dado
+          sem conceito na ontologia, e é o que o teste de relacionamento barra.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_dim_modalidade')
+                field: codigo_submodalidade
+
+      - name: porte_desambiguado
+        description: "Porte com o tipo de cliente no rótulo. É por esta coluna que se agrupa, não por porte."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_dim_porte')
+                field: valor_desambiguado
+
+      - name: cnae_ocupacao_desambiguado
+        description: "Atividade com o tipo de cliente no rótulo."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_dim_cnae_ocupacao')
+                field: valor_desambiguado
+
+      - name: modalidade_v1_efetiva
+        description: >
+          A modalidade da V1 correspondente, oficial quando a planilha cobre a
+          combinação e inferida pelo projeto nas duas que ela não cobre. Nunca
+          nula: o seed cobre as 264 combinações possíveis.
+        data_tests: [not_null]
+
+      - name: origem_da_modalidade_v1
+        description: >
+          De onde veio a correspondência. É o que impede a inferência do projeto
+          de se passar por fonte oficial.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["oficial", "oficial_ambigua", "inferida_pelo_projeto"]
+
+      - name: regra_de_correspondencia
+        description: "Qual regra da planilha oficial produziu a correspondência."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["base", "tratamento_1", "tratamento_2", "ausente_na_planilha"]

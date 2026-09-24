@@ -335,6 +335,15 @@ dimensoes:
     fonte: "Metodologia V2, seção 3.g"
     polimorfica_por: cliente
     aviso: "Ver avisos_gerais.colunas_polimorficas."
+    # PT: O nome de cada taxonomia, separado do texto da definição para poder
+    #     ser lido por máquina. É a mesma informação da definition, e é o que
+    #     permite gerar a dimensão sem o script precisar interpretar a frase.
+    # EN: Each taxonomy's name, split out of the definition text so it can be
+    #     read by machine. Same information as the definition, and what lets
+    #     the dimension be generated without the script parsing prose.
+    taxonomia_por_cliente:
+      PF: "Faixa de rendimento em salários mínimos"
+      PJ: "Porte da empresa"
     correspondencia_v1:
       tipo: exata_com_prefixo_removido
       coluna: porte
@@ -373,6 +382,9 @@ dimensoes:
     fonte: "Metodologia V2, seções 3.e e 3.f"
     polimorfica_por: cliente
     aviso: "Ver avisos_gerais.colunas_polimorficas."
+    taxonomia_por_cliente:
+      PF: "Natureza da ocupação"
+      PJ: "Seção do CNAE"
     historyNote: >
       A V1 separava em três colunas: "ocupacao" para pessoa física, com valores
       prefixados por "PF - ", e "cnae_secao" e "cnae_subclasse" para pessoa

@@ -67,6 +67,14 @@ A tabela de correspondência entra como **seed do dbt**, derivada da planilha of
 
 A ingestão mostrou que **a carteira ativa da V2 é de 3,95% a 5,94% maior que a da V1** em todos os 31 meses em que as duas coexistem (`docs/analise-v1-v2.md`, seção 6). A decisão deste ADR continua de pé para o que ela resolve, a **classificação**: o lookup V2 para V1 segue determinístico e sem fan-out. Já "reconstruir a série V1 a partir da V2 sem perda" vale para a taxonomia, não para os valores. A série reconstruída tem a classificação da V1 aplicada ao universo da V2, e não reproduz os totais que a V1 publicou. Todo mart que usar a conformação precisa dizer isso.
 
+## Atualização de 2026-09-24: a divergência não é uniforme, e isso é mais grave
+
+Com a camada intermediária pronta, a comparação foi feita modalidade por modalidade, e não só no total (`docs/analise-v1-v2.md`, seção 6). **Quatorze das dezesseis modalidades da V1 ficam entre 0% e 8,3% acima do publicado, e duas fogem: "PJ - Comércio exterior" com +17,1% e "PJ - Outros créditos" com +82,7%.**
+
+No caso extremo, a submodalidade 0299, "Outros empréstimos", sozinha põe R$ 226,2 bi em "PJ - Outros créditos", mais que a modalidade inteira publicada pela V1 no mês. Todas essas linhas vêm da tabela oficial, com `regra = base`, sem inferência do projeto.
+
+Isso não invalida a decisão, e refina o alcance dela: **a tabela de equivalência é correspondência de taxonomia, não receita para reproduzir agregado publicado.** A consequência prática para os marts é que a ressalva deixa de ser um número global de 4% a 6% e passa a ser por modalidade, com duas delas incomparáveis na prática. Onde a V1 classificava essas operações é pergunta aberta na issue #19.
+
 ## Atualização de 2026-09-22: o que apareceu ao gerar o seed
 
 A extração da planilha oficial confirmou a parte central da decisão e acrescentou três limites que a investigação original não tinha visto. Seed em `dbt/seeds/correspondencia_modalidade_v2_v1.csv`, gerado por `scripts/gerar_seed_correspondencia.py` e verificado por `scripts/validar_correspondencia.py`.

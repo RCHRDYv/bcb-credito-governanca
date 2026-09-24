@@ -97,6 +97,12 @@ uv run python -m scripts.gerar_seed_correspondencia
 uv run python -m scripts.validar_correspondencia
 ```
 
+Para gerar as dimensões a partir da ontologia. Elas nunca são escritas à mão, e é isso que torna impossível a documentação divergir do modelo sem alguém notar:
+
+```bash
+uv run python -m scripts.gerar_seeds_da_ontologia
+```
+
 As validações têm duas camadas. A que compara com o dado exige acesso ao Databricks e roda localmente. A que confere apenas a coerência dos artefatos roda sem credencial, e é a que o CI executa em todo PR:
 
 ```bash
@@ -120,7 +126,9 @@ Do diretório `dbt/`, com o mesmo OAuth do CLI e um `~/.dbt/profiles.yml` copiad
 uv run dbt build
 ```
 
-O comando carrega o seed, cria as views de staging e roda os testes. Hoje são 66 verificações, e uma delas avisa de propósito: a identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024, que vem assim do arquivo publicado pelo BCB. O teste avisa com uma linha e falha com duas, para que uma segunda ocorrência não passe em silêncio. O raciocínio da camada está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+O comando carrega os seeds, cria as views de staging e de intermediate e roda os testes. Hoje são 113 verificações, e uma delas avisa de propósito: a identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024, que vem assim do arquivo publicado pelo BCB. O teste avisa com uma linha e falha com duas, para que uma segunda ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+
+A camada intermediária resolve as dimensões: ela traz o código do Anexo 3 que o dado publicado não tem, desfaz a ambiguidade das duas colunas polimórficas no formato que a V1 usava, e liga cada linha à modalidade correspondente da V1 pela tabela oficial de equivalência. Os testes de relacionamento provam que nenhuma linha fica sem dimensão, e um teste de contagem e soma prova que as junções não multiplicam linha.
 
 Para o QA da camada, por caminhos diferentes dos testes do dbt, incluindo a conferência das linhas contra o manifesto medido fora do Databricks e a varredura da cardinalidade mês a mês:
 
