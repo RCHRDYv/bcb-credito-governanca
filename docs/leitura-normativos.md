@@ -82,6 +82,8 @@ A V1 documentava a supressão e usava um rótulo legível. **A V2 usa o código 
 
 Ambos remetem ao Anexo 3 do Leiaute do documento 3040, que é um nível de documentação abaixo. A pergunta Q17 do experimento depende disso e exige descer mais um degrau.
 
+> **Atualização de 2026-09-25:** o degrau seguinte responde em parte. Das definições do Anexo 3, só a do home equity (0211) declara garantia real. O tipo de garantia existe no documento 3040, por operação, no bloco de garantias, com 14 tipos no Anexo 12 do leiaute, e não é publicado no SCR.data. A lista está em `ontology/modalidades.yml`, aviso `garantia_nao_declarada`.
+
 **Achado de método:** o PDF de metodologia é, ele próprio, um ponteiro para outro documento. O significado não está a uma consulta de distância, está a duas.
 
 ---

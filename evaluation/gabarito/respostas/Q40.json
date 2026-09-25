@@ -1,0 +1,27 @@
+{
+  "consulta": "Q40.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "ambigua_no_ultimo_mes_pct",
+    "inferida_no_ultimo_mes_pct",
+    "ambigua_no_recorte_pct",
+    "inferida_no_recorte_pct",
+    "linhas_ambiguas_no_recorte"
+  ],
+  "tipos": [
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "LONG"
+  ],
+  "linhas": [
+    [
+      "2.455634468",
+      "0.01500760666",
+      "2.706511323",
+      "0.02180542359",
+      "295134"
+    ]
+  ]
+}

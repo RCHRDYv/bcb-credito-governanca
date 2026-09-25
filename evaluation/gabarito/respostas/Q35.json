@@ -1,0 +1,33 @@
+{
+  "consulta": "Q35.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "modalidade_v1_atribuida",
+    "meses_com_ocorrencia",
+    "recortes",
+    "primeiro_mes",
+    "ultimo_mes",
+    "maior_carteira_mensal",
+    "maior_participacao_no_consignado_pct"
+  ],
+  "tipos": [
+    "STRING",
+    "LONG",
+    "LONG",
+    "DATE",
+    "DATE",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "PF - Empréstimo com consignação em folha",
+      "14",
+      "17",
+      "2024-01-31",
+      "2025-09-30",
+      "3443757.32",
+      "0.0005354035221"
+    ]
+  ]
+}

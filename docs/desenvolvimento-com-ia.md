@@ -120,9 +120,17 @@ Ao escrever a ontologia das dimensões, a IA mediu que a coluna `tcb` da V1 traz
 
 **Por que importa:** é uma forma nova de erro nesta lista. Os anteriores foram afirmações sem verificação; este foi verificado e ainda assim errado, porque a verificação foi feita no agregado. **Um total esconde uma série temporal**, e uma coluna que morre no meio da série parece idêntica a uma coluna com dado faltante quando se olha só a contagem. A regra que ficou: toda afirmação sobre marcador, nulo ou ausência é medida ao longo do tempo, não só no total.
 
+### 12. Afirmação sobre um texto feita pela leitura, e não pela busca
+
+Ao escrever o aviso `garantia_nao_declarada` da ontologia, a IA afirmou que só a definição do home equity (0211) menciona garantia, e que as demais "não mencionam garantia". A mesma frase foi para a errata da Q17 no conjunto v2 das perguntas. O sentido estava certo: só o home equity declara garantia real.
+
+**Pego por:** o gabarito da #16. A consulta que prova a ausência procura "garant" nas 66 definições e devolveu três linhas: as de capital de giro (0215 e 0216) citam "garantias" como item do contrato, sem dizer qual. O aviso da ontologia foi corrigido. A errata do v2 é pré-registro e não muda; o conjunto v3 a corrige num campo próprio, e o gabarito diz a coisa exata ([ADR 0015](adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md)).
+
+**Por que importa:** "nenhuma outra menciona" é uma afirmação sobre todos os itens de um conjunto, e ler alguns deles não a sustenta. A regra que ficou é a mesma dos outros casos, aplicada a texto: afirmação de ausência se prova com busca no conjunto inteiro.
+
 ## O padrão que emerge
 
-Os onze erros têm quase a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
+Os doze erros têm quase a mesma forma: **a IA foi rápida e confiante em afirmações que não tinha verificado.** Nenhum deles foi erro de sintaxe ou de implementação, que é onde a assistência é mais forte. Todos foram erros de fato, de procedência ou de contexto.
 
 O sexto acrescenta uma variação relevante: **ausência de erro não é evidência de correção.** Três dos casos passaram despercebidos justamente porque nada quebrou. O sétimo mostra o caminho inverso: uma objeção sem verificação quase descartou uma conclusão certa. O décimo primeiro acrescenta a variação mais incômoda: **verificar no agregado não é verificar.** A medição estava correta e a conclusão tirada dela, não.
 

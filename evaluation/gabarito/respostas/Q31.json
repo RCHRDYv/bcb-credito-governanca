@@ -1,0 +1,62 @@
+{
+  "consulta": "Q31.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_submodalidade",
+    "modalidade",
+    "submodalidade",
+    "carteira_ativa",
+    "participacao_no_cartao_pct",
+    "total_do_cartao"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "STRING",
+    "DECIMAL",
+    "DOUBLE",
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "1304",
+      "Outros créditos",
+      "Cartão de crédito - compra à vista e parcelado lojista",
+      "601159460719.62",
+      "75.06407481",
+      "800861746804.42"
+    ],
+    [
+      "0210",
+      "Empréstimos",
+      "Cartão de crédito - compra, fatura parcelada ou saque financiado pela instituição financeira emitente do cartão",
+      "100368016737.18",
+      "12.53250229",
+      "800861746804.42"
+    ],
+    [
+      "0218",
+      "Empréstimos",
+      "Cartão de crédito - não migrado",
+      "75067100791.17",
+      "9.373290845",
+      "800861746804.42"
+    ],
+    [
+      "0204",
+      "Empréstimos",
+      "Crédito rotativo vinculado a cartão de crédito",
+      "24079238033.84",
+      "3.006666023",
+      "800861746804.42"
+    ],
+    [
+      "0406",
+      "Financiamentos",
+      "Cartão de crédito - compra ou fatura parcelada pela instituição financeira emitente do cartão",
+      "187930522.61",
+      "0.0234660381",
+      "800861746804.42"
+    ]
+  ]
+}

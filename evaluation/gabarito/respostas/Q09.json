@@ -1,0 +1,156 @@
+{
+  "consulta": "Q09.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_modalidade",
+    "modalidade",
+    "carteira_ativa",
+    "carteira_inadimplencia",
+    "ativo_problematico",
+    "distancia_em_reais",
+    "distancia_pp",
+    "criterio_ativo_problematico"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "DECIMAL",
+    "DECIMAL",
+    "DECIMAL",
+    "DECIMAL",
+    "DOUBLE",
+    "STRING"
+  ],
+  "linhas": [
+    [
+      "07",
+      "Financiamentos com interveniência",
+      "1817371037.96",
+      "7320489.62",
+      "763217544.48",
+      "755897054.86",
+      "41.5928855",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "01",
+      "Adiantamentos a depositantes",
+      "1907164600.76",
+      "1091688676.88",
+      "1234401460.94",
+      "142712784.06",
+      "7.482982014",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "03",
+      "Direitos creditórios descontados",
+      "37829679393.01",
+      "1663214404.48",
+      "4061989846.28",
+      "2398775441.80",
+      "6.340988029",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "11",
+      "Financiamentos de infraestrutura e desenvolvimento",
+      "123102665585.60",
+      "40925050.91",
+      "5963110652.70",
+      "5922185601.79",
+      "4.810769591",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "02",
+      "Empréstimos",
+      "2625542428129.61",
+      "227637304319.15",
+      "347417700165.71",
+      "119780395846.56",
+      "4.562119986",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "09",
+      "Financiamentos imobiliários",
+      "1496221362851.10",
+      "19601458977.01",
+      "74317711927.31",
+      "54716252950.30",
+      "3.656962419",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "05",
+      "Financiamentos à exportação",
+      "323362696288.72",
+      "2498598539.13",
+      "13508187685.76",
+      "11009589146.63",
+      "3.404718378",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "841157364437.94",
+      "54877756588.12",
+      "78525321129.66",
+      "23647564541.54",
+      "2.811312787",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "04",
+      "Financiamentos",
+      "1312240207522.97",
+      "45480426420.94",
+      "80385679416.84",
+      "34905252995.90",
+      "2.659974355",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "13",
+      "Outros créditos",
+      "783548722995.44",
+      "6879881645.43",
+      "27316219713.67",
+      "20436338068.24",
+      "2.608177063",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "12",
+      "Operações de arrendamento",
+      "27085912235.73",
+      "245340172.50",
+      "816897037.17",
+      "571556864.67",
+      "2.110162876",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "06",
+      "Financiamentos à importação",
+      "16687086852.31",
+      "4032282.49",
+      "7347152.14",
+      "3314869.65",
+      "0.01986487923",
+      "Característica especial 19, informada pela instituição"
+    ],
+    [
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "176189371.46",
+      "26835.17",
+      "26835.17",
+      "0.00",
+      "0",
+      "Característica especial 19, informada pela instituição"
+    ]
+  ]
+}

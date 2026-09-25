@@ -1,0 +1,42 @@
+{
+  "consulta": "Q30_presenca.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_submodalidade",
+    "modalidade",
+    "submodalidade",
+    "meses_com_dado",
+    "meses_no_recorte",
+    "primeiro_mes",
+    "ultimo_mes"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "STRING",
+    "LONG",
+    "LONG",
+    "DATE",
+    "DATE"
+  ],
+  "linhas": [
+    [
+      "0209",
+      "Empréstimos",
+      "ARO - adiantamento de receitas orçamentárias",
+      "2",
+      "31",
+      "2024-12-31",
+      "2025-01-31"
+    ],
+    [
+      "0590",
+      "Financiamentos à exportação",
+      "Financiamento de projeto",
+      "16",
+      "31",
+      "2025-04-30",
+      "2026-07-31"
+    ]
+  ]
+}

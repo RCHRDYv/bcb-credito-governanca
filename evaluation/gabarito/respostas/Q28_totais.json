@@ -1,0 +1,24 @@
+{
+  "consulta": "Q28_totais.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "carteira_ativa",
+    "variacao_mensal_pct",
+    "variacao_anual_pct"
+  ],
+  "tipos": [
+    "DATE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "2026-07-31",
+      "7.590678851e+12",
+      "-0.6077444627",
+      "9.360064094"
+    ]
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "consulta": "Q01.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "carteira_ativa",
+    "mes_do_ano_anterior",
+    "carteira_ativa_do_ano_anterior",
+    "variacao_em_reais",
+    "variacao_pct"
+  ],
+  "tipos": [
+    "DATE",
+    "DECIMAL",
+    "DATE",
+    "DECIMAL",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "2026-07-31",
+      "7590678851302.61",
+      "2025-07-31",
+      "6940997076181.43",
+      "649681775121.18",
+      "9.360064094"
+    ]
+  ]
+}

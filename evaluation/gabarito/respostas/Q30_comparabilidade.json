@@ -1,0 +1,114 @@
+{
+  "consulta": "Q30_comparabilidade.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "modalidade_v1",
+    "carteira_v1_publicada",
+    "carteira_v2_conformada",
+    "diferenca_pct"
+  ],
+  "tipos": [
+    "STRING",
+    "DECIMAL",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "PJ - Outros créditos",
+      "207130507597.44",
+      "375501757044.82",
+      "81.28751839"
+    ],
+    [
+      "PJ - Comércio exterior",
+      "257813792976.91",
+      "302778640423.07",
+      "17.44082306"
+    ],
+    [
+      "PJ - Investimento",
+      "311036749087.92",
+      "335779747647.82",
+      "7.955008092"
+    ],
+    [
+      "PJ - Financiamento de infraestrutura/desenvolvimento/projeto e outros créditos",
+      "653122239020.43",
+      "696996196326.98",
+      "6.7175721"
+    ],
+    [
+      "PF - Empréstimo com consignação em folha",
+      "754919396156.78",
+      "791772694343.56",
+      "4.881752724"
+    ],
+    [
+      "PJ - Operações com recebíveis",
+      "192832472771.31",
+      "200118382747.50",
+      "3.778362571"
+    ],
+    [
+      "PF - Cartão de crédito",
+      "717652623248.71",
+      "743525919985.00",
+      "3.605267493"
+    ],
+    [
+      "PJ - Rural e agroindustrial",
+      "88717505441.84",
+      "91774961909.12",
+      "3.446283179"
+    ],
+    [
+      "PF - Veículos",
+      "408338700983.20",
+      "422073237180.53",
+      "3.363515671"
+    ],
+    [
+      "PJ - Capital de giro",
+      "761939238705.60",
+      "781018759431.80",
+      "2.504073784"
+    ],
+    [
+      "PF - Empréstimo sem consignação em folha",
+      "369190592482.83",
+      "373712618430.20",
+      "1.224848639"
+    ],
+    [
+      "PF - Outros créditos",
+      "261011715185.08",
+      "263355325338.77",
+      "0.8978946221"
+    ],
+    [
+      "PJ - Cheque especial e conta garantida",
+      "64224994345.81",
+      "64707886780.34",
+      "0.7518761807"
+    ],
+    [
+      "PF - Habitacional",
+      "1402269642138.62",
+      "1405183742476.22",
+      "0.2078131231"
+    ],
+    [
+      "PF - Rural e agroindustrial",
+      "680785966851.45",
+      "681001192202.65",
+      "0.03161424613"
+    ],
+    [
+      "PJ - Habitacional",
+      "61376159893.99",
+      "61377789034.23",
+      "0.002654353486"
+    ]
+  ]
+}

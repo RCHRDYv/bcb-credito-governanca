@@ -127,9 +127,11 @@ jobs:
           git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 
       # PT: Integridade do pré-registro: o conjunto v2 das perguntas precisa
-      #     conter os 30 enunciados originais sem uma palavra alterada.
+      #     conter os 30 enunciados originais sem uma palavra alterada, e o v3
+      #     só muda enunciado com a alteração declarada e o texto do v2 citado.
       # EN: Pre-registration integrity: the v2 question set must carry the 30
-      #     original wordings with no word changed.
+      #     original wordings with no word changed, and v3 may change a wording
+      #     only with a declared change quoting the v2 text.
       - name: Perguntas do experimento
         run: uv run python -m scripts.validar_perguntas
 
@@ -141,6 +143,18 @@ jobs:
       #     may cite only the star schema, which is what the AI queries.
       - name: Cobertura da camada gold
         run: uv run python -m scripts.validar_cobertura
+
+      # PT: Gabarito das perguntas: completo, com o tipo de acerto do
+      #     pré-registro, SQL só de leitura sobre as tabelas que a cobertura
+      #     lista, fontes que existem na ontologia, e todo SQL planejado pelo
+      #     DuckDB sobre o esquema exportado, porque o experimento vai rodar
+      #     lá (ADR 0015).
+      # EN: Answer key: complete, with the pre-registered answer types,
+      #     read-only SQL over the tables the coverage matrix lists, existing
+      #     ontology sources, and every SQL planned by DuckDB over the exported
+      #     schema, since the experiment will run there.
+      - name: Gabarito das perguntas
+        run: uv run python -m scripts.validar_gabarito
 
       # PT: Carga do projeto dbt: Jinja, macros, referências entre modelos,
       #     fontes e testes. Não conecta no warehouse e não precisa de

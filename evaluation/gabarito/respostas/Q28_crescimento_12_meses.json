@@ -1,0 +1,36 @@
+{
+  "consulta": "Q28_crescimento_12_meses.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "posicao",
+    "codigo_modalidade",
+    "modalidade",
+    "crescimento_pct"
+  ],
+  "tipos": [
+    "INT",
+    "STRING",
+    "STRING",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "1",
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "77.78089815"
+    ],
+    [
+      "2",
+      "13",
+      "Outros créditos",
+      "13.52258001"
+    ],
+    [
+      "3",
+      "09",
+      "Financiamentos imobiliários",
+      "12.62862545"
+    ]
+  ]
+}

@@ -1,0 +1,674 @@
+# =============================================================================
+# PT: Gabarito das perguntas do experimento (issue #16, ADR 0015).
+#
+#     Este arquivo diz COMO cada pergunta do conjunto vigente de perguntas
+#     (questions_v3.yml) é respondida:
+#     com que leituras, com que SQL, com que ressalva e a partir de que
+#     definição. Os números NÃO estão aqui. Eles saem dos SQL, rodados por
+#     scripts/gerar_gabarito.py, e ficam em evaluation/gabarito/respostas/ e
+#     em docs/gabarito.md. Nenhum número do dado é digitado à mão.
+#
+#     Regras, conferidas por scripts/validar_gabarito.py no CI:
+#
+#     1. Toda pergunta do conjunto vigente está aqui. As que ainda dependem de uma
+#        fonte ou de um modelo ficam como pendentes, com a mesma issue que a
+#        evaluation/cobertura.yml cita.
+#     2. O tipo_de_acerto é o do conjunto vigente. Toda valor_com_ressalva tem
+#        a ressalva obrigatória escrita, e toda abstencao tem a explicação e o
+#        que faltaria para responder.
+#     3. Cada pergunta tem de 1 a 3 leituras aceitas, decididas pelo Yuri em
+#        2026-09-25. Uma leitura é uma interpretação razoável da pergunta, com
+#        o próprio SQL; a resposta acerta se bater com uma delas e disser qual
+#        usou. Uma leitura pode ter mais de uma consulta, quando a resposta tem
+#        partes.
+#     4. Quando a pergunta não diz o período, o mesmo SQL traz as duas janelas,
+#        12 meses e o recorte inteiro, e vale a que a resposta declarar.
+#     5. Os SQL só leem o esquema estrela (dim_* e fct_*), como a IA (ADR
+#        0007), e só as tabelas que a cobertura.yml lista para a pergunta.
+#        São escritos no subconjunto comum ao Databricks SQL e ao DuckDB.
+#     6. fonte cita de onde vem a definição usada: um id da ontologia, no
+#        formato arquivo.id, ou um documento do projeto.
+#
+#     Nenhuma pergunta é alterada aqui. Enunciado só muda num conjunto novo
+#     e declarado de perguntas, como o v3, que ajustou a janela de três delas
+#     ao recorte do projeto.
+#
+# EN: The answer key for the experiment's questions. This file states HOW
+#     each question is answered (accepted readings, SQL, mandatory caveat and
+#     the definition's source); the numbers come from the SQL, run by
+#     scripts/gerar_gabarito.py, and are never typed by hand. Each question
+#     has 1 to 3 accepted readings; an answer is correct if it matches one
+#     and says which. When the question states no period, the SQL carries
+#     both windows. Checked in CI by scripts/validar_gabarito.py.
+# =============================================================================
+
+metadata:
+  versao: 1
+  conjunto_de_perguntas: "evaluation/questions_v3.yml"
+  leituras_aceitas_decididas_em: "2026-09-25"
+  catalogo: "workspace"
+  esquema: "bcb_scr_marts"
+
+perguntas:
+
+  # ---------------------------------------------------------------------------
+  # PT: Monitoramento e benchmark de mercado
+  # EN: Market monitoring and benchmark
+  # ---------------------------------------------------------------------------
+  Q01:
+    tipo_de_acerto: valor
+    fonte: [metricas.carteira_ativa]
+    leituras:
+      - id: unica
+        descricao: "Carteira ativa total no último mês e no mesmo mês do ano anterior, com a variação em reais e em percentual."
+        consultas: [Q01.sql]
+
+  Q02:
+    tipo_de_acerto: valor
+    fonte: [metricas.carteira_ativa, modalidades.modalidade_e_conta_contabil]
+    leituras:
+      - id: percentual
+        descricao: "Crescimento da carteira em 12 meses, em percentual, no nível de modalidade. As cinco primeiras do ranking."
+        consultas: [Q02_percentual.sql]
+      - id: reais
+        descricao: "Crescimento da carteira em 12 meses, em reais, no nível de modalidade. As cinco primeiras do ranking."
+        consultas: [Q02_reais.sql]
+    observacao: >
+      No percentual, uma modalidade de base muito pequena pode liderar o
+      ranking com pouco dinheiro. É o motivo de a leitura em reais também
+      valer. É o caso de Financiamentos de títulos e valores mobiliários: os
+      bancos saíram em 2025, e uma fintech passou a operar a partir de
+      agosto de 2025 (ontologia, aviso da sub_1001).
+
+  Q03:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_cliente, metricas.carteira_ativa]
+    leituras:
+      - id: unica
+        descricao: "Participação de PF e PJ na carteira ativa, mês a mês, do mês 24 meses antes do último até o último."
+        consultas: [Q03.sql]
+
+  Q04:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_segmento, metricas.carteira_ativa]
+    leituras:
+      - id: unica
+        descricao: >
+          Crescimento da carteira por segmento de instituição, em 12 meses e
+          no recorte inteiro. Banco tradicional é o segmento Banco;
+          instituição de pagamento e fintech são segmentos próprios da V2.
+        consultas: [Q04.sql]
+
+  Q05:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_uf, dimensoes.uf_e_domicilio_ou_sede]
+    leituras:
+      - id: unica
+        descricao: "Participação acumulada das cinco UFs de maior carteira ativa no último mês."
+        consultas: [Q05.sql]
+
+  # ---------------------------------------------------------------------------
+  # PT: Risco e inadimplência
+  # EN: Risk and default
+  # ---------------------------------------------------------------------------
+  Q06:
+    tipo_de_acerto: valor
+    fonte: [metricas.indicador_inadimplencia]
+    leituras:
+      - id: unica
+        descricao: >
+          Taxa de inadimplência por modalidade no último mês, como razão de
+          somas: carteira inadimplida sobre carteira ativa. A média das taxas
+          dos recortes não é a taxa da modalidade.
+        consultas: [Q06.sql]
+
+  Q07:
+    tipo_de_acerto: valor
+    fonte: [metricas.indicador_inadimplencia]
+    leituras:
+      - id: pontos
+        descricao: "Variação da taxa de inadimplência em 6 meses, por modalidade, em pontos percentuais."
+        consultas: [Q07_pontos.sql]
+      - id: relativa
+        descricao: "Variação relativa da taxa de inadimplência em 6 meses, por modalidade, em percentual da taxa anterior."
+        consultas: [Q07_relativa.sql]
+    observacao: >
+      Financiamentos de títulos e valores mobiliários parte de taxa zero seis
+      meses antes, e por isso não tem variação relativa. É uma modalidade
+      muito pequena, que trocou de operador dentro do recorte (ontologia,
+      aviso da sub_1001), e a inadimplência dela subiu e voltou a quase zero
+      entre as duas pontas da janela.
+
+  Q08:
+    tipo_de_acerto: valor
+    fonte: [modalidades.sub_0204, modalidades.cartao_de_credito_em_tres_modalidades, metricas.indicador_inadimplencia]
+    leituras:
+      - id: unica
+        descricao: >
+          Taxa de inadimplência do rotativo do cartão, só a submodalidade
+          0204, no último mês, contra a média das taxas mensais dos últimos
+          dois anos, os 24 meses que terminam no último mês.
+        consultas: [Q08.sql]
+    observacao: >
+      O v2 pedia cinco anos, e o v3 ajustou a janela ao recorte do projeto.
+      Somar o cartão parcelado (0210, 0218, 0406) ou o lojista (1304) ao
+      rotativo é erro.
+
+  Q09:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [metricas.carteira_inadimplencia, metricas.ativo_problematico]
+    leituras:
+      - id: unica
+        descricao: >
+          Distância entre ativo problemático e carteira inadimplida, por
+          modalidade, no último mês, em reais e em pontos percentuais da
+          carteira.
+        consultas: [Q09.sql]
+    ressalva_obrigatoria:
+      - >
+        São duas medidas diferentes. A carteira inadimplida soma as operações
+        com alguma parcela vencida há mais de 90 dias. O ativo problemático
+        inclui essas e também as operações com indício de que não serão
+        pagas, como reestruturações.
+      - >
+        O critério do ativo problemático mudou em janeiro de 2025: desde
+        então conta só o que a própria instituição marca como problemático
+        (característica especial 19). A distância antes e depois dessa data
+        não é comparável.
+
+  Q10:
+    tipo_de_acerto: valor
+    fonte: [metricas.indicador_inadimplencia, metricas.carteira_ativa]
+    leituras:
+      - id: unica
+        descricao: >
+          Modalidades em que a carteira cresce e a taxa de inadimplência cai
+          na mesma janela, em 12 meses e no recorte inteiro.
+        consultas: [Q10.sql]
+
+  # ---------------------------------------------------------------------------
+  # PT: Expansão geográfica e priorização
+  # EN: Geographic expansion and prioritisation
+  # ---------------------------------------------------------------------------
+  Q11:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.populacao_residente_estimada, dimensoes.uf_e_domicilio_ou_sede]
+    leituras:
+      - id: unica
+        descricao: "Carteira de PJ por habitante, por UF, no último mês, com a estimativa de população do IBGE do mesmo ano."
+        consultas: [Q11.sql]
+    observacao: "A população é estimativa anual, com referência em 1º de julho, aplicada a todos os meses do ano."
+
+  Q12:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.populacao_residente_estimada]
+    leituras:
+      - id: reais
+        descricao: "Crescimento da carteira por habitante em 12 meses, por UF, em reais."
+        consultas: [Q12_reais.sql]
+      - id: percentual
+        descricao: "Crescimento da carteira por habitante em 12 meses, por UF, em percentual."
+        consultas: [Q12_percentual.sql]
+    observacao: "Os doze meses atravessam dois anos de estimativa de população, e cada mês usa a do próprio ano."
+
+  Q13:
+    tipo_de_acerto: valor
+    pendente:
+      depende_de: ["#38"]
+      motivo: "Renda média por UF ainda não está no projeto."
+
+  Q14:
+    tipo_de_acerto: valor_com_ressalva
+    fonte:
+      - fontes_externas.empresa_ativa
+      - fontes_externas.estoque_reconstruido
+      - fontes_externas.grupo_de_natureza_juridica
+      - fontes_externas.mei
+      - dimensoes.uf_e_domicilio_ou_sede
+    leituras:
+      - id: empresariais_sem_mei
+        descricao: >
+          Carteira PJ por empresa ativa de natureza empresarial, sem MEI, que
+          é o denominador da camada de decisão (ADR 0014). Sub-atendida é a
+          UF abaixo da mediana das UFs.
+        consultas: [Q14_empresariais_sem_mei.sql]
+      - id: todas_as_empresas
+        descricao: >
+          Carteira PJ por empresa ativa, com todas as empresas, inclusive MEI
+          e entidades sem fins lucrativos. Sub-atendida é a UF abaixo da
+          mediana das UFs.
+        consultas: [Q14_todas_as_empresas.sql]
+    ressalva_obrigatoria:
+      - >
+        A UF do SCR é a do domicílio da pessoa ou da sede da empresa, e não o
+        lugar onde o crédito foi usado.
+    observacao: >
+      O número de empresas é reconstruído de um único retrato do CNPJ, com
+      erro medido por UF (ADR 0009).
+
+  Q15:
+    tipo_de_acerto: valor
+    pendente:
+      depende_de: ["#38"]
+      motivo: "Massa salarial por UF ainda não está no projeto."
+
+  # ---------------------------------------------------------------------------
+  # PT: Modalidade e produto
+  # EN: Modality and product
+  # ---------------------------------------------------------------------------
+  Q16:
+    tipo_de_acerto: valor
+    fonte: [modalidades.sub_0202, modalidades.sub_0203]
+    leituras:
+      - id: unica
+        descricao: >
+          Carteira de crédito pessoal com consignação (0202) e sem
+          consignação (0203), mês a mês, do mês 24 meses antes do último até
+          o último, com o crescimento acumulado de cada uma na janela.
+        consultas: [Q16.sql]
+    observacao: "O v2 pedia três anos, e o v3 ajustou a janela ao recorte do projeto."
+
+  Q17:
+    tipo_de_acerto: abstencao
+    fonte: [modalidades.garantia_nao_declarada, modalidades.sub_0211]
+    explicacao: >
+      O dado não diz quais modalidades têm garantia real. Entre as definições
+      normativas, só a do home equity (0211) declara garantia real: operações
+      garantidas por hipoteca ou alienação fiduciária de imóvel residencial.
+      As de capital de giro (0215 e 0216) citam "garantias" apenas como item
+      do contrato, sem dizer qual. O tipo de garantia existe no documento
+      3040, por operação, e o SCR.data não o publica. A única comparação
+      possível é a do home equity com o restante da carteira de pessoa
+      física, e ela não generaliza para "modalidades com garantia real".
+    o_que_faltaria: >
+      O bloco de garantias do documento 3040, que as instituições informam
+      por operação: tipo e subtipo da garantia (Anexo 12 do leiaute, com 14
+      tipos, entre eles alienação fiduciária, hipoteca, penhor, caução,
+      cessão de direitos creditórios e garantia fidejussória), valor
+      original, reavaliação e compartilhamento. É informação individual, e
+      nenhum desses campos é publicado no SCR.data. A lista de tipos está na
+      ontologia, aviso garantia_nao_declarada.
+    leituras:
+      - id: unica
+        descricao: >
+          A prova da ausência, pelas definições que citam garantia, e a taxa
+          de inadimplência do home equity contra o restante da PF em todos os
+          meses do recorte.
+        consultas: [Q17_definicoes.sql, Q17_home_equity.sql]
+
+  Q18:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [metricas.numero_de_operacoes, docs/sentinela-numero-de-operacoes.md]
+    leituras:
+      - id: unica
+        descricao: >
+          Ticket médio por modalidade no último mês: carteira dividida pelo
+          número de operações, só nos recortes com contagem divulgada, e a
+          parcela da carteira que fica de fora.
+        consultas: [Q18.sql]
+    ressalva_obrigatoria:
+      - >
+        O ticket médio só é calculável sobre os recortes com contagem de
+        operações divulgada. Os recortes sem contagem (o -1 do dado publicado)
+        ficam de fora, e a exclusão não é aleatória: concentra-se em nichos,
+        em UFs menores e em PJ. Tratar o -1 como número dá resultado sem
+        sentido.
+
+  Q19:
+    tipo_de_acerto: valor
+    fonte: [modalidades.mod_08, modalidades.sub_0440]
+    leituras:
+      - id: unica
+        descricao: >
+          Financiamentos rurais (modalidade 08) de PJ contra o restante da
+          carteira PJ, em crescimento e em taxa de inadimplência, em 12 meses
+          e no recorte inteiro.
+        consultas: [Q19.sql]
+    observacao: >
+      O crédito agroindustrial saiu da modalidade rural em 2017 e é a
+      submodalidade 0440, em Financiamentos. Ele fica no restante da
+      carteira PJ.
+
+  # ---------------------------------------------------------------------------
+  # PT: Concentração e competição
+  # EN: Concentration and competition
+  # ---------------------------------------------------------------------------
+  Q20:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_segmento]
+    leituras:
+      - id: herfindahl
+        descricao: "Índice de Herfindahl-Hirschman das participações dos segmentos, de 0 a 10.000, e a variação em 12 meses e no recorte inteiro."
+        consultas: [Q20_herfindahl.sql]
+      - id: maior_segmento
+        descricao: "Participação do maior segmento na carteira, e a variação em 12 meses e no recorte inteiro."
+        consultas: [Q20_maior_segmento.sql]
+
+  Q21:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_segmento, dimensoes.granularidade_encolhe_em_julho_de_2025]
+    leituras:
+      - id: unica
+        descricao: >
+          Participação de instituições de pagamento e de fintechs na carteira
+          de cada modalidade, e o ganho em pontos percentuais em 12 meses e no
+          recorte inteiro.
+        consultas: [Q21.sql]
+    observacao: >
+      Em modalidade muito pequena, um ganho grande de participação é pouco
+      dinheiro. Em Financiamentos de títulos e valores mobiliários, o ganho
+      das fintechs é a entrada de uma fintech depois da saída dos bancos, e
+      não conquista de mercado (ontologia, aviso da sub_1001). A queda de recortes de julho de 2025 atinge as instituições
+      de pagamento, mas não a carteira, e por isso não afeta a participação.
+
+  # ---------------------------------------------------------------------------
+  # PT: PIX e mudança estrutural
+  # EN: PIX and structural change
+  # ---------------------------------------------------------------------------
+  Q22:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.volume_de_pix, fontes_externas.pix_por_uf_depende_do_lado]
+    leituras:
+      - id: unica
+        descricao: >
+          Volume mensal do PIX liquidado no SPI, do mês 24 meses antes do
+          último até o último, pelo lado pagador e com a linha sem UF, que
+          pertence ao total do país.
+        consultas: [Q22.sql]
+    observacao: >
+      Somar pagador e recebedor conta cada transação duas vezes. O PIX
+      liquidado nos livros do próprio participante não está no dado.
+
+  Q23:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.volume_de_pix, modalidades.modalidade_e_conta_contabil]
+    leituras:
+      - id: modalidade
+        descricao: "Modalidades cuja carteira caiu enquanto o PIX cresceu, em 12 meses e no recorte inteiro."
+        consultas: [Q23_modalidade.sql]
+      - id: submodalidade
+        descricao: "Submodalidades cuja carteira caiu enquanto o PIX cresceu, em 12 meses e no recorte inteiro."
+        consultas: [Q23_submodalidade.sql]
+    observacao: >
+      Coincidência no tempo não é causa, e a série é curta. A retração de
+      Financiamentos de títulos e valores mobiliários no recorte é a saída
+      dos bancos em 2025, e não tem relação com o PIX (ontologia, aviso da
+      sub_1001).
+
+  Q24:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.pix_por_uf_depende_do_lado, fontes_externas.volume_de_pix]
+    leituras:
+      - id: pagador
+        descricao: "Volume de PIX do último mês pela UF do pagador, dividido pela carteira ativa da UF."
+        consultas: [Q24_pagador.sql]
+      - id: recebedor
+        descricao: "Volume de PIX do último mês pela UF do recebedor, dividido pela carteira ativa da UF."
+        consultas: [Q24_recebedor.sql]
+    observacao: "PIX é fluxo do mês e carteira é saldo: a razão compara grandezas de natureza diferente."
+
+  # ---------------------------------------------------------------------------
+  # PT: Contexto econômico
+  # EN: Economic context
+  # ---------------------------------------------------------------------------
+  Q25:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.selic_meta, metricas.indicador_inadimplencia]
+    leituras:
+      - id: unica
+        descricao: "Meta da Selic do Copom e taxa de inadimplência total, mês a mês, do mês 24 meses antes do último até o último."
+        consultas: [Q25.sql]
+    observacao: >
+      O v2 pedia três anos, e o v3 ajustou a janela ao recorte do projeto. É
+      a meta do Copom, e não a taxa efetiva (ADR 0010).
+
+  Q26:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.selic_meta, metricas.indicador_inadimplencia]
+    leituras:
+      - id: unica
+        descricao: >
+          Correlação entre a variação mensal da meta da Selic e a variação
+          mensal da taxa de inadimplência, com a inadimplência deslocada de 0
+          a 12 meses. A defasagem candidata é a de maior correlação.
+        consultas: [Q26.sql]
+    observacao: >
+      A série é curta e tem poucas decisões do Copom. A resposta precisa
+      tratar a defasagem como estimativa, com esse limite declarado, e não
+      afirmar um número de meses como fato.
+
+  Q27:
+    tipo_de_acerto: valor
+    pendente:
+      depende_de: ["#27"]
+      motivo: "A projeção entra na v0.2, com backtest e erro publicado."
+
+  # ---------------------------------------------------------------------------
+  # PT: Automação do trabalho repetitivo
+  # EN: Automating repetitive work
+  # ---------------------------------------------------------------------------
+  Q28:
+    tipo_de_acerto: valor
+    fonte: [metricas.carteira_ativa, metricas.indicador_inadimplencia]
+    leituras:
+      - id: no_mes
+        descricao: >
+          Carteira total com a variação mensal e a anual, e as três
+          modalidades de maior crescimento e de maior deterioração da
+          inadimplência no mês.
+        consultas: [Q28_totais.sql, Q28_crescimento_no_mes.sql, Q28_deterioracao_no_mes.sql]
+      - id: em_12_meses
+        descricao: >
+          Carteira total com a variação mensal e a anual, e as três
+          modalidades de maior crescimento e de maior deterioração da
+          inadimplência em 12 meses.
+        consultas: [Q28_totais.sql, Q28_crescimento_12_meses.sql, Q28_deterioracao_12_meses.sql]
+
+  Q29:
+    tipo_de_acerto: valor
+    fonte: [metricas.carteira_ativa, metricas.indicador_inadimplencia, metricas.indicador_ativo_problematico]
+    leituras:
+      - id: 12_meses
+        descricao: >
+          Variação do último mês de cada métrica nacional contra a média e o
+          desvio padrão amostral das 12 variações anteriores. Atípica quando
+          o z passa de 2 em módulo.
+        consultas: [Q29_12_meses.sql]
+      - id: 24_meses
+        descricao: "A mesma regra contra as 24 variações anteriores."
+        consultas: [Q29_24_meses.sql]
+    observacao: >
+      O resultado depende da janela, do limiar e do desvio padrão usado
+      (amostral ou populacional), e uma métrica pode ficar perto do limiar.
+      Na janela de 24 meses, o histórico inclui a mudança de critério do
+      ativo problemático de janeiro de 2025.
+
+  Q30:
+    tipo_de_acerto: valor_com_ressalva
+    fonte:
+      - docs/analise-v1-v2.md
+      - docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md
+      - modalidades.nem_todo_par_ocorre_em_todo_mes
+    leituras:
+      - id: unica
+        descricao: >
+          As submodalidades da V2 que não aparecem em todos os meses, e a
+          série no padrão da V1 reconstruída a partir da V2, contra a V1
+          publicada, por modalidade da V1, no último mês.
+        consultas: [Q30_presenca.sql, Q30_comparabilidade.sql]
+    ressalva_obrigatoria:
+      - >
+        A V1 e a V2 não têm nenhum valor de modalidade em comum: a V1
+        classifica pela finalidade do crédito, e a V2 pela natureza contábil
+        da operação. Uma série que agrupe por modalidade atravessando as duas
+        soma categorias incomparáveis.
+      - >
+        A série reconstruída no padrão da V1 reproduz a classificação, e não
+        os totais: a diferença contra a V1 publicada não é uniforme por
+        modalidade.
+      - "A V1 continua publicada, ao contrário do que diz o portal de dados abertos."
+
+  # ---------------------------------------------------------------------------
+  # PT: Armadilhas de classificação
+  # EN: Classification traps
+  # ---------------------------------------------------------------------------
+  Q31:
+    tipo_de_acerto: valor
+    fonte: [modalidades.cartao_de_credito_em_tres_modalidades]
+    leituras:
+      - id: unica
+        descricao: >
+          Soma da carteira das cinco submodalidades de cartão (0204, 0210,
+          0218, 0406 e 1304), de três modalidades, no último mês.
+        consultas: [Q31.sql]
+
+  Q32:
+    tipo_de_acerto: valor
+    fonte: [modalidades.mod_13, metricas.outros_creditos_balde_de_supressao]
+    leituras:
+      - id: unica
+        descricao: "Composição de Outros créditos por submodalidade no último mês, e o peso da modalidade na carteira total."
+        consultas: [Q32.sql]
+    observacao: >
+      O nome sugere resíduo, mas a maior parte é compra no cartão sem juros
+      (1304). Um ranking de modalidades que trate Outros créditos como sobra
+      interpreta errado uma das maiores fatias da carteira.
+
+  Q33:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [dimensoes.colunas_polimorficas, dimensoes.dim_porte]
+    leituras:
+      - id: unica
+        descricao: "Carteira por porte no último mês, separada por tipo de cliente, com a participação dentro de cada cliente."
+        consultas: [Q33.sql]
+    ressalva_obrigatoria:
+      - >
+        Porte tem dois significados: faixa de renda em salários mínimos para
+        PF, e tamanho da empresa para PJ. Agrupar sem separar o cliente
+        mistura duas taxonomias.
+
+  Q34:
+    tipo_de_acerto: valor
+    fonte: [modalidades.sub_0902, modalidades.mod_09, docs/cadeia-normativa.md]
+    leituras:
+      - id: unica
+        descricao: "Carteira da submodalidade 0902, financiamento habitacional fora do SFH, no último mês."
+        consultas: [Q34.sql]
+    observacao: >
+      O rótulo da 0902 traz um caractere de controle invisível no lugar do
+      traço. Filtrar pelo texto escrito à mão devolve vazio, sem erro. A
+      fronteira com o SFH mudou dentro do recorte: em 2025-10-10, o teto do
+      imóvel financiado no SFH subiu de R$ 1,5 milhão para R$ 2,25 milhões
+      (Resolução CMN 5.255), e financiamentos novos nessa faixa podem ter
+      passado da 0902 para a 0901 (ontologia, historyNote da mod_09).
+
+  Q35:
+    tipo_de_acerto: valor
+    fonte: [modalidades.sub_0202, docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md]
+    leituras:
+      - id: unica
+        descricao: >
+          Operações de crédito pessoal consignado (0202) com cliente PJ: em
+          quantos meses aparecem, de que tamanho, e a que modalidade da V1 a
+          tabela oficial de equivalência as atribui.
+        consultas: [Q35.sql]
+    observacao: >
+      Existem e são poucas. A tabela de equivalência as atribui à modalidade
+      de PF, o que mostra que o cliente informado nem sempre é o tomador
+      final.
+
+  # ---------------------------------------------------------------------------
+  # PT: Limites do dado e comparabilidade
+  # EN: Data limits and comparability
+  # ---------------------------------------------------------------------------
+  Q36:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [metricas.numero_de_operacoes, docs/sentinela-numero-de-operacoes.md]
+    leituras:
+      - id: unica
+        descricao: "Parcela da carteira e das linhas em recortes sem contagem de operações divulgada, no último mês e no recorte inteiro."
+        consultas: [Q36.sql]
+    ressalva_obrigatoria:
+      - >
+        A supressão impede calcular o total de operações, o ticket médio e
+        qualquer razão por operação sem viés. O critério da supressão não é
+        publicado, e não é o número de operações.
+
+  Q37:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [metricas.numero_de_operacoes]
+    leituras:
+      - id: unica
+        descricao: "Soma do número de operações no último mês, com quantos recortes e quanta carteira não têm contagem divulgada."
+        consultas: [Q37.sql]
+    ressalva_obrigatoria:
+      - >
+        A soma é um limite inferior, e não o total: os recortes sem contagem
+        divulgada ficam de fora dela.
+
+  Q38:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [metricas.ativo_problematico, metricas.carteira_inadimplencia, docs/cadeia-normativa.md]
+    leituras:
+      - id: v2
+        descricao: >
+          Variação de carteira, carteira inadimplida e ativo problemático no
+          mês da mudança de critério, na V2, contra a menor e a maior variação
+          mensal dos outros meses.
+        consultas: [Q38_v2.sql]
+      - id: v1
+        descricao: "A mesma comparação na V1, que publica as mesmas medidas com a taxonomia antiga."
+        consultas: [Q38_v1.sql]
+    ressalva_obrigatoria:
+      - >
+        A comparação entre dezembro de 2024 e janeiro de 2025 não é válida
+        sem ressalva: em janeiro de 2025 o ativo problemático passou a ser só
+        o que a instituição marca como problemático (característica especial
+        19), com a Resolução CMN 4.966.
+      - >
+        O dado não permite separar o efeito da definição de uma piora real. A
+        carteira inadimplida, cuja definição não mudou, também saltou no
+        mesmo mês.
+
+  Q39:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [docs/analise-v1-v2.md, metricas.divergencia_com_outras_publicacoes]
+    leituras:
+      - id: unica
+        descricao: >
+          Carteira ativa total da V1 e da V2, mês a mês, com a diferença e a
+          mudança da diferença de um mês para o outro. O degrau é a maior
+          mudança.
+        consultas: [Q39.sql]
+    ressalva_obrigatoria:
+      - >
+        A causa da diferença não está identificada. O degrau coincide no tempo
+        com a IN BCB 659, de setembro de 2025, e isso é coincidência temporal,
+        e não causa verificada.
+
+  Q40:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [docs/adr/0003-conformacao-de-taxonomia-entre-versoes.md]
+    leituras:
+      - id: unica
+        descricao: >
+          Parcela da carteira em que a modalidade da V1 é ambígua ou inferida
+          pelo projeto, no último mês e no recorte inteiro.
+        consultas: [Q40.sql]
+    ressalva_obrigatoria:
+      - >
+        O porquê: uma regra da tabela oficial de equivalência depende do
+        campo Natureza da operação, que o SCR.data não publica. Nessas linhas
+        há duas modalidades candidatas, e nenhuma é escolhida em silêncio.
+
+  Q41:
+    tipo_de_acerto: abstencao
+    fonte: [docs/recomendacao.md]
+    explicacao: >
+      O SCR.data não traz taxa de juros, receita, custo de captação nem
+      perda. Sem isso não existe rentabilidade para calcular, e qualquer
+      número seria estimativa sem base no dado.
+    o_que_faltaria: >
+      Taxa de juros por modalidade, custo de captação e perda esperada,
+      idealmente por instituição. As taxas de juros por modalidade existem em
+      outra publicação do BCB, mas não fazem parte deste dado.

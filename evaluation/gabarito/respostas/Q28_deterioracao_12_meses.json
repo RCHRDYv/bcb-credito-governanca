@@ -1,0 +1,36 @@
+{
+  "consulta": "Q28_deterioracao_12_meses.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "posicao",
+    "codigo_modalidade",
+    "modalidade",
+    "variacao_pp"
+  ],
+  "tipos": [
+    "INT",
+    "STRING",
+    "STRING",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "1",
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "3.099946347"
+    ],
+    [
+      "2",
+      "02",
+      "Empréstimos",
+      "0.932427673"
+    ],
+    [
+      "3",
+      "04",
+      "Financiamentos",
+      "0.6733640326"
+    ]
+  ]
+}

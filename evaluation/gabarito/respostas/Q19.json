@@ -1,0 +1,38 @@
+{
+  "consulta": "Q19.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "grupo",
+    "crescimento_12_meses_pct",
+    "crescimento_no_recorte_pct",
+    "taxa_no_ultimo_mes_pct",
+    "variacao_taxa_12_meses_pp",
+    "variacao_taxa_no_recorte_pp"
+  ],
+  "tipos": [
+    "STRING",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "Financiamentos rurais",
+      "23.81740661",
+      "47.14138695",
+      "0.7892806408",
+      "0.3616409121",
+      "0.5578111846"
+    ],
+    [
+      "Restante da carteira PJ",
+      "8.294668775",
+      "23.06372227",
+      "3.14826332",
+      "0.348151273",
+      "0.7685856758"
+    ]
+  ]
+}
