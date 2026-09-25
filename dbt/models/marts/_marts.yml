@@ -453,3 +453,33 @@ models:
         data_tests: [not_null]
       - name: pessoas
         description: "Pessoas distintas no mês. Não soma entre lados nem entre meses."
+
+  - name: mrt_decisao
+    description: >
+      Matriz de espaço contra risco da camada de decisão (issue #26, ADR
+      0014), por UF e modalidade, só cliente PJ, no último mês do SCR. Espaço
+      é a carteira por empresa ativa (natureza empresarial, sem MEI) contra a
+      mediana das UFs; risco é a variação da taxa de inadimplência contra a do
+      país na mesma modalidade. Parâmetros em dbt_project.yml. Fora do
+      experimento (ADR 0007).
+    columns:
+      - name: uf
+        data_tests: [not_null]
+      - name: codigo_modalidade
+        data_tests: [not_null]
+      - name: empresas
+        description: "Empresas ativas de natureza empresarial, sem MEI, na UF. Reconstruído do CNPJ (ADR 0009)."
+        data_tests: [not_null]
+      - name: quadrante
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["entrar", "observar", "manter", "não entrar", "não avaliada"]
+      - name: custo_de_nao_entrar
+        description: "Carteira, em reais, que faltaria para a célula chegar à mediana da modalidade. Só onde o espaço é alto."
+      - name: custo_do_risco
+        description: "Ordem de grandeza, em reais, do aumento da carteira inadimplida atribuível à piora da taxa na janela. Não é perda."
+      - name: alerta_antecipado
+        description: "Distância entre ativo problemático e inadimplência abrindo mais que a do país na janela."
+        data_tests: [not_null]
