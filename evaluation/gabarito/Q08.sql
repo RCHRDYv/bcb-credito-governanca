@@ -1,9 +1,9 @@
 -- PT: Q08. Inadimplência do rotativo do cartão (submodalidade 0204, e só
---     ela) no último mês, contra a média das taxas mensais. A pergunta pede
---     cinco anos, e a média usa todo o recorte disponível, que é menor.
+--     ela) no último mês, contra a média das taxas mensais dos últimos dois
+--     anos: os 24 meses que terminam no último mês.
 -- EN: Q08. Revolving credit card default (submodality 0204 only) in the
---     latest month against the average of monthly rates over the available
---     window, which is shorter than the five years asked.
+--     latest month against the average of monthly rates over the last two
+--     years, the 24 months ending in the latest month.
 with mensal as (
 
     select
@@ -27,10 +27,12 @@ ultimo as (
 historico as (
 
     select
-        min(data_base) as inicio_da_media,
+        min(mensal.data_base) as inicio_da_media,
         count(*) as meses_na_media,
-        avg(taxa_inadimplencia_pct) as media_das_taxas_mensais_pct
+        avg(mensal.taxa_inadimplencia_pct) as media_das_taxas_mensais_pct
     from mensal
+    cross join ultimo
+    where mensal.data_base > last_day(ultimo.data_base - interval '24' month)
 
 )
 

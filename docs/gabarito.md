@@ -2,7 +2,7 @@
 
 **Mês de referência:** jul/2026. Gerado por `scripts/gerar_gabarito.py` a partir de [`evaluation/gabarito.yml`](../evaluation/gabarito.yml) e dos SQL em [`evaluation/gabarito/`](../evaluation/gabarito/). Nenhum número deste documento é digitado à mão: para atualizar, rode o script de novo.
 
-São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`questions_v2.yml`](../evaluation/questions_v2.yml)). 38 têm resposta nesta versão, com 47 leituras e 52 consultas, e 3 dependem de fonte ou modelo que ainda não está no projeto.
+São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer execução ([`questions_v3.yml`](../evaluation/questions_v3.yml)). 38 têm resposta nesta versão, com 47 leituras e 52 consultas, e 3 dependem de fonte ou modelo que ainda não está no projeto.
 
 ## Como ler
 
@@ -74,7 +74,7 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 | 12 | 11 | Financiamentos de infraestrutura e desenvolvimento | R$ 124,9 bi | R$ 123,1 bi | -R$ 1,8 bi | -1,48% |
 | 13 | 06 | Financiamentos à importação | R$ 20,6 bi | R$ 16,7 bi | -R$ 3,9 bi | -19,08% |
 
-**Observação:** No percentual, uma modalidade de base muito pequena pode liderar o ranking com pouco dinheiro. É o motivo de a leitura em reais também valer.
+**Observação:** No percentual, uma modalidade de base muito pequena pode liderar o ranking com pouco dinheiro. É o motivo de a leitura em reais também valer. É o caso de Financiamentos de títulos e valores mobiliários: os bancos saíram em 2025, e uma fintech passou a operar a partir de agosto de 2025 (ontologia, aviso da sub_1001).
 
 ### Q03. Qual a participação de pessoa física versus pessoa jurídica na carteira total, e como evoluiu nos últimos 24 meses?
 
@@ -231,21 +231,23 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 | 12 | 12 | Operações de arrendamento | 1,50% | 0,91% | -0,60 p.p. | -39,71% |
 | 13 | 10 | Financiamentos de títulos e valores mobiliários | 0,00% | 0,02% | 0,02 p.p. |  |
 
-### Q08. A inadimplência do cartão de crédito rotativo está acima ou abaixo da média histórica de cinco anos?
+**Observação:** Financiamentos de títulos e valores mobiliários parte de taxa zero seis meses antes, e por isso não tem variação relativa. É uma modalidade muito pequena, que trocou de operador dentro do recorte (ontologia, aviso da sub_1001), e a inadimplência dela subiu e voltou a quase zero entre as duas pontas da janela.
+
+### Q08. A inadimplência do cartão de crédito rotativo está acima ou abaixo da média histórica dos últimos dois anos?
 
 **Tipo de acerto:** `valor`
 
 **Fonte da definição:** `modalidades.sub_0204`, `modalidades.cartao_de_credito_em_tres_modalidades`, `metricas.indicador_inadimplencia`
 
-**Como se responde:** Taxa de inadimplência do rotativo do cartão, só a submodalidade 0204, no último mês, contra a média das taxas mensais em todo o recorte disponível.
+**Como se responde:** Taxa de inadimplência do rotativo do cartão, só a submodalidade 0204, no último mês, contra a média das taxas mensais dos últimos dois anos, os 24 meses que terminam no último mês.
 
 [`Q08.sql`](../evaluation/gabarito/Q08.sql)
 
 | Mês | Taxa no último mês | Média das taxas mensais | Início da média | Meses na média | Acima da média |
 |---|---|---|---|---|---|
-| jul/2026 | 13,47% | 13,99% | jan/2024 | 31 | não |
+| jul/2026 | 13,47% | 14,19% | ago/2024 | 24 | não |
 
-**Observação:** A pergunta pede a média de cinco anos, e o recorte do projeto é menor (triagem da ontologia, item 1.3). A resposta precisa dizer a janela que usou. Somar o cartão parcelado (0210, 0218, 0406) ou o lojista (1304) ao rotativo é erro.
+**Observação:** O v2 pedia cinco anos, e o v3 ajustou a janela ao recorte do projeto. Somar o cartão parcelado (0210, 0218, 0406) ou o lojista (1304) ao rotativo é erro.
 
 ### Q09. Qual a diferença entre inadimplência e ativo problemático nesta base, e qual o gap entre as duas métricas por modalidade?
 
@@ -538,55 +540,49 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 
 ## Modalidade e produto
 
-### Q16. Qual a evolução do crédito consignado versus crédito pessoal não consignado nos últimos três anos?
+### Q16. Qual a evolução do crédito consignado versus crédito pessoal não consignado nos últimos dois anos?
 
 **Tipo de acerto:** `valor`
 
 **Fonte da definição:** `modalidades.sub_0202`, `modalidades.sub_0203`
 
-**Como se responde:** Carteira de crédito pessoal com consignação (0202) e sem consignação (0203), mês a mês, com o crescimento acumulado de cada uma no recorte.
+**Como se responde:** Carteira de crédito pessoal com consignação (0202) e sem consignação (0203), mês a mês, do mês 24 meses antes do último até o último, com o crescimento acumulado de cada uma na janela.
 
 [`Q16.sql`](../evaluation/gabarito/Q16.sql)
 
-<details><summary>31 linhas</summary>
+<details><summary>25 linhas</summary>
 
 | Mês | Consignado | Não consignado | Participação do consignado | Crescimento acumulado consignado | Crescimento acumulado não consignado |
 |---|---|---|---|---|---|
-| jan/2024 | R$ 643,2 bi | R$ 271,5 bi | 70,32% | 0,00% | 0,00% |
-| fev/2024 | R$ 650,0 bi | R$ 276,8 bi | 70,13% | 1,05% | 1,94% |
-| mar/2024 | R$ 654,1 bi | R$ 280,6 bi | 69,98% | 1,70% | 3,36% |
-| abr/2024 | R$ 658,0 bi | R$ 283,7 bi | 69,87% | 2,30% | 4,49% |
-| mai/2024 | R$ 661,7 bi | R$ 286,6 bi | 69,77% | 2,87% | 5,57% |
-| jun/2024 | R$ 665,6 bi | R$ 287,6 bi | 69,83% | 3,48% | 5,93% |
-| jul/2024 | R$ 671,8 bi | R$ 291,5 bi | 69,74% | 4,45% | 7,35% |
-| ago/2024 | R$ 676,7 bi | R$ 296,8 bi | 69,51% | 5,21% | 9,30% |
-| set/2024 | R$ 681,3 bi | R$ 301,1 bi | 69,35% | 5,92% | 10,88% |
-| out/2024 | R$ 685,4 bi | R$ 308,1 bi | 68,99% | 6,56% | 13,48% |
-| nov/2024 | R$ 689,4 bi | R$ 313,8 bi | 68,72% | 7,18% | 15,56% |
-| dez/2024 | R$ 690,9 bi | R$ 315,4 bi | 68,66% | 7,41% | 16,16% |
-| jan/2025 | R$ 698,3 bi | R$ 324,6 bi | 68,27% | 8,56% | 19,54% |
-| fev/2025 | R$ 706,0 bi | R$ 330,0 bi | 68,14% | 9,76% | 21,55% |
-| mar/2025 | R$ 711,9 bi | R$ 333,4 bi | 68,10% | 10,68% | 22,80% |
-| abr/2025 | R$ 718,5 bi | R$ 340,3 bi | 67,86% | 11,70% | 25,32% |
-| mai/2025 | R$ 723,7 bi | R$ 343,4 bi | 67,82% | 12,51% | 26,47% |
-| jun/2025 | R$ 720,0 bi | R$ 347,9 bi | 67,42% | 11,95% | 28,14% |
-| jul/2025 | R$ 723,9 bi | R$ 353,6 bi | 67,18% | 12,54% | 30,24% |
-| ago/2025 | R$ 729,4 bi | R$ 356,8 bi | 67,15% | 13,40% | 31,40% |
-| set/2025 | R$ 735,1 bi | R$ 359,8 bi | 67,14% | 14,29% | 32,53% |
-| out/2025 | R$ 743,4 bi | R$ 367,8 bi | 66,90% | 15,58% | 35,46% |
-| nov/2025 | R$ 749,5 bi | R$ 370,1 bi | 66,94% | 16,52% | 36,32% |
-| dez/2025 | R$ 751,8 bi | R$ 368,7 bi | 67,10% | 16,88% | 35,77% |
-| jan/2026 | R$ 765,7 bi | R$ 376,4 bi | 67,04% | 19,05% | 38,62% |
-| fev/2026 | R$ 774,9 bi | R$ 380,7 bi | 67,06% | 20,48% | 40,20% |
-| mar/2026 | R$ 783,8 bi | R$ 380,7 bi | 67,31% | 21,86% | 40,20% |
-| abr/2026 | R$ 790,0 bi | R$ 382,2 bi | 67,39% | 22,82% | 40,78% |
-| mai/2026 | R$ 796,1 bi | R$ 383,1 bi | 67,51% | 23,77% | 41,09% |
-| jun/2026 | R$ 797,9 bi | R$ 375,4 bi | 68,01% | 24,05% | 38,25% |
-| jul/2026 | R$ 791,8 bi | R$ 373,7 bi | 67,94% | 23,10% | 37,64% |
+| jul/2024 | R$ 671,8 bi | R$ 291,5 bi | 69,74% | 0,00% | 0,00% |
+| ago/2024 | R$ 676,7 bi | R$ 296,8 bi | 69,51% | 0,73% | 1,82% |
+| set/2024 | R$ 681,3 bi | R$ 301,1 bi | 69,35% | 1,41% | 3,29% |
+| out/2024 | R$ 685,4 bi | R$ 308,1 bi | 68,99% | 2,02% | 5,71% |
+| nov/2024 | R$ 689,4 bi | R$ 313,8 bi | 68,72% | 2,62% | 7,65% |
+| dez/2024 | R$ 690,9 bi | R$ 315,4 bi | 68,66% | 2,84% | 8,20% |
+| jan/2025 | R$ 698,3 bi | R$ 324,6 bi | 68,27% | 3,93% | 11,35% |
+| fev/2025 | R$ 706,0 bi | R$ 330,0 bi | 68,14% | 5,09% | 13,23% |
+| mar/2025 | R$ 711,9 bi | R$ 333,4 bi | 68,10% | 5,96% | 14,39% |
+| abr/2025 | R$ 718,5 bi | R$ 340,3 bi | 67,86% | 6,94% | 16,74% |
+| mai/2025 | R$ 723,7 bi | R$ 343,4 bi | 67,82% | 7,72% | 17,81% |
+| jun/2025 | R$ 720,0 bi | R$ 347,9 bi | 67,42% | 7,18% | 19,37% |
+| jul/2025 | R$ 723,9 bi | R$ 353,6 bi | 67,18% | 7,74% | 21,32% |
+| ago/2025 | R$ 729,4 bi | R$ 356,8 bi | 67,15% | 8,57% | 22,40% |
+| set/2025 | R$ 735,1 bi | R$ 359,8 bi | 67,14% | 9,43% | 23,46% |
+| out/2025 | R$ 743,4 bi | R$ 367,8 bi | 66,90% | 10,65% | 26,19% |
+| nov/2025 | R$ 749,5 bi | R$ 370,1 bi | 66,94% | 11,55% | 26,99% |
+| dez/2025 | R$ 751,8 bi | R$ 368,7 bi | 67,10% | 11,90% | 26,48% |
+| jan/2026 | R$ 765,7 bi | R$ 376,4 bi | 67,04% | 13,98% | 29,13% |
+| fev/2026 | R$ 774,9 bi | R$ 380,7 bi | 67,06% | 15,35% | 30,60% |
+| mar/2026 | R$ 783,8 bi | R$ 380,7 bi | 67,31% | 16,67% | 30,60% |
+| abr/2026 | R$ 790,0 bi | R$ 382,2 bi | 67,39% | 17,59% | 31,14% |
+| mai/2026 | R$ 796,1 bi | R$ 383,1 bi | 67,51% | 18,50% | 31,43% |
+| jun/2026 | R$ 797,9 bi | R$ 375,4 bi | 68,01% | 18,77% | 28,79% |
+| jul/2026 | R$ 791,8 bi | R$ 373,7 bi | 67,94% | 17,85% | 28,21% |
 
 </details>
 
-**Observação:** A pergunta pede três anos, e o recorte do projeto é menor. A resposta precisa dizer a janela que usou.
+**Observação:** O v2 pedia três anos, e o v3 ajustou a janela ao recorte do projeto.
 
 ### Q17. Modalidades com garantia real apresentam inadimplência sistematicamente menor? Quantifique.
 
@@ -594,9 +590,9 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 
 **Fonte da definição:** `modalidades.garantia_nao_declarada`, `modalidades.sub_0211`
 
-**A resposta certa é reconhecer o limite.** O dado não diz quais modalidades têm garantia real. Entre as definições normativas, só a do home equity (0211) declara garantia real: operações garantidas por hipoteca ou alienação fiduciária de imóvel residencial. As de capital de giro (0215 e 0216) citam "garantias" apenas como item do contrato, sem dizer qual. O SCR.data não publica o campo de garantias do documento 3040. A única comparação possível é a do home equity com o restante da carteira de pessoa física, e ela não generaliza para "modalidades com garantia real".
+**A resposta certa é reconhecer o limite.** O dado não diz quais modalidades têm garantia real. Entre as definições normativas, só a do home equity (0211) declara garantia real: operações garantidas por hipoteca ou alienação fiduciária de imóvel residencial. As de capital de giro (0215 e 0216) citam "garantias" apenas como item do contrato, sem dizer qual. O tipo de garantia existe no documento 3040, por operação, e o SCR.data não o publica. A única comparação possível é a do home equity com o restante da carteira de pessoa física, e ela não generaliza para "modalidades com garantia real".
 
-**O que faltaria:** O tipo de garantia por operação, que existe no documento 3040 (Anexo 12 do leiaute) e não é publicado no SCR.data.
+**O que faltaria:** O bloco de garantias do documento 3040, que as instituições informam por operação: tipo e subtipo da garantia (Anexo 12 do leiaute, com 14 tipos, entre eles alienação fiduciária, hipoteca, penhor, caução, cessão de direitos creditórios e garantia fidejussória), valor original, reavaliação e compartilhamento. É informação individual, e nenhum desses campos é publicado no SCR.data. A lista de tipos está na ontologia, aviso garantia_nao_declarada.
 
 **Como se responde:** A prova da ausência, pelas definições que citam garantia, e a taxa de inadimplência do home equity contra o restante da PF em todos os meses do recorte.
 
@@ -711,7 +707,7 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 | 12 | Operações de arrendamento | 0,00% | 0,00 p.p. | 0,00 p.p. | 0,00% | 0,00 p.p. | 0,00 p.p. |
 | 13 | Outros créditos | 15,52% | 2,37 p.p. | 4,96 p.p. | 0,11% | 0,01 p.p. | 0,09 p.p. |
 
-**Observação:** Em modalidade muito pequena, um ganho grande de participação é pouco dinheiro. A queda de recortes de julho de 2025 atinge as instituições de pagamento, mas não a carteira, e por isso não afeta a participação.
+**Observação:** Em modalidade muito pequena, um ganho grande de participação é pouco dinheiro. Em Financiamentos de títulos e valores mobiliários, o ganho das fintechs é a entrada de uma fintech depois da saída dos bancos, e não conquista de mercado (ontologia, aviso da sub_1001). A queda de recortes de julho de 2025 atinge as instituições de pagamento, mas não a carteira, e por isso não afeta a participação.
 
 ## PIX e mudança estrutural
 
@@ -860,7 +856,7 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 
 </details>
 
-**Observação:** Coincidência no tempo não é causa, e a série é curta.
+**Observação:** Coincidência no tempo não é causa, e a série é curta. A retração de Financiamentos de títulos e valores mobiliários no recorte é a saída dos bancos em 2025, e não tem relação com o PIX (ontologia, aviso da sub_1001).
 
 ### Q24. Qual a razão entre volume de PIX e carteira de crédito, por UF?
 
@@ -948,26 +944,20 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 
 ## Contexto econômico
 
-### Q25. Como a inadimplência se comportou frente à trajetória da Selic nos últimos três anos?
+### Q25. Como a inadimplência se comportou frente à trajetória da Selic nos últimos dois anos?
 
 **Tipo de acerto:** `valor`
 
 **Fonte da definição:** `fontes_externas.selic_meta`, `metricas.indicador_inadimplencia`
 
-**Como se responde:** Meta da Selic do Copom e taxa de inadimplência total, mês a mês, no recorte inteiro.
+**Como se responde:** Meta da Selic do Copom e taxa de inadimplência total, mês a mês, do mês 24 meses antes do último até o último.
 
 [`Q25.sql`](../evaluation/gabarito/Q25.sql)
 
-<details><summary>31 linhas</summary>
+<details><summary>25 linhas</summary>
 
 | Mês | Selic meta | Taxa inadimplência |
 |---|---|---|
-| jan/2024 | 11,75% | 3,18% |
-| fev/2024 | 11,25% | 3,19% |
-| mar/2024 | 10,75% | 3,14% |
-| abr/2024 | 10,75% | 3,17% |
-| mai/2024 | 10,50% | 3,22% |
-| jun/2024 | 10,50% | 3,11% |
 | jul/2024 | 10,50% | 3,13% |
 | ago/2024 | 10,50% | 3,16% |
 | set/2024 | 10,75% | 3,14% |
@@ -996,7 +986,7 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 
 </details>
 
-**Observação:** A pergunta pede três anos, e o recorte do projeto é menor. É a meta do Copom, e não a taxa efetiva (ADR 0010).
+**Observação:** O v2 pedia três anos, e o v3 ajustou a janela ao recorte do projeto. É a meta do Copom, e não a taxa efetiva (ADR 0010).
 
 ### Q26. Existe defasagem entre variação da Selic e variação da inadimplência? De quantos meses?
 
@@ -1250,7 +1240,7 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 
 **Tipo de acerto:** `valor`
 
-**Fonte da definição:** `modalidades.sub_0902`
+**Fonte da definição:** `modalidades.sub_0902`, `modalidades.mod_09`, `docs/cadeia-normativa.md`
 
 **Como se responde:** Carteira da submodalidade 0902, financiamento habitacional fora do SFH, no último mês.
 
@@ -1260,7 +1250,7 @@ São 41 perguntas, do conjunto v2 registrado antes de qualquer execução ([`que
 |---|---|
 | jul/2026 | R$ 197,1 bi |
 
-**Observação:** O rótulo da 0902 traz um caractere de controle invisível no lugar do traço. Filtrar pelo texto escrito à mão devolve vazio, sem erro.
+**Observação:** O rótulo da 0902 traz um caractere de controle invisível no lugar do traço. Filtrar pelo texto escrito à mão devolve vazio, sem erro. A fronteira com o SFH mudou dentro do recorte: em 2025-10-10, o teto do imóvel financiado no SFH subiu de R$ 1,5 milhão para R$ 2,25 milhões (Resolução CMN 5.255), e financiamentos novos nessa faixa podem ter passado da 0902 para a 0901 (ontologia, historyNote da mod_09).
 
 ### Q35. Existem operações de crédito pessoal consignado com cliente pessoa jurídica? Se sim, o que isso significa?
 
