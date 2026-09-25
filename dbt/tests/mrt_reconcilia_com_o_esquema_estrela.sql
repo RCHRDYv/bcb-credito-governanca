@@ -74,8 +74,24 @@ carteira_por_uf as (
 
 ),
 
-fato_empresas as (
+decisao as (
 
+    select data_base, sum(carteira_ativa) as carteira_ativa
+    from {{ ref('mrt_decisao') }}
+    group by data_base
+
+),
+
+fato_v2_pj as (
+
+    select data_base, sum(carteira_ativa) as carteira_ativa
+    from {{ ref('fct_carteira') }}
+    where cliente = 'PJ'
+    group by data_base
+
+),
+
+fato_empresas as (
     select data_base, sum(empresas_ativas) as empresas_ativas
     from {{ ref('fct_empresas_ativas') }}
     group by data_base
@@ -127,6 +143,15 @@ conferencias as (
     select e.data_base, 'mrt_carteira_por_uf: empresas ativas',
            u.empresas_ativas, e.empresas_ativas
     from fato_empresas e left join carteira_por_uf u on u.data_base = e.data_base
+
+    -- PT: o mart de decisão tem só o último mês, então a conferência parte
+    --     dele, e não do fato
+    -- EN: the decision mart has only the latest month, so the check starts
+    --     from it
+    union all
+    select d.data_base, 'mrt_decisao: carteira PJ',
+           d.carteira_ativa, f.carteira_ativa
+    from decisao d left join fato_v2_pj f on f.data_base = d.data_base
 
 )
 

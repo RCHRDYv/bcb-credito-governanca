@@ -51,8 +51,18 @@ carteira_por_uf as (
 
 ),
 
-erro_da_reconstrucao as (
+decisao as (
 
+    select 'mrt_decisao' as mart,
+           concat_ws(' | ', uf, codigo_modalidade) as chave,
+           count(*) as linhas
+    from {{ ref('mrt_decisao') }}
+    group by uf, codigo_modalidade
+    having count(*) > 1
+
+),
+
+erro_da_reconstrucao as (
     select 'mrt_erro_da_reconstrucao' as mart,
            concat_ws(' | ', retrato, uf) as chave,
            count(*) as linhas
@@ -71,3 +81,5 @@ union all
 select * from carteira_por_uf
 union all
 select * from erro_da_reconstrucao
+union all
+select * from decisao

@@ -61,3 +61,30 @@ seeds:
     #     hand-written. The ontology is a source of the model, not documentation
     #     about it, which makes doc-to-data drift structurally impossible.
     +schema: marts
+
+# =============================================================================
+# PT: Parâmetros da camada de decisão (issue #26, ADR 0014). Ficam aqui para a
+#     regra da matriz ser lida e mudada num lugar só. Os três primeiros são
+#     decisões do Yuri de 2026-09-24.
+# EN: Decision layer parameters, kept in one place so the matrix rule is read
+#     and changed there.
+# =============================================================================
+vars:
+  # PT: Denominador do espaço: empresas deste grupo de natureza jurídica
+  #     (2 = entidades empresariais), sem MEI.
+  # EN: Room-to-grow denominator: companies of this legal nature group, no MEI.
+  decisao_grupo_natureza_juridica: "2"
+
+  # PT: Carteira PJ mínima, em reais, para a célula de UF e modalidade entrar
+  #     na matriz. Em jul/2026 deixa 148 de 309 células, com 98,5% da carteira.
+  # EN: Minimum PJ portfolio, in reais, for a state-modality cell to be rated.
+  decisao_carteira_minima: 1000000000
+
+  # PT: Janela da tendência de risco, em meses.
+  # EN: Risk trend window, in months.
+  decisao_meses_de_tendencia: 6
+
+  # PT: Mínimo de UFs acima do corte para a modalidade ter mediana que compare
+  #     alguma coisa. Com uma UF só, a célula é a própria mediana.
+  # EN: Minimum rated states for a modality's median to mean anything.
+  decisao_minimo_de_ufs: 3
