@@ -142,6 +142,18 @@ jobs:
       - name: Cobertura da camada gold
         run: uv run python -m scripts.validar_cobertura
 
+      # PT: Gabarito das perguntas: completo, com o tipo de acerto do
+      #     pré-registro, SQL só de leitura sobre as tabelas que a cobertura
+      #     lista, fontes que existem na ontologia, e todo SQL planejado pelo
+      #     DuckDB sobre o esquema exportado, porque o experimento vai rodar
+      #     lá (ADR 0015).
+      # EN: Answer key: complete, with the pre-registered answer types,
+      #     read-only SQL over the tables the coverage matrix lists, existing
+      #     ontology sources, and every SQL planned by DuckDB over the exported
+      #     schema, since the experiment will run there.
+      - name: Gabarito das perguntas
+        run: uv run python -m scripts.validar_gabarito
+
       # PT: Carga do projeto dbt: Jinja, macros, referências entre modelos,
       #     fontes e testes. Não conecta no warehouse e não precisa de
       #     credencial (ver .github/dbt/profiles.yml). É o que pega um `ref`
