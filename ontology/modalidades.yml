@@ -94,8 +94,10 @@ avisos_gerais:
     descricao: >
       Só uma definição declara garantia: 0211 home equity, "garantidos por
       hipoteca ou por alienação fiduciária de bens imóveis residenciais". As
-      demais não mencionam garantia, e o SCR.data não traz o campo de
-      garantias do documento 3040 (Anexo 12 do leiaute).
+      de capital de giro (0215 e 0216) citam "garantias" apenas como item do
+      contrato, sem dizer qual, e as demais não mencionam garantia. O
+      SCR.data não traz o campo de garantias do documento 3040 (Anexo 12 do
+      leiaute).
     consequencia: >
       Classificar modalidades por "tem garantia real" a partir de normativo só
       é possível para 0211. Para as demais, qualquer classificação é

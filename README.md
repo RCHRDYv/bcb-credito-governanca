@@ -103,7 +103,7 @@ flowchart LR
     end
 
     ia["IA do experimento"]
-    gab["Gabarito #16"]
+    gab["Gabarito<br/>evaluation/gabarito"]
     dash["Dashboard #17"]
     dec["Camada de decisão<br/>mrt_decisao"]
 
@@ -120,7 +120,7 @@ flowchart LR
     apres --> dash & dec
 
     classDef planejado stroke-dasharray: 5 5
-    class ia,gab,dash planejado
+    class ia,dash planejado
 ```
 
 Tracejado é o que ainda não foi construído, com o número da issue. O esquema estrela, o caminho da ontologia até o modelo e as camadas de verificação estão desenhados em [`docs/arquitetura.md`](docs/arquitetura.md). Os diagramas são código, e não imagem, pelo motivo do [ADR 0008](docs/adr/0008-diagramas-como-codigo-em-mermaid.md).
@@ -189,6 +189,7 @@ uv run python -m scripts.validar_dimensoes --estrutura
 uv run python -m scripts.validar_correspondencia --estrutura
 uv run python -m scripts.validar_perguntas
 uv run python -m scripts.validar_cobertura
+uv run python -m scripts.validar_gabarito
 ```
 
 Para conferir a ontologia de dimensões contra o dado, incluindo se cada valor ocorre nos tipos de cliente que a ontologia declara:
@@ -217,6 +218,13 @@ Para o QA da camada, por caminhos diferentes dos testes do dbt, incluindo a conf
 uv run python -m scripts.analises.qa_staging
 ```
 
+Para gerar o gabarito das perguntas do experimento, com as respostas em SQL sobre o esquema estrela, e conferir as respostas contra os marts e os documentos do projeto:
+
+```bash
+uv run python -m scripts.gerar_gabarito
+uv run python -m scripts.analises.qa_gabarito
+```
+
 ### Documentação
 
 | Documento | O que traz |
@@ -243,9 +251,11 @@ uv run python -m scripts.analises.qa_staging
 | [ADR 0012](docs/adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md) | A camada de IA é um assistente de dados com modelo aberto, e a aplicação pública roda a custo zero |
 | [ADR 0013](docs/adr/0013-experimento-2x2-ontologia-contra-documentos.md) | O experimento vira 2x2, ontologia contra documentos, e passa a buscar uma descoberta |
 | [ADR 0014](docs/adr/0014-matriz-de-decisao-espaco-contra-risco.md) | A matriz de decisão compara cada UF com o país, em quatro quadrantes |
+| [ADR 0015](docs/adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md) | O gabarito aceita leituras declaradas e é SQL portátil sobre o esquema estrela |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Cobertura da camada gold](evaluation/cobertura.yml) | Para cada pergunta e cada tela, os modelos que a respondem ou a issue que a bloqueia |
+| [Gabarito](docs/gabarito.md) | A resposta de cada pergunta em SQL, com as leituras aceitas, a ressalva obrigatória e a fonte da definição, gerada sem número digitado à mão |
 
 ## Planejado versus entregue
 

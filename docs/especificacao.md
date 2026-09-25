@@ -199,7 +199,7 @@ As perguntas que sustentam a decisão são as mesmas do gabarito. Isso liga as d
 - **Condição D, acrescentada em 2026-09-24:** esquema, ontologia e trechos recuperados
 - **A e B não mudam.** C e D são extensão registrada antes de qualquer execução, e as hipóteses de cada comparação estão no [ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md). O corpus do RAG são os documentos que a ontologia cita, então B e C têm acesso ao mesmo conhecimento, curado ou cru
 - **O que as quatro condições consultam:** o esquema estrela da camada gold, e só ele. Os marts de apresentação ficam de fora, porque já trazem taxas e diferenças calculadas e desarmariam as armadilhas em todas as condições por igual ([ADR 0007](adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md))
-- **Métrica:** acerto da resposta final contra gabarito calculado por SQL
+- **Métrica:** acerto da resposta final contra gabarito calculado por SQL. O gabarito está em [`gabarito.md`](gabarito.md), gerado dos SQL em [`../evaluation/gabarito/`](../evaluation/gabarito/), com as leituras aceitas de cada pergunta registradas antes de qualquer execução ([ADR 0015](adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md))
 - **Teste:** Q de Cochran para as quatro condições pareadas, e McNemar entre pares, com correção de Holm para comparações múltiplas. O McNemar é o apropriado para dado binário pareado, e o tamanho de efeito é sempre reportado
 
 **O que conta como acerto, definido em 2026-09-22.** O conjunto v2 das perguntas ([`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml)) declara, por pergunta, o tipo de acerto esperado:
