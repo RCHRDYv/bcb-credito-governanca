@@ -16,7 +16,7 @@ Este projeto responde a duas perguntas sobre os mesmos dados públicos de crédi
 
 A entrega final não é um painel de indicadores, é uma recomendação: onde entrar, onde manter e onde não entrar, por estado e modalidade, com o custo de errar e com **a lista do que este dado não permite afirmar.** O SCR é agregado e não traz taxa nem receita, então rentabilidade, spread e comportamento de instituição específica ficam fora, e isso é dito junto da recomendação.
 
-O desenho está em [`docs/especificacao.md`](docs/especificacao.md), seção "Camada de decisão", e o raciocínio no [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md).
+A recomendação está em [`docs/recomendacao.md`](docs/recomendacao.md), gerada do mart de decisão sem nenhum número digitado à mão, e a regra da matriz no [ADR 0014](docs/adr/0014-matriz-de-decisao-espaco-contra-risco.md). O raciocínio de terminar numa recomendação está no [ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md).
 
 ## O problema
 
@@ -105,7 +105,7 @@ flowchart LR
     ia["IA do experimento"]
     gab["Gabarito #16"]
     dash["Dashboard #17"]
-    dec["Camada de decisão #26"]
+    dec["Camada de decisão<br/>mrt_decisao"]
 
     v2 -- "ingestion/" --> b2 --> s2 --> conf
     v1 -- "ingestion/" --> b1 --> s1
@@ -120,7 +120,7 @@ flowchart LR
     apres --> dash & dec
 
     classDef planejado stroke-dasharray: 5 5
-    class ia,gab,dash,dec planejado
+    class ia,gab,dash planejado
 ```
 
 Tracejado é o que ainda não foi construído, com o número da issue. O esquema estrela, o caminho da ontologia até o modelo e as camadas de verificação estão desenhados em [`docs/arquitetura.md`](docs/arquitetura.md). Os diagramas são código, e não imagem, pelo motivo do [ADR 0008](docs/adr/0008-diagramas-como-codigo-em-mermaid.md).
@@ -205,7 +205,7 @@ Do diretório `dbt/`, com o mesmo OAuth do CLI e um `~/.dbt/profiles.yml` copiad
 uv run dbt build
 ```
 
-O comando carrega os seeds, cria as views de staging e de intermediate, as tabelas da camada gold e roda os testes. Hoje são 298 verificações, e três avisam de propósito, cada uma por um defeito do próprio dado publicado. A identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024 do arquivo do BCB; a tabela Empresas da Receita traz uma empresa repetida; e o PIX pago no país não bate com o recebido em dois meses de 2025, por cerca de R$ 1,2 milhão. Cada teste avisa com os casos conhecidos e falha com um a mais, para que uma nova ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
+O comando carrega os seeds, cria as views de staging e de intermediate, as tabelas da camada gold e roda os testes. Hoje são 306 verificações, e três avisam de propósito, cada uma por um defeito do próprio dado publicado. A identidade `carteira_ativa = carteira_a_vencer + carteira_vencida` falha em uma linha de dez/2024 do arquivo do BCB; a tabela Empresas da Receita traz uma empresa repetida; e o PIX pago no país não bate com o recebido em dois meses de 2025, por cerca de R$ 1,2 milhão. Cada teste avisa com os casos conhecidos e falha com um a mais, para que uma nova ocorrência não passe em silêncio. O raciocínio do staging está no [ADR 0006](docs/adr/0006-staging-corrige-forma-preserva-conteudo.md).
 
 A camada intermediária resolve as dimensões: ela traz o código do Anexo 3 que o dado publicado não tem, desfaz a ambiguidade das duas colunas polimórficas no formato que a V1 usava, e liga cada linha à modalidade correspondente da V1 pela tabela oficial de equivalência. Os testes de relacionamento provam que nenhuma linha fica sem dimensão, e um teste de contagem e soma prova que as junções não multiplicam linha.
 
@@ -242,6 +242,7 @@ uv run python -m scripts.analises.qa_staging
 | [ADR 0011](docs/adr/0011-pix-por-municipio-so-liquidado-no-spi.md) | O PIX do projeto é o liquidado no SPI, por mês fechado, com os dois lados guardados |
 | [ADR 0012](docs/adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md) | A camada de IA é um assistente de dados com modelo aberto, e a aplicação pública roda a custo zero |
 | [ADR 0013](docs/adr/0013-experimento-2x2-ontologia-contra-documentos.md) | O experimento vira 2x2, ontologia contra documentos, e passa a buscar uma descoberta |
+| [ADR 0014](docs/adr/0014-matriz-de-decisao-espaco-contra-risco.md) | A matriz de decisão compara cada UF com o país, em quatro quadrantes |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Cobertura da camada gold](evaluation/cobertura.yml) | Para cada pergunta e cada tela, os modelos que a respondem ou a issue que a bloqueia |

@@ -192,5 +192,4 @@ telas:
     limite: "Movida para a v0.2 em 2026-09-24. O histórico já está em mrt_carteira_mensal."
   tela_4:
     titulo: "A recomendação, com o custo de errar e o que o dado não permite afirmar"
-    modelos: [mrt_limites_do_dado, mrt_reconciliacao_versoes, mrt_erro_da_reconstrucao]
-    depende_de: ["#26"]
+    modelos: [mrt_decisao, mrt_limites_do_dado, mrt_reconciliacao_versoes, mrt_erro_da_reconstrucao]
