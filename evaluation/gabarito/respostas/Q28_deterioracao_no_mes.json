@@ -1,0 +1,36 @@
+{
+  "consulta": "Q28_deterioracao_no_mes.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "posicao",
+    "codigo_modalidade",
+    "modalidade",
+    "variacao_pp"
+  ],
+  "tipos": [
+    "INT",
+    "STRING",
+    "STRING",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "1",
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "0.8773246542"
+    ],
+    [
+      "2",
+      "01",
+      "Adiantamentos a depositantes",
+      "0.8109253968"
+    ],
+    [
+      "3",
+      "03",
+      "Direitos creditórios descontados",
+      "0.2525068462"
+    ]
+  ]
+}

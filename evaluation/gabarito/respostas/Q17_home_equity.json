@@ -1,0 +1,30 @@
+{
+  "consulta": "Q17_home_equity.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "meses",
+    "meses_com_home_equity_abaixo",
+    "media_home_equity_pct",
+    "media_restante_pf_pct",
+    "minima_home_equity_pct",
+    "maxima_home_equity_pct"
+  ],
+  "tipos": [
+    "LONG",
+    "LONG",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "31",
+      "31",
+      "2.260794724",
+      "4.551507218",
+      "1.926042486",
+      "2.723084007"
+    ]
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "consulta": "Q21.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_modalidade",
+    "modalidade",
+    "participacao_ip_no_ultimo_mes_pct",
+    "ganho_ip_12_meses_pp",
+    "ganho_ip_no_recorte_pp",
+    "participacao_fintech_no_ultimo_mes_pct",
+    "ganho_fintech_12_meses_pp",
+    "ganho_fintech_no_recorte_pp"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "01",
+      "Adiantamentos a depositantes",
+      "0",
+      "0",
+      "0",
+      "8.861322192e-07",
+      "8.861322192e-07",
+      "-5.966272495e-05"
+    ],
+    [
+      "02",
+      "Empréstimos",
+      "0.00560453642",
+      "-0.0004880579791",
+      "-0.04113591209",
+      "0.2330923466",
+      "0.03807252044",
+      "0.1342382563"
+    ],
+    [
+      "03",
+      "Direitos creditórios descontados",
+      "0",
+      "0",
+      "0",
+      "0.009014624165",
+      "-0.316895445",
+      "-0.010526401"
+    ],
+    [
+      "04",
+      "Financiamentos",
+      "0",
+      "0",
+      "0",
+      "0.0457322241",
+      "0.02652642929",
+      "0.03852657974"
+    ],
+    [
+      "05",
+      "Financiamentos à exportação",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "06",
+      "Financiamentos à importação",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "07",
+      "Financiamentos com interveniência",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "09",
+      "Financiamentos imobiliários",
+      "0",
+      "0",
+      "0",
+      "0.02826739965",
+      "0.003119008491",
+      "0.02785310286"
+    ],
+    [
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "0",
+      "0",
+      "0",
+      "56.20013266",
+      "56.20013266",
+      "56.20013266"
+    ],
+    [
+      "11",
+      "Financiamentos de infraestrutura e desenvolvimento",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "12",
+      "Operações de arrendamento",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "13",
+      "Outros créditos",
+      "15.51890814",
+      "2.370590165",
+      "4.960820275",
+      "0.1130305043",
+      "0.007181036518",
+      "0.08903968744"
+    ]
+  ]
+}

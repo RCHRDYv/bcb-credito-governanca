@@ -1,0 +1,118 @@
+{
+  "consulta": "Q33.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "cliente",
+    "porte_desambiguado",
+    "taxonomia",
+    "carteira_ativa",
+    "participacao_no_cliente_pct"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "STRING",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "PF",
+      "PF - Acima de 20 salários mínimos",
+      "Faixa de rendimento em salários mínimos",
+      "985831011579.77",
+      "21.06195415"
+    ],
+    [
+      "PF",
+      "PF - Mais de 5 a 10 salários mínimos",
+      "Faixa de rendimento em salários mínimos",
+      "858661899816.49",
+      "18.34502805"
+    ],
+    [
+      "PF",
+      "PF - Mais de 3 a 5 salários mínimos",
+      "Faixa de rendimento em salários mínimos",
+      "693804930724.88",
+      "14.82291333"
+    ],
+    [
+      "PF",
+      "PF - Mais de 1 a 2 salários mínimos",
+      "Faixa de rendimento em salários mínimos",
+      "622839220503.27",
+      "13.30675435"
+    ],
+    [
+      "PF",
+      "PF - Mais de 10 a 20 salários mínimos",
+      "Faixa de rendimento em salários mínimos",
+      "609594200657.47",
+      "13.02377888"
+    ],
+    [
+      "PF",
+      "PF - Mais de 2 a 3 salários mínimos",
+      "Faixa de rendimento em salários mínimos",
+      "484835423548.40",
+      "10.35834879"
+    ],
+    [
+      "PF",
+      "PF - Até 1 salário mínimo",
+      "Faixa de rendimento em salários mínimos",
+      "297631195926.25",
+      "6.358792256"
+    ],
+    [
+      "PF",
+      "PF - Indisponível",
+      "Faixa de rendimento em salários mínimos",
+      "97535246256.77",
+      "2.083808341"
+    ],
+    [
+      "PF",
+      "PF - Sem rendimento",
+      "Faixa de rendimento em salários mínimos",
+      "29891491793.93",
+      "0.6386218553"
+    ],
+    [
+      "PJ",
+      "PJ - Grande",
+      "Porte da empresa",
+      "1514749686958.59",
+      "52.05228381"
+    ],
+    [
+      "PJ",
+      "PJ - Médio",
+      "Porte da empresa",
+      "718106781010.58",
+      "24.6767491"
+    ],
+    [
+      "PJ",
+      "PJ - Pequeno",
+      "Porte da empresa",
+      "445625772064.23",
+      "15.31331504"
+    ],
+    [
+      "PJ",
+      "PJ - Micro",
+      "Porte da empresa",
+      "127800831506.75",
+      "4.391699308"
+    ],
+    [
+      "PJ",
+      "PJ - Indisponível",
+      "Porte da empresa",
+      "103771158955.23",
+      "3.565952753"
+    ]
+  ]
+}

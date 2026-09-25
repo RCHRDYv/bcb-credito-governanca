@@ -1,0 +1,60 @@
+{
+  "consulta": "Q38_v1.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "medida",
+    "mes_da_quebra",
+    "valor_no_mes_anterior",
+    "valor_no_mes_da_quebra",
+    "variacao_na_quebra_pct",
+    "menor_variacao_nos_outros_meses_pct",
+    "maior_variacao_nos_outros_meses_pct"
+  ],
+  "tipos": [
+    "STRING",
+    "DATE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "ativo_problematico",
+      "2025-01-31",
+      "4.210470611e+11",
+      "4.526042923e+11",
+      "7.494941565",
+      "-0.9656222048",
+      "4.584479675"
+    ],
+    [
+      "ativo_problematico_sem_atraso_acima_de_90_dias",
+      "2025-01-31",
+      "2.256677307e+11",
+      "2.381896912e+11",
+      "5.548848505",
+      "-3.367091019",
+      "8.119182433"
+    ],
+    [
+      "carteira_ativa",
+      "2025-01-31",
+      "6.397933339e+12",
+      "6.395644138e+12",
+      "-0.0357803142",
+      "-0.5900385848",
+      "1.838060389"
+    ],
+    [
+      "carteira_inadimplida",
+      "2025-01-31",
+      "1.953793304e+11",
+      "2.144146011e+11",
+      "9.742724911",
+      "-3.814792134",
+      "7.869023866"
+    ]
+  ]
+}

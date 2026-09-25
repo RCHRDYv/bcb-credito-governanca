@@ -1,0 +1,111 @@
+{
+  "consulta": "Q06.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_modalidade",
+    "modalidade",
+    "carteira_ativa",
+    "carteira_inadimplencia",
+    "taxa_inadimplencia_pct"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "DECIMAL",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "01",
+      "Adiantamentos a depositantes",
+      "1907164600.76",
+      "1091688676.88",
+      "57.24145029"
+    ],
+    [
+      "02",
+      "Empréstimos",
+      "2625542428129.61",
+      "227637304319.15",
+      "8.670105723"
+    ],
+    [
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "841157364437.94",
+      "54877756588.12",
+      "6.52407729"
+    ],
+    [
+      "03",
+      "Direitos creditórios descontados",
+      "37829679393.01",
+      "1663214404.48",
+      "4.396586043"
+    ],
+    [
+      "04",
+      "Financiamentos",
+      "1312240207522.97",
+      "45480426420.94",
+      "3.465861369"
+    ],
+    [
+      "09",
+      "Financiamentos imobiliários",
+      "1496221362851.10",
+      "19601458977.01",
+      "1.310064103"
+    ],
+    [
+      "12",
+      "Operações de arrendamento",
+      "27085912235.73",
+      "245340172.50",
+      "0.9057851564"
+    ],
+    [
+      "13",
+      "Outros créditos",
+      "783548722995.44",
+      "6879881645.43",
+      "0.8780413321"
+    ],
+    [
+      "05",
+      "Financiamentos à exportação",
+      "323362696288.72",
+      "2498598539.13",
+      "0.7726922641"
+    ],
+    [
+      "07",
+      "Financiamentos com interveniência",
+      "1817371037.96",
+      "7320489.62",
+      "0.4028065523"
+    ],
+    [
+      "11",
+      "Financiamentos de infraestrutura e desenvolvimento",
+      "123102665585.60",
+      "40925050.91",
+      "0.03324465048"
+    ],
+    [
+      "06",
+      "Financiamentos à importação",
+      "16687086852.31",
+      "4032282.49",
+      "0.02416408883"
+    ],
+    [
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "176189371.46",
+      "26835.17",
+      "0.01523086766"
+    ]
+  ]
+}

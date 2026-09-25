@@ -1,0 +1,62 @@
+{
+  "consulta": "Q32.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_submodalidade",
+    "submodalidade",
+    "carteira_ativa",
+    "participacao_na_modalidade_pct",
+    "participacao_da_modalidade_na_carteira_pct"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "DECIMAL",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "1304",
+      "Cartão de crédito - compra à vista e parcelado lojista",
+      "601159460719.62",
+      "76.72266486",
+      "10.32251184"
+    ],
+    [
+      "1350",
+      "Recebíveis adquiridos",
+      "149112397610.39",
+      "19.03039252",
+      "10.32251184"
+    ],
+    [
+      "1399",
+      "Outros com característica de crédito",
+      "14777751556.84",
+      "1.88600289",
+      "10.32251184"
+    ],
+    [
+      "1301",
+      "Avais e fianças honrados",
+      "8992335659.16",
+      "1.147642182",
+      "10.32251184"
+    ],
+    [
+      "1303",
+      "Títulos e créditos a receber",
+      "6627352489.64",
+      "0.8458124294",
+      "10.32251184"
+    ],
+    [
+      "1302",
+      "Devedores por compra de valores e bens",
+      "2879424959.79",
+      "0.3674851193",
+      "10.32251184"
+    ]
+  ]
+}

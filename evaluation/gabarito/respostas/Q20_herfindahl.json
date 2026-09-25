@@ -1,0 +1,27 @@
+{
+  "consulta": "Q20_herfindahl.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "hhi_no_inicio_do_recorte",
+    "hhi_12_meses_antes",
+    "hhi_no_ultimo_mes",
+    "variacao_12_meses",
+    "variacao_no_recorte"
+  ],
+  "tipos": [
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "6851.774172",
+      "6627.492857",
+      "6525.786981",
+      "-101.705876",
+      "-325.9871918"
+    ]
+  ]
+}

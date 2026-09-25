@@ -1,0 +1,30 @@
+{
+  "consulta": "Q20_maior_segmento.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "maior_segmento",
+    "participacao_no_inicio_do_recorte_pct",
+    "participacao_12_meses_antes_pct",
+    "participacao_no_ultimo_mes_pct",
+    "variacao_12_meses_pp",
+    "variacao_no_recorte_pp"
+  ],
+  "tipos": [
+    "STRING",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "Banco",
+      "82.20422877",
+      "80.75692875",
+      "80.09741057",
+      "-0.6595181775",
+      "-2.106818194"
+    ]
+  ]
+}

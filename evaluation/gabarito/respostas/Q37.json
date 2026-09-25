@@ -1,0 +1,27 @@
+{
+  "consulta": "Q37.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "operacoes_limite_inferior",
+    "recortes_sem_contagem",
+    "carteira_sem_contagem",
+    "carteira_sem_contagem_pct"
+  ],
+  "tipos": [
+    "DATE",
+    "LONG",
+    "LONG",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "2026-07-31",
+      "941879067",
+      "82407",
+      "475863512101.98",
+      "6.269050785"
+    ]
+  ]
+}

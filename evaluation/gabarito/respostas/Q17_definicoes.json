@@ -1,0 +1,36 @@
+{
+  "consulta": "Q17_definicoes.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_submodalidade",
+    "modalidade",
+    "submodalidade",
+    "definicao"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "STRING",
+    "STRING"
+  ],
+  "linhas": [
+    [
+      "0211",
+      "Empréstimos",
+      "Home Equity",
+      "empréstimos a pessoas físicas, garantidos por hipoteca ou por alienação fiduciária de bens imóveis residenciais, sem vinculação a aquisição de bens"
+    ],
+    [
+      "0215",
+      "Empréstimos",
+      "Capital de giro com prazo de vencimento até 365 dias",
+      "operações de crédito voltadas para o financiamento de curto prazo (igual ou inferior a 365 dias) das pessoas jurídicas, vinculadas às necessidades de capital de giro e a um contrato específico que estabeleça prazos, taxas e garantias"
+    ],
+    [
+      "0216",
+      "Empréstimos",
+      "Capital de giro com prazo de vencimento superior a 365 dias",
+      "operações de crédito voltadas para o financiamento de médio e longo prazo (superior a 365 dias) das pessoas jurídicas, vinculadas às necessidades de capital de giro e a um contrato específico que estabeleça prazos, taxas e garantias"
+    ]
+  ]
+}

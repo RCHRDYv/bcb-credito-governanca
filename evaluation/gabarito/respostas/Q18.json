@@ -1,0 +1,126 @@
+{
+  "consulta": "Q18.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_modalidade",
+    "modalidade",
+    "carteira_com_contagem",
+    "operacoes_divulgadas",
+    "ticket_medio",
+    "carteira_sem_contagem_pct"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "DECIMAL",
+    "LONG",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "11",
+      "Financiamentos de infraestrutura e desenvolvimento",
+      "73051157297.39",
+      "6778",
+      "10777686.23",
+      "40.65834647"
+    ],
+    [
+      "05",
+      "Financiamentos à exportação",
+      "247585155307.21",
+      "36714",
+      "6743617.021",
+      "23.43422474"
+    ],
+    [
+      "06",
+      "Financiamentos à importação",
+      "13561995501.80",
+      "8605",
+      "1576059.907",
+      "18.72760284"
+    ],
+    [
+      "12",
+      "Operações de arrendamento",
+      "17839473232.75",
+      "31551",
+      "565417.0465",
+      "34.13744725"
+    ],
+    [
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "805861587933.77",
+      "3304530",
+      "243865.7201",
+      "4.196096711"
+    ],
+    [
+      "09",
+      "Financiamentos imobiliários",
+      "1480010357627.48",
+      "9491321",
+      "155933.0211",
+      "1.083463024"
+    ],
+    [
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "1949898.78",
+      "19",
+      "102626.2516",
+      "98.89329375"
+    ],
+    [
+      "04",
+      "Financiamentos",
+      "1141810617405.03",
+      "24839851",
+      "45966.88673",
+      "12.98768237"
+    ],
+    [
+      "03",
+      "Direitos creditórios descontados",
+      "32663692039.94",
+      "5446017",
+      "5997.721278",
+      "13.65591101"
+    ],
+    [
+      "02",
+      "Empréstimos",
+      "2552555026694.57",
+      "632995272",
+      "4032.502516",
+      "2.779897999"
+    ],
+    [
+      "13",
+      "Outros créditos",
+      "747995991070.09",
+      "263814797",
+      "2835.307191",
+      "4.537399"
+    ],
+    [
+      "01",
+      "Adiantamentos a depositantes",
+      "1874955636.01",
+      "1897638",
+      "988.0470543",
+      "1.68884032"
+    ],
+    [
+      "07",
+      "Financiamentos com interveniência",
+      "3379555.81",
+      "5974",
+      "565.7107148",
+      "99.81404151"
+    ]
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "consulta": "Q08.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "taxa_no_ultimo_mes_pct",
+    "media_das_taxas_mensais_pct",
+    "inicio_da_media",
+    "meses_na_media",
+    "acima_da_media"
+  ],
+  "tipos": [
+    "DATE",
+    "DOUBLE",
+    "DOUBLE",
+    "DATE",
+    "LONG",
+    "BOOLEAN"
+  ],
+  "linhas": [
+    [
+      "2026-07-31",
+      "13.46891336",
+      "13.99264524",
+      "2024-01-31",
+      "31",
+      "false"
+    ]
+  ]
+}

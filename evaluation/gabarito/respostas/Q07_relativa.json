@@ -1,0 +1,141 @@
+{
+  "consulta": "Q07_relativa.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "posicao",
+    "codigo_modalidade",
+    "modalidade",
+    "taxa_6_meses_antes_pct",
+    "taxa_no_ultimo_mes_pct",
+    "variacao_pp",
+    "variacao_relativa_pct"
+  ],
+  "tipos": [
+    "INT",
+    "STRING",
+    "STRING",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "1",
+      "11",
+      "Financiamentos de infraestrutura e desenvolvimento",
+      "0.01251199615",
+      "0.03324465048",
+      "0.02073265434",
+      "165.7022116"
+    ],
+    [
+      "2",
+      "07",
+      "Financiamentos com interveniência",
+      "0.3514446486",
+      "0.4028065523",
+      "0.05136190364",
+      "14.61450725"
+    ],
+    [
+      "3",
+      "03",
+      "Direitos creditórios descontados",
+      "3.874262542",
+      "4.396586043",
+      "0.5223235011",
+      "13.48188192"
+    ],
+    [
+      "4",
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "5.752753915",
+      "6.52407729",
+      "0.7713233757",
+      "13.40789798"
+    ],
+    [
+      "5",
+      "04",
+      "Financiamentos",
+      "3.062999497",
+      "3.465861369",
+      "0.4028618725",
+      "13.1525282"
+    ],
+    [
+      "6",
+      "06",
+      "Financiamentos à importação",
+      "0.02179709374",
+      "0.02416408883",
+      "0.002366995092",
+      "10.85922335"
+    ],
+    [
+      "7",
+      "02",
+      "Empréstimos",
+      "8.040463547",
+      "8.670105723",
+      "0.6296421755",
+      "7.830918849"
+    ],
+    [
+      "8",
+      "13",
+      "Outros créditos",
+      "0.8329796898",
+      "0.8780413321",
+      "0.04506164238",
+      "5.409692809"
+    ],
+    [
+      "9",
+      "05",
+      "Financiamentos à exportação",
+      "0.7587608293",
+      "0.7726922641",
+      "0.01393143476",
+      "1.836077223"
+    ],
+    [
+      "10",
+      "01",
+      "Adiantamentos a depositantes",
+      "56.26559433",
+      "57.24145029",
+      "0.9758559591",
+      "1.734374213"
+    ],
+    [
+      "11",
+      "09",
+      "Financiamentos imobiliários",
+      "1.357238324",
+      "1.310064103",
+      "-0.04717422059",
+      "-3.475750704"
+    ],
+    [
+      "12",
+      "12",
+      "Operações de arrendamento",
+      "1.5022882",
+      "0.9057851564",
+      "-0.5965030434",
+      "-39.70629893"
+    ],
+    [
+      "13",
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "0",
+      "0.01523086766",
+      "0.01523086766",
+      null
+    ]
+  ]
+}

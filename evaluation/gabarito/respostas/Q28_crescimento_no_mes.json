@@ -1,0 +1,36 @@
+{
+  "consulta": "Q28_crescimento_no_mes.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "posicao",
+    "codigo_modalidade",
+    "modalidade",
+    "crescimento_pct"
+  ],
+  "tipos": [
+    "INT",
+    "STRING",
+    "STRING",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "1",
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "6.508664389"
+    ],
+    [
+      "2",
+      "05",
+      "Financiamentos à exportação",
+      "1.81248937"
+    ],
+    [
+      "3",
+      "01",
+      "Adiantamentos a depositantes",
+      "0.5374851027"
+    ]
+  ]
+}
