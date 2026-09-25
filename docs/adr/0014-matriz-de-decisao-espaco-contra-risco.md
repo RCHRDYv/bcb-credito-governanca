@@ -59,7 +59,7 @@ A célula recebe o alerta quando a distância entre ativo problemático e cartei
 
 ### 7. Modalidade com poucas UFs acima do corte fica de fora
 
-Com uma célula só acima do corte, ela é a própria mediana, e a comparação não mede nada. A modalidade precisa de pelo menos 3 UFs acima do corte. Em jul/2026 isso afeta uma célula, de R$ 1,55 bilhão, em "Financiamentos com interveniência". **É um parâmetro, e o valor 3 fica para revisão do Yuri.**
+Com uma célula só acima do corte, ela é a própria mediana, e a comparação não mede nada. A modalidade precisa de pelo menos 3 UFs acima do corte. Em jul/2026 isso afeta uma célula, de R$ 1,55 bilhão, em "Financiamentos com interveniência". É um parâmetro, e o valor 3 foi confirmado pelo Yuri em 2026-09-25, na revisão da PR #54.
 
 ### Onde a regra mora
 
@@ -91,3 +91,4 @@ As razões da matriz são calculadas em ponto flutuante (`double`), e as somas c
 - **A mediana muda quando as UFs mudam.** Uma UF pode mudar de quadrante sem mudar nada nela, só porque outras mudaram. É o preço de comparar com o país.
 - **O denominador é reconstruído,** com erro medido de até 2,3% por UF (ADR 0009), e o porte e a natureza jurídica usados são os de hoje.
 - **Sem projeção:** a v0.1 decide com o que aconteceu. A projeção de três meses (Q27) entra na v0.2, com a #27.
+- **A premissa ainda tem várias ressalvas.** Na revisão da PR #54, em 2026-09-25, o Yuri aceitou a matriz para a v0.1 e registrou que a camada de decisão só fica mais robusta com a renda média e a massa salarial por UF da #38. Pouco crédito por empresa pode ser falta de demanda, e não espaço, e "entrar" não quer dizer rentável. As fragilidades estão reunidas na #55.
