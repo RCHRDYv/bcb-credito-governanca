@@ -106,6 +106,34 @@ avisos_gerais:
       pergunta Q17 do experimento.
     confianca: verbatim
     fonte: "Instruções 3040, p. 22"
+    tipos_no_documento_3040:
+      descricao: >
+        O documento 3040 tem o bloco de garantias (Gar) por operação, e cada
+        operação pode ter várias. Cada garantia traz tipo e subtipo (Anexo
+        12), valor original, valor e data de reavaliação, situação (Anexo
+        47), tipo de valor (Anexo 48) e se é compartilhada com outra operação
+        (Anexo 49). Os anexos 47 a 49 entraram com a IN BCB 659, de
+        2025-09-08, que também reorganizou os subtipos: parte deles é
+        descontinuada a partir da data-base maio/2026, trocada por subtipos
+        mais detalhados, como imóvel residencial urbano com matrícula. Nada
+        disso é publicado no SCR.data.
+      confianca: verbatim
+      fonte: "Leiaute do Documento 3040, aba Anexo, Anexo 12 (Garantias), e aba Doc3040, bloco c (Gar)"
+      tipos:
+        - {codigo: "01", nome: "cessão de direitos creditórios"}
+        - {codigo: "02", nome: "caução"}
+        - {codigo: "03", nome: "penhor"}
+        - {codigo: "04", nome: "alienação fiduciária"}
+        - {codigo: "05", nome: "hipoteca"}
+        - {codigo: "06", nome: "operações garantidas pelo governo"}
+        - {codigo: "07", nome: "outras garantias não fidejussórias"}
+        - {codigo: "08", nome: "seguros ou garantia de outras entidades assemelhados"}
+        - {codigo: "09", nome: "garantia fidejussória"}
+        - {codigo: "10", nome: "bens arrendados"}
+        - {codigo: "11", nome: "garantias internacionais"}
+        - {codigo: "12", nome: "operações garantidas por outras entidades"}
+        - {codigo: "13", nome: "acordos de compensação"}
+        - {codigo: "14", nome: "ativos financeiros e valores mobiliários"}
 
   - id: nomes_divergentes
     gravidade: media
@@ -1018,6 +1046,17 @@ conceitos:
       de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 32"
+    historyNote: >
+      Novo modelo de crédito imobiliário, de 2025-10-10 (Resolução CMN
+      5.255, com a CMN 5.254 e a Resolução BCB 512). Na data da publicação,
+      o valor máximo de avaliação do imóvel financiado no SFH passou de R$
+      1,5 milhão para R$ 2,25 milhões. Financiamentos novos de imóveis nessa
+      faixa podem ser SFH (0901) desde então, e antes seriam fora do SFH
+      (0902): a fronteira entre as duas submodalidades muda dentro do
+      recorte do projeto, e o efeito no dado não foi medido. Ajustes no
+      direcionamento da poupança valem desde 2026-01-01, e o modelo novo a
+      partir de 2027.
+    fonte_historyNote: "Resolução CMN 5.255, de 2025-10-10, art. 2º (art. 13 da Resolução 4.676) e art. 4º; nota do BCB de 2025-10-10"
 
   - id: sub_0901
     notation: "0901"
@@ -1106,6 +1145,14 @@ conceitos:
       Única submodalidade da modalidade 10. A definição é a da modalidade.
       Nos direitos por empréstimos de ações, o cliente informado são as
       câmaras e prestadores de serviços de compensação.
+    aviso: >
+      Modalidade muito pequena, que mudou de composição dentro do recorte.
+      Medido em 2026-09-25: a carteira dos bancos zerou em abril de 2025, e
+      uma fintech passa a operar a partir de agosto de 2025. Variação
+      percentual e participação por segmento nesta modalidade refletem essa
+      troca de quem opera, e não crescimento de mercado. O nome lembra o de
+      Financiamentos imobiliários (09), e as duas modalidades não têm
+      relação: aqui são títulos e valores mobiliários.
 
   # ---------------------------------------------------------------------------
   # 11 Financiamentos de infraestrutura e desenvolvimento
