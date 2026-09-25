@@ -3,8 +3,8 @@
 #     cada pergunta do experimento e cada tela do dashboard precisa ter os
 #     modelos que a respondem, ou a issue que ainda a bloqueia.
 #
-#     Arquivo separado de propósito: questions_v2.yml é pré-registro e não é
-#     tocado. Esta matriz diz COMO responder, e aquele arquivo diz O QUE foi
+#     Arquivo separado de propósito: os conjuntos de perguntas são
+#     pré-registro e não são tocados. Esta matriz diz COMO responder, e aquele arquivo diz O QUE foi
 #     perguntado, antes de qualquer resultado.
 #
 #     Três regras, conferidas por scripts/validar_cobertura.py no CI:
@@ -50,9 +50,8 @@ perguntas:
   Q08:
     modelos: [fct_carteira, dim_modalidade, dim_tempo]
     limite: >
-      A pergunta pede a média de cinco anos, e o recorte do projeto começa em
-      jan/2024, com 31 meses. A resposta precisa dizer isso, ou a ingestão
-      precisa recuar a 2021.
+      No conjunto v3, a média é a dos últimos dois anos, que cabem no recorte.
+      O v2 pedia cinco anos, e o recorte começa em jan/2024.
   Q09:
     modelos: [fct_carteira, dim_modalidade, dim_tempo]
     limite: "A distância entre as duas métricas muda de definição em jan/2025 (dim_tempo.criterio_ativo_problematico)."
@@ -83,7 +82,7 @@ perguntas:
   # ---------------------------------------------------------------------------
   Q16:
     modelos: [fct_carteira, dim_modalidade, dim_tempo]
-    limite: "A pergunta pede três anos, e o recorte tem 31 meses."
+    limite: "No conjunto v3, a janela é de dois anos, que cabem no recorte. O v2 pedia três."
   Q17:
     modelos: [dim_modalidade, fct_carteira]
     limite: >
@@ -130,8 +129,8 @@ perguntas:
   Q25:
     modelos: [fct_carteira, fct_selic, dim_tempo]
     limite: >
-      A pergunta pede três anos, e o recorte tem 31 meses, desde jan/2024. É
-      a meta do Copom, e não a taxa efetiva (fct_selic, ADR 0010).
+      É a meta do Copom, e não a taxa efetiva (fct_selic, ADR 0010). No
+      conjunto v3, a janela é de dois anos; o v2 pedia três.
   Q26:
     modelos: [fct_carteira, fct_selic, dim_tempo]
     limite: >

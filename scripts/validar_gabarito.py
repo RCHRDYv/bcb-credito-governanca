@@ -4,10 +4,10 @@ PT: Valida o gabarito (evaluation/gabarito.yml), sem precisar de credencial.
 
     O que é conferido:
 
-    1. **Completude.** As 41 perguntas do conjunto v2 estão no gabarito, e as
+    1. **Completude.** As 41 perguntas do conjunto vigente estão no gabarito, e as
        pendentes são exatamente as que a cobertura.yml bloqueia, pela mesma
        issue.
-    2. **Tipo de acerto.** É o mesmo do questions_v2.yml. Toda
+    2. **Tipo de acerto.** É o mesmo do conjunto de perguntas vigente. Toda
        valor_com_ressalva tem ressalva obrigatória, e toda abstencao tem a
        explicação e o que faltaria.
     3. **Leituras.** De 1 a 3 por pergunta respondível, com id único,
@@ -28,7 +28,7 @@ PT: Valida o gabarito (evaluation/gabarito.yml), sem precisar de credencial.
        (#45).
 
 EN: Validates the answer key with no credential; runs in CI. Checks
-    completeness against the v2 questions and the coverage matrix, answer
+    completeness against the current question set and the coverage matrix, answer
     types and mandatory caveats, readings and SQL files, that every SQL is a
     read-only query on star schema tables listed in the coverage matrix, that
     every cited ontology id and document exists, that every query has a
@@ -49,7 +49,7 @@ from pathlib import Path
 import duckdb
 import yaml
 
-from scripts.validar_perguntas import V2, perguntas
+from scripts.validar_perguntas import VIGENTE, perguntas
 
 RAIZ = Path(__file__).resolve().parents[1]
 GABARITO = RAIZ / "evaluation" / "gabarito.yml"
@@ -111,7 +111,7 @@ def checar_completude(gabarito: dict, por_id: dict, cobertura: dict) -> list[str
     """PT: todas as perguntas, e as pendentes certas / EN: all ids, right pending ones"""
     ids = set(gabarito["perguntas"])
     erros = [f"pergunta fora do gabarito: {i}" for i in sorted(set(por_id) - ids)]
-    erros += [f"id no gabarito que não existe no conjunto v2: {i}" for i in sorted(ids - set(por_id))]
+    erros += [f"id no gabarito que não existe no conjunto de perguntas: {i}" for i in sorted(ids - set(por_id))]
     for id_ in sorted(ids & set(por_id)):
         bloqueio = sorted(cobertura["perguntas"][id_].get("depende_de", []))
         pendente = sorted(gabarito["perguntas"][id_].get("pendente", {}).get("depende_de", []))
@@ -125,7 +125,7 @@ def checar_entrada(id_: str, entrada: dict, pergunta: dict) -> list[str]:
     erros = []
     tipo = pergunta.get("tipo_de_acerto", "valor")
     if entrada.get("tipo_de_acerto") != tipo:
-        erros.append(f"{id_}: tipo_de_acerto '{entrada.get('tipo_de_acerto')}', o questions_v2.yml diz '{tipo}'")
+        erros.append(f"{id_}: tipo_de_acerto '{entrada.get('tipo_de_acerto')}', o conjunto de perguntas diz '{tipo}'")
     if "pendente" in entrada:
         if not entrada["pendente"].get("motivo"):
             erros.append(f"{id_}: pendente sem motivo")
@@ -250,7 +250,7 @@ def checar_portabilidade(consultas: list[str]) -> list[str]:
 def main() -> None:
     gabarito = carregar(GABARITO)
     cobertura = carregar(COBERTURA)
-    _, por_id = perguntas(V2)
+    _, por_id = perguntas(VIGENTE)
     ontologia = ids_da_ontologia()
 
     erros = checar_completude(gabarito, por_id, cobertura)

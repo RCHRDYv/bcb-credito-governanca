@@ -39,7 +39,7 @@ from pathlib import Path
 
 import yaml
 
-from scripts.validar_perguntas import V2, perguntas
+from scripts.validar_perguntas import VIGENTE, perguntas
 
 RAIZ = Path(__file__).resolve().parents[1]
 COBERTURA = RAIZ / "evaluation" / "cobertura.yml"
@@ -90,7 +90,7 @@ def situacao(entrada: dict) -> str:
 
 def main() -> None:
     matriz = yaml.safe_load(COBERTURA.read_text(encoding="utf-8"))
-    _, por_id = perguntas(V2)
+    _, por_id = perguntas(VIGENTE)
     existentes = modelos_existentes()
     erros: list[str] = []
 

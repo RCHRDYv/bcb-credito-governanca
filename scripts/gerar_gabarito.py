@@ -41,9 +41,9 @@ import yaml
 from ingestion.databricks import Resultado, cliente, consultar, warehouse
 from ingestion.fontes import RAIZ
 from scripts.gerar_recomendacao import maiuscula, mes, numero
+from scripts.validar_perguntas import VIGENTE
 
 GABARITO = RAIZ / "evaluation" / "gabarito.yml"
-PERGUNTAS = RAIZ / "evaluation" / "questions_v2.yml"
 PASTA_SQL = RAIZ / "evaluation" / "gabarito"
 PASTA_RESPOSTAS = PASTA_SQL / "respostas"
 ESQUEMA_ESTRELA = PASTA_SQL / "esquema_estrela.json"
@@ -313,7 +313,8 @@ def secao_pergunta(id_: str, pergunta: dict, entrada: dict, respostas: dict[str,
 
 def documento(gabarito: dict, respostas: dict[str, Resultado], referencia: str) -> str:
     """PT: docs/gabarito.md inteiro / EN: the whole docs/gabarito.md"""
-    blocos = carregar(PERGUNTAS)["blocos"]
+    conjunto = carregar(VIGENTE)
+    blocos = conjunto["blocos"]
     entradas = gabarito["perguntas"]
     respondiveis = [e for e in entradas.values() if "pendente" not in e]
     leituras = sum(len(e.get("leituras", [])) for e in respondiveis)
@@ -322,7 +323,7 @@ def documento(gabarito: dict, respostas: dict[str, Resultado], referencia: str) 
 
 **Mês de referência:** {mes(referencia)}. Gerado por `scripts/gerar_gabarito.py` a partir de [`evaluation/gabarito.yml`](../evaluation/gabarito.yml) e dos SQL em [`evaluation/gabarito/`](../evaluation/gabarito/). Nenhum número deste documento é digitado à mão: para atualizar, rode o script de novo.
 
-São {len(entradas)} perguntas, do conjunto v2 registrado antes de qualquer execução ([`questions_v2.yml`](../evaluation/questions_v2.yml)). {len(respondiveis)} têm resposta nesta versão, com {leituras} leituras e {len(respostas)} consultas, e {len(entradas) - len(respondiveis)} dependem de fonte ou modelo que ainda não está no projeto.
+São {len(entradas)} perguntas, do conjunto v{conjunto['metadata']['versao']}, registrado em {conjunto['metadata']['registrado_em']}, antes de qualquer execução ([`{VIGENTE.name}`](../evaluation/{VIGENTE.name})). {len(respondiveis)} têm resposta nesta versão, com {leituras} leituras e {len(respostas)} consultas, e {len(entradas) - len(respondiveis)} dependem de fonte ou modelo que ainda não está no projeto.
 
 ## Como ler
 

@@ -127,9 +127,11 @@ jobs:
           git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 
       # PT: Integridade do pré-registro: o conjunto v2 das perguntas precisa
-      #     conter os 30 enunciados originais sem uma palavra alterada.
+      #     conter os 30 enunciados originais sem uma palavra alterada, e o v3
+      #     só muda enunciado com a alteração declarada e o texto do v2 citado.
       # EN: Pre-registration integrity: the v2 question set must carry the 30
-      #     original wordings with no word changed.
+      #     original wordings with no word changed, and v3 may change a wording
+      #     only with a declared change quoting the v2 text.
       - name: Perguntas do experimento
         run: uv run python -m scripts.validar_perguntas
 
