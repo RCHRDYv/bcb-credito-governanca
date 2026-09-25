@@ -254,6 +254,7 @@ uv run python -m scripts.analises.qa_gabarito
 | [ADR 0015](docs/adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md) | O gabarito aceita leituras declaradas e é SQL portátil sobre o esquema estrela |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
+| [Perguntas do experimento, conjunto v3](evaluation/questions_v3.yml) | As 41 do v2, com a janela de três perguntas ajustada ao recorte do projeto e mais uma nota corrigida. Registrado em 25/09/2026, antes de qualquer execução, e é o que vale para o experimento |
 | [Cobertura da camada gold](evaluation/cobertura.yml) | Para cada pergunta e cada tela, os modelos que a respondem ou a issue que a bloqueia |
 | [Gabarito](docs/gabarito.md) | A resposta de cada pergunta em SQL, com as leituras aceitas, a ressalva obrigatória e a fonte da definição, gerada sem número digitado à mão |
 

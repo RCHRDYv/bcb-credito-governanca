@@ -202,7 +202,7 @@ As perguntas que sustentam a decisão são as mesmas do gabarito. Isso liga as d
 - **Métrica:** acerto da resposta final contra gabarito calculado por SQL. O gabarito está em [`gabarito.md`](gabarito.md), gerado dos SQL em [`../evaluation/gabarito/`](../evaluation/gabarito/), com as leituras aceitas de cada pergunta registradas antes de qualquer execução ([ADR 0015](adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md))
 - **Teste:** Q de Cochran para as quatro condições pareadas, e McNemar entre pares, com correção de Holm para comparações múltiplas. O McNemar é o apropriado para dado binário pareado, e o tamanho de efeito é sempre reportado
 
-**O que conta como acerto, definido em 2026-09-22.** O conjunto v2 das perguntas ([`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml)) declara, por pergunta, o tipo de acerto esperado:
+**O que conta como acerto, definido em 2026-09-22.** O conjunto de perguntas declara, por pergunta, o tipo de acerto esperado. O conjunto que vale é o v3 ([`../evaluation/questions_v3.yml`](../evaluation/questions_v3.yml)), que herda os tipos do v2:
 
 | Tipo | Acerto é |
 |---|---|
@@ -214,7 +214,7 @@ Sem essa distinção, uma resposta numérica confiante sobre pergunta impossíve
 
 **Três exigências de rigor, declaradas junto dos resultados:**
 
-1. Perguntas **pré-registradas**, com data de registro anterior a qualquer execução: o conjunto original em [`../evaluation/questions.yml`](../evaluation/questions.yml), de 2026-08-20, preservado sem alteração, e o conjunto v2 em [`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml), de 2026-09-22, que vale para o experimento. O v2 mantém os 30 enunciados originais, corrige três notas erradas no campo `errata` e acrescenta 11 perguntas nascidas de achados posteriores
+1. Perguntas **pré-registradas**, com data de registro anterior a qualquer execução: o conjunto original em [`../evaluation/questions.yml`](../evaluation/questions.yml), de 2026-08-20, preservado sem alteração, o conjunto v2 em [`../evaluation/questions_v2.yml`](../evaluation/questions_v2.yml), de 2026-09-22, também preservado, e o conjunto v3 em [`../evaluation/questions_v3.yml`](../evaluation/questions_v3.yml), de 2026-09-25, que vale para o experimento. O v2 mantém os 30 enunciados originais, corrige três notas erradas no campo `errata` e acrescenta 11 perguntas nascidas de achados posteriores. O v3 ajusta a janela de três perguntas ao recorte do projeto, sem mudar a lógica delas, e corrige mais uma nota ([ADR 0015](adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md))
 2. Temperatura zero, ou múltiplas execuções por pergunta com variância reportada
 3. **No mínimo dois modelos** de níveis diferentes, para que o efeito não seja artefato de um modelo específico
 

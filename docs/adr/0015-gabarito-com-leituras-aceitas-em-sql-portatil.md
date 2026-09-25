@@ -15,7 +15,7 @@ Escrever as consultas mostrou três problemas que uma resposta única por pergun
 
 Uma resposta só por pergunta mediria se o modelo adivinhou a intenção de quem escreveu a pergunta, e não se ele interpretou o dado.
 
-**2. Três perguntas pedem mais história do que o recorte tem.** A Q08 pede cinco anos, e a Q16 e a Q25 pedem três. O recorte começa em jan/2024 (triagem da ontologia, item 1.3).
+**2. Três perguntas pediam mais história do que o recorte tem.** No conjunto v2, a Q08 pedia cinco anos, e a Q16 e a Q25 pediam três. O recorte começa em jan/2024 (triagem da ontologia, item 1.3), e tem 31 meses.
 
 **3. O gabarito é calculado no Databricks, e o experimento vai rodar no DuckDB** (#45, ADR 0012). Um SQL que só o Spark aceita, como `add_months` ou `try_divide`, daria um gabarito que o próprio experimento não reproduz.
 
@@ -46,9 +46,21 @@ Uma leitura pode ter mais de uma consulta, quando a resposta tem partes: a Q17 p
 
 Quando a pergunta não diz o período, como na Q04, na Q10, na Q19 e na Q21, a mesma consulta traz 12 meses e o recorte inteiro, e vale a janela que a resposta declarar. O plano da #16 previa duas leituras para isso. Com as janelas como colunas, o limite de três leituras fica para diferenças de métrica, e a Q20 usa as duas que tem para o HHI e para o maior segmento.
 
-### 3. Período maior que o recorte: responde com o recorte, e a resposta declara a janela
+### 3. Período maior que o recorte: conjunto v3 das perguntas, com a janela ajustada
 
-A Q08, a Q16 e a Q25 são respondidas com os 31 meses disponíveis, e a observação de cada uma diz que a resposta precisa declarar a janela usada. Recuar a ingestão a 2021 foi descartado na triagem, pelo custo de conformar cada quebra de taxonomia a mais. E as quatro condições do experimento veem o mesmo recorte, então a comparação entre elas não é afetada.
+Decidido pelo Yuri em 2026-09-25, na revisão da PR #57: as perguntas podem ser revistas para caber no dado que o projeto tem e nas escolhas de desenho feitas para caber nos recursos disponíveis, sem mudar a lógica de nenhuma pergunta, só a janela de tempo. É o que a nota de método do v2 prevê para mudança antes da primeira execução: um conjunto novo e declarado, com o anterior intacto.
+
+O [`questions_v3.yml`](../../evaluation/questions_v3.yml) repete as 41 perguntas do v2 e muda só três enunciados. A janela escolhida é de dois anos, a mesma que a Q03 e a Q22 já usam, e que cabe no recorte com folga:
+
+| Pergunta | No v2 | No v3 |
+|---|---|---|
+| Q08 | média histórica de cinco anos | média histórica dos últimos dois anos |
+| Q16 | nos últimos três anos | nos últimos dois anos |
+| Q25 | nos últimos três anos | nos últimos dois anos |
+
+Cada mudança fica no campo `alteracao_v3`, com o enunciado do v2. O `validar_perguntas` passou a proteger a passagem do v2 para o v3: enunciado só muda com esse campo, e o campo precisa citar o enunciado do v2 palavra por palavra; tipo de acerto, dependência, nota e errata não mudam. O v3 também corrige a nota da Q17 no campo `errata_v3` (ver o achado abaixo).
+
+Recuar a ingestão a 2021 continua descartado, pelo custo de conformar cada quebra de taxonomia a mais (triagem, item 1.3).
 
 ### 4. SQL portátil, conferido no CI
 
@@ -78,11 +90,15 @@ O `gabarito.yml` não tem nenhum número do dado. O ponto flutuante vai com 10 a
 
 Como comparar o número da IA com o do gabarito, com que tolerância, e quantos itens de uma lista precisam bater, é protocolo do experimento. É registrado na #47, junto das hipóteses, antes da #48.
 
-## Achado ao escrever o gabarito
+## Achados ao escrever e revisar o gabarito
 
-A consulta que prova a ausência na Q17 procura "garant" nas definições das modalidades e devolve três linhas, e não uma. A do home equity (0211) declara garantia real. As de capital de giro (0215 e 0216) citam "garantias" como item do contrato, sem dizer qual. O aviso `garantia_nao_declarada` da ontologia dizia que as demais "não mencionam garantia", e foi corrigido.
+**Garantia na Q17.** A consulta que prova a ausência procura "garant" nas definições das modalidades e devolve três linhas, e não uma. A do home equity (0211) declara garantia real. As de capital de giro (0215 e 0216) citam "garantias" como item do contrato, sem dizer qual. O aviso `garantia_nao_declarada` da ontologia dizia que as demais "não mencionam garantia", e foi corrigido. A errata da Q17 no v2 tem a mesma imprecisão, e o v2 não muda; o v3 corrige no campo `errata_v3`.
 
-A errata da Q17 no `questions_v2.yml` tem a mesma imprecisão ("só o home equity menciona garantia na definição"). Ela é pré-registro e não muda. O gabarito diz a coisa exata.
+Na revisão, o Yuri pediu o tipo de garantia, se ele já existe no documento 3040. Existe: o bloco de garantias do 3040 traz, por operação, tipo e subtipo (14 tipos no Anexo 12 do leiaute), valor original, reavaliação e compartilhamento, reorganizado pela IN BCB 659, de set/2025. É informação individual, e o SCR.data não publica nenhum desses campos. A lista de tipos entrou na ontologia, e a resposta de abstenção da Q17 diz exatamente o que faltaria.
+
+**Novo modelo de crédito imobiliário.** Na revisão, o Yuri trouxe a nota do BCB de 2025-10-10 e as Resoluções CMN 5.254 e 5.255 e BCB 512. Elas tratam de crédito imobiliário, e uma delas muda uma fronteira do dado dentro do recorte: o teto do imóvel financiado no SFH passou de R$ 1,5 milhão para R$ 2,25 milhões na publicação da CMN 5.255. Financiamentos novos nessa faixa podem ter passado da 0902 (fora do SFH) para a 0901 (SFH). O efeito não foi medido. Entrou na cadeia normativa, na ontologia (mod_09) e na observação da Q34.
+
+**Financiamentos de títulos e valores mobiliários.** O comentário do Yuri estava na linha da TVM, e as normas citadas não tratam dela. O dado mostra outra história, medida em 2026-09-25: a submodalidade 1001 existe em todos os meses do recorte. A carteira dos bancos, que chegou a R$ 4,0 bi em abr/2024, zerou em abr/2025. Uma fintech passou a operar em ago/2025, e chegou a R$ 99 mi em jul/2026. Essa troca de operador produz o +77,8% em 12 meses da Q02, a participação de fintechs de 56% na Q21 e a retração no recorte da Q23. Entrou como aviso na ontologia (sub_1001) e como observação nessas perguntas e na Q07.
 
 ## Alternativas descartadas
 
@@ -93,6 +109,8 @@ A errata da Q17 no `questions_v2.yml` tem a mesma imprecisão ("só o home equit
 **Número digitado à mão no gabarito.** Desatualiza no primeiro mês novo, e ninguém confere de onde veio.
 
 **Duas leituras para a janela, em vez das duas colunas.** Gastaria o limite de três leituras com período em perguntas que também variam de métrica.
+
+**Responder a Q08, a Q16 e a Q25 com o recorte inteiro, sem mudar a pergunta.** Era a primeira versão desta PR. Deixava o enunciado pedindo cinco ou três anos e o gabarito respondendo com 31 meses, e a resposta certa dependeria de a IA declarar uma janela diferente da pedida.
 
 ## Consequências
 

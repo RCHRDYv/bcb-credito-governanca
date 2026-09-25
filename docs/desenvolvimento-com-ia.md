@@ -124,7 +124,7 @@ Ao escrever a ontologia das dimensões, a IA mediu que a coluna `tcb` da V1 traz
 
 Ao escrever o aviso `garantia_nao_declarada` da ontologia, a IA afirmou que só a definição do home equity (0211) menciona garantia, e que as demais "não mencionam garantia". A mesma frase foi para a errata da Q17 no conjunto v2 das perguntas. O sentido estava certo: só o home equity declara garantia real.
 
-**Pego por:** o gabarito da #16. A consulta que prova a ausência procura "garant" nas 66 definições e devolveu três linhas: as de capital de giro (0215 e 0216) citam "garantias" como item do contrato, sem dizer qual. O aviso da ontologia foi corrigido. A errata é pré-registro e não muda, e o gabarito diz a coisa exata ([ADR 0015](adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md)).
+**Pego por:** o gabarito da #16. A consulta que prova a ausência procura "garant" nas 66 definições e devolveu três linhas: as de capital de giro (0215 e 0216) citam "garantias" como item do contrato, sem dizer qual. O aviso da ontologia foi corrigido. A errata do v2 é pré-registro e não muda; o conjunto v3 a corrige num campo próprio, e o gabarito diz a coisa exata ([ADR 0015](adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md)).
 
 **Por que importa:** "nenhuma outra menciona" é uma afirmação sobre todos os itens de um conjunto, e ler alguns deles não a sustenta. A regra que ficou é a mesma dos outros casos, aplicada a texto: afirmação de ausência se prova com busca no conjunto inteiro.
 
