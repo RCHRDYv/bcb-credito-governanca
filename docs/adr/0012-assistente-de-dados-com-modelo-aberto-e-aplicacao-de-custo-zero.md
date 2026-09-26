@@ -1,6 +1,6 @@
 # ADR 0012: A camada de IA é um assistente de dados com modelo aberto, e a aplicação pública roda a custo zero
 
-**Status:** Aceito
+**Status:** Aceito. Em 2026-09-25, o que este ADR decide sobre a aplicação pública (a decisão 5 e a parte das decisões 1 e 4 que trata dela) foi substituído pelos ADRs [0016](0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md) e [0019](0019-chat-consulta-so-o-esquema-estrela.md). O que ele decide sobre o experimento continua valendo.
 **Data:** 2026-09-24
 
 ## Contexto
