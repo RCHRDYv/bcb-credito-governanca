@@ -73,10 +73,14 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 |---|---|---|
 | Fonte da verdade da ontologia | Arquivo YAML versionado | Evita deriva entre duas superfícies de autoria |
 | Documentação para humano | Gerada do YAML, publicada com `dbt docs` | Público e navegável, sem exigir login |
-| Dashboard consultando o banco | Não. O esquema estrela é exportado em Parquet para dentro da aplicação, e consultado por DuckDB | Nenhuma credencial fora da máquina do Yuri. Dado mensal não precisa de tempo real ([ADR 0012](adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md)) |
-| Onde a IA roda | Experimento: modelos abertos, locais. Aplicação pública: modelo pequeno no plano gratuito de CPU do Hugging Face Spaces | Custo zero, e o Databricks não serve aplicação pública ([ADR 0012](adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md)) |
-| Credenciais | OAuth, nada em disco | Ver [ADR 0001](adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) |
+| Dashboard consultando o banco | Não. As telas leem os marts de apresentação exportados em JSON para dentro do site, e o chat consulta o esquema estrela em Parquet, num dataset público do Hugging Face, por DuckDB | Nenhuma credencial fora da máquina do Yuri. Dado mensal não precisa de tempo real ([ADR 0016](adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md)) |
+| Onde a IA roda | Experimento: modelos abertos, locais. Chat do dashboard: modelo aberto leve num Space ZeroGPU do Hugging Face, escolhido separadamente do experimento | Custo zero, e a cota de GPU gasta é a do visitante ([ADR 0016](adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md), [ADR 0019](adr/0019-chat-consulta-so-o-esquema-estrela.md)) |
+| Credenciais | OAuth, nada em disco. Nenhuma credencial pessoal, de nenhum serviço, fica exposta | Ver [ADR 0001](adr/0001-credenciais-e-dado-bruto-fora-do-repositorio.md) e [ADR 0016](adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md) |
 | Diagramas de arquitetura | Mermaid dentro do markdown, sem imagem exportada | O diagrama muda na mesma PR que o modelo. Ver [ADR 0008](adr/0008-diagramas-como-codigo-em-mermaid.md) |
+| Site do dashboard | Estático, no GitHub Pages, publicado por Actions sem nenhum segredo | Grátis, não dorme e fica no mesmo lugar que o código ([ADR 0016](adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md)) |
+| Stack da interface | JavaScript com ES modules, Vite e ECharts, sem framework | Menos coisa para aprender e manter ([ADR 0017](adr/0017-interface-em-javascript-sem-framework.md)) |
+| Design system | Tokens no formato W3C DTCG, gerados para CSS pelo Style Dictionary, com a estrutura do IBM Carbon | O visual muda num lugar só, para a interface e para os gráficos ([ADR 0018](adr/0018-design-system-por-tokens-dtcg.md)) |
+| O que o chat consulta | Só o esquema estrela, com a ontologia como contexto, e nada do experimento | O dashboard não é o experimento ([ADR 0019](adr/0019-chat-consulta-so-o-esquema-estrela.md)) |
 
 ## Estrutura
 
@@ -85,7 +89,7 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 ├── ontology/      Ontologia, glossário e contratos, com citação normativa
 ├── dbt/           staging → intermediate → marts
 ├── evaluation/    Perguntas pré-registradas, gabarito, análise estatística
-├── dashboard/     Aplicação do Hugging Face Spaces: dashboard e, na v0.3, a caixa de pergunta
+├── dashboard/     Site estático do dashboard, no GitHub Pages. O chat da v0.3 roda num Space ZeroGPU
 ├── scripts/       Utilitários e verificadores
 └── docs/adr/      Decisões de arquitetura
 ```
@@ -109,7 +113,7 @@ Oito artefatos, cada um com um público e uma origem versionada. A coluna de sit
 | Problema de negócio | Qualquer leitor | README | Entregue |
 | Glossário de negócio | Negócio | `ontology/modalidades.yml`, `ontology/dimensoes.yml`, `ontology/metricas.yml` | Entregue |
 | Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para seeds, staging, intermediate e marts |
-| ADR | Técnico sênior | `docs/adr/` | Entregue, oito decisões |
+| ADR | Técnico sênior | `docs/adr/` | Entregue, dezenove decisões |
 | Diagramas de arquitetura | Ambos | Mermaid no `README.md` e em [`docs/arquitetura.md`](arquitetura.md) | Entregue |
 | Linhagem | Ambos | Gerada pelo `dbt docs` | v0.2 |
 | Contrato de dados | Consumidor | `ontology/contratos.yml` | v0.2 |
@@ -237,6 +241,6 @@ A ordem importa: perguntas antes de modelagem, porque são elas que determinam o
 | Versão | Escopo |
 |---|---|
 | **v0.1** | Ingestão, ontologia, dbt, gabarito, dashboard que conta a decisão |
-| **v0.2** | `dbt docs` publicado, contratos de dados, emissão SKOS, previsão e agrupamento de UFs, renda do IBGE, exportação do esquema estrela para Parquet e DuckDB, corpus e índice do RAG, registro das hipóteses e das condições C e D |
-| **v0.3** | Experimento 2x2 com dois modelos locais, assistente com resposta auditável, caixa de pergunta na aplicação pública, análise estatística |
-| **v0.4** | LLMOps: versionamento de prompt, tracing, reavaliação automática mensal quando o BCB publica dado novo, e publicação no Hugging Face do dataset da gold e dos resultados |
+| **v0.2** | `dbt docs` publicado, contratos de dados, emissão SKOS, previsão e agrupamento de UFs, renda do IBGE, exportação do esquema estrela para Parquet e DuckDB, publicada num dataset do Hugging Face, corpus e índice do RAG, registro das hipóteses e das condições C e D |
+| **v0.3** | Experimento 2x2 com dois modelos locais, assistente com resposta auditável, chat do dashboard num Space ZeroGPU, análise estatística |
+| **v0.4** | LLMOps: versionamento de prompt, tracing, reavaliação automática mensal quando o BCB publica dado novo, e publicação no Hugging Face dos resultados do experimento |

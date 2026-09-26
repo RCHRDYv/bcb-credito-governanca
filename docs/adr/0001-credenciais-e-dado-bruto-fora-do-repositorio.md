@@ -1,6 +1,6 @@
 # ADR 0001: Credenciais e dado bruto ficam fora do repositório
 
-**Status:** Aceito
+**Status:** Aceito. Ampliado pelo [ADR 0016](0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md) em 2026-09-25: a regra vale para toda credencial pessoal, de qualquer serviço.
 **Data:** 2026-08-20
 
 ## Contexto
