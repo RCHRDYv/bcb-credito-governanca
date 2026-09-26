@@ -30,7 +30,7 @@ Este projeto mede esse efeito com dado público real, e com método que qualquer
 
 **A outra parte busca uma descoberta.** Vale o trabalho de curar uma ontologia, se os mesmos documentos de onde ela foi destilada podem ser recuperados por busca num RAG? O experimento compara quatro condições (só o esquema, só a ontologia, só os documentos e as duas camadas juntas), com hipóteses de direção registradas antes de qualquer execução ([ADR 0013](docs/adr/0013-experimento-2x2-ontologia-contra-documentos.md)). É a pergunta que decide entre montar uma camada semântica e jogar documentos num RAG. O resultado vale para este domínio, com tamanho de efeito, e não como lei geral.
 
-O mesmo desenho vira ferramenta: um assistente para pessoas de negócio, dentro do dashboard, que responde com o número, o SQL que o produziu, os conceitos da ontologia usados e a ressalva que o torna interpretável ([ADR 0012](docs/adr/0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zero.md)).
+O dashboard também tem um chat para pessoas de negócio, separado do experimento. Ele consulta o esquema estrela, com a ontologia como contexto, e responde com o número, o SQL que o produziu e a ressalva que o torna interpretável. O chat não vê nada do experimento, para não enviesar o que o experimento mede ([ADR 0019](docs/adr/0019-chat-consulta-so-o-esquema-estrela.md)).
 
 ## Por que os dados do SCR
 
@@ -139,7 +139,7 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | `ontology/` | Ontologia, glossário e contratos de dados, com citação normativa |
 | `dbt/` | Camada semântica: staging, intermediate, marts, testes |
 | `evaluation/` | Perguntas de negócio, gabarito e análise estatística |
-| `dashboard/` | Aplicação do dashboard, para o Hugging Face Spaces |
+| `dashboard/` | Site estático do dashboard, no GitHub Pages. O chat da v0.3 roda num Space ZeroGPU do Hugging Face |
 | `scripts/` | Utilitários e verificadores |
 | `docs/adr/` | Registro de decisões de arquitetura |
 
@@ -252,6 +252,10 @@ uv run python -m scripts.analises.qa_gabarito
 | [ADR 0013](docs/adr/0013-experimento-2x2-ontologia-contra-documentos.md) | O experimento vira 2x2, ontologia contra documentos, e passa a buscar uma descoberta |
 | [ADR 0014](docs/adr/0014-matriz-de-decisao-espaco-contra-risco.md) | A matriz de decisão compara cada UF com o país, em quatro quadrantes |
 | [ADR 0015](docs/adr/0015-gabarito-com-leituras-aceitas-em-sql-portatil.md) | O gabarito aceita leituras declaradas e é SQL portátil sobre o esquema estrela |
+| [ADR 0016](docs/adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md) | O site do dashboard é estático no GitHub Pages, e o chat roda num Space ZeroGPU |
+| [ADR 0017](docs/adr/0017-interface-em-javascript-sem-framework.md) | A interface é JavaScript sem framework, com Vite e ECharts |
+| [ADR 0018](docs/adr/0018-design-system-por-tokens-dtcg.md) | O design system nasce de tokens no formato DTCG |
+| [ADR 0019](docs/adr/0019-chat-consulta-so-o-esquema-estrela.md) | O chat do dashboard consulta só o esquema estrela, e não é o experimento |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Perguntas do experimento, conjunto v3](evaluation/questions_v3.yml) | As 41 do v2, com a janela de três perguntas ajustada ao recorte do projeto e mais uma nota corrigida. Registrado em 25/09/2026, antes de qualquer execução, e é o que vale para o experimento |
@@ -262,19 +266,22 @@ uv run python -m scripts.analises.qa_gabarito
 
 O plano vive em issues com dependências e critério de pronto, agrupadas por versão: [milestone v0.1](https://github.com/RCHRDYv/bcb-credito-governanca/milestone/1).
 
-Três replanejamentos que já aconteceram, com o que causou cada um:
+Quatro replanejamentos que já aconteceram, com o que causou cada um:
 
 | O que mudou | Por que |
 |---|---|
 | **A leitura do sentinela `-1` foi refutada** e o conceito passou de "inferido" para "lacuna" | O teste empírico mostrou que a versão atual publica contagens de 1 a 15. A hipótese herdada da versão antiga estava errada ([documento](docs/sentinela-numero-de-operacoes.md)) |
 | **A conformação entre V1 e V2 deixou de valer para totais** e passou a valer só para a taxonomia | A ingestão mostrou que a V2 fica de 3,95% a 5,94% acima da V1 em todos os meses ([análise](docs/analise-v1-v2.md), seção 6) |
 | **A previsão e o agrupamento de UFs saíram da v0.1** para a v0.2 | A camada de decisão entrou depois do plano original, e inflar a primeira versão atrasaria a entrega visível ([ADR 0005](docs/adr/0005-projeto-termina-em-recomendacao.md)) |
+| **O dashboard saiu do Space de CPU do Hugging Face** e foi para um site estático no GitHub Pages, com o chat num Space ZeroGPU | Em 2026 o Hugging Face passou a exigir plano pago para criar Space de CPU, e o projeto tem custo zero ([ADR 0016](docs/adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md)) |
 
 ## Segurança
 
 Repositório público muda o cálculo de risco por dois motivos: qualquer pessoa lê o conteúdo, e **o histórico do git é permanente**. Apagar um segredo do arquivo não o remove do histórico.
 
 **Nenhuma credencial existe neste repositório, em nenhum commit.** A autenticação no Databricks usa OAuth, então nenhum token é sequer gerado. O `profiles.yml` real vive em `~/.dbt/`, fora do projeto, e o repositório publica apenas um `.example` com placeholders.
+
+**A regra vale para qualquer serviço, e não só para o Databricks.** O site do dashboard é publicado com o token efêmero que o GitHub gera para cada execução do workflow. O Space e o dataset do Hugging Face são publicados da máquina local, e nenhum dos dois guarda segredo ([ADR 0016](docs/adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md)).
 
 **Três camadas de defesa, porque uma só é frágil:**
 
@@ -309,7 +316,7 @@ The project ends in a recommendation, with the list of what this data cannot sup
 
 **Part of it is replication.** The effect of metadata on text-to-SQL accuracy is established in the literature and already underpins commercial products; measuring it here is a transparent replication in a new domain: Brazilian regulatory credit data, in Portuguese, with genuine and officially documented taxonomy drift.
 
-**The other part seeks a finding.** Is curating an ontology worth the effort when the documents it was distilled from can be retrieved through RAG? The experiment compares four conditions (schema only, ontology only, documents only, and both), with directional hypotheses registered before any run. The result holds for this domain, reported with effect sizes, not as a general law. The same design becomes a tool: an assistant for business users, inside the dashboard, that answers with the number, the SQL behind it, the ontology concepts used and the caveat that makes it interpretable.
+**The other part seeks a finding.** Is curating an ontology worth the effort when the documents it was distilled from can be retrieved through RAG? The experiment compares four conditions (schema only, ontology only, documents only, and both), with directional hypotheses registered before any run. The result holds for this domain, reported with effect sizes, not as a general law. The dashboard also has a chat for business users, kept apart from the experiment. It queries the star schema with the ontology as context, and answers with the number, the SQL behind it and the caveat that makes it interpretable. The chat sees nothing from the experiment, so it cannot bias what the experiment measures.
 
 The dataset is the Brazilian Central Bank's credit registry (SCR), published monthly with breakdowns by state, credit modality, company size, sector and client type. It was chosen because its messiness is real rather than manufactured: undocumented sentinel values, delimiters inside quoted fields, Brazilian decimal notation, UTF-8 with a BOM that opens "fine" as latin-1 while corrupting every accent, and two similarly named metrics with different regulatory definitions.
 
