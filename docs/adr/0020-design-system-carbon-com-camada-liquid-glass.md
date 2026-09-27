@@ -48,7 +48,7 @@ A interface não usa os componentes web do Carbon. Os componentes são construí
 
 ### 5. Os modelos de página usam o grid do Carbon e cobrem variações
 
-São seis modelos genéricos, e cada visão do dashboard escolhe o seu pela pergunta que responde. O chat é opcional por visão. Se as visões terão um bloco de título-conclusão e apoio ainda está em aberto: os modelos reservam o lugar dele, sem torná-lo regra.
+São seis modelos genéricos, e cada visão do dashboard escolhe o seu pela pergunta que responde. O chat é opcional por visão. Decidido em 2026-09-26, depois da escolha do design system: as visões não têm bloco de título-conclusão no topo. A visão abre nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do próprio gráfico, gerada do dado.
 
 ### O que continua valendo do ADR 0018
 

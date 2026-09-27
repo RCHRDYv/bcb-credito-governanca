@@ -257,7 +257,12 @@ Não usar: o amarelo de atenção para qualquer outra coisa na mesma tela.
 
 ## Padrões de uso · Liquid Glass
 
-**Título-conclusão e apoio: em aberto.** Ainda não está decidido se as visões terão este bloco. Se for adotado, o título diz o que o gráfico prova, numa frase que um executivo repetiria, e não um rótulo como "Matriz de risco". A especificação e a #17 falam em "conclusão escrita junto do gráfico", e isso é alinhado quando a decisão for tomada.
+**Cabeçalho do gráfico, sem bloco de título na visão.** Decidido em 2026-09-26: as visões não têm bloco de título-conclusão no topo. A visão abre nos filtros e na visualização, e cada gráfico traz um cabeçalho com três partes:
+- **Título do gráfico,** em `heading-02`, dizendo o que o gráfico mostra, como "Espaço contra risco, por estado e modalidade".
+- **Conclusão, quando houver,** em `body-01` e numa frase só, gerada do dado e nunca digitada à mão.
+- **Data-base e fonte,** em `label-01`, sempre.
+
+Não usar: rótulo genérico como "Gráfico 1", nem conclusão escrita à mão, que envelhece quando o dado muda.
 
 **Barra de filtros.** Numa linha só, acima do conteúdo. Controle segmentado para opções exclusivas, chips para filtros que se combinam. Filtrar nunca repinta as cores.
 
@@ -282,7 +287,7 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 
 **Regras dos modelos:**
 - **O chat é opcional por visão.** Quando existe, fica num trilho de 4 colunas à direita no desktop, ou num botão flutuante nos modelos de tela cheia e no celular. Nunca cobre o conteúdo no desktop.
-- **Bloco de título e apoio: em aberto.** Todos os modelos reservam o lugar dele, acima dos filtros e só nas colunas do conteúdo.
+- **Nenhuma visão tem bloco de título no topo.** A visão abre nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do gráfico.
 - **Toda visão tem a alternativa em tabela.**
 
 ## Conteúdo
@@ -325,7 +330,6 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 | Escolher as paletas sequencial e divergente do Carbon e validá-las | #63 |
 | Tema escuro, derivado dos mesmos tokens (ADR 0018) | #62 |
 | Conferir a camada Liquid Glass em Safari e Firefox, e a alternativa sem `backdrop-filter` | #62 a #64 |
-| Bloco de título-conclusão e apoio | Em aberto |
 | Nome e identidade visual do produto | Em aberto |
 
 ## Fontes
