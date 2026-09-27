@@ -3,6 +3,7 @@
 O que o dashboard precisa fazer, para quem, e como se confere que ele faz. Este documento conversa com:
 - o contexto de produto, em [`dashboard/PRODUCT.md`](../../dashboard/PRODUCT.md);
 - o [design system](design-system.md);
+- a [arquitetura](arquitetura.md), que diz como o site, o dataset e o chat se ligam;
 - as decisões dos ADRs [0016 a 0020](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md).
 
 **Como ler:**
@@ -110,7 +111,7 @@ Os dois primeiros formam o público que o produto serve. O terceiro é quem abre
 | RNF-08 | Custo | Zero: todos os serviços em plano gratuito | Conferência dos planos a cada publicação | Definido nos ADRs 0012 e 0016 |
 | RNF-09 | Credenciais | Nenhuma credencial pessoal, de nenhum serviço, no repositório, no CI, na página ou no Space | gitleaks no pre-commit e no CI; nenhuma chave no JavaScript publicado | Definido no ADR 0016 |
 | RNF-10 | Experimento protegido | O dashboard não tem acesso ao gabarito nem às perguntas do experimento | Teste de empacotamento do Space; os arquivos do site vêm só dos marts de apresentação | Definido no ADR 0019 |
-| RNF-11 | Segurança do conteúdo | Política de segurança de conteúdo sem `unsafe-inline`, e texto do modelo sempre sanitizado antes de entrar na página | Inspeção da política publicada; teste com texto malicioso | Definido nos ADRs 0016 e 0017; verificação na #68 |
+| RNF-11 | Segurança do conteúdo | Política de segurança de conteúdo sem `unsafe-inline` em script e em folha de estilo. A única exceção é o estilo em atributo, que o ECharts exige ([arquitetura](arquitetura.md#política-de-segurança-de-conteúdo)). Texto do modelo sempre sanitizado antes de entrar na página, sem atributo de estilo | Inspeção da política publicada; teste com texto malicioso | Definido nos ADRs 0016 e 0017 e na arquitetura; verificação na #68 |
 | RNF-12 | Atualização do dado | Mensal, pela exportação feita na máquina local, com a data-base visível em cada número | A data-base da tela bate com a do mart | Definido no ADR 0016 |
 | RNF-13 | Idioma | Português do Brasil, com os textos num arquivo de tradução para o inglês entrar depois | Nenhum texto fixo nos componentes | Definido no ADR 0017 |
 | RNF-14 | Movimento | Nenhuma animação quando o sistema pede movimento reduzido | Teste com a preferência ligada | Definido no design system |

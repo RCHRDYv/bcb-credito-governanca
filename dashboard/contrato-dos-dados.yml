@@ -1,0 +1,203 @@
+# =============================================================================
+# PT: Contrato dos arquivos que o site do dashboard lê (issue #60).
+#
+#     O site não tem banco, conexão nem credencial (ADR 0016). Ele lê arquivos
+#     JSON exportados dos marts de apresentação (ADR 0007) na máquina local,
+#     pela exportação da #66. Este arquivo é a fonte única do que cada JSON
+#     traz: a exportação lê daqui o que exportar, e o CI reprova o arquivo que
+#     sair do contrato. A arquitetura, em docs/dashboard/arquitetura.md, resume
+#     por arquivo e aponta para cá, sem repetir as colunas.
+#
+#     Três regras:
+#     - Só entra coluna que alguma visão usa. Coluna nova entra aqui antes de
+#       entrar na exportação.
+#     - Os números vão sem formatação: fração de 0 a 1 e reais em reais. A
+#       formatação brasileira é feita só no site (RF-G10).
+#     - Toda coluna aponta para a definição: um conceito da ontologia, que é a
+#       fonte da verdade, ou o ADR que fixou a regra. A definição não é
+#       repetida aqui.
+#
+# EN: Contract for the files the dashboard site reads. The site has no
+#     database, connection or credential; it reads JSON files exported locally
+#     from the presentation marts. This file is the single source of what each
+#     JSON carries: the export reads it, and CI fails any file outside it. Only
+#     columns a view uses, raw numbers (formatting happens in the site), and
+#     every column points to its definition in the ontology or in an ADR.
+# =============================================================================
+
+versao: 1
+destino: dashboard/public/data/
+
+# -----------------------------------------------------------------------------
+# PT: Forma de cada JSON. Por coluna, e não por linha: o nome da coluna não se
+#     repete a cada linha, e o dataset do ECharts lê essa forma direto.
+# EN: Shape of each JSON. Column-oriented, so names are not repeated per row,
+#     and ECharts datasets read it directly.
+# -----------------------------------------------------------------------------
+formato:
+  codificacao: utf-8
+  exemplo: '{"arquivo": "decisao.json", "data_base": "2026-07-31", "colunas": {"uf": ["SP", "MG"], "carteira_ativa": [1.0e11, 4.2e10]}}'
+  datas: "Texto no formato AAAA-MM-DD. Mês sem dia, como o retrato do CNPJ, no formato AAAA-MM."
+  nulo: "null do JSON. Só onde a coluna diz nulo: true."
+
+# -----------------------------------------------------------------------------
+# PT: O que o número é, e como o site o mostra.
+# EN: What each number is, and how the site shows it.
+# -----------------------------------------------------------------------------
+unidades:
+  reais: "Valor em reais, sem escala. O site mostra como R$ 485,5 bi."
+  reais_por_empresa: "Reais divididos por empresas ativas. O site mostra como R$ 1,2 mi por empresa."
+  fracao: "Razão de 0 a 1, sempre razão de somas. O site mostra como 0,93%."
+  diferenca_de_fracao: "Diferença entre duas frações. O site mostra como +0,15 p.p."
+  variacao_relativa: "Razão menos um. O site mostra como +4,2%."
+  indice: "Razão sem unidade, em que 1 é a referência. O site mostra com duas casas."
+  empresas: "Contagem de empresas."
+  contagem: "Contagem de outra coisa, dita na definição da coluna."
+  meses: "Número inteiro de meses."
+  data: "Data no formato AAAA-MM-DD."
+  mes: "Mês no formato AAAA-MM."
+  texto: "Rótulo ou código, mostrado como vem."
+  booleano: "Verdadeiro ou falso."
+
+# -----------------------------------------------------------------------------
+# PT: Os arquivos da v0.1. O da visão 3 entra com a #27, na v0.2. O
+#     mrt_reconciliacao_versoes fica fora, porque nenhuma visão da v0.1 o usa.
+# EN: The v0.1 files. View 3's file comes with #27 in v0.2.
+# -----------------------------------------------------------------------------
+arquivos:
+
+  - arquivo: decisao.json
+    origem: mrt_decisao
+    grao: "UF e modalidade, só cliente PJ, no último mês do SCR"
+    filtro: "Nenhum. Entram também as células não avaliadas, com o motivo."
+    visoes: [1, 2, 4]
+    colunas:
+      - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
+      - {nome: data_base_anterior, tipo: string, unidade: data, nulo: false, definicao: "ADR 0014, decisão 3"}
+      - {nome: uf, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#dim_uf"}
+      - {nome: codigo_modalidade, tipo: string, unidade: texto, nulo: false, definicao: "ontology/modalidades.yml"}
+      - {nome: modalidade, tipo: string, unidade: texto, nulo: false, definicao: "ontology/modalidades.yml"}
+      - {nome: carteira_ativa, tipo: number, unidade: reais, nulo: false, definicao: "ontology/metricas.yml#carteira_ativa"}
+      - {nome: empresas, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#estoque_reconstruido"}
+      - {nome: carteira_por_empresa, tipo: number, unidade: reais_por_empresa, nulo: false, definicao: "ADR 0014, decisão 1"}
+      - {nome: mediana_carteira_por_empresa, tipo: number, unidade: reais_por_empresa, nulo: true, definicao: "ADR 0014, decisão 1"}
+      - {nome: indice_de_espaco, tipo: number, unidade: indice, nulo: true, definicao: "ADR 0014, decisão 1"}
+      - {nome: ufs_acima_do_corte, tipo: integer, unidade: contagem, nulo: true, definicao: "ADR 0014, decisão 7"}
+      - {nome: taxa_inadimplencia, tipo: number, unidade: fracao, nulo: true, definicao: "ontology/metricas.yml#indicador_inadimplencia"}
+      - {nome: taxa_inadimplencia_anterior, tipo: number, unidade: fracao, nulo: true, definicao: "ontology/metricas.yml#indicador_inadimplencia"}
+      - {nome: variacao_taxa_inadimplencia, tipo: number, unidade: diferenca_de_fracao, nulo: true, definicao: "ADR 0014, decisão 3"}
+      - {nome: taxa_pais, tipo: number, unidade: fracao, nulo: true, definicao: "ADR 0014, decisão 3"}
+      - {nome: variacao_taxa_pais, tipo: number, unidade: diferenca_de_fracao, nulo: true, definicao: "ADR 0014, decisão 3"}
+      - {nome: avaliada, tipo: boolean, unidade: booleano, nulo: false, definicao: "ADR 0014, decisão 2"}
+      - {nome: motivo_nao_avaliada, tipo: string, unidade: texto, nulo: true, definicao: "ADR 0014, decisão 7"}
+      - {nome: quadrante, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0014, decisão 4", valores: ["entrar", "observar", "manter", "não entrar", "não avaliada"]}
+      - {nome: custo_de_nao_entrar, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0014, decisão 5"}
+      - {nome: custo_do_risco, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0014, decisão 5"}
+      - {nome: distancia_ap_inadimplencia, tipo: number, unidade: diferenca_de_fracao, nulo: true, definicao: "ADR 0014, decisão 6"}
+      - {nome: variacao_distancia, tipo: number, unidade: diferenca_de_fracao, nulo: true, definicao: "ADR 0014, decisão 6"}
+      - {nome: variacao_distancia_pais, tipo: number, unidade: diferenca_de_fracao, nulo: true, definicao: "ADR 0014, decisão 6"}
+      - {nome: alerta_antecipado, tipo: boolean, unidade: booleano, nulo: false, definicao: "ADR 0014, decisão 6"}
+
+  - arquivo: carteira_mensal_pj.json
+    origem: mrt_carteira_mensal
+    grao: "Mês, UF e modalidade, só cliente PJ"
+    filtro: >
+      cliente = 'PJ'. A faixa de meses sai da medida de tamanho da #66 contra
+      o orçamento do RNF-03, com pelo menos os sete meses que a janela de
+      seis meses usa.
+    visoes: [2]
+    colunas:
+      - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
+      - {nome: uf, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#dim_uf"}
+      - {nome: codigo_modalidade, tipo: string, unidade: texto, nulo: false, definicao: "ontology/modalidades.yml"}
+      - {nome: modalidade, tipo: string, unidade: texto, nulo: false, definicao: "ontology/modalidades.yml"}
+      - {nome: carteira_ativa, tipo: number, unidade: reais, nulo: false, definicao: "ontology/metricas.yml#carteira_ativa"}
+      - {nome: carteira_inadimplencia, tipo: number, unidade: reais, nulo: false, definicao: "ontology/metricas.yml#carteira_inadimplencia"}
+      - {nome: ativo_problematico, tipo: number, unidade: reais, nulo: false, definicao: "ontology/metricas.yml#ativo_problematico"}
+      - {nome: taxa_inadimplencia, tipo: number, unidade: fracao, nulo: true, definicao: "ontology/metricas.yml#indicador_inadimplencia"}
+      - {nome: taxa_ativo_problematico, tipo: number, unidade: fracao, nulo: true, definicao: "ontology/metricas.yml#indicador_ativo_problematico"}
+      - {nome: distancia_ap_inadimplencia, tipo: number, unidade: diferenca_de_fracao, nulo: true, definicao: "ADR 0014, decisão 6"}
+      - {nome: variacao_taxa_inadimplencia_6m, tipo: number, unidade: diferenca_de_fracao, nulo: true, definicao: "ADR 0014, decisão 3"}
+      - {nome: criterio_ativo_problematico, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#criterio_ativo_problematico"}
+      - {nome: janela_6m_cruza_quebra_ativo_problematico, tipo: boolean, unidade: booleano, nulo: false, definicao: "ontology/dimensoes.yml#criterio_ativo_problematico"}
+
+  - arquivo: carteira_por_uf.json
+    origem: mrt_carteira_por_uf
+    grao: "UF, no último mês do SCR"
+    filtro: "data_base igual à do decisao.json, para as duas fontes da visão 1 falarem do mesmo mês."
+    visoes: [1]
+    colunas:
+      - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
+      - {nome: uf, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#dim_uf"}
+      - {nome: carteira_pj, tipo: number, unidade: reais, nulo: false, definicao: "ontology/metricas.yml#carteira_ativa"}
+      - {nome: empresas_ativas, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#estoque_reconstruido"}
+      - {nome: empresas_ativas_sem_mei, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#mei"}
+      - {nome: carteira_pj_por_empresa_ativa, tipo: number, unidade: reais_por_empresa, nulo: false, definicao: "ADR 0009"}
+      - {nome: carteira_pj_por_empresa_ativa_sem_mei, tipo: number, unidade: reais_por_empresa, nulo: false, definicao: "ADR 0009"}
+      - {nome: taxa_inadimplencia_pj, tipo: number, unidade: fracao, nulo: true, definicao: "ontology/metricas.yml#indicador_inadimplencia"}
+      - {nome: retrato_do_cnpj, tipo: string, unidade: mes, nulo: false, definicao: "ontology/fontes_externas.yml#cnpj_aberto"}
+      - {nome: meses_ate_o_retrato, tipo: integer, unidade: meses, nulo: false, definicao: "ADR 0009"}
+
+  - arquivo: limites_do_dado.json
+    origem: mrt_limites_do_dado
+    grao: "Mês"
+    filtro: "Nenhum."
+    visoes: [4]
+    colunas:
+      - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
+      - {nome: parcela_carteira_contagem_suprimida, tipo: number, unidade: fracao, nulo: false, definicao: "ontology/metricas.yml#numero_de_operacoes"}
+      - {nome: parcela_recortes_contagem_suprimida, tipo: number, unidade: fracao, nulo: false, definicao: "ontology/metricas.yml#numero_de_operacoes"}
+      - {nome: operacoes_limite_inferior, tipo: integer, unidade: contagem, nulo: true, definicao: "ontology/metricas.yml#numero_de_operacoes"}
+      - {nome: parcela_carteira_conformacao_ambigua, tipo: number, unidade: fracao, nulo: false, definicao: "ADR 0003"}
+      - {nome: parcela_carteira_conformacao_inferida, tipo: number, unidade: fracao, nulo: false, definicao: "ADR 0003"}
+      - {nome: diferenca_v2_sobre_v1, tipo: number, unidade: variacao_relativa, nulo: false, definicao: "ontology/dimensoes.yml#divergencia_entre_versoes"}
+      - {nome: criterio_ativo_problematico, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#criterio_ativo_problematico"}
+      - {nome: ativo_problematico_comparavel_com_mes_anterior, tipo: boolean, unidade: booleano, nulo: false, definicao: "ontology/dimensoes.yml#criterio_ativo_problematico"}
+      - {nome: granularidade_da_publicacao, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#granularidade_da_publicacao"}
+      - {nome: divergencia_entre_versoes, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#divergencia_entre_versoes"}
+      - {nome: quebras_no_mes, tipo: string, unidade: texto, nulo: true, definicao: "ontology/dimensoes.yml#dim_data_base"}
+
+  - arquivo: erro_da_reconstrucao.json
+    origem: mrt_erro_da_reconstrucao
+    grao: "Retrato do CNPJ e UF"
+    filtro: "Nenhum."
+    visoes: [4]
+    colunas:
+      - {nome: retrato, tipo: string, unidade: mes, nulo: false, definicao: "ontology/fontes_externas.yml#cnpj_aberto"}
+      - {nome: data_de_corte, tipo: string, unidade: data, nulo: false, definicao: "ontology/fontes_externas.yml#data_do_retrato_nao_e_fim_de_mes"}
+      - {nome: uf, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#dim_uf"}
+      - {nome: empresas_ativas_real, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#empresa_ativa"}
+      - {nome: empresas_ativas_reconstruida, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#estoque_reconstruido"}
+      - {nome: erro_relativo, tipo: number, unidade: variacao_relativa, nulo: false, definicao: "ADR 0009"}
+
+# -----------------------------------------------------------------------------
+# PT: Arquivos que não saem de um mart.
+# EN: Files that do not come from a mart.
+# -----------------------------------------------------------------------------
+auxiliares:
+
+  - arquivo: ontologia.json
+    origem: "ontology/*.yml, sem passar pelo Databricks"
+    conteudo: >
+      Um registro por conceito citado em alguma coluna acima, com id, rótulo
+      em português, definição, fonte normativa, grau de confiança e nota de
+      escopo. É o que o site mostra quando alguém pergunta de onde vem um
+      número (RF-G07). Gerado do YAML da ontologia, nunca digitado.
+    visoes: [1, 2, 4]
+
+  - arquivo: manifesto.json
+    origem: "A própria exportação"
+    conteudo: >
+      A data-base do último mês, os parâmetros da decisão lidos do
+      dbt_project.yml (corte de materialidade, meses da tendência e mínimo de
+      UFs), e o número de linhas e o sha256 de cada arquivo. Não guarda data
+      de geração: rodar de novo com o mesmo dado produz os mesmos arquivos,
+      byte a byte, como a docs/recomendacao.md.
+    visoes: [1, 2, 4]
+
+  - arquivo: geo/ufs.json
+    origem: "API de malhas v3 do IBGE, baixada uma vez e simplificada (#67)"
+    conteudo: >
+      A malha das 27 UFs, com a sigla e o código do IBGE de cada uma, e a
+      fonte e a licença registradas. Fica em dashboard/public/geo/.
+    visoes: [1]

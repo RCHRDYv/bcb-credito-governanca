@@ -106,7 +106,7 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 
 ## Arquitetura de documentação
 
-Oito artefatos, cada um com um público e uma origem versionada. A coluna de situação diz o que já existe, para a tabela não descrever como pronto o que ainda é plano:
+Onze artefatos, cada um com um público e uma origem versionada. A coluna de situação diz o que já existe, para a tabela não descrever como pronto o que ainda é plano:
 
 | Artefato | Público | Origem | Situação |
 |---|---|---|---|
@@ -116,7 +116,8 @@ Oito artefatos, cada um com um público e uma origem versionada. A coluna de sit
 | ADR | Técnico sênior | `docs/adr/` | Entregue, vinte decisões |
 | Design system do dashboard | Ambos | [`docs/dashboard/design-system.md`](dashboard/design-system.md) e o protótipo em `dashboard/prototipo-design-system/` | Entregue |
 | Requisitos do dashboard | Ambos | [`docs/dashboard/requisitos.md`](dashboard/requisitos.md), com as [referências de design](dashboard/referencias-de-design.md) | Entregue |
-| Diagramas de arquitetura | Ambos | Mermaid no `README.md` e em [`docs/arquitetura.md`](arquitetura.md) | Entregue |
+| Arquitetura do dashboard | Técnico | [`docs/dashboard/arquitetura.md`](dashboard/arquitetura.md), com o contrato dos arquivos do site em `dashboard/contrato-dos-dados.yml` | Entregue |
+| Diagramas de arquitetura | Ambos | Mermaid no `README.md`, em [`docs/arquitetura.md`](arquitetura.md) e em [`docs/dashboard/arquitetura.md`](dashboard/arquitetura.md) | Entregue |
 | Linhagem | Ambos | Gerada pelo `dbt docs` | v0.2 |
 | Contrato de dados | Consumidor | `ontology/contratos.yml` | v0.2 |
 | Runbook | Operação | `docs/runbook.md` | v0.2 |
