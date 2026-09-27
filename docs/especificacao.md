@@ -115,6 +115,7 @@ Oito artefatos, cada um com um público e uma origem versionada. A coluna de sit
 | Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para seeds, staging, intermediate e marts |
 | ADR | Técnico sênior | `docs/adr/` | Entregue, vinte decisões |
 | Design system do dashboard | Ambos | [`docs/dashboard/design-system.md`](dashboard/design-system.md) e o protótipo em `dashboard/prototipo-design-system/` | Entregue |
+| Requisitos do dashboard | Ambos | [`docs/dashboard/requisitos.md`](dashboard/requisitos.md), com as [referências de design](dashboard/referencias-de-design.md) | Entregue |
 | Diagramas de arquitetura | Ambos | Mermaid no `README.md` e em [`docs/arquitetura.md`](arquitetura.md) | Entregue |
 | Linhagem | Ambos | Gerada pelo `dbt docs` | v0.2 |
 | Contrato de dados | Consumidor | `ontology/contratos.yml` | v0.2 |
@@ -185,7 +186,7 @@ Declarar essa fronteira é parte da entrega. Uma recomendação sem ela é palpi
 
 ### O dashboard conta a decisão
 
-Uma pergunta por tela, com o texto da conclusão junto do gráfico, e não uma galeria de indicadores:
+Uma pergunta por tela, e não uma galeria de indicadores. As telas não têm bloco de título-conclusão no topo: abrem nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do próprio gráfico, gerada do dado (decidido em 2026-09-26, [design system](dashboard/design-system.md)):
 
 1. Onde está o crédito PJ hoje, e onde ele é escasso por empresa
 2. Onde o risco está piorando, com a distinção entre inadimplência e ativo problemático
