@@ -1,0 +1,25 @@
+<!doctype html>
+<!--
+  PT: Página única do site. O conteúdo é montado por src/main.js; aqui ficam
+      só o idioma, os metadados e o ponto de montagem. Não há script nem
+      estilo embutido, para a política de segurança de conteúdo da #68 não
+      precisar de exceção.
+  EN: The site's single page. Content is built by src/main.js; no inline
+      script or style, so the #68 content security policy needs no exception.
+-->
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Onde uma financeira pode crescer em crédito para empresas no Brasil, e onde o risco está piorando, com dados públicos do Banco Central."
+    />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <title>Crédito PJ</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
