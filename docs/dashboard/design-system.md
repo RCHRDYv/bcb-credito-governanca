@@ -30,7 +30,7 @@ Itens marcados **em aberto** ainda não foram decididos e não são regra.
 
 ### Cor · Carbon
 
-Tema **g10** do Carbon. O contraste foi medido contra o fundo (#f4f4f4) e contra o vidro regular sobre o fundo (#fbfbfb).
+Tema **g10** do Carbon. O contraste foi medido contra o fundo (#f4f4f4) e contra o vidro regular sobre o fundo (#fdfdfd, com o vidro a 82% desde a #64).
 
 **Neutros e ação**
 
@@ -40,12 +40,12 @@ Tema **g10** do Carbon. O contraste foi medido contra o fundo (#f4f4f4) e contra
 | Camada sólida | `layer-01` | #ffffff | | |
 | Borda sutil | `border-subtle-01` | #e0e0e0 | | |
 | Borda sutil em camada | `border-subtle-00` | #c6c6c6 | | |
-| Borda forte | `border-strong-01` | #8d8d8d | 3,02:1 | 3,21:1 |
-| Texto principal | `text-primary` | #161616 | 16,45:1 | 17,49:1 |
-| Texto secundário | `text-secondary` | #525252 | 7,10:1 | 7,55:1 |
-| Texto de ajuda | `text-helper` | #6f6f6f | 4,57:1 | 4,86:1 |
-| Texto de exemplo nos campos | `text-placeholder` | `rgba(22, 22, 22, 0.4)` | | |
-| Ação e foco | `interactive`, `focus` | #0f62fe (azul 60) | 4,55:1 | 4,83:1 |
+| Borda forte | `border-strong-01` | #8d8d8d | 3,02:1 | 3,26:1 |
+| Texto principal | `text-primary` | #161616 | 16,45:1 | 17,79:1 |
+| Texto secundário | `text-secondary` | #525252 | 7,10:1 | 7,68:1 |
+| Texto de ajuda | `text-helper` | #6f6f6f | 4,57:1 | 4,94:1 |
+| Texto de exemplo nos campos | o mesmo cinza do texto de ajuda, decidido na #64 | #6f6f6f (cinza 60) | 4,57:1 | 4,94:1 |
+| Ação e foco | `interactive`, `focus` | #0f62fe (azul 60) | 4,55:1 | 4,92:1 |
 | Ação ao passar o mouse | `button-primary-hover` | #0050e6 | | |
 | Ação pressionada | `button-primary-active` | #002d9c | | |
 | Fundo de seleção | azul 10 | #edf5ff | | |
@@ -82,9 +82,9 @@ O escuro é o tema **g100** do Carbon, conferido no `@carbon/themes` 11.82.0 em 
 - o site segue o sistema do visitante: abre escuro para quem usa o modo escuro, e claro para os outros;
 - quando o sistema não indica preferência, o site abre claro;
 - a impressão e o PDF saem sempre claros;
-- uma escolha manual pelo atributo `data-tema` já funciona, mas o botão de troca **está em aberto** e, se entrar, entra na #64.
+- desde a #64, o visitante pode escolher no topo entre claro, escuro e automático, que é o padrão e segue o sistema. A escolha fica guardada no navegador, e um script pequeno no `<head>` a aplica antes da pintura, para a página não piscar no tema errado.
 
-**Neutros e ação.** O contraste é medido contra o fundo (#161616) e contra o vidro regular sobre o fundo (#222222).
+**Neutros e ação.** O contraste é medido contra o fundo (#161616) e contra o vidro regular sobre o fundo (#242424, com o vidro a 88% desde a #64).
 
 | Uso | Token do Carbon | Valor | Contraste no fundo | No vidro |
 |---|---|---|---|---|
@@ -92,14 +92,14 @@ O escuro é o tema **g100** do Carbon, conferido no `@carbon/themes` 11.82.0 em 
 | Camada sólida | `layer-01` | #262626 (cinza 90) | | |
 | Borda sutil | `border-subtle-01` | #525252 | | |
 | Borda sutil em camada | `border-subtle-00` | #393939 | | |
-| Borda forte | `border-strong-01` | #6f6f6f | 3,60:1 | 3,17:1 |
-| Texto principal | `text-primary` | #f4f4f4 | 16,45:1 | 14,47:1 |
-| Texto secundário | `text-secondary` | #c6c6c6 | 10,59:1 | 9,31:1 |
-| Texto de ajuda | `text-helper` | #a8a8a8 | 7,61:1 | 6,69:1 |
-| Texto de exemplo nos campos | `text-placeholder` | `rgba(244, 244, 244, 0.4)` | 3,60:1 | |
-| Ação | `interactive` | #4589ff (azul 50) | 5,41:1 | 4,75:1 |
-| Link | `link-primary` | #78a9ff (azul 40) | 7,68:1 | 6,76:1 |
-| Foco | `focus` | #ffffff | 18,10:1 | 15,91:1 |
+| Borda forte | `border-strong-01` | #6f6f6f | 3,60:1 | 3,09:1 |
+| Texto principal | `text-primary` | #f4f4f4 | 16,45:1 | 14,11:1 |
+| Texto secundário | `text-secondary` | #c6c6c6 | 10,59:1 | 9,09:1 |
+| Texto de ajuda | `text-helper` | #a8a8a8 | 7,61:1 | 6,53:1 |
+| Texto de exemplo nos campos | o mesmo cinza do texto de ajuda, decidido na #64 | #a8a8a8 (cinza 40) | 7,61:1 | 6,53:1 |
+| Ação | `interactive` | #4589ff (azul 50) | 5,41:1 | 4,64:1 |
+| Link | `link-primary` | #78a9ff (azul 40) | 7,68:1 | 6,59:1 |
+| Foco | `focus` | #ffffff | 18,10:1 | 15,52:1 |
 | Botão primário | `button-primary` | #0f62fe, igual ao claro, com o texto branco a 5,00:1 | | |
 | Fundo de seleção | azul 90 | #001d6c | | |
 
@@ -162,18 +162,18 @@ No escuro a ordem se inverte, porque o valor baixo é o que se aproxima do fundo
 | Claro | verde-azulado 80 | verde-azulado 60 | verde-azulado 40 | cinza 20 | roxo 40 | roxo 60 | roxo 80 |
 | Escuro | verde-azulado 40 | verde-azulado 50 | verde-azulado 70 | cinza 80 | roxo 70 | roxo 50 | roxo 40 |
 
-**Validação e simulação de daltonismo.** O contraste é medido contra o vidro regular do tema (#fbfbfb e #222222), e a distância entre cores em OKLab, multiplicada por 100, com a simulação de Machado, Oliveira e Fernandes (2009). Para a categórica, o alvo é 8 com daltonismo e 15 sem; para as rampas, o que importa é cada degrau continuar distinto do vizinho.
+**Validação e simulação de daltonismo.** O contraste é medido contra o cartão sólido onde os gráficos são desenhados, o token `color.chart.surface` (#ffffff no claro e #161616 no escuro, desde a #64), e a distância entre cores em OKLab, multiplicada por 100, com a simulação de Machado, Oliveira e Fernandes (2009). Para a categórica, o alvo é 8 com daltonismo e 15 sem; para as rampas, o que importa é cada degrau continuar distinto do vizinho.
 
 | Paleta | Tema | Contraste | Sem daltonismo | Protanopia | Deuteranopia | Tritanopia |
 |---|---|---|---|---|---|---|
-| Categórica, pior par vizinho | Claro | 3,22:1 | 23,8 | 20,6 | 15,9 | 19,0 |
-| Categórica, pior par vizinho | Escuro | 3,18:1 | 15,8 | 13,2 | 8,4 | 3,1 |
-| Sequencial, menor passo | Claro | 2,27:1 na ponta | 10,2 | 7,3 | 8,6 | 9,1 |
-| Sequencial, menor passo | Escuro | 2,06:1 na ponta | 10,2 | 7,3 | 8,6 | 9,0 |
-| Divergente, polos no mesmo degrau | Claro | 2,26:1 perto do meio | 18,3 | 12,9 | 9,6 | 7,0 |
-| Divergente, polos no mesmo degrau | Escuro | 2,06:1 perto do meio | 22,5 | 12,9 | 9,6 | 9,2 |
+| Categórica, pior par vizinho | Claro | 3,33:1 | 23,8 | 20,6 | 15,9 | 19,0 |
+| Categórica, pior par vizinho | Escuro | 3,62:1 | 15,8 | 13,2 | 8,4 | 3,1 |
+| Sequencial, menor passo | Claro | 2,35:1 na ponta | 10,2 | 7,3 | 8,6 | 9,1 |
+| Sequencial, menor passo | Escuro | 2,34:1 na ponta | 10,2 | 7,3 | 8,6 | 9,0 |
+| Divergente, polos no mesmo degrau | Claro | 2,33:1 perto do meio | 18,3 | 12,9 | 9,6 | 7,0 |
+| Divergente, polos no mesmo degrau | Escuro | 2,34:1 perto do meio | 22,5 | 12,9 | 9,6 | 9,2 |
 
-A tritanopia aparece nos números, mas não reprova, porque é rara e o modelo é menos preciso para ela. No escuro, o roxo 60 e o ciano 50 ficam a 3,1 para quem tem tritanopia, e a legenda e o rótulo identificam essas duas séries. No escuro sem `backdrop-filter`, a ponta das rampas fica em 1,96:1 sobre a camada sólida, logo abaixo do piso de 2:1, exceção aceita em 2026-09-27 (ADR 0021, decisão 5).
+A tritanopia aparece nos números, mas não reprova, porque é rara e o modelo é menos preciso para ela. No escuro, o roxo 60 e o ciano 50 ficam a 3,1 para quem tem tritanopia, e a legenda e o rótulo identificam essas duas séries. A exceção de 1,96:1 da ponta das rampas no escuro, aceita no ADR 0021, deixou de existir na #64, com o cartão sólido.
 
 **Cores que já têm outro significado.** O roxo 70 é também a marca de Manter, e a divergente usa as matizes de Manter e de Entrar. Por isso vale a regra da etiqueta de quadrante: numa tela com a matriz ou com etiquetas de quadrante, essas paletas não entram com outro significado.
 
@@ -248,16 +248,22 @@ No escuro, a sombra precisa ser mais forte para aparecer, e o brilho mais fraco 
 
 | Material | Preenchimento | Desfoque | Onde |
 |---|---|---|---|
-| Vidro claro | branco a 22% | 10 px, saturação 180% | O que flutua sobre o conteúdo: navegação, filtros, botão do chat |
-| Vidro regular | branco a 62% | 26 px, saturação 180% | Tabelas, dicas, painéis de detalhe e bolhas do chat |
+| Vidro claro | branco a 22% | 10 px, saturação 180% | O que flutua sobre o conteúdo: a barra de topo, o controle segmentado, os chips de filtro e o botão do chat |
+| Vidro regular | branco a 82%, revisto na #64 | 26 px, saturação 180% | Tudo que tem dado ou texto: tabelas, dicas, avisos, campos, estados, botão secundário e bolhas do chat |
 | Escurecimento | #161616 a 28% | nenhum | Por trás de uma superfície que pede foco, como o chat aberto no celular |
 
-Toda superfície de vidro tem borda branca a 78% e o brilho na borda da elevação. No escuro, o preenchimento é o cinza 90 (#262626), a 40% no vidro claro e a 72% no regular, a borda é branca a 12%, e o escurecimento é preto a 50%.
+Toda superfície de vidro tem borda branca a 78% e o brilho na borda da elevação. No escuro, o preenchimento é o cinza 90 (#262626), a 40% no vidro claro e a 88% no regular, a borda é branca a 12%, e o escurecimento é preto a 50%.
 
-**Campo de luz.** O vidro precisa de algo atrás para parecer vidro. O fundo da página leva manchas suaves com as próprias cores do Carbon, sobre o cinza 10: azul 30 (#a6c8ff), roxo 30 (#d4bbff) e verde-azulado 20 (#9ef0f0), de 30% a 50% de opacidade. No escuro, as manchas usam o azul 80 (#002d9c), o roxo 80 (#491d8b) e o verde-azulado 80 (#004144), com a mesma opacidade.
+**Campo de luz.** O vidro precisa de algo atrás para parecer vidro. O fundo da página leva manchas com as próprias cores do Carbon, sobre o cinza 10: azul 30 (#a6c8ff), roxo 30 (#d4bbff) e verde-azulado 20 (#9ef0f0). No escuro, as manchas usam o azul 80 (#002d9c), o roxo 80 (#491d8b) e o verde-azulado 80 (#004144).
+- **Intensidade:** a cor cheia, como no painel de vidro do protótipo, decidida em 2026-09-27, na #64, depois de comparar 30%, 45% e a cor cheia com os mesmos componentes ([ADR 0020](../adr/0020-design-system-carbon-com-camada-liquid-glass.md), revisão de 2026-09-27).
+- **Onde fica:** atrás da página inteira, parado em relação à janela, para sempre haver cor atrás do vidro em qualquer ponto da rolagem. É a variável `--campo-de-luz`, do `base.css`.
+- **Na impressão:** some, e o fundo fica liso.
 
 **Regras do vidro:**
-- **Onde vai cada vidro:** o claro só no que flutua, e o regular em tudo que tem dado ou texto. O texto de ajuda mantém 4,86:1 sobre o vidro regular.
+- **Onde vai cada vidro:** o claro só no que flutua, e o regular em tudo que tem dado ou texto.
+- **O contraste é medido no pior ponto:** o centro de uma mancha, atrás do vidro. Ali, o texto de ajuda fica em 4,59:1 e o link em 4,57:1 no claro, acima dos 4,5:1, e o teste `campo-de-luz.test.js` confere todos os textos que ficam sobre vidro.
+- **O vermelho de erro sobre vidro é só para ícone.** Como texto, ele ficaria abaixo de 4,5:1 no escuro. A mensagem de erro do campo fica sobre o fundo da página.
+- **Os gráficos não ficam no vidro,** e sim num cartão sólido, para as cores dos gráficos não dependerem do que está atrás.
 - **Camadas:** no máximo duas camadas de vidro empilhadas.
 - **Animação:** o desfoque nunca é animado, porque pesa na placa de vídeo.
 - **Sem suporte a `backdrop-filter`:** a superfície vira sólida, na camada `layer-01` (#ffffff).
@@ -279,36 +285,45 @@ Toda superfície de vidro tem borda branca a 78% e o brilho na borda da elevaç�
 
 ## Componentes · Liquid Glass
 
-Todo componente tem os estados normal, com o mouse em cima, com foco, pressionado e desativado. Quando fazem sentido, também carregando e erro. O foco é sempre visível: anel de 2 px em #0f62fe.
+Os componentes moram em `dashboard/src/componentes/`, um módulo por componente, e aparecem no [catálogo](../../dashboard/catalogo.html) nos dois temas, sobre o campo de luz, como ficam na página. Cada um tem teste unitário em `dashboard/tests/unit/componentes/`.
+
+**Comum a todos.**
+- **Estados:** normal, com o mouse em cima, com foco, pressionado e desativado. Quando fazem sentido, também carregando e erro.
+- **Foco:** sempre visível, com anel de 2 px na cor de foco do tema.
+- **Ícones:** os do Tabler Icons, os mesmos do protótipo, do pacote `@tabler/icons` 3.48.0 (MIT), citados pelo nome. O build junta só os ícones usados, e nenhum é buscado fora do site, como pede a política de segurança. O ícone é decorativo: o texto ao lado é o que se lê.
+- **Textos:** todos no arquivo de tradução, pelo `t()`.
 
 **Botões.** Cápsulas de 40 px de altura.
-- **Primário:** azul 60 com brilho na borda.
-- **Secundário:** vidro regular.
-- **Sutil:** só texto em azul.
-- **Comportamento:** sobem 1 px com o mouse em cima, encolhem para 96% com a mola média ao serem pressionados, e ficam a 40% de opacidade quando desativados.
-- **Carregando:** mostra um indicador girando e mantém a largura, para a tela não pular.
-- **Não usar:** mais de um primário na mesma área, nem botão para trocar de visão, que é papel das abas e do controle segmentado.
+- **O que é:**
+  - o primário, em azul 60 com brilho na borda, para a ação principal da área;
+  - o secundário, em vidro regular, para ações de apoio;
+  - o sutil, só texto em azul, para ações de pouco peso, como "Ver o SQL".
+- **Comportamento:** sobem 1 px com o mouse em cima, encolhem para 96% com a mola média ao serem pressionados, e ficam a 40% de opacidade quando desativados. Carregando, mostram um indicador girando no lugar do texto, que fica transparente mas segura a largura, para a tela não pular.
+- **Quando usar:** para disparar uma ação.
+- **Quando não usar:** mais de um primário na mesma área, nem botão para trocar de visão, que é papel das abas e do controle segmentado.
+- **Acessibilidade:** `<button>` nativo. Carregando, o botão fica ocupado (`aria-busy`) e ignora o clique, mas continua com o nome, porque o texto só fica transparente.
 
-**Controle segmentado.**
-- **Trilho:** em vidro claro.
-- **Opção escolhida:** é uma gota de vidro que desliza até ela com a mola longa.
-- **Teclado:** as setas trocam a opção.
-- **Uso:** trocar de visão ou de recorte, com até cinco opções.
-- **Não usar:** com mais de cinco opções, nem para filtros que se combinam, que é papel dos chips.
+**Controle segmentado.** Opções exclusivas lado a lado, num trilho de vidro claro. A opção escolhida é uma gota de vidro que desliza até ela com a mola longa.
+- **Quando usar:** para trocar de visão, de recorte ou de tema, com até cinco opções.
+- **Quando não usar:** com mais de cinco opções, nem para filtros que se combinam, que é papel dos chips.
+- **Acessibilidade:** segue o padrão de grupo de rádio da WAI-ARIA.
+  - O Tab entra só na opção escolhida.
+  - As setas trocam a opção e levam o foco junto, e Home e End vão para a primeira e a última.
+  - Em tela estreita, as opções não quebram linha: o controle rola na horizontal, e a opção escolhida fica sempre à vista.
 
-**Chips de filtro.**
-- **Forma:** cápsulas de vidro.
-- **Selecionado:** fundo azul translúcido, borda azul, texto azul 70 (#0043ce, 7,09:1 sobre o azul 10) e ícone de confirmação.
-- **Uso:** filtros que se combinam entre si.
-- **Não usar:** para disparar ações, que é papel dos botões, nem para opções exclusivas, que é papel do controle segmentado.
+**Chips de filtro.** Cápsulas de vidro claro que se ligam e se desligam.
+- **Selecionado:** fundo azul translúcido, borda azul, texto azul 70 no claro (azul 30 no escuro) e o ícone de confirmação.
+- **Quando usar:** para filtros que se combinam entre si, como várias modalidades.
+- **Quando não usar:** para disparar ações, que é papel dos botões, nem para opções exclusivas, que é papel do controle segmentado.
+- **Acessibilidade:** botões com `aria-pressed`, num grupo com nome. A seleção aparece pelo ícone de confirmação, e não só pela cor.
 
-**Campos de texto.**
-- **Forma:** 40 px de altura, raio de controle, em vidro.
+**Campos de texto.** 40 px de altura, raio de controle, em vidro regular, com a borda forte, que tem 3:1 contra o vidro.
 - **Foco:** borda azul e anel azul suave de 4 px.
-- **Erro:** borda vermelha e uma mensagem que diz o problema e como resolver, com ícone.
+- **Erro:** borda vermelha e uma mensagem que diz o problema e como resolver, com ícone. A mensagem fica sobre o fundo da página, embaixo do campo.
 - **Desativado:** a 50% de opacidade.
-- **Rótulo:** sempre fora do campo, em `label-01`.
-- **Não usar:** o texto de exemplo no lugar do rótulo, porque ele some quando a pessoa começa a digitar.
+- **Texto de exemplo:** o mesmo cinza do texto de ajuda, com 4,94:1 sobre o vidro. O valor do Carbon, preto a 40%, ficava em 2,69:1 (decidido em 2026-09-27, na #64).
+- **Quando não usar:** o texto de exemplo no lugar do rótulo, porque ele some quando a pessoa começa a digitar.
+- **Acessibilidade:** o rótulo fica sempre fora do campo, em `label-01`, ligado a ele. A ajuda e o erro ficam ligados ao campo por `aria-describedby`, e o erro marca o campo com `aria-invalid`.
 
 **Etiqueta de quadrante.** Cápsula com o ponto na cor do quadrante, o ícone, o nome e o texto no tom escuro:
 - Entrar: seta para cima e para a direita;
@@ -316,25 +331,37 @@ Todo componente tem os estados normal, com o mouse em cima, com foco, pressionad
 - Não entrar: sinal de proibido;
 - Manter: sinal de igual.
 
-Não usar: as cores dos quadrantes com outro significado na mesma tela, nem o nome do quadrante sem o ícone.
+A matriz de espaço contra risco usa esta etiqueta nos cantos.
+- **Quando não usar:** as cores dos quadrantes com outro significado na mesma tela, nem o nome do quadrante sem o ícone.
+- **Acessibilidade:** o nome vai sempre junto do ícone, e o quadrante nunca aparece só pela cor.
 
-**Etiqueta de alerta antecipado.** Cápsula em amarelo 10 com texto amarelo 80 e ícone de sino.
-Não usar: o amarelo de atenção para qualquer outra coisa na mesma tela.
+**Etiqueta de alerta antecipado.** Cápsula em amarelo 10, com texto amarelo 80 e o ícone de sino.
+- **Quando usar:** na célula em que a distância entre ativo problemático e carteira inadimplida abriu mais que a do país.
+- **Quando não usar:** o amarelo de atenção para qualquer outra coisa na mesma tela.
 
-**Tabela.**
-- **Superfície:** vidro regular, com raio de cartão.
-- **Cabeçalho:** translúcido, em `heading-compact-01`.
-- **Números:** à direita, tabulares e com unidade.
-- **Linha com o mouse em cima:** fundo azul a 6%.
-- **Não usar:** cor de fundo para destacar linhas por valor. O destaque vem da ordenação e do filtro.
+**Tabela.** Vidro regular, com raio de cartão.
+- **O que é:**
+  - cabeçalho translúcido, em `heading-compact-01`;
+  - números à direita, tabulares e com unidade;
+  - linha com o mouse em cima em azul a 6%.
+- **Quando usar:** em toda visão com gráfico, com os mesmos números (RF-G06), e para consultar muitas linhas.
+- **Quando não usar:** cor de fundo para destacar linhas por valor. O destaque vem da ordenação e do filtro.
+- **Acessibilidade:** legenda (`<caption>`) e cabeçalhos de coluna e de linha marcados. Em tela estreita, a tabela rola na horizontal dentro de uma região com nome, que recebe foco pelo teclado.
 
-**Dica flutuante.** Vidro regular, raio de controle e elevação 2. Traz o nome do item e os números dele, e nunca esconde informação que não esteja também na tela ou na tabela.
+**Dica flutuante.** Vidro regular, raio de controle e elevação 2.
+- **O que é:** o nome do item e os números dele. Nunca esconde informação que não esteja também na tela ou na tabela.
+- **Quando usar:** para os números de um item, sem abrir o painel de detalhe. Os gráficos usam a dica do próprio ECharts, com o mesmo visual.
+- **Acessibilidade:** segue a WCAG 2.2, critério 1.4.13.
+  - Abre com o mouse e com o foco do teclado.
+  - Dá para passar o mouse sobre ela sem que suma.
+  - Fecha com o Esc, sem mover o foco.
 
 **Avisos.** Vidro levemente tingido pela cor do estado, com o ícone num círculo.
 - **Informação e erro:** a cor do estado vai no ícone.
-- **Atenção:** o círculo é amarelo #f1c21b e o glifo é #161616.
+- **Atenção:** o círculo é o amarelo de atenção, e o glifo fica escuro nos dois temas, como faz o Carbon.
 - **Texto:** diz o problema e a saída, e nunca só "algo deu errado".
-- **Não usar:** mais de dois avisos empilhados, nem aviso para o que cabe num rótulo.
+- **Quando não usar:** mais de dois avisos empilhados, nem aviso para o que cabe num rótulo.
+- **Acessibilidade:** um aviso que aparece depois que a página abriu é anunciado a leitores de tela: o de erro com urgência, os outros com calma.
 
 **Chat.**
 - **Pergunta:** numa bolha azul 60.
@@ -345,13 +372,23 @@ Não usar: o amarelo de atenção para qualquer outra coisa na mesma tela.
   4. o SQL, recolhido atrás de "Ver o SQL", em `code-01`.
 - **Quando o dado não permite responder:** a resposta diz isso e diz o que faltaria.
 - **Entrada:** uma cápsula de vidro com botão circular de enviar.
-- **Não usar:** número na resposta sem o SQL recolhido junto.
+- **Quando não usar:** número na resposta sem o SQL recolhido junto.
+- **Acessibilidade:** a conversa é um registro que leitores de tela acompanham com calma. A entrada tem rótulo, e o botão de enviar tem nome.
+- **O que fica para depois:** o destaque de cor do SQL entra com o cliente do chat, na #51. No catálogo, o exemplo é marcado como ilustrativo, porque o chat só existe na v0.3.
 
 **Estados de carregamento e de exceção.**
 - **Carregando:** barras em cápsula com brilho passando, no lugar do conteúdo. Nunca um indicador girando no meio da tela.
 - **Vazio:** explica por que está vazio e como sair disso. Por exemplo: "Nenhuma combinação passa no corte de R$ 1 bi com esse filtro. Tire um dos filtros para ver mais."
 - **Erro:** diz o problema e oferece a ação de tentar de novo.
 - **Chat acordando:** um orbe de vidro que respira devagar, com o aviso de que as outras telas continuam funcionando.
+- **Acessibilidade:** carregando é um status ocupado, com o texto só para leitores de tela, e o erro é anunciado com urgência. Com movimento reduzido, o brilho e a respiração param.
+
+**Controle de tema.** O controle segmentado com claro, escuro e automático, na barra de topo (decidido em 2026-09-27, na #64).
+- **O que faz:** automático é o padrão, e segue o sistema. Claro e escuro fixam o tema pelo atributo `data-tema`, e a escolha fica guardada no navegador do visitante.
+- **Sem piscar:** o `public/tema-inicial.js`, um script pequeno e síncrono no `<head>`, servido pelo próprio site, aplica a escolha guardada antes da pintura.
+- **Na impressão:** sai sempre claro, qualquer que seja a escolha.
+
+**Barra de topo.** Em vidro claro, com o nome do produto e o controle de tema. A navegação entre as visões entra nela quando as visões chegarem.
 
 ## Componentes de gráfico · nossos, sobre o ECharts
 
@@ -366,7 +403,7 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
 - **Movimento reduzido.** Com a preferência do sistema ligada, não há animação.
 - **Renderizador SVG.** As texturas saem como padrão vetorial, sem imagem embutida, o que respeita a política de segurança do site.
 
-**Cartão de gráfico.** O vidro regular, com o cabeçalho do padrão de uso: título em `heading-02` e data-base com a fonte em `label-01`.
+**Cartão de gráfico.** Um cartão sólido, e não de vidro, desde a #64: o token `color.chart.surface`, branco no claro e cinza 100 no escuro. O dado fica firme, e as cores dos gráficos não dependem do campo de luz atrás. Traz o cabeçalho do padrão de uso: título em `heading-02` e data-base com a fonte em `label-01`.
 - **Quando usar:** em todo gráfico e número de destaque.
 - **Quando não usar:** com frase de conclusão no cabeçalho, que o padrão proíbe.
 - **Acessibilidade:** o título dá nome à região do cartão, e a data-base e a fonte são texto.
@@ -475,9 +512,10 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 
 - **Nomes dos tokens:** seguem o Atlassian (ADR 0018), com a referência ao token do Carbon de onde vêm. Por exemplo, `color.text.secondary` vem de `text-secondary` (#525252), e `color.chart.categorical.1` é a primeira cor categórica.
 - **Tokens da camada Liquid Glass:** nomes próprios, como `material.vidro.regular`, `radius.capsula` e `motion.mola.media`.
+- **Tokens de componente:** em `tokens/componentes/`, como `botao.primario.fundo`, `segmentado.gota` e `aviso.atencao.glifo`, sempre apontando para cores semânticas ou primitivas.
 - **Onde moram:** `dashboard/tokens/`, em três pastas, `primitivos/`, `semanticos/` e `componentes/`. O `scripts/gerar-tokens.js` gera o `src/estilos/tokens.css` e o `tokens.json`, que nunca são editados à mão, e o CI reprova quando eles divergem dos tokens.
 - **Formato:** DTCG 2025.10, com a cor no formato novo, de espaço de cor e componentes. A mola é uma função `linear()` do CSS, que o DTCG não descreve; ela fica em `$extensions`, com a curva do Carbon como valor de reserva.
-- **Catálogo:** o [catálogo](../../dashboard/catalogo.html) mostra as fundações, as paletas e os componentes de gráfico nos dois temas, lidos dos tokens, e o teste de contraste confere os pares de cor nos dois temas.
+- **Catálogo:** o [catálogo](../../dashboard/catalogo.html) mostra as fundações, os componentes, as paletas e os gráficos nos dois temas, lidos dos tokens. O teste de contraste confere os pares de cor nos dois temas, e o do campo de luz, o texto sobre o vidro no pior ponto.
 - **Mudança em fundação** (cor, tipo, espaço, grid) só com ADR, porque muda a relação com o Carbon oficial.
 - **Componente novo ou alterado** entra por PR que atualiza este guia e o protótipo no mesmo commit.
 - **Paleta nova ou alterada** passa pela validação de contraste e de daltonismo antes de entrar. O teste automatizado, `dashboard/tests/unit/paletas.test.js`, lê as paletas dos tokens e reprova a que ficar fora dos critérios do [ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md).
@@ -487,8 +525,7 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 | Pendência | Onde se resolve |
 |---|---|
 | A malha das UFs, simplificada e versionada, de que o mapa por UF depende. Até lá, o mapa do catálogo mostra o estado de erro, e o cartograma segue funcionando | #67 |
-| Texto de exemplo nos campos: o valor oficial do Carbon fica em 2,53:1 no claro e 3,60:1 no escuro, abaixo dos 4,5:1 de texto | #64, ao construir os campos |
-| Conferir a camada Liquid Glass em Safari e Firefox, e a alternativa sem `backdrop-filter` | #62 a #64 |
+| Conferir o vidro no Firefox a olho. O WebKit, motor do Safari, foi conferido na #64, e o Firefox roda os testes de ponta a ponta e o axe no CI, mas não abre na máquina de desenvolvimento | Na primeira visão, #69 |
 | Nome e identidade visual do produto | Em aberto |
 
 ## Fontes

@@ -1,6 +1,6 @@
 # ADR 0021: As paletas de gráfico saem do Carbon, com a categórica ajustada e validação automatizada
 
-**Status:** Aceito
+**Status:** Aceito. Revisto em 2026-09-27, na #64: os gráficos passam a ser desenhados num cartão sólido, e a exceção da decisão 5 deixou de existir.
 **Data:** 2026-09-27
 
 ## Contexto
@@ -85,11 +85,22 @@ A distância é medida em OKLab, multiplicada por 100. A tritanopia aparece nos 
 
 O teste `dashboard/tests/unit/paletas.test.js` lê as paletas dos tokens gerados e confere as duas superfícies em que um gráfico pode estar: o vidro regular e a camada sólida que o substitui. Dois controles negativos garantem que o teste reprova de verdade: a categórica oficial do Carbon e uma paleta clara demais para o fundo precisam reprovar. O texto do tema dos gráficos é conferido em `tema.test.js`, com 4,5:1.
 
-### 5. Exceção aceita: a ponta das rampas no escuro sem desfoque
+### 5. Exceção aceita: a ponta das rampas no escuro sem desfoque, superada na #64
 
 Quando o navegador não tem `backdrop-filter`, o vidro vira a camada sólida, #262626 no escuro. Nesse caso, a ponta da sequencial e dos braços da divergente, roxo 70 e verde-azulado 70, fica em 1,96:1, logo abaixo do piso de 2:1. Sobre o vidro, que é o caso normal, fica em 2,06:1.
 
-A exceção foi aceita em 2026-09-27, e a outra saída era trocar o primeiro degrau do escuro, o que mudaria a rampa aprovada na revisão visual. O teste confere as rampas sobre o vidro, e o contraste de 3:1 da categórica nas duas superfícies.
+A exceção foi aceita em 2026-09-27, e a outra saída era trocar o primeiro degrau do escuro, o que mudaria a rampa aprovada na revisão visual.
+
+**Superada no mesmo dia, na #64.** Com o campo de luz na cor cheia ([ADR 0020](0020-design-system-carbon-com-camada-liquid-glass.md), revisão de 2026-09-27), os gráficos passaram para um cartão sólido, o token `color.chart.surface`: branco no claro e cinza 100 (#161616) no escuro. Contra ele, todas as cores passam:
+
+| | Claro, #ffffff | Escuro, #161616 |
+|---|---|---|
+| Menor contraste da categórica | 3,33:1 | 3,62:1 |
+| Outros | 3,32:1 | 3,60:1 |
+| Ponta da sequencial | 2,35:1 | 2,34:1 |
+| Divergente, perto do meio | 2,33:1 | 2,34:1 |
+
+O teste de paletas passou a medir contra esse cartão.
 
 ## Alternativas descartadas
 
@@ -117,4 +128,4 @@ A exceção foi aceita em 2026-09-27, e a outra saída era trocar o primeiro deg
   Continua valendo a regra do guia: as cores dos quadrantes não aparecem com outro significado na mesma tela. Numa visão com a matriz ou com etiquetas de quadrante, essas paletas não entram com outro significado.
 - **Até quatro séries em dispersão, mapa e pequenos múltiplos,** por causa do ciano 50 e do azul 50.
 - **Tritanopia no escuro.** O pior par vizinho da categórica fica em 3,1, entre o roxo 60 e o ciano 50. Para quem tem tritanopia, a identificação dessas duas séries depende da legenda e do rótulo.
-- **A exceção da decisão 5,** no escuro sem desfoque.
+- **A exceção da decisão 5,** no escuro sem desfoque, superada na #64 pelo cartão sólido.
