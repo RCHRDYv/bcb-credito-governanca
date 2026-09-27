@@ -1,0 +1,53 @@
+{
+  "radius": {
+    "$type": "dimension",
+    "$description": "Os raios pelo uso, da camada Liquid Glass (ADR 0020)",
+    "pequeno": { "$value": "{radius-scale.8}", "$description": "Etiquetas pequenas e miniaturas" },
+    "controle": {
+      "$value": "{radius-scale.12}",
+      "$description": "Campos, avisos e dicas flutuantes"
+    },
+    "cartao": {
+      "$value": "{radius-scale.20}",
+      "$description": "Painéis, tabelas e bolhas do chat"
+    },
+    "painel": { "$value": "{radius-scale.28}", "$description": "Superfícies grandes" },
+    "capsula": {
+      "$value": "{radius-scale.999}",
+      "$description": "Botões, controle segmentado, chips e a entrada do chat"
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "controle": { "$value": "{space.08}", "$description": "Altura dos controles, 40 px" },
+    "area-de-toque": {
+      "$value": "{space.08}",
+      "$description": "Área de toque mínima, 40 px, acima dos 24 px da WCAG 2.2"
+    }
+  },
+  "border": {
+    "$type": "dimension",
+    "fina": { "$value": "{border-width.1}" },
+    "foco": { "$value": "{border-width.2}", "$description": "Largura do anel de foco" }
+  },
+  "motion": {
+    "$description": "Movimento da camada Liquid Glass. A mola vai em posição e escala; cor e opacidade usam a curva produtiva do Carbon, sem mola.",
+    "duracao": {
+      "$type": "duration",
+      "curta": { "$value": "{duration.200}", "$description": "Passar o mouse" },
+      "media": {
+        "$value": "{duration.350}",
+        "$description": "Pressionar botão e chip, trocar de estado"
+      },
+      "longa": {
+        "$value": "{duration.500}",
+        "$description": "A gota do controle segmentado e painéis que entram"
+      }
+    },
+    "curva": {
+      "$type": "cubicBezier",
+      "mola": { "$value": "{easing.mola}" },
+      "produtiva": { "$value": "{easing.produtiva}" }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "elevation": {
+    "$type": "shadow",
+    "$description": "Elevação da camada Liquid Glass (ADR 0020). As cores das sombras são tokens semânticos, então a elevação muda com o tema sem ter um valor próprio para o escuro.",
+    "1": {
+      "$description": "Painéis, tabelas e cartões",
+      "$value": [
+        {
+          "color": "{color.sombra.contato}",
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 1, "unit": "px" },
+          "blur": { "value": 3, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" }
+        },
+        {
+          "color": "{color.sombra.difusa}",
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 6, "unit": "px" },
+          "blur": { "value": 16, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" }
+        }
+      ]
+    },
+    "2": {
+      "$description": "O que flutua: dicas e a entrada do chat",
+      "$value": [
+        {
+          "color": "{color.sombra.flutuante}",
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 10, "unit": "px" },
+          "blur": { "value": 34, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" }
+        }
+      ]
+    },
+    "brilho": {
+      "$description": "O brilho na borda de toda superfície de vidro",
+      "$value": [
+        {
+          "color": "{color.brilho.topo}",
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 1, "unit": "px" },
+          "blur": { "value": 1, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" },
+          "inset": true
+        },
+        {
+          "color": "{color.brilho.base}",
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": -1, "unit": "px" },
+          "blur": { "value": 1, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" },
+          "inset": true
+        },
+        {
+          "color": "{color.brilho.interno}",
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 0, "unit": "px" },
+          "blur": { "value": 20, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" },
+          "inset": true
+        }
+      ]
+    }
+  }
+}

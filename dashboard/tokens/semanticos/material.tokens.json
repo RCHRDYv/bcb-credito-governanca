@@ -1,0 +1,43 @@
+{
+  "material": {
+    "$description": "Os materiais da camada Liquid Glass (ADR 0020). O vidro claro vai no que flutua; o regular, em tudo que tem dado ou texto. Sem suporte a backdrop-filter, na impressão e com alto contraste do sistema, a superfície vira sólida.",
+    "vidro": {
+      "claro": {
+        "preenchimento": {
+          "$type": "color",
+          "$value": "{color.transparente.branco.22}",
+          "$extensions": { "credito-pj": { "escuro": "{color.transparente.cinza-90.40}" } }
+        },
+        "desfoque": { "$type": "dimension", "$value": "{blur.10}" },
+        "saturacao": { "$type": "number", "$value": "{saturation.180}" }
+      },
+      "regular": {
+        "preenchimento": {
+          "$type": "color",
+          "$value": "{color.transparente.branco.62}",
+          "$extensions": { "credito-pj": { "escuro": "{color.transparente.cinza-90.72}" } }
+        },
+        "desfoque": { "$type": "dimension", "$value": "{blur.26}" },
+        "saturacao": { "$type": "number", "$value": "{saturation.180}" }
+      },
+      "borda": {
+        "$type": "color",
+        "$value": "{color.transparente.branco.78}",
+        "$extensions": { "credito-pj": { "escuro": "{color.transparente.branco.12}" } }
+      }
+    },
+    "escurecimento": {
+      "$type": "color",
+      "$value": "{color.transparente.cinza-100.28}",
+      "$description": "Por trás de uma superfície que pede foco, como o chat aberto no celular",
+      "$extensions": { "credito-pj": { "escuro": "{color.transparente.preto.50}" } }
+    },
+    "campo-de-luz": {
+      "opacidade": {
+        "$type": "number",
+        "$value": 0.45,
+        "$description": "Opacidade das manchas de luz, dentro da faixa de 30% a 50% do guia"
+      }
+    }
+  }
+}

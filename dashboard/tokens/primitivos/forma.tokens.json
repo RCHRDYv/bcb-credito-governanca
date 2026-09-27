@@ -1,0 +1,27 @@
+{
+  "radius-scale": {
+    "$type": "dimension",
+    "$description": "Escala de raios da camada Liquid Glass (ADR 0020). O nome é o valor em px. Os nomes de uso, como controle e cápsula, ficam na camada semântica.",
+    "8": { "$value": { "value": 8, "unit": "px" } },
+    "12": { "$value": { "value": 12, "unit": "px" } },
+    "20": { "$value": { "value": 20, "unit": "px" } },
+    "28": { "$value": { "value": 28, "unit": "px" } },
+    "999": { "$value": { "value": 999, "unit": "px" } }
+  },
+  "border-width": {
+    "$type": "dimension",
+    "1": { "$value": { "value": 1, "unit": "px" } },
+    "2": { "$value": { "value": 2, "unit": "px" } }
+  },
+  "blur": {
+    "$type": "dimension",
+    "$description": "Desfoques da camada Liquid Glass, para o backdrop-filter",
+    "10": { "$value": { "value": 10, "unit": "px" } },
+    "26": { "$value": { "value": 26, "unit": "px" } }
+  },
+  "saturation": {
+    "$type": "number",
+    "$description": "Saturação aplicada junto do desfoque do vidro. 1,8 é 180%.",
+    "180": { "$value": 1.8 }
+  }
+}

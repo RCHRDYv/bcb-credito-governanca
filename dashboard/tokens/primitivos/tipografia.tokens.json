@@ -1,0 +1,57 @@
+{
+  "font": {
+    "$description": "Escalas de tipografia do Carbon, do pacote @carbon/type 11.68.0, conferidas em 2026-09-27. Os estilos que a interface usa ficam na camada semântica.",
+    "family": {
+      "$type": "fontFamily",
+      "sans": {
+        "$value": [
+          "IBM Plex Sans",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ],
+        "$description": "IBM Plex Sans, com licença aberta (OFL), servida pelo próprio site"
+      },
+      "mono": {
+        "$value": ["IBM Plex Mono", "Menlo", "DejaVu Sans Mono", "Consolas", "monospace"],
+        "$description": "IBM Plex Mono, para SQL e código"
+      }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "light": { "$value": 300 },
+      "regular": { "$value": 400 },
+      "semibold": { "$value": 600 }
+    },
+    "size": {
+      "$type": "dimension",
+      "12": { "$value": { "value": 12, "unit": "px" } },
+      "14": { "$value": { "value": 14, "unit": "px" } },
+      "16": { "$value": { "value": 16, "unit": "px" } },
+      "20": { "$value": { "value": 20, "unit": "px" } },
+      "28": { "$value": { "value": 28, "unit": "px" } },
+      "32": { "$value": { "value": 32, "unit": "px" } },
+      "42": { "$value": { "value": 42, "unit": "px" } },
+      "54": { "$value": { "value": 54, "unit": "px" } }
+    },
+    "line-height": {
+      "$type": "number",
+      "$description": "Alturas de linha do Carbon, como razão do tamanho. O nome é a própria razão.",
+      "1-199": { "$value": 1.199 },
+      "1-25": { "$value": 1.25 },
+      "1-286": { "$value": 1.28572 },
+      "1-333": { "$value": 1.33333 },
+      "1-4": { "$value": 1.4 },
+      "1-429": { "$value": 1.42857 },
+      "1-5": { "$value": 1.5 }
+    },
+    "letter-spacing": {
+      "$type": "dimension",
+      "0": { "$value": { "value": 0, "unit": "px" } },
+      "16": { "$value": { "value": 0.16, "unit": "px" } },
+      "32": { "$value": { "value": 0.32, "unit": "px" } }
+    }
+  }
+}

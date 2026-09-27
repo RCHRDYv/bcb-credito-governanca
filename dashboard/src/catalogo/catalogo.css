@@ -1,0 +1,374 @@
+/*
+ * PT: Estilo do catálogo do design system. Só tokens: nenhuma cor, medida ou
+ *     duração é escrita aqui. Os painéis de tema fixam o `color-scheme`, e as
+ *     cores semânticas, que são `light-dark()`, resolvem para o tema do painel.
+ *
+ * EN: Design system catalog styles, tokens only. Theme panels pin
+ *     `color-scheme`, so the `light-dark()` semantic colors resolve per panel.
+ */
+
+@layer componentes {
+  .catalogo {
+    max-inline-size: calc(var(--grid-breakpoint-max) - 2 * var(--grid-margin-max));
+    margin-inline: auto;
+    padding: 0 var(--space-05) var(--space-12);
+  }
+
+  .catalogo__cabecalho {
+    padding-block: var(--space-10) var(--space-07);
+  }
+
+  .catalogo__introducao,
+  .secao__explicacao {
+    max-inline-size: 65ch;
+    margin-block: var(--space-04) var(--space-05);
+    color: var(--color-text-secondary);
+  }
+
+  .secao {
+    padding-block-start: var(--space-10);
+  }
+
+  .secao__explicacao {
+    margin-block-end: var(--space-07);
+  }
+
+  /* PT: claro e escuro lado a lado a partir do ponto de quebra lg do grid (1056 px). É a
+     única medida escrita à mão, porque o CSS não lê variável dentro de media query. */
+  /* EN: side by side from the grid lg breakpoint; media queries cannot read variables */
+  .lado-a-lado {
+    display: grid;
+    gap: var(--space-06);
+  }
+
+  @media (min-width: 1056px) {
+    .lado-a-lado {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .tema {
+    min-inline-size: 0;
+    padding: var(--space-06);
+    border: var(--border-fina) solid var(--color-border-subtle);
+    border-radius: var(--radius-painel);
+    background: var(--color-background-page);
+    color: var(--color-text-primary);
+  }
+
+  .tema--claro {
+    color-scheme: light;
+  }
+
+  .tema--escuro {
+    color-scheme: dark;
+  }
+
+  .tema__rotulo {
+    margin-block-end: var(--space-05);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .numero {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* PT: o nome do token quebra só nos hífens, e a tabela rola se não couber */
+  /* EN: token names break at hyphens only; the table scrolls when needed */
+  code {
+    overflow-wrap: break-word;
+  }
+
+  /* PT: tabela de cores / EN: color table */
+  .tabela {
+    overflow-x: auto;
+  }
+
+  .tabela table {
+    inline-size: 100%;
+    border-collapse: collapse;
+  }
+
+  .tabela th,
+  .tabela td {
+    padding: var(--space-03) var(--space-04);
+    border-block-end: var(--border-fina) solid var(--color-border-subtle);
+    text-align: start;
+    vertical-align: middle;
+  }
+
+  .tabela thead th {
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .tabela .tabela__grupo {
+    padding-block-start: var(--space-06);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .tabela td:last-child {
+    text-align: end;
+  }
+
+  .amostra {
+    display: block;
+    inline-size: var(--space-07);
+    block-size: var(--space-07);
+    border: var(--border-fina) solid var(--color-border-subtle-em-camada);
+    border-radius: var(--radius-pequeno);
+  }
+
+  .amostra--larga {
+    inline-size: 100%;
+    block-size: var(--space-08);
+  }
+
+  /* PT: paleta primitiva / EN: primitive palette */
+  .paleta__familia {
+    margin-block-end: var(--space-05);
+  }
+
+  .paleta__nome,
+  .paleta__degrau,
+  .tipo__meta {
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .paleta__degraus {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: var(--space-02);
+    margin: var(--space-02) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* PT: tipografia / EN: type */
+  .tipos,
+  .espacos,
+  .raios {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tipo {
+    padding-block: var(--space-05);
+    border-block-end: var(--border-fina) solid var(--color-border-subtle);
+  }
+
+  .tipo__exemplo {
+    margin-block-start: var(--space-03);
+    overflow-wrap: anywhere;
+  }
+
+  /* PT: espaçamento; no celular, a barra vai para a linha de baixo, porque a
+     maior tem 160 px e não cabe ao lado do nome */
+  /* EN: spacing; on phones the bar drops below the name */
+  .espaco {
+    display: grid;
+    grid-template-columns: var(--space-13) 1fr;
+    align-items: center;
+    gap: var(--space-03) var(--space-05);
+    padding-block: var(--space-02);
+  }
+
+  .espaco__barra {
+    display: block;
+    grid-column: 1 / -1;
+    block-size: var(--space-04);
+    border-radius: var(--radius-capsula);
+    background: var(--color-border-strong);
+  }
+
+  @media (min-width: 672px) {
+    .espaco {
+      grid-template-columns: var(--space-13) var(--space-11) 1fr;
+    }
+
+    .espaco__barra {
+      grid-column: auto;
+    }
+  }
+
+  /* PT: raios / EN: radius */
+  .raios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-07);
+  }
+
+  .raio {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-03);
+  }
+
+  .raio__caixa {
+    display: block;
+    inline-size: var(--space-11);
+    block-size: var(--space-11);
+    border: var(--border-fina) solid var(--color-border-strong);
+    background: var(--color-background-layer);
+  }
+
+  /* PT: elevação / EN: elevation */
+  .superficies {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-06);
+    padding: var(--space-05);
+  }
+
+  .superficie {
+    min-block-size: var(--space-12);
+    padding: var(--space-05);
+    border-radius: var(--radius-cartao);
+    background: var(--color-background-layer);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .superficie--1 {
+    box-shadow: var(--elevation-1);
+  }
+
+  .superficie--2 {
+    box-shadow: var(--elevation-2);
+  }
+
+  /* PT: vidro sobre o campo de luz / EN: glass over the light field */
+  .campo-de-luz {
+    --opacidade: calc(var(--material-campo-de-luz-opacidade) * 100%);
+
+    display: grid;
+    gap: var(--space-06);
+    padding: var(--space-07) var(--space-06);
+    border-radius: var(--radius-cartao);
+    background:
+      radial-gradient(
+        40% 60% at 12% 18%,
+        color-mix(in oklch, var(--color-campo-de-luz-azul) var(--opacidade), transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        45% 55% at 88% 30%,
+        color-mix(in oklch, var(--color-campo-de-luz-roxo) var(--opacidade), transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        55% 60% at 45% 100%,
+        color-mix(in oklch, var(--color-campo-de-luz-verde-azulado) var(--opacidade), transparent),
+        transparent 70%
+      ),
+      var(--color-background-page);
+  }
+
+  .vidro {
+    padding: var(--space-05) var(--space-06);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-cartao);
+    box-shadow: var(--elevation-2), var(--elevation-brilho);
+  }
+
+  .vidro--claro {
+    justify-self: start;
+    border-radius: var(--radius-capsula);
+    background: var(--material-vidro-claro-preenchimento);
+    backdrop-filter: blur(var(--material-vidro-claro-desfoque))
+      saturate(var(--material-vidro-claro-saturacao));
+  }
+
+  .vidro--regular {
+    background: var(--material-vidro-regular-preenchimento);
+    backdrop-filter: blur(var(--material-vidro-regular-desfoque))
+      saturate(var(--material-vidro-regular-saturacao));
+  }
+
+  /* PT: sem backdrop-filter, a superfície vira sólida / EN: solid without backdrop-filter */
+  @supports not (backdrop-filter: blur(1px)) {
+    .vidro {
+      background: var(--color-background-layer);
+    }
+  }
+
+  .vidro__titulo {
+    font: var(--type-heading-02);
+    letter-spacing: var(--type-heading-02-letter-spacing);
+  }
+
+  .vidro__texto {
+    margin-block-start: var(--space-02);
+    color: var(--color-text-helper);
+  }
+
+  /* PT: movimento / EN: motion */
+  .movimento {
+    display: grid;
+    gap: var(--space-05);
+    max-inline-size: calc(4 * var(--space-13));
+  }
+
+  .movimento__linha {
+    display: grid;
+    gap: var(--space-03);
+  }
+
+  .trilho {
+    position: relative;
+    block-size: var(--space-07);
+    border: var(--border-fina) solid var(--color-border-subtle);
+    border-radius: var(--radius-capsula);
+    background: var(--color-background-layer);
+  }
+
+  .bolinha {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: var(--space-02);
+    inline-size: var(--space-06);
+    block-size: var(--space-06);
+    border-radius: var(--radius-capsula);
+    background: var(--color-interactive);
+    translate: 0 -50%;
+    transition: inset-inline-start var(--motion-duracao-longa) var(--motion-curva-mola);
+  }
+
+  .bolinha--produtiva {
+    transition-timing-function: var(--motion-curva-produtiva);
+  }
+
+  .movimento--movido .bolinha {
+    inset-inline-start: calc(100% - var(--space-06) - var(--space-02));
+  }
+
+  .movimento__botao {
+    justify-self: start;
+    block-size: var(--botao-altura);
+    padding-inline: var(--space-06);
+    border: 0;
+    border-radius: var(--botao-raio);
+    background: var(--botao-primario-fundo);
+    color: var(--botao-primario-texto);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    cursor: pointer;
+    transition: background-color var(--motion-duracao-curta) var(--motion-curva-produtiva);
+  }
+
+  .movimento__botao:hover {
+    background: var(--botao-primario-fundo-hover);
+  }
+
+  .movimento__botao:active {
+    background: var(--botao-primario-fundo-pressionado);
+  }
+}

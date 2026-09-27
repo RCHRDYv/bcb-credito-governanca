@@ -1,0 +1,20 @@
+{
+  "botao": {
+    "$description": "Botões em cápsula, do guia do design system. Os demais ajustes entram com os componentes, na #64.",
+    "altura": { "$type": "dimension", "$value": "{size.controle}" },
+    "raio": { "$type": "dimension", "$value": "{radius.capsula}" },
+    "primario": {
+      "fundo": { "$type": "color", "$value": "{color.background.brand.default}" },
+      "fundo-hover": { "$type": "color", "$value": "{color.background.brand.hover}" },
+      "fundo-pressionado": { "$type": "color", "$value": "{color.background.brand.pressed}" },
+      "texto": { "$type": "color", "$value": "{color.text.on-color}" }
+    }
+  },
+  "foco": {
+    "$description": "O anel de foco, sempre visível",
+    "anel": {
+      "largura": { "$type": "dimension", "$value": "{border.foco}" },
+      "cor": { "$type": "color", "$value": "{color.focus}" }
+    }
+  }
+}

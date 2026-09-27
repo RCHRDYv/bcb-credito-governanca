@@ -1,0 +1,19 @@
+/*
+ * PT: A barra de topo com o nome do produto, comum a todas as páginas. A
+ *     navegação entre as visões (RF-G01) entra aqui quando as visões chegarem.
+ * EN: The top bar with the product name, shared by every page.
+ */
+
+@layer componentes {
+  .topo {
+    border-block-end: var(--border-fina) solid var(--color-border-subtle);
+  }
+
+  .topo__nome {
+    max-inline-size: calc(var(--grid-breakpoint-max) - 2 * var(--grid-margin-max));
+    margin-inline: auto;
+    padding: var(--space-05);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+}

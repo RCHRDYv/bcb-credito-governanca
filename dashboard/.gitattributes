@@ -1,0 +1,7 @@
+# PT: Fim de linha LF em todo o site do dashboard, também no Windows. O
+#     repositório já guarda LF (hook mixed-line-ending), e o Biome formata
+#     com LF; sem isto, o Git entrega CRLF no Windows e o lint acusa todos
+#     os arquivos.
+# EN: LF line endings for the whole dashboard site, also on Windows.
+* text=auto eol=lf
+*.woff2 binary

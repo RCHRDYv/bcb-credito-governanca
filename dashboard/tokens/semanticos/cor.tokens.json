@@ -1,0 +1,400 @@
+{
+  "color": {
+    "$type": "color",
+    "$description": "O papel de cada cor na interface. O $value é o tema claro, do g10 do Carbon, e o escuro fica em $extensions, do g100. Os dois apontam para primitivos.",
+    "background": {
+      "page": {
+        "$value": "{color.gray.10}",
+        "$description": "Fundo da página (background)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.100}"
+          }
+        }
+      },
+      "layer": {
+        "$value": "{color.white}",
+        "$description": "Camada sólida (layer-01)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.90}"
+          }
+        }
+      },
+      "layer-hover": {
+        "$value": "{color.hover.gray-10}",
+        "$description": "Camada com o mouse em cima (layer-hover-01)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.hover.gray-90}"
+          }
+        }
+      },
+      "selected": {
+        "$value": "{color.blue.10}",
+        "$description": "Fundo de seleção",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.blue.90}"
+          }
+        }
+      },
+      "brand": {
+        "default": {
+          "$value": "{color.blue.60}",
+          "$description": "Botão primário (button-primary), igual nos dois temas",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.blue.60}"
+            }
+          }
+        },
+        "hover": {
+          "$value": "{color.hover.blue-60}",
+          "$description": "Botão primário com o mouse em cima",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.hover.blue-60}"
+            }
+          }
+        },
+        "pressed": {
+          "$value": "{color.blue.80}",
+          "$description": "Botão primário pressionado",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.blue.80}"
+            }
+          }
+        }
+      }
+    },
+    "border": {
+      "subtle": {
+        "$value": "{color.gray.20}",
+        "$description": "Borda sutil (border-subtle-01)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.70}"
+          }
+        }
+      },
+      "subtle-em-camada": {
+        "$value": "{color.gray.30}",
+        "$description": "Borda sutil em camada (border-subtle-00)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.80}"
+          }
+        }
+      },
+      "strong": {
+        "$value": "{color.gray.50}",
+        "$description": "Borda forte (border-strong-01)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.60}"
+          }
+        }
+      }
+    },
+    "text": {
+      "primary": {
+        "$value": "{color.gray.100}",
+        "$description": "Texto principal (text-primary)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.10}"
+          }
+        }
+      },
+      "secondary": {
+        "$value": "{color.gray.70}",
+        "$description": "Texto secundário (text-secondary)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.30}"
+          }
+        }
+      },
+      "helper": {
+        "$value": "{color.gray.60}",
+        "$description": "Texto de ajuda (text-helper)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.40}"
+          }
+        }
+      },
+      "placeholder": {
+        "$value": "{color.transparente.cinza-100.40}",
+        "$description": "Texto de exemplo nos campos (text-placeholder)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.transparente.cinza-10.40}"
+          }
+        }
+      },
+      "on-color": {
+        "$value": "{color.white}",
+        "$description": "Texto sobre cor forte, como no botão primário (text-on-color)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.white}"
+          }
+        }
+      }
+    },
+    "interactive": {
+      "$value": "{color.blue.60}",
+      "$description": "Borda e ícone de elemento interativo (interactive)",
+      "$extensions": {
+        "credito-pj": {
+          "escuro": "{color.blue.50}"
+        }
+      }
+    },
+    "link": {
+      "default": {
+        "$value": "{color.blue.60}",
+        "$description": "Link (link-primary)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.blue.40}"
+          }
+        }
+      },
+      "hover": {
+        "$value": "{color.blue.70}",
+        "$description": "Link com o mouse em cima (link-primary-hover)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.blue.30}"
+          }
+        }
+      }
+    },
+    "focus": {
+      "$value": "{color.blue.60}",
+      "$description": "Anel de foco (focus)",
+      "$extensions": {
+        "credito-pj": {
+          "escuro": "{color.white}"
+        }
+      }
+    },
+    "support": {
+      "info": {
+        "$value": "{color.blue.70}",
+        "$description": "Informação: ícone e texto",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.blue.50}"
+          }
+        }
+      },
+      "success": {
+        "$value": "{color.green.50}",
+        "$description": "Sucesso: só ícone e marca, nunca texto",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.green.40}"
+          }
+        }
+      },
+      "error": {
+        "$value": "{color.red.60}",
+        "$description": "Erro: ícone, borda e texto",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.red.50}"
+          }
+        }
+      },
+      "warning": {
+        "$value": "{color.yellow.30}",
+        "$description": "Atenção: só preenchimento de ícone, com o glifo no texto principal do tema claro",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.yellow.30}"
+          }
+        }
+      }
+    },
+    "quadrante": {
+      "$description": "Os quatro quadrantes da recomendação (ADR 0014). A marca vai em pontos, faixas e no ponto da etiqueta; o texto usa o tom de leitura da mesma cor. No escuro, as marcas ficam nos mesmos degraus do claro, menos o roxo, que sobe para o 50 para ter contraste, e os textos usam degraus claros. As duas paletas de marcas passaram no validador de daltonismo em 2026-09-27, com o mesmo alerta entre vermelho e amarelo para deuteranopia, aceito porque o quadrante sempre leva ícone e rótulo.",
+      "entrar": {
+        "marca": {
+          "$value": "{color.teal.50}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.teal.50}"
+            }
+          }
+        },
+        "texto": {
+          "$value": "{color.teal.70}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.teal.30}"
+            }
+          }
+        }
+      },
+      "observar": {
+        "marca": {
+          "$value": "{color.yellow.50}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.yellow.50}"
+            }
+          }
+        },
+        "texto": {
+          "$value": "{color.yellow.80}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.yellow.20}"
+            }
+          }
+        }
+      },
+      "nao-entrar": {
+        "marca": {
+          "$value": "{color.red.60}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.red.60}"
+            }
+          }
+        },
+        "texto": {
+          "$value": "{color.red.70}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.red.30}"
+            }
+          }
+        }
+      },
+      "manter": {
+        "marca": {
+          "$value": "{color.purple.70}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.50}"
+            }
+          }
+        },
+        "texto": {
+          "$value": "{color.purple.70}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.30}"
+            }
+          }
+        }
+      }
+    },
+    "alerta-antecipado": {
+      "$description": "O par do Carbon para atenção, no alerta antecipado (ADR 0014, decisão 6)",
+      "fundo": {
+        "$value": "{color.yellow.10}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.yellow.90}"
+          }
+        }
+      },
+      "texto": {
+        "$value": "{color.yellow.80}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.yellow.20}"
+          }
+        }
+      }
+    },
+    "campo-de-luz": {
+      "$description": "As manchas de luz atrás do vidro, com as cores do próprio Carbon",
+      "azul": {
+        "$value": "{color.blue.30}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.blue.80}"
+          }
+        }
+      },
+      "roxo": {
+        "$value": "{color.purple.30}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.purple.80}"
+          }
+        }
+      },
+      "verde-azulado": {
+        "$value": "{color.teal.20}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.teal.80}"
+          }
+        }
+      }
+    },
+    "sombra": {
+      "$description": "As cores das sombras das elevações. No escuro, a sombra precisa ser mais forte para aparecer.",
+      "contato": {
+        "$value": "{color.transparente.preto.08}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.transparente.preto.40}"
+          }
+        }
+      },
+      "difusa": {
+        "$value": "{color.transparente.preto.06}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.transparente.preto.30}"
+          }
+        }
+      },
+      "flutuante": {
+        "$value": "{color.transparente.preto.14}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.transparente.preto.50}"
+          }
+        }
+      }
+    },
+    "brilho": {
+      "$description": "As cores do brilho na borda de toda superfície de vidro",
+      "topo": {
+        "$value": "{color.transparente.branco.95}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.transparente.branco.14}"
+          }
+        }
+      },
+      "base": {
+        "$value": "{color.transparente.preto.05}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.transparente.preto.30}"
+          }
+        }
+      },
+      "interno": {
+        "$value": "{color.transparente.branco.35}",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.transparente.branco.04}"
+          }
+        }
+      }
+    }
+  }
+}

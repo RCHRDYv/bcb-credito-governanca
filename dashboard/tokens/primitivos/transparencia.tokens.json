@@ -1,0 +1,178 @@
+{
+  "color": {
+    "transparente": {
+      "$type": "color",
+      "$description": "Cores com transparência que o Carbon e a camada Liquid Glass usam. O número é a opacidade, em porcentagem.",
+      "branco": {
+        "12": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.12,
+            "hex": "#ffffff"
+          }
+        },
+        "14": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.14,
+            "hex": "#ffffff"
+          }
+        },
+        "22": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.22,
+            "hex": "#ffffff"
+          }
+        },
+        "35": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.35,
+            "hex": "#ffffff"
+          }
+        },
+        "62": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.62,
+            "hex": "#ffffff"
+          }
+        },
+        "78": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.78,
+            "hex": "#ffffff"
+          }
+        },
+        "95": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.95,
+            "hex": "#ffffff"
+          }
+        },
+        "04": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.04,
+            "hex": "#ffffff"
+          }
+        }
+      },
+      "preto": {
+        "14": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.14,
+            "hex": "#000000"
+          }
+        },
+        "30": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.3,
+            "hex": "#000000"
+          }
+        },
+        "40": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.4,
+            "hex": "#000000"
+          }
+        },
+        "50": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.5,
+            "hex": "#000000"
+          }
+        },
+        "05": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.05,
+            "hex": "#000000"
+          }
+        },
+        "06": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.06,
+            "hex": "#000000"
+          }
+        },
+        "08": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.08,
+            "hex": "#000000"
+          }
+        }
+      },
+      "cinza-10": {
+        "40": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.956863, 0.956863, 0.956863],
+            "alpha": 0.4,
+            "hex": "#f4f4f4"
+          }
+        }
+      },
+      "cinza-90": {
+        "40": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.14902, 0.14902, 0.14902],
+            "alpha": 0.4,
+            "hex": "#262626"
+          }
+        },
+        "72": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.14902, 0.14902, 0.14902],
+            "alpha": 0.72,
+            "hex": "#262626"
+          }
+        }
+      },
+      "cinza-100": {
+        "28": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.086275, 0.086275, 0.086275],
+            "alpha": 0.28,
+            "hex": "#161616"
+          }
+        },
+        "40": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.086275, 0.086275, 0.086275],
+            "alpha": 0.4,
+            "hex": "#161616"
+          }
+        }
+      }
+    }
+  }
+}

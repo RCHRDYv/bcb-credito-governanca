@@ -1,0 +1,15 @@
+/*
+ * PT: Ponto de entrada do CSS. A primeira linha fixa a ordem das camadas: o
+ *     que vem depois ganha. Os componentes (#64) entram na camada
+ *     `componentes`, e nunca precisam de `!important` para vencer a base.
+ *
+ * EN: CSS entry point. The first line fixes the cascade layer order; later
+ *     layers win, so components never need `!important` over the base.
+ */
+
+@layer reset, tokens, base, componentes, utilitarios;
+
+@import "./fontes.css" layer(base);
+@import "./tokens.css";
+@import "./base.css";
+@import "./topo.css";
