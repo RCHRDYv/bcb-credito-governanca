@@ -45,7 +45,7 @@ Dois diferenciais, com o mesmo peso (confirmado em 2026-09-26):
 - Formatação brasileira: R$ 1,2 bi, 3,4 p.p., set/26. Nomes de modalidade iguais aos do BCB.
 - Terminologia fixa: os quatro quadrantes são Entrar, Observar, Manter e Não entrar. "Custo de errar", "fronteira do dado" e "alerta antecipado" têm definição no ADR 0014.
 - Em aberto: o nome do produto. As telas usam "Crédito PJ" como nome provisório.
-- Decidido em 2026-09-26: as visões não têm bloco de título-conclusão. A visão abre nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do gráfico, gerada do dado.
+- Decidido em 2026-09-26: as visões não têm bloco de título-conclusão, e os gráficos não trazem conclusão escrita. A visão abre nos filtros e na visualização, o cabeçalho de cada gráfico tem só o título e a data-base com a fonte, e quem quiser tirar uma conclusão pergunta ao chat.
 
 ## Brand Commitments
 

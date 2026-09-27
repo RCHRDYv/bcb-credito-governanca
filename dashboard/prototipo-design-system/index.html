@@ -506,8 +506,8 @@ WHERE f.uf = 'RJ' AND f.cliente = 'PJ'
     <section class="bloco" id="padroes">
       <h2 class="tit">Padrões de uso</h2>
       <div class="padrao"><div class="anat"><span class="marc">TÍTULO DO GRÁFICO</span><div style="font-size:16px;font-weight:600;line-height:24px">Espaço contra risco, por estado e modalidade</div>
-        <span class="marc" style="margin-top:8px">CONCLUSÃO, QUANDO HOUVER</span><div style="font-size:14px;line-height:20px;color:var(--tinta-2)">Em 35 combinações, dá para crescer sem que o risco piore mais que no país.</div><span class="marc" style="margin-top:8px">DATA-BASE E FONTE</span><div class="nota">Data-base jul/2026 · SCR.data, Banco Central</div></div>
-        <div class="regra"><b>Cabeçalho do gráfico, sem bloco de título na visão.</b> A visão abre nos filtros e na visualização (decidido em 2026-09-26). Cada gráfico traz o título, a conclusão quando houver, gerada do dado e nunca digitada, e a data-base com a fonte.</div></div>
+        <span class="marc" style="margin-top:8px">DATA-BASE E FONTE</span><div class="nota">Data-base jul/2026 · SCR.data, Banco Central</div></div>
+        <div class="regra"><b>Cabeçalho do gráfico, sem bloco de título na visão e sem conclusão escrita.</b> A visão abre nos filtros e na visualização, e cada gráfico traz só o título e a data-base com a fonte (decidido em 2026-09-26). Quem quiser tirar uma conclusão pergunta ao chat.</div></div>
       <div class="padrao"><div class="anat"><div class="linha-comp" style="margin:0"><div class="segmentado"><button aria-pressed="true">Todos</button><button>Entrar</button><button>Observar</button></div><button class="chip">Empréstimos</button><button class="chip">Financiamentos</button></div></div>
         <div class="regra"><b>Filtros numa linha só, acima do conteúdo.</b> Filtrar nunca repinta as cores: cada quadrante mantém a sua cor com ou sem filtro.</div></div>
       <div class="padrao"><div class="anat"><span class="marc">DETALHE</span><dl class="kv"><dt>Carteira PJ</dt><dd>R$ 219,4 bi</dd><dt>Índice de espaço</dt><dd>0,87</dd><dt>Variação em 6 meses</dt><dd>+0,15 p.p.</dd><dt>No país</dt><dd>+0,19 p.p.</dd></dl></div>
@@ -518,7 +518,7 @@ WHERE f.uf = 'RJ' AND f.cliente = 'PJ'
 
     <section class="bloco" id="wireframes">
       <h2 class="tit">Grid e modelos de página</h2>
-      <p class="explica">O grid é o padrão do Carbon. Os modelos são esqueletos genéricos, sem dado e sem ligação com uma visão específica: cada visão do dashboard escolhe o modelo que serve à pergunta dela. O chat só aparece nos modelos que o preveem. Nenhuma visão tem bloco de título no topo: a conclusão, quando houver, fica no cabeçalho do gráfico.</p>
+      <p class="explica">O grid é o padrão do Carbon. Os modelos são esqueletos genéricos, sem dado e sem ligação com uma visão específica: cada visão do dashboard escolhe o modelo que serve à pergunta dela. O chat só aparece nos modelos que o preveem. Nenhuma visão tem bloco de título no topo, e os gráficos não trazem conclusão escrita.</p>
       <h3>Grid 2x do Carbon</h3>
       <table class="t"><thead><tr><th>Ponto de quebra</th><th class="n">A partir de</th><th class="n">Colunas</th><th class="n">Margem</th></tr></thead><tbody><tr><td>sm, celular</td><td class="n">320 px</td><td class="n">4</td><td class="n">0</td></tr><tr><td>md, tablet</td><td class="n">672 px</td><td class="n">8</td><td class="n">16 px</td></tr><tr><td>lg, notebook</td><td class="n">1056 px</td><td class="n">16</td><td class="n">16 px</td></tr><tr><td>xlg, desktop</td><td class="n">1312 px</td><td class="n">16</td><td class="n">16 px</td></tr><tr><td>max, tela grande</td><td class="n">1584 px</td><td class="n">16</td><td class="n">24 px</td></tr></tbody></table>
       <div class="reguas">
@@ -539,7 +539,7 @@ WHERE f.uf = 'RJ' AND f.cliente = 'PJ'
       <ul class="regras-wf">
         <li><b>Cada visão escolhe o seu modelo</b> pela pergunta que responde. Visões diferentes podem usar grids diferentes.</li>
         <li><b>O chat é opcional por visão.</b> Quando existe, fica num trilho de 4 colunas à direita no desktop, ou num botão flutuante nos modelos de tela cheia e no celular.</li>
-        <li><b>Nenhuma visão tem bloco de título no topo</b> (decidido em 2026-09-26). A visão abre nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do gráfico.</li>
+        <li><b>Nenhuma visão tem bloco de título no topo</b> (decidido em 2026-09-26). A visão abre nos filtros e na visualização, e o cabeçalho de cada gráfico tem só o título e a data-base com a fonte.</li>
         <li><b>Toda visão tem uma alternativa em tabela</b> para quem não lê cor ou prefere números.</li>
       </ul>
     </section>

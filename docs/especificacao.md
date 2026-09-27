@@ -186,7 +186,7 @@ Declarar essa fronteira é parte da entrega. Uma recomendação sem ela é palpi
 
 ### O dashboard conta a decisão
 
-Uma pergunta por tela, e não uma galeria de indicadores. As telas não têm bloco de título-conclusão no topo: abrem nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do próprio gráfico, gerada do dado (decidido em 2026-09-26, [design system](dashboard/design-system.md)):
+Uma pergunta por tela, e não uma galeria de indicadores. As telas não têm bloco de título-conclusão no topo, e os gráficos não trazem conclusão escrita: a tela abre nos filtros e na visualização, e quem quiser tirar uma conclusão pergunta ao chat (decidido em 2026-09-26, [design system](dashboard/design-system.md)):
 
 1. Onde está o crédito PJ hoje, e onde ele é escasso por empresa
 2. Onde o risco está piorando, com a distinção entre inadimplência e ativo problemático
