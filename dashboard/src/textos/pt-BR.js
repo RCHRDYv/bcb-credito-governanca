@@ -23,9 +23,9 @@ export const ptBR = Object.freeze({
   "inicio.em-construcao": "As visões do dashboard estão em construção.",
 
   "catalogo.titulo-da-pagina": "Catálogo do design system · Crédito PJ",
-  "catalogo.titulo": "Fundações do design system",
+  "catalogo.titulo": "Catálogo do design system",
   "catalogo.introducao":
-    "Cores, tipos, espaços, raios, elevação, vidro, movimento e gráficos, lidos direto dos tokens. As seções que mudam com o tema mostram o claro e o escuro lado a lado. Os componentes de interface entram nesta página com a #64.",
+    "As fundações, os componentes e os gráficos do dashboard, lidos direto dos tokens. As seções que mudam com o tema mostram o claro e o escuro lado a lado, e o controle no topo troca o tema da página.",
   "catalogo.guia": "Ler o guia do design system",
   "catalogo.tema-claro": "Tema claro",
   "catalogo.tema-escuro": "Tema escuro",
@@ -83,6 +83,76 @@ export const ptBR = Object.freeze({
   "catalogo.produtiva": "Curva produtiva do Carbon",
   "catalogo.mover": "Mover",
 
+  "catalogo.controles": "Controles",
+  "catalogo.controles-explicacao":
+    "Botões, controle segmentado, chips e campos, com os estados de cada um. O foco do teclado aparece sempre, e cada controle funciona sem mouse.",
+  "catalogo.botoes": "Botões: primário, secundário, sutil, desativado e carregando",
+  "catalogo.exemplo-aplicar": "Aplicar filtro",
+  "catalogo.exemplo-exportar": "Exportar PDF",
+  "catalogo.desativado": "Desativado",
+  "catalogo.controle-segmentado": "Controle segmentado",
+  "catalogo.exemplo-visao": "Visão",
+  "catalogo.visao-credito": "Onde está o crédito",
+  "catalogo.visao-risco": "Onde o risco piora",
+  "catalogo.visao-recomendacao": "Recomendação",
+  "catalogo.chips": "Chips de filtro",
+  "catalogo.exemplo-modalidades": "Modalidades",
+  "catalogo.campos": "Campos: com ajuda, preenchido, com erro e desativado",
+  "catalogo.campo-estado": "Estado",
+  "catalogo.exemplo-sp": "Ex.: SP",
+  "catalogo.ajuda-estado": "A sigla da UF, com duas letras.",
+  "catalogo.campo-modalidade": "Modalidade",
+  "catalogo.erro-estado": "Não existe UF com essa sigla. Use duas letras, como SP.",
+  "catalogo.campo-pergunta": "Pergunta",
+  "catalogo.chat-indisponivel": "Chat indisponível",
+  "catalogo.dados-e-avisos": "Dados e avisos",
+  "catalogo.dados-e-avisos-explicacao":
+    "Etiquetas, tabela, dica flutuante e avisos, com os números de jul/2026 da recomendação. Nenhum significado depende só da cor.",
+  "catalogo.etiquetas": "Etiquetas de quadrante e alerta antecipado",
+  "catalogo.tabela": "Tabela",
+  "catalogo.tabela-legenda":
+    "As duas combinações de UF e modalidade com mais carteira PJ em cada quadrante, {data}",
+  "catalogo.coluna-uf": "UF",
+  "catalogo.coluna-modalidade": "Modalidade",
+  "catalogo.coluna-carteira": "Carteira PJ",
+  "catalogo.coluna-espaco": "Índice de espaço",
+  "catalogo.coluna-risco": "Variação além do país",
+  "catalogo.coluna-quadrante": "Quadrante",
+  "catalogo.coluna-alerta": "Alerta",
+  "catalogo.dica": "Dica flutuante",
+  "catalogo.dica-nota":
+    "A primeira dica aparece aberta, para mostrar o visual. A segunda abre com o mouse ou com o foco do teclado, e fecha com o Esc.",
+  "catalogo.avisos": "Avisos: informação, atenção e erro",
+  "catalogo.aviso-uf-da-sede": "A UF é a da sede da empresa, e não onde o crédito foi usado.",
+  "catalogo.aviso-quebra": "A série cruza a mudança de critério do ativo problemático de jan/2025.",
+  "catalogo.aviso-erro": "Os dados não carregaram. Tente de novo em alguns segundos.",
+  "catalogo.chat": "Chat",
+  "catalogo.chat-explicacao":
+    "A pergunta, a resposta com o número, a frase, a ressalva e o SQL recolhido, a abstenção quando o dado não permite responder, e a entrada.",
+  "catalogo.chat-ilustrativo":
+    "Exemplo ilustrativo: o chat entra na v0.3 (#51). O número vem do dado do projeto; o SQL é um exemplo e não foi executado.",
+  "catalogo.chat-pergunta": "Qual a carteira PJ por empresa ativa em {modalidade} em São Paulo?",
+  "catalogo.chat-frase": "em {data}, a maior entre as UFs. A mediana das UFs é {mediana}.",
+  "catalogo.chat-sql":
+    "select sum(c.carteira_ativa) / sum(e.empresas_ativas)\nfrom fct_carteira c\njoin dim_modalidade m using (codigo_submodalidade)\njoin fct_empresas_ativas e using (data_base, uf)\nwhere c.data_base = '2026-07-31' and c.uf = 'SP'\n  and c.cliente = 'PJ' and m.modalidade = 'Empréstimos'",
+  "catalogo.chat-pergunta-sem-dado": "Qual banco mais emprestou para empresas no Rio de Janeiro?",
+  "catalogo.chat-motivo": "O SCR.data é agregado por segmento, e não identifica instituições.",
+  "catalogo.chat-faltaria":
+    "Para responder, seria preciso o dado por instituição, que o SCR.data não publica.",
+  "catalogo.estados": "Estados",
+  "catalogo.estados-explicacao":
+    "Carregando, vazio, erro e o chat acordando. Cada estado diz o que está acontecendo e, quando dá, a saída.",
+  "catalogo.estado-carregando": "Carregando",
+  "catalogo.estado-vazio": "Vazio",
+  "catalogo.estado-erro": "Erro",
+  "catalogo.estado-chat-acordando": "Chat acordando",
+  "catalogo.vazio-titulo": "Nenhuma combinação neste filtro",
+  "catalogo.vazio-texto":
+    "Nenhuma combinação passa no corte de R$ 1 bi com esse filtro. Tire um dos filtros para ver mais.",
+  "catalogo.erro-titulo": "Os dados não carregaram",
+  "catalogo.erro-texto":
+    "O arquivo da visão não respondeu. As outras visões continuam funcionando.",
+
   "catalogo.paletas-de-grafico": "Paletas de gráfico",
   "catalogo.paletas-de-grafico-explicacao":
     "Cada paleta tem um papel. A categórica diz qual série é qual; a sequencial diz quanto; a divergente diz para que lado de uma referência. As faixas de baixo mostram como cada paleta aparece para quem tem daltonismo, pela simulação de Machado, Oliveira e Fernandes (2009).",
@@ -132,6 +202,28 @@ export const ptBR = Object.freeze({
   "matriz.eixo-risco-curto": "Variação além da do país",
   "matriz.eixo-espaco-estreito": "Carteira por empresa ÷ mediana",
   "matriz.eixo-risco-estreito": "Além do país (p.p.)",
+
+  "alerta-antecipado.nome": "Alerta antecipado",
+
+  "tema.rotulo": "Tema",
+  "tema.claro": "Claro",
+  "tema.escuro": "Escuro",
+  "tema.automatico": "Automático",
+
+  "chat.conversa": "Conversa com o chat",
+  "chat.pergunta": "Pergunta",
+  "chat.resposta": "Resposta do chat",
+  "chat.ver-o-sql": "Ver o SQL",
+  "chat.abstencao": "Não dá para responder com este dado.",
+  "chat.exemplo": "Pergunte sobre crédito PJ",
+  "chat.rotulo-da-entrada": "Sua pergunta sobre crédito PJ",
+  "chat.enviar": "Enviar a pergunta",
+
+  "estado.carregando": "Carregando os dados",
+  "estado.tentar-de-novo": "Tentar de novo",
+  "estado.chat-acordando": "O chat está acordando",
+  "estado.chat-acordando-texto":
+    "O modelo leva alguns segundos para carregar na primeira pergunta. As outras telas continuam funcionando enquanto isso.",
 
   "quadrante.entrar": "Entrar",
   "quadrante.observar": "Observar",

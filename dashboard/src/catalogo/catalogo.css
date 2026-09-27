@@ -247,29 +247,17 @@
 
   /* PT: vidro sobre o campo de luz / EN: glass over the light field */
   .campo-de-luz {
-    --opacidade: calc(var(--material-campo-de-luz-opacidade) * 100%);
-
     display: grid;
     gap: var(--space-06);
     padding: var(--space-07) var(--space-06);
     border-radius: var(--radius-cartao);
-    background:
-      radial-gradient(
-        40% 60% at 12% 18%,
-        color-mix(in oklch, var(--color-campo-de-luz-azul) var(--opacidade), transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        45% 55% at 88% 30%,
-        color-mix(in oklch, var(--color-campo-de-luz-roxo) var(--opacidade), transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        55% 60% at 45% 100%,
-        color-mix(in oklch, var(--color-campo-de-luz-verde-azulado) var(--opacidade), transparent),
-        transparent 70%
-      ),
-      var(--color-background-page);
+    background: var(--campo-de-luz), var(--color-background-page);
+  }
+
+  /* PT: painéis de componentes com o campo de luz atrás, como na página (#64) */
+  /* EN: component panels with the light field behind, as on the page */
+  .tema--campo-de-luz {
+    background: var(--campo-de-luz), var(--color-background-page);
   }
 
   .vidro {
@@ -452,5 +440,40 @@
 
   .botao-de-tema:active {
     background: var(--botao-primario-fundo-pressionado);
+  }
+
+  /* PT: componentes de interface (#64): cada bloco com o nome e os exemplos */
+  /* EN: interface components: each block with its name and examples */
+  .bloco-de-componente + .bloco-de-componente {
+    margin-block-start: var(--space-07);
+  }
+
+  .bloco-de-componente__nome {
+    margin-block-end: var(--space-04);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .bloco-de-componente__exemplos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-05);
+  }
+
+  /* PT: a tabela, os avisos e o chat ocupam a largura toda / EN: full-width examples */
+  .bloco-de-componente__exemplos > :is(.tabela, .aviso, .carregando) {
+    flex: 1 1 100%;
+    min-inline-size: 0;
+  }
+
+  .selo-ilustrativo {
+    margin-block-end: var(--space-05);
+    padding: var(--space-03) var(--space-04);
+    border: var(--border-fina) dashed var(--color-border-strong);
+    border-radius: var(--radius-controle);
+    color: var(--color-text-secondary);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
   }
 }

@@ -52,6 +52,14 @@
             "hex": "#ffffff"
           }
         },
+        "82": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "alpha": 0.82,
+            "hex": "#ffffff"
+          }
+        },
         "95": {
           "$value": {
             "colorSpace": "srgb",
@@ -151,6 +159,14 @@
             "colorSpace": "srgb",
             "components": [0.14902, 0.14902, 0.14902],
             "alpha": 0.72,
+            "hex": "#262626"
+          }
+        },
+        "88": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.14902, 0.14902, 0.14902],
+            "alpha": 0.88,
             "hex": "#262626"
           }
         }

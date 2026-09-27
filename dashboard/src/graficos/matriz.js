@@ -23,16 +23,16 @@
  *     icon and name, and tooltips, never by color alone.
  */
 
+import { etiquetaDeQuadrante, nomeDoQuadrante } from "../componentes/etiqueta-de-quadrante.js";
 import { elemento } from "../dom.js";
 import { numero, pontos, vezes } from "../formatos.js";
 import { t } from "../textos/index.js";
 import { echarts } from "./echarts.js";
 import { criarGrafico } from "./grafico.js";
-import { iconeDoQuadrante } from "./icones.js";
 import { hex } from "./tema.js";
 
 /** @typedef {import("./grafico.js").Grafico} Grafico */
-/** @typedef {import("./icones.js").Quadrante} Quadrante */
+/** @typedef {import("../componentes/etiqueta-de-quadrante.js").Quadrante} Quadrante */
 
 /**
  * @typedef {object} Celula
@@ -64,35 +64,21 @@ const CANTOS = {
   "nao-entrar": "inferior-esquerdo",
 };
 
-/**
- * PT: A chave do nome de cada quadrante no arquivo de tradução.
- * EN: Each quadrant name's translation key.
- *
- * @type {Record<Quadrante, import("../textos/index.js").ChaveDeTexto>}
- */
-const NOME = {
-  entrar: "quadrante.entrar",
-  observar: "quadrante.observar",
-  "nao-entrar": "quadrante.nao-entrar",
-  manter: "quadrante.manter",
-};
-
 /** PT: margens da área de desenho, em px / EN: plot margins */
 const MARGENS = { esquerda: 64, direita: 16, topo: 16, base: 56 };
 
 /**
- * PT: A etiqueta de um quadrante: ícone e nome, no tom de texto da cor.
- * EN: A quadrant label: icon and name, in the color's text tone.
+ * PT: A etiqueta de quadrante do design system (#64), posta no canto do
+ *     quadrante.
+ * EN: The design system quadrant tag, placed at the quadrant corner.
  *
  * @param {Quadrante} quadrante
  * @returns {HTMLElement}
  */
 function etiqueta(quadrante) {
-  return elemento(
-    "span",
-    { classe: `matriz__etiqueta matriz__etiqueta--${CANTOS[quadrante]} quadrante--${quadrante}` },
-    [iconeDoQuadrante(quadrante), elemento("span", { texto: t(NOME[quadrante]) })],
-  );
+  return elemento("span", { classe: `matriz__canto matriz__canto--${CANTOS[quadrante]}` }, [
+    etiquetaDeQuadrante(quadrante),
+  ]);
 }
 
 /**
@@ -142,7 +128,7 @@ export function matriz(el, { celulas }) {
             `<strong>${echarts.format.encodeHTML(`${c.uf} · ${c.modalidade}`)}</strong>`,
             `${t("matriz.eixo-espaco-curto")}: ${vezes(c.indice_de_espaco)}`,
             `${t("matriz.eixo-risco-curto")}: ${pontos(c.desvio_do_risco)}`,
-            nome ? t(NOME[nome]) : "",
+            nome ? nomeDoQuadrante(nome) : "",
           ].join("<br>");
         },
       },
@@ -169,7 +155,7 @@ export function matriz(el, { celulas }) {
       },
       series: QUADRANTES.map(([doMart, chave], i) => ({
         type: "scatter",
-        name: t(NOME[chave]),
+        name: nomeDoQuadrante(chave),
         itemStyle: { color: hex(`color.quadrante.${chave}.marca`, tema) },
         data: celulas
           .filter((c) => c.quadrante === doMart)

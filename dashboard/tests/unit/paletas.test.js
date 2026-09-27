@@ -4,9 +4,9 @@
  *     As paletas são lidas dos tokens gerados, nos dois temas, e passam pelos
  *     mesmos critérios da revisão: contraste de 3:1 para elemento gráfico
  *     (WCAG 2.2), faixa de luminosidade, croma, e distância entre cores com
- *     e sem daltonismo. As cores são medidas contra as duas superfícies em
- *     que um gráfico pode estar: o vidro regular composto sobre a página e a
- *     camada sólida que o substitui.
+ *     e sem daltonismo. As cores são medidas contra o cartão sólido onde os
+ *     gráficos são desenhados (`color.chart.surface`, decidido em 2026-09-27,
+ *     na #64), que não muda com o campo de luz atrás da página.
  *
  *     Os controles negativos garantem que o teste reprova de verdade: a
  *     paleta oficial do Carbon, que motivou a #63, e uma paleta clara demais
@@ -49,26 +49,23 @@ function reprovados(resultado) {
 for (const tema of TEMAS) {
   describe(`paletas de gráfico no tema ${tema}`, () => {
     const p = paletas(tema);
-    const { vidro, solida } = superficies(tema);
+    const { grafico } = superficies(tema);
 
-    it.each([
-      ["vidro", vidro],
-      ["camada sólida", solida],
-    ])("cada cor categórica passa de 3:1 sobre o %s", (_nome, superficie) => {
+    it("cada cor categórica passa de 3:1 sobre o cartão do gráfico", () => {
       for (const cor of [...p.categorica, p.outros]) {
-        expect(razaoDeContraste(cor, superficie), cor).toBeGreaterThanOrEqual(GRAFICO);
+        expect(razaoDeContraste(cor, grafico), cor).toBeGreaterThanOrEqual(GRAFICO);
       }
     });
 
     it("a categórica passa nos pares vizinhos, para barras e linhas", () => {
-      const resultado = validarCategorica(p.categorica, { tema, superficie: vidro });
+      const resultado = validarCategorica(p.categorica, { tema, superficie: grafico });
       expect(reprovados(resultado)).toEqual([]);
     });
 
     it("as quatro primeiras categóricas passam em todos os pares, para dispersão e mapa", () => {
       const resultado = validarCategorica(p.categorica.slice(0, 4), {
         tema,
-        superficie: vidro,
+        superficie: grafico,
         pares: "todos",
       });
       expect(reprovados(resultado)).toEqual([]);
@@ -79,33 +76,30 @@ for (const tema of TEMAS) {
       // EN: cyan 50 and blue 50 are too close when they touch
       const resultado = validarCategorica(p.categorica.slice(0, 5), {
         tema,
-        superficie: vidro,
+        superficie: grafico,
         pares: "todos",
       });
       expect(resultado.aprovada).toBe(false);
     });
 
-    // PT: sobre o vidro, que é a superfície de sempre. Na camada sólida do
-    //     escuro, a ponta fica em 1,96:1, exceção aceita no ADR 0021
-    // EN: on the glass; the dark solid layer is an accepted exception
-    it("a sequencial é uma rampa válida sobre o vidro", () => {
-      const resultado = validarSequencial(p.sequencial, { tema, superficie: vidro });
+    it("a sequencial é uma rampa válida sobre o cartão do gráfico", () => {
+      const resultado = validarSequencial(p.sequencial, { tema, superficie: grafico });
       expect(reprovados(resultado)).toEqual([]);
     });
 
-    it("a divergente é válida sobre o vidro", () => {
-      const resultado = validarDivergente(p.divergente, { tema, superficie: vidro });
+    it("a divergente é válida sobre o cartão do gráfico", () => {
+      const resultado = validarDivergente(p.divergente, { tema, superficie: grafico });
       expect(reprovados(resultado)).toEqual([]);
     });
   });
 }
 
 describe("controles negativos: o validador reprova paleta ruim", () => {
-  const { vidro } = superficies("claro");
+  const { grafico } = superficies("claro");
 
   it("reprova a categórica oficial do Carbon, pela faixa e pelo croma", () => {
     const oficial = ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#fa4d56", "#520408"];
-    const resultado = validarCategorica(oficial, { tema: "claro", superficie: vidro });
+    const resultado = validarCategorica(oficial, { tema: "claro", superficie: grafico });
     expect(resultado.aprovada).toBe(false);
     const ids = resultado.criterios.filter((c) => c.estado === "reprova").map((c) => c.id);
     expect(ids).toEqual(expect.arrayContaining(["faixa", "croma"]));
@@ -115,7 +109,7 @@ describe("controles negativos: o validador reprova paleta ruim", () => {
     // PT: os degraus 20 do Carbon, claros demais para um fundo quase branco
     // EN: Carbon's 20 steps, too light for a near-white background
     const clara = ["#e8daff", "#bae6ff", "#9ef0f0", "#ffd6e8"];
-    const resultado = validarCategorica(clara, { tema: "claro", superficie: vidro });
+    const resultado = validarCategorica(clara, { tema: "claro", superficie: grafico });
     expect(resultado.aprovada).toBe(false);
     expect(resultado.criterios.find((c) => c.id === "contraste")?.estado).toBe("reprova");
   });
@@ -123,7 +117,7 @@ describe("controles negativos: o validador reprova paleta ruim", () => {
   it("reprova uma rampa fora de ordem", () => {
     const resultado = validarSequencial(["#8a3ffc", "#be95ff", "#491d8b"], {
       tema: "claro",
-      superficie: vidro,
+      superficie: grafico,
     });
     expect(resultado.criterios.find((c) => c.id === "monotonica")?.estado).toBe("reprova");
   });
@@ -131,7 +125,7 @@ describe("controles negativos: o validador reprova paleta ruim", () => {
   it("reprova uma divergente com o meio colorido", () => {
     const resultado = validarDivergente(
       { negativo: ["#08bdba"], neutro: "#ffd6e8", positivo: ["#be95ff"] },
-      { tema: "claro", superficie: vidro },
+      { tema: "claro", superficie: grafico },
     );
     expect(resultado.criterios.find((c) => c.id === "neutro")?.estado).toBe("reprova");
   });

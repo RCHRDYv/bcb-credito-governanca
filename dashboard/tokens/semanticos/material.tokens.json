@@ -14,8 +14,9 @@
       "regular": {
         "preenchimento": {
           "$type": "color",
-          "$value": "{color.transparente.branco.62}",
-          "$extensions": { "credito-pj": { "escuro": "{color.transparente.cinza-90.72}" } }
+          "$value": "{color.transparente.branco.82}",
+          "$description": "Revisto em 2026-09-27, na #64: de 62% para 82% (72% para 88% no escuro), para o texto sobre o vidro passar nos 4,5:1 da WCAG com o campo de luz na cor cheia",
+          "$extensions": { "credito-pj": { "escuro": "{color.transparente.cinza-90.88}" } }
         },
         "desfoque": { "$type": "dimension", "$value": "{blur.26}" },
         "saturacao": { "$type": "number", "$value": "{saturation.180}" }
@@ -35,8 +36,8 @@
     "campo-de-luz": {
       "opacidade": {
         "$type": "number",
-        "$value": 0.45,
-        "$description": "Opacidade das manchas de luz, dentro da faixa de 30% a 50% do guia"
+        "$value": 1,
+        "$description": "Opacidade das manchas de luz: a cor cheia, como no painel de vidro do protótipo. Decidido em 2026-09-27, na #64"
       }
     }
   }

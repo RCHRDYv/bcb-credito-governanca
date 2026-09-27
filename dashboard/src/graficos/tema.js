@@ -6,15 +6,16 @@
  *     `cor()`, e nenhum hex é digitado aqui: se um token muda, o gráfico
  *     muda junto. Existem dois temas, claro e escuro, com os mesmos papéis.
  *
- *     O gráfico é desenhado sobre o vidro regular. Como o vidro é
- *     transparente, a cor que o olho vê atrás das marcas é o vidro composto
- *     sobre o fundo da página, e é contra ela que o contraste é medido.
+ *     O gráfico é desenhado num cartão sólido, e não no vidro (decidido em
+ *     2026-09-27, na #64): o dado fica firme, como pede o ADR 0020, e o campo
+ *     de luz atrás da página não muda o contraste das cores dos gráficos.
+ *     O fundo do cartão é o token `color.chart.surface`, e é contra ele
+ *     que as paletas são validadas.
  *
  * EN: The chart theme, built from the design system tokens. ECharts cannot
  *     read CSS variables, so the theme is assembled here from the generated
- *     token list; no hex is typed in this file. Charts sit on the regular
- *     glass, so contrast is measured against the glass composited over the
- *     page background.
+ *     token list; no hex is typed in this file. Charts sit on a solid card
+ *     (`color.chart.surface`), which is what the palettes are validated on.
  */
 
 import { compor } from "../cor/contraste.js";
@@ -58,18 +59,18 @@ export function hex(caminho, tema) {
 }
 
 /**
- * PT: As superfícies onde um gráfico pode ser desenhado: o vidro regular
- *     composto sobre a página, e a camada sólida que o substitui quando o
- *     navegador não tem `backdrop-filter` e na impressão.
- * EN: The surfaces a chart can sit on.
+ * PT: As superfícies que importam para um gráfico: o cartão sólido onde ele
+ *     é desenhado, e o vidro regular, composto sobre a página, onde fica a
+ *     dica flutuante.
+ * EN: The chart card surface and the regular glass used by the tooltip.
  *
  * @param {Tema} tema
- * @returns {{ vidro: string, solida: string }}
+ * @returns {{ grafico: string, vidro: string }}
  */
 export function superficies(tema) {
   return {
+    grafico: hex("color.chart.surface", tema),
     vidro: hex("material.vidro.regular.preenchimento", tema),
-    solida: hex("color.background.layer", tema),
   };
 }
 
@@ -117,8 +118,7 @@ export function montarTema(tema, troca = {}) {
   const textoSecundario = hex("color.text.secondary", tema);
   const bordaSutil = hex("color.border.subtle", tema);
   const bordaForte = hex("color.border.strong", tema);
-  const fundo = hex("color.background.page", tema);
-  const { vidro } = superficies(tema);
+  const { grafico, vidro } = superficies(tema);
   const fonte = token("font.family.sans").css;
   const categorica = troca.categorica ?? paletas(tema).categorica;
 
@@ -171,16 +171,16 @@ export function montarTema(tema, troca = {}) {
       emphasis: { focus: "series" },
     },
     bar: { itemStyle: { borderRadius: 4 }, barCategoryGap: "30%" },
-    scatter: { symbolSize: 10, itemStyle: { borderColor: vidro, borderWidth: 2 } },
+    scatter: { symbolSize: 10, itemStyle: { borderColor: grafico, borderWidth: 2 } },
     // PT: fronteiras das UFs na cor do fundo: o espaço entre as áreas separa
     //     vizinhas de cores próximas
     // EN: state borders in the background color, as a gap between fills
     map: {
-      itemStyle: { borderColor: fundo, borderWidth: 1 },
+      itemStyle: { borderColor: grafico, borderWidth: 1 },
       label: { show: false },
       emphasis: { label: { show: false }, itemStyle: { borderColor: texto, borderWidth: 2 } },
       select: { disabled: true },
     },
-    heatmap: { itemStyle: { borderColor: vidro, borderWidth: 2, borderRadius: 4 } },
+    heatmap: { itemStyle: { borderColor: grafico, borderWidth: 2, borderRadius: 4 } },
   };
 }

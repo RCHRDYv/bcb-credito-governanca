@@ -1,0 +1,798 @@
+/*
+ * PT: Estilo dos componentes de interface (#64), só com tokens.
+ *
+ *     As cores vêm das variáveis do tokens.css, que já trazem o claro e o
+ *     escuro. Os tons translúcidos que o guia descreve em porcentagem, como
+ *     "fundo azul a 6%" na linha da tabela, usam `color-mix()` sobre as
+ *     variáveis dos tokens, para seguirem o tema sozinhos. Sem suporte a
+ *     `backdrop-filter`, cada vidro vira a camada sólida, e com movimento
+ *     reduzido nada se move (base.css).
+ *
+ * EN: Interface component styles, tokens only. Translucent tints from the
+ *     guide use `color-mix()` over token variables so they follow the theme.
+ */
+
+@layer utilitarios {
+  /* PT: texto só para leitores de tela / EN: screen-reader-only text */
+  .visualmente-oculto {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@layer componentes {
+  /* ---------------------------------------------------------------- ícones */
+
+  /* PT: o ícone acompanha o tamanho do texto ao lado / EN: icons follow the text size */
+  .icone {
+    flex: none;
+    inline-size: 1.25em;
+    block-size: 1.25em;
+  }
+
+  /* ---------------------------------------------------------------- vidro */
+
+  :is(
+    .botao--secundario,
+    .campo__entrada,
+    .tabela,
+    .dica,
+    .aviso,
+    .chat-resposta,
+    .chat-entrada,
+    .estado
+  ) {
+    backdrop-filter: blur(var(--material-vidro-regular-desfoque))
+      saturate(var(--material-vidro-regular-saturacao));
+  }
+
+  /* PT: vidro claro no que flutua: o controle segmentado e os filtros */
+  /* EN: clear glass on floating controls */
+  :is(.segmentado, .chip) {
+    backdrop-filter: blur(var(--material-vidro-claro-desfoque))
+      saturate(var(--material-vidro-claro-saturacao));
+  }
+
+  /* ---------------------------------------------------------------- botão */
+
+  .botao {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--botao-altura);
+    padding-inline: var(--space-06);
+    border: var(--border-fina) solid transparent;
+    border-radius: var(--botao-raio);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    cursor: pointer;
+    transition:
+      translate var(--motion-duracao-curta) var(--motion-curva-mola),
+      scale var(--motion-duracao-media) var(--motion-curva-mola),
+      background-color var(--motion-duracao-curta) var(--motion-curva-produtiva);
+  }
+
+  .botao__conteudo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-03);
+  }
+
+  /* PT: sobe 1 px com o mouse e encolhe para 96% ao pressionar, pela mola */
+  /* EN: lifts 1 px on hover and shrinks to 96% when pressed */
+  .botao:hover:not(:disabled, [aria-busy="true"]) {
+    translate: 0 calc(-1 * var(--border-fina));
+  }
+
+  .botao:active:not(:disabled, [aria-busy="true"]) {
+    scale: 0.96;
+  }
+
+  /* PT: desativado a 40%, como o guia / EN: disabled at 40% */
+  .botao:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .botao--primario {
+    background: var(--botao-primario-fundo);
+    color: var(--botao-primario-texto);
+    box-shadow: var(--elevation-brilho);
+  }
+
+  .botao--primario:hover:not(:disabled) {
+    background: var(--botao-primario-fundo-hover);
+  }
+
+  .botao--primario:active:not(:disabled) {
+    background: var(--botao-primario-fundo-pressionado);
+  }
+
+  .botao--secundario {
+    border-color: var(--material-vidro-borda);
+    background: var(--material-vidro-regular-preenchimento);
+    color: var(--color-text-primary);
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+  }
+
+  .botao--sutil {
+    padding-inline: var(--space-05);
+    background: transparent;
+    color: var(--color-link-default);
+  }
+
+  .botao--sutil:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-interactive) 8%, transparent);
+  }
+
+  /* PT: carregando: o texto fica transparente, mas segura a largura */
+  /* EN: loading: the label turns invisible but keeps the width */
+  .botao__giro {
+    position: absolute;
+    inset: 0;
+    inline-size: var(--space-05);
+    block-size: var(--space-05);
+    margin: auto;
+    border: var(--border-foco) solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .botao--carregando {
+    cursor: progress;
+  }
+
+  /* PT: opacidade zero, e não visibility: o texto some da tela mas continua
+     sendo o nome do botão para leitores de tela */
+  /* EN: opacity, not visibility, so the label stays the accessible name */
+  .botao--carregando .botao__conteudo {
+    opacity: 0;
+  }
+
+  .botao--carregando .botao__giro {
+    opacity: 1;
+    animation: botao-giro calc(2 * var(--motion-duracao-longa)) linear infinite;
+  }
+
+  @keyframes botao-giro {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  /* ---------------------------------------------------------------- controle segmentado */
+
+  /* PT: em tela estreita, as opções não quebram: o controle rola na horizontal,
+     e o foco do teclado traz a opção escolhida para a vista */
+  /* EN: on narrow screens options never wrap; the control scrolls instead */
+  .segmentado {
+    position: relative;
+    display: inline-flex;
+    max-inline-size: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: var(--space-01);
+    padding: var(--space-02);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-capsula);
+    background: var(--material-vidro-claro-preenchimento);
+    box-shadow: var(--elevation-brilho);
+  }
+
+  /* PT: a gota de vidro desliza até a opção escolhida, pela mola longa */
+  /* EN: the glass drop slides to the chosen option */
+  .segmentado__gota {
+    position: absolute;
+    inset-block: var(--space-02);
+    inset-inline-start: 0;
+    inline-size: var(--gota-largura, 0);
+    translate: var(--gota-inicio, 0) 0;
+    border-radius: var(--radius-capsula);
+    background: var(--segmentado-gota);
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+    transition:
+      translate var(--motion-duracao-longa) var(--motion-curva-mola),
+      inline-size var(--motion-duracao-longa) var(--motion-curva-mola);
+  }
+
+  .segmentado__opcao {
+    position: relative;
+    flex: none;
+    white-space: nowrap;
+    block-size: calc(var(--size-controle) - 2 * var(--space-02));
+    padding-inline: var(--space-05);
+    border: 0;
+    border-radius: var(--radius-capsula);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    cursor: pointer;
+    transition: color var(--motion-duracao-curta) var(--motion-curva-produtiva);
+  }
+
+  .segmentado__opcao[aria-checked="true"] {
+    color: var(--color-text-primary);
+  }
+
+  /* ---------------------------------------------------------------- chips */
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-03);
+  }
+
+  /* PT: o ícone de confirmação só aparece no chip selecionado */
+  /* EN: the check icon only shows on the selected chip */
+  .chip .icone {
+    display: none;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-02);
+    min-block-size: var(--space-07);
+    padding-inline: var(--space-04);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-capsula);
+    background: var(--material-vidro-claro-preenchimento);
+    box-shadow: var(--elevation-brilho);
+    color: var(--color-text-primary);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    cursor: pointer;
+    transition:
+      scale var(--motion-duracao-media) var(--motion-curva-mola),
+      background-color var(--motion-duracao-curta) var(--motion-curva-produtiva);
+  }
+
+  .chip:active {
+    scale: 0.95;
+  }
+
+  /* PT: selecionado: fundo azul translúcido, borda azul, texto azul e confirmação */
+  /* EN: selected: translucent blue fill, blue border and text, check icon */
+  .chip[aria-pressed="true"] {
+    border-color: var(--color-interactive);
+    background: color-mix(
+      in oklab,
+      var(--color-interactive) 12%,
+      var(--material-vidro-regular-preenchimento)
+    );
+    color: var(--color-link-hover);
+  }
+
+  .chip[aria-pressed="true"] .icone {
+    display: inline-block;
+  }
+
+  /* ---------------------------------------------------------------- campo */
+
+  .campo {
+    display: grid;
+    gap: var(--space-02);
+    inline-size: min(100%, calc(4 * var(--space-10)));
+  }
+
+  .campo__rotulo {
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .campo__entrada {
+    block-size: var(--size-controle);
+    padding-inline: var(--space-04);
+    border: var(--border-fina) solid var(--color-border-strong);
+    border-radius: var(--radius-controle);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-brilho);
+    color: var(--color-text-primary);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    transition:
+      border-color var(--motion-duracao-curta) var(--motion-curva-produtiva),
+      box-shadow var(--motion-duracao-curta) var(--motion-curva-produtiva);
+  }
+
+  .campo__entrada::placeholder {
+    color: var(--color-text-placeholder);
+    opacity: 1;
+  }
+
+  /* PT: foco: borda azul e anel azul suave de 4 px / EN: blue border and soft ring */
+  .campo__entrada:focus-visible {
+    outline: none;
+    border-color: var(--color-interactive);
+    box-shadow:
+      var(--elevation-brilho),
+      0 0 0 var(--space-02) color-mix(in oklab, var(--color-interactive) 24%, transparent);
+  }
+
+  .campo--erro .campo__entrada {
+    border-color: var(--color-support-error);
+  }
+
+  .campo--erro .campo__entrada:focus-visible {
+    box-shadow:
+      var(--elevation-brilho),
+      0 0 0 var(--space-02) color-mix(in oklab, var(--color-support-error) 24%, transparent);
+  }
+
+  /* PT: desativado a 50%, como o guia / EN: disabled at 50% */
+  .campo__entrada:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .campo__ajuda,
+  .campo__erro {
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+  }
+
+  .campo__ajuda {
+    color: var(--color-text-helper);
+  }
+
+  .campo__erro {
+    display: flex;
+    align-items: center;
+    gap: var(--space-02);
+    color: var(--color-support-error);
+  }
+
+  /* ---------------------------------------------------------------- etiquetas */
+
+  .etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-02);
+    padding: var(--space-01) var(--space-03);
+    border: var(--border-fina) solid
+      color-mix(in oklab, var(--etiqueta-marca) 30%, var(--material-vidro-borda));
+    border-radius: var(--radius-capsula);
+    background: color-mix(
+      in oklab,
+      var(--etiqueta-marca) 12%,
+      var(--material-vidro-regular-preenchimento)
+    );
+    color: var(--etiqueta-texto);
+    font: var(--type-label-01);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    white-space: nowrap;
+  }
+
+  .etiqueta__ponto {
+    inline-size: var(--space-03);
+    block-size: var(--space-03);
+    border-radius: 50%;
+    background: var(--etiqueta-marca);
+  }
+
+  .etiqueta--entrar {
+    --etiqueta-marca: var(--color-quadrante-entrar-marca);
+    --etiqueta-texto: var(--color-quadrante-entrar-texto);
+  }
+
+  .etiqueta--observar {
+    --etiqueta-marca: var(--color-quadrante-observar-marca);
+    --etiqueta-texto: var(--color-quadrante-observar-texto);
+  }
+
+  .etiqueta--nao-entrar {
+    --etiqueta-marca: var(--color-quadrante-nao-entrar-marca);
+    --etiqueta-texto: var(--color-quadrante-nao-entrar-texto);
+  }
+
+  .etiqueta--manter {
+    --etiqueta-marca: var(--color-quadrante-manter-marca);
+    --etiqueta-texto: var(--color-quadrante-manter-texto);
+  }
+
+  .etiqueta--alerta {
+    border-color: var(--color-support-warning);
+    background: var(--color-alerta-antecipado-fundo);
+    color: var(--color-alerta-antecipado-texto);
+  }
+
+  /* ---------------------------------------------------------------- tabela */
+
+  .tabela {
+    overflow-x: auto;
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-cartao);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+  }
+
+  .tabela table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+  }
+
+  .tabela__legenda {
+    padding: var(--space-05) var(--space-05) var(--space-03);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    text-align: start;
+  }
+
+  .tabela :is(th, td) {
+    padding: var(--space-03) var(--space-05);
+    border-block-start: var(--border-fina) solid var(--color-border-subtle);
+    text-align: start;
+    vertical-align: middle;
+  }
+
+  /* PT: o cabeçalho translúcido / EN: translucent header */
+  .tabela thead th {
+    border-block-start: 0;
+    background: color-mix(in oklab, var(--color-background-layer) 50%, transparent);
+    color: var(--color-text-secondary);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    white-space: nowrap;
+  }
+
+  .tabela tbody th {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* PT: a linha sob o mouse ganha azul a 6% / EN: 6% blue on the hovered row */
+  .tabela tbody tr:hover > * {
+    background: color-mix(in oklab, var(--color-interactive) 6%, transparent);
+  }
+
+  .tabela .tabela__numero {
+    text-align: end;
+    white-space: nowrap;
+  }
+
+  /* ---------------------------------------------------------------- dica flutuante */
+
+  .com-dica {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dica {
+    inline-size: max-content;
+    max-inline-size: calc(4 * var(--space-10));
+    padding: var(--space-03) var(--space-04);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-controle);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-2), var(--elevation-brilho);
+    color: var(--color-text-primary);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .com-dica > .dica {
+    position: absolute;
+    z-index: 10;
+    inset-block-start: calc(100% + var(--space-02));
+    inset-inline-start: 0;
+  }
+
+  .dica[hidden] {
+    display: none;
+  }
+
+  /* ---------------------------------------------------------------- avisos */
+
+  .aviso {
+    display: flex;
+    align-items: center;
+    gap: var(--space-04);
+    max-inline-size: 70ch;
+    padding: var(--space-04) var(--space-05);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-controle);
+    background: color-mix(
+      in oklab,
+      var(--aviso-cor) 8%,
+      var(--material-vidro-regular-preenchimento)
+    );
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+    color: var(--color-text-primary);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+  }
+
+  .aviso__icone {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--space-07);
+    block-size: var(--space-07);
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--aviso-cor) 16%, var(--color-background-layer));
+    color: var(--aviso-cor);
+  }
+
+  .aviso__texto {
+    margin: 0;
+  }
+
+  .aviso--informacao {
+    --aviso-cor: var(--color-support-info);
+  }
+
+  .aviso--erro {
+    --aviso-cor: var(--color-support-error);
+  }
+
+  .aviso--atencao {
+    --aviso-cor: var(--color-support-warning);
+  }
+
+  /* PT: atenção: círculo amarelo com o glifo escuro, como o Carbon */
+  /* EN: warning: yellow circle with a dark glyph */
+  .aviso--atencao .aviso__icone {
+    background: var(--color-support-warning);
+    color: var(--aviso-atencao-glifo);
+  }
+
+  /* ---------------------------------------------------------------- chat */
+
+  .conversa {
+    display: grid;
+    gap: var(--space-04);
+    max-inline-size: calc(8 * var(--space-10));
+  }
+
+  .chat-pergunta {
+    justify-self: end;
+    max-inline-size: 90%;
+    padding: var(--space-03) var(--space-05);
+    border-radius: var(--radius-cartao) var(--radius-cartao) var(--radius-pequeno)
+      var(--radius-cartao);
+    background: var(--color-background-brand-default);
+    box-shadow: var(--elevation-brilho);
+    color: var(--color-text-on-color);
+  }
+
+  .chat-resposta {
+    display: grid;
+    gap: var(--space-03);
+    padding: var(--space-05);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-cartao) var(--radius-cartao) var(--radius-cartao)
+      var(--radius-pequeno);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+  }
+
+  .chat-resposta p {
+    margin: 0;
+  }
+
+  .chat-resposta__numero {
+    font: var(--type-heading-04);
+    letter-spacing: var(--type-heading-04-letter-spacing);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chat-resposta__titulo {
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .chat-resposta--abstencao .chat-resposta__frase + .chat-resposta__frase {
+    color: var(--color-text-secondary);
+  }
+
+  .chat-resposta__sql summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-02);
+    color: var(--color-link-default);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .chat-resposta__sql summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chat-resposta__sql summary > svg {
+    transition: rotate var(--motion-duracao-curta) var(--motion-curva-produtiva);
+  }
+
+  .chat-resposta__sql[open] summary > svg {
+    rotate: 90deg;
+  }
+
+  .chat-resposta__sql pre {
+    margin: var(--space-03) 0 0;
+    padding: var(--space-04);
+    overflow-x: auto;
+    border-radius: var(--radius-controle);
+    background: color-mix(in oklab, var(--color-text-primary) 6%, transparent);
+    white-space: pre-wrap;
+  }
+
+  .chat-entrada {
+    display: flex;
+    align-items: center;
+    gap: var(--space-03);
+    max-inline-size: calc(8 * var(--space-10));
+    padding: var(--space-02) var(--space-02) var(--space-02) var(--space-05);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-capsula);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-2), var(--elevation-brilho);
+  }
+
+  /* PT: o anel de foco vai na cápsula inteira / EN: focus ring on the whole capsule */
+  .chat-entrada:focus-within {
+    outline: var(--foco-anel-largura) solid var(--foco-anel-cor);
+    outline-offset: var(--space-01);
+  }
+
+  .chat-entrada__campo {
+    flex: 1;
+    min-inline-size: 0;
+    block-size: var(--size-controle);
+    border: 0;
+    background: transparent;
+    color: var(--color-text-primary);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+  }
+
+  .chat-entrada__campo:focus-visible {
+    outline: none;
+  }
+
+  .chat-entrada__campo::placeholder {
+    color: var(--color-text-placeholder);
+    opacity: 1;
+  }
+
+  .chat-entrada__enviar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--size-controle);
+    block-size: var(--size-controle);
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-background-brand-default);
+    box-shadow: var(--elevation-brilho);
+    color: var(--color-text-on-color);
+    cursor: pointer;
+  }
+
+  .chat-entrada__enviar:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ---------------------------------------------------------------- estados */
+
+  .carregando {
+    display: grid;
+    gap: var(--space-03);
+    max-inline-size: calc(5 * var(--space-10));
+  }
+
+  /* PT: barras em cápsula com um brilho passando / EN: shimmering capsule bars */
+  .carregando__barra {
+    block-size: var(--space-04);
+    border-radius: var(--radius-capsula);
+    /* PT: tons tirados do texto principal, iguais em peso nos dois temas */
+    /* EN: tints of the primary text, equally visible in both themes */
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--color-text-primary) 12%, transparent),
+        color-mix(in oklab, var(--color-text-primary) 4%, transparent),
+        color-mix(in oklab, var(--color-text-primary) 12%, transparent)
+      )
+      0 0 / 200% 100%;
+    animation: brilho-passando calc(3 * var(--motion-duracao-longa)) linear infinite;
+  }
+
+  .carregando__barra:nth-child(2) {
+    inline-size: 60%;
+  }
+
+  .carregando__barra:nth-child(4) {
+    inline-size: 80%;
+  }
+
+  @keyframes brilho-passando {
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  .estado {
+    display: grid;
+    gap: var(--space-02);
+    justify-items: start;
+    max-inline-size: 60ch;
+    padding: var(--space-05);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-cartao);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+  }
+
+  .estado p {
+    margin: 0;
+  }
+
+  .estado__titulo {
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .estado__texto {
+    color: var(--color-text-secondary);
+  }
+
+  .estado .botao {
+    margin-block-start: var(--space-03);
+  }
+
+  /* PT: o orbe de vidro que respira devagar / EN: the slowly breathing orb */
+  .estado__orbe {
+    inline-size: var(--space-07);
+    block-size: var(--space-07);
+    margin-block-end: var(--space-02);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 30%,
+      var(--color-white),
+      var(--color-blue-30) 45%,
+      var(--color-blue-60)
+    );
+    box-shadow: var(--elevation-brilho);
+    animation: respirar calc(5 * var(--motion-duracao-longa)) ease-in-out infinite;
+  }
+
+  @keyframes respirar {
+    50% {
+      scale: 1.08;
+      opacity: 0.8;
+    }
+  }
+
+  /* ---------------------------------------------------------------- sem desfoque */
+
+  /* PT: sem backdrop-filter, o vidro vira a camada sólida / EN: solid fallback */
+  @supports not (backdrop-filter: blur(1px)) {
+    :is(
+        .botao--secundario,
+        .chip,
+        .segmentado,
+        .campo__entrada,
+        .tabela,
+        .dica,
+        .chat-resposta,
+        .chat-entrada,
+        .estado
+      ) {
+      background: var(--color-background-layer);
+    }
+  }
+}

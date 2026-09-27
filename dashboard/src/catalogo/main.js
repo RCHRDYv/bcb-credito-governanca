@@ -10,8 +10,10 @@
 
 import "../estilos/index.css";
 import "./catalogo.css";
+import { topo } from "../componentes/topo.js";
 import { elemento } from "../dom.js";
 import { t } from "../textos/index.js";
+import { secaoChat, secaoControles, secaoDadosEAvisos, secaoEstados } from "./componentes.js";
 import { secaoGraficos, secaoPaletasDeGrafico } from "./graficos.js";
 import {
   secaoCores,
@@ -42,9 +44,7 @@ export async function montarCatalogo(raiz) {
     atributos: { href: "#conteudo" },
   });
 
-  const topo = elemento("header", { classe: "topo" }, [
-    elemento("p", { classe: "topo__nome", texto: t("produto.nome") }),
-  ]);
+  const barraDeTopo = topo();
 
   const cabecalho = elemento("div", { classe: "catalogo__cabecalho" }, [
     elemento("h1", { texto: t("catalogo.titulo") }),
@@ -65,12 +65,16 @@ export async function montarCatalogo(raiz) {
       secaoElevacao(),
       secaoVidro(),
       secaoMovimento(),
+      secaoControles(),
+      secaoDadosEAvisos(),
+      secaoChat(),
+      secaoEstados(),
       secaoPaletasDeGrafico(),
       graficos.elemento,
     ],
   );
 
-  raiz.replaceChildren(pular, topo, principal);
+  raiz.replaceChildren(pular, barraDeTopo, principal);
   // PT: os gráficos só são desenhados com a seção já na página, porque o tema
   //     de cada um vem do painel onde ele está
   // EN: charts are drawn once on the page, since each takes its panel theme

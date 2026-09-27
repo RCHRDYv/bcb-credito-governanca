@@ -59,9 +59,10 @@ export function secao(id, titulo, explicacao, conteudo) {
  * EN: Two panels, light and dark, with the same content built for each theme.
  *
  * @param {(tema: Tema) => Node[]} montar
+ * @param {{ campoDeLuz?: boolean }} [opcoes] Campo de luz atrás, para o vidro aparecer / light field
  * @returns {HTMLElement}
  */
-export function ladoALado(montar) {
+export function ladoALado(montar, { campoDeLuz = false } = {}) {
   /** @type {[Tema, ChaveDeTexto][]} */
   const temas = [
     ["claro", "catalogo.tema-claro"],
@@ -71,7 +72,7 @@ export function ladoALado(montar) {
     "div",
     { classe: "lado-a-lado" },
     temas.map(([tema, rotulo]) =>
-      elemento("div", { classe: `tema tema--${tema}` }, [
+      elemento("div", { classe: `tema tema--${tema}${campoDeLuz ? " tema--campo-de-luz" : ""}` }, [
         elemento("h3", { classe: "tema__rotulo", texto: t(rotulo) }),
         ...montar(tema),
       ]),

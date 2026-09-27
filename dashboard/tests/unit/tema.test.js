@@ -3,7 +3,7 @@
  *
  *     O tema do ECharts precisa sair dos tokens, e nunca de um hex digitado:
  *     cada cor conferida aqui é comparada com o token de onde deveria vir.
- *     O texto do gráfico precisa de 4,5:1 sobre o vidro, como qualquer
+ *     O texto do gráfico precisa de 4,5:1 sobre o cartão, como qualquer
  *     texto da interface.
  *
  * EN: Chart theme tests: every color must come from the tokens, and chart
@@ -23,7 +23,7 @@ const TEXTO = 4.5;
 for (const tema of TEMAS) {
   describe(`tema ${tema}`, () => {
     const objeto = /** @type {Record<string, any>} */ (montarTema(tema));
-    const { vidro } = superficies(tema);
+    const { grafico } = superficies(tema);
 
     it("usa a paleta categórica dos tokens / uses the token palette", () => {
       expect(objeto.color).toEqual(paletas(tema).categorica);
@@ -35,9 +35,9 @@ for (const tema of TEMAS) {
       expect(objeto.categoryAxis.axisLabel.color).toBe(hex("color.text.secondary", tema));
     });
 
-    it("tem texto com pelo menos 4,5:1 sobre o vidro / chart text contrast", () => {
+    it("tem texto com pelo menos 4,5:1 sobre o cartão / chart text contrast", () => {
       for (const texto of [objeto.textStyle.color, objeto.categoryAxis.axisLabel.color]) {
-        expect(razaoDeContraste(texto, vidro)).toBeGreaterThanOrEqual(TEXTO);
+        expect(razaoDeContraste(texto, grafico)).toBeGreaterThanOrEqual(TEXTO);
       }
     });
 
@@ -52,9 +52,9 @@ for (const tema of TEMAS) {
 }
 
 describe("os dois temas / both themes", () => {
-  it("compõem o vidro regular como o guia registra: #fbfbfb e #222222", () => {
-    expect(superficies("claro").vidro).toBe("#fbfbfb");
-    expect(superficies("escuro").vidro).toBe("#222222");
+  it("desenham o gráfico no cartão sólido: branco no claro e cinza 100 no escuro", () => {
+    expect(superficies("claro").grafico).toBe("#ffffff");
+    expect(superficies("escuro").grafico).toBe("#161616");
   });
 
   it("trocam as cores de texto / swap text colors", () => {
