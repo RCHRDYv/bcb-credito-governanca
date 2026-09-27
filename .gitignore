@@ -53,3 +53,10 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# PT: Site do dashboard: dependências e saídas do build e dos testes (#65)
+# EN: Dashboard site: dependencies and build and test outputs
+dashboard/node_modules/
+dashboard/dist/
+dashboard/test-results/
+dashboard/playwright-report/

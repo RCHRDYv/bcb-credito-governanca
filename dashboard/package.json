@@ -1,0 +1,35 @@
+{
+  "name": "credito-pj-dashboard",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Site estático do dashboard de crédito PJ. Static site for the corporate credit dashboard.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "tsc -p jsconfig.json",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "budget": "node scripts/orcamento.js",
+    "lighthouse": "node scripts/lighthouse.js",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build && npm run budget && npm run test:e2e && npm run lighthouse"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@biomejs/biome": "2.5.14",
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.19.0",
+    "chrome-launcher": "1.2.1",
+    "lighthouse": "13.5.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.1",
+    "vitest": "5.0.2"
+  }
+}

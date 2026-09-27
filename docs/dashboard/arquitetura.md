@@ -104,7 +104,7 @@ flowchart TB
     duck -- "carregado na partida" --> parquet
 
     classDef planejado stroke-dasharray: 5 5
-    class visoes,filtros,carga,graficos,componentes,textos,cliente,json,malha,tokens,publica,modelo,contexto,travas,duck,parquet planejado
+    class visoes,filtros,carga,graficos,componentes,cliente,json,malha,tokens,publica,modelo,contexto,travas,duck,parquet planejado
 ```
 
 ## Fluxo do dado
@@ -242,6 +242,7 @@ dashboard/                        raiz do site, no Vite (#65)
 ├── public/
 │   ├── data/                     JSON exportados e manifesto (#66)
 │   └── geo/                      malha das UFs (#67)
+├── scripts/                      orçamento de carga e Lighthouse (#65)
 └── tests/                        Vitest, e Playwright com axe (#65)
 
 space/                            código do Space do chat (#73)

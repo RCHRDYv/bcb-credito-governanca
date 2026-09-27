@@ -1,6 +1,6 @@
 # ADR 0017: A interface é JavaScript sem framework, com Vite e ECharts
 
-**Status:** Aceito
+**Status:** Aceito. Complementado em 2026-09-27 pela #65. O `checkJs` funciona no TypeScript 7.0.2 com JSDoc moderno, e um erro de tipo posto de propósito faz a checagem falhar. O Lighthouse entra no CI direto, na versão 13.5.0, sem o `@lhci/cli`, que está parado desde jun/2025 com o Lighthouse 12.6.1.
 **Data:** 2026-09-25
 
 ## Contexto
