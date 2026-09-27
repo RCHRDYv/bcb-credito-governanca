@@ -84,5 +84,5 @@ Todas as quatro foram montadas no mesmo protótipo e comparadas no mesmo formato
 - **Carbon AI Chat:** não pode ser usado como vem, porque o chat segue a nossa camada.
 - **Custo do vidro:** o `backdrop-filter` pesa em aparelhos fracos e não imprime. O guia define a superfície sólida como alternativa, e a impressão sem vidro.
 - **Duas linguagens juntas:** IBM Plex com formas arredondadas pede cuidado para não parecer duas linguagens coladas.
-- **Paleta categórica:** a oficial do Carbon falha na validação, porque um tom quase preto sai da faixa de luminosidade e um verde-escuro tem pouca saturação. O ajuste é decidido na #63.
+- **Paleta categórica:** a oficial do Carbon falha na validação, porque um tom quase preto sai da faixa de luminosidade e um verde-escuro tem pouca saturação. O ajuste foi decidido na #63, no [ADR 0021](0021-paletas-de-grafico-do-carbon-validadas.md), junto com a sequencial e a divergente.
 - **Valores interpretados:** transparências, desfoque e curvas de mola da camada Liquid Glass são interpretação nossa, e precisam ser conferidos em Safari e Firefox na implementação (#62 a #64).

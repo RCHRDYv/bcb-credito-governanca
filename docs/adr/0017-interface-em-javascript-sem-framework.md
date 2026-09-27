@@ -1,6 +1,6 @@
 # ADR 0017: A interface é JavaScript sem framework, com Vite e ECharts
 
-**Status:** Aceito. Complementado em 2026-09-27 pela #65. O `checkJs` funciona no TypeScript 7.0.2 com JSDoc moderno, e um erro de tipo posto de propósito faz a checagem falhar. O Lighthouse entra no CI direto, na versão 13.5.0, sem o `@lhci/cli`, que está parado desde jun/2025 com o Lighthouse 12.6.1.
+**Status:** Aceito. Complementado em 2026-09-27 pela #65 e pela #63, que mediu o ECharts importado por partes. O `checkJs` funciona no TypeScript 7.0.2 com JSDoc moderno, e um erro de tipo posto de propósito faz a checagem falhar. O Lighthouse entra no CI direto, na versão 13.5.0, sem o `@lhci/cli`, que está parado desde jun/2025 com o Lighthouse 12.6.1.
 **Data:** 2026-09-25
 
 ## Contexto
@@ -97,5 +97,5 @@ As versões ficam fixadas no lockfile, e a atualização é feita de propósito,
 **Negativas, e são reais.**
 - **Sem framework, a ligação entre filtro e tela é escrita à mão.** Com poucas telas é aceitável; se o dashboard crescer muito, o Astro é a primeira alternativa a reavaliar.
 - **O tema do ECharts passa por JavaScript,** porque a biblioteca não lê variáveis CSS sozinha. Isso fica isolado num módulo só (#63).
-- **O tamanho do ECharts importado por partes ainda não foi medido.** A medida sai do build da #65 e é comparada com o orçamento dos requisitos (#58).
+- **O tamanho do ECharts importado por partes,** medido na #63 em 2026-09-27: 227,8 KB comprimido, com os gráficos de linha, barra, mapa, dispersão e calor, os componentes que o design system usa e o renderizador SVG. Com o catálogo, o JavaScript do site soma 251 KB, dentro dos 350 KB do RNF-03.
 - **O TypeScript atual, 7.0.2, é a versão reescrita em Go.** A #65 confere se a checagem de JSDoc com `checkJs` funciona nele como na versão anterior, antes de adotar.

@@ -14,6 +14,7 @@ O design system junta duas fontes, e cada seção deste guia diz de qual delas v
 |---|---|---|
 | **Carbon, oficial** | Cor, paletas de gráfico, tipografia, espaçamento e grid | Documentação e pacotes do Carbon, conferidos em 2026-09-26 |
 | **Camada Liquid Glass, nossa** | Materiais de vidro, raio, elevação, movimento, componentes, padrões de uso e modelos de página | Este guia, a partir das diretrizes de materiais da Apple |
+| **Componentes de gráfico, nossos** | Tema dos gráficos, mapa, cartograma, matriz, série temporal, ranking e número de destaque, sobre o ECharts | Este guia e o catálogo |
 
 Itens marcados **em aberto** ainda não foram decididos e não são regra.
 
@@ -126,13 +127,55 @@ O **alerta antecipado** usa fundo amarelo 90 (#302400) e texto amarelo 20 (#fddc
 
 ### Paletas de gráfico · Carbon
 
-- **Categórica,** para identidade, como modalidades: a paleta categórica oficial do Carbon, em ordem fixa (#6929c4, #1192e8, #005d5d, #9f1853, #fa4d56, #570408).
-  - Até seis séries. A partir da sétima, as menores viram "Outros". Uma cor nova nunca é gerada.
-  - A cor segue a série, e não a posição: um filtro que tira séries não repinta as que ficam.
-  - **Pendente:** na validação, o #570408 sai da faixa de luminosidade e o #005d5d fica sem saturação. O ajuste é decidido na #63.
-- **Sequencial,** para magnitude: uma matiz só, do claro ao escuro.
-- **Divergente,** para desvio contra o país: duas matizes, com cinza no ponto neutro, que é a variação do país.
-- **Qual paleta sequencial e qual divergente:** as duas são escolhidas entre as oficiais do Carbon e validadas na #63.
+As três paletas saem das rampas oficiais do Carbon e foram escolhidas na revisão visual de 2026-09-27 ([ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md)). Os tokens são `color.chart.categorical.1` a `6`, `color.chart.sequential.1` a `5`, `color.chart.diverging.*` e `color.chart.other`, e o [catálogo](../../dashboard/catalogo.html) mostra cada paleta nos dois temas, com a simulação de daltonismo.
+
+**Categórica,** para identidade, como modalidades. É a oficial do Carbon com a menor troca que passa nos dois temas: o verde-azulado, sem croma, vira laranja 50, o vermelho 90, quase preto, sai, e o azul 50 entra.
+
+| Posição | Claro | Escuro |
+|---|---|---|
+| 1 | roxo 70, #6929c4 | roxo 60, #8a3ffc |
+| 2 | ciano 50, #1192e8 | ciano 50, #1192e8 |
+| 3 | laranja 50, #eb6200 | laranja 50, #eb6200 |
+| 4 | magenta 70, #9f1853 | magenta 50, #ee5396 |
+| 5 | azul 50, #4589ff | azul 50, #4589ff |
+| 6 | vermelho 50, #fa4d56 | vermelho 50, #fa4d56 |
+| Outros | cinza 50, #8d8d8d | cinza 60, #6f6f6f |
+
+- **Ordem fixa, e a cor segue a série.** Um filtro que tira séries não repinta as que ficam. Uma cor nova nunca é gerada.
+- **Até seis séries com cor** em barras e linhas. A partir da sétima, as menores somam "Outros", em cinza.
+- **Até quatro séries com cor em dispersão, mapa e pequenos múltiplos,** em que qualquer par de cores pode se encostar. O ciano 50 e o azul 50 ficam próximos demais quando se encostam.
+- **Uma série só usa a primeira cor,** como o ranking e a série temporal. Pintar cada barra de uma cor gastaria a cor para repetir o que o comprimento já mostra.
+
+**Sequencial,** para magnitude, como carteira por empresa. É a rampa roxa do Carbon, em cinco degraus, sem o branco, que some no vidro.
+
+| Degrau | 1, valor baixo | 2 | 3 | 4 | 5, valor alto |
+|---|---|---|---|---|---|
+| Claro | roxo 40, #be95ff | roxo 50, #a56eff | roxo 60, #8a3ffc | roxo 70, #6929c4 | roxo 80, #491d8b |
+| Escuro | roxo 70, #6929c4 | roxo 60, #8a3ffc | roxo 50, #a56eff | roxo 40, #be95ff | roxo 30, #d4bbff |
+
+No escuro a ordem se inverte, porque o valor baixo é o que se aproxima do fundo.
+
+**Divergente,** para desvio contra uma referência, como a variação da inadimplência contra a do país. É a roxo e verde-azulado do Carbon, com três degraus de cada lado e o meio em cinza, no lugar do branco do Carbon. Roxo fica acima da referência, e verde-azulado abaixo.
+
+| | Abaixo, na ponta | Abaixo | Abaixo, perto | Meio | Acima, perto | Acima | Acima, na ponta |
+|---|---|---|---|---|---|---|---|
+| Claro | verde-azulado 80 | verde-azulado 60 | verde-azulado 40 | cinza 20 | roxo 40 | roxo 60 | roxo 80 |
+| Escuro | verde-azulado 40 | verde-azulado 50 | verde-azulado 70 | cinza 80 | roxo 70 | roxo 50 | roxo 40 |
+
+**Validação e simulação de daltonismo.** O contraste é medido contra o vidro regular do tema (#fbfbfb e #222222), e a distância entre cores em OKLab, multiplicada por 100, com a simulação de Machado, Oliveira e Fernandes (2009). Para a categórica, o alvo é 8 com daltonismo e 15 sem; para as rampas, o que importa é cada degrau continuar distinto do vizinho.
+
+| Paleta | Tema | Contraste | Sem daltonismo | Protanopia | Deuteranopia | Tritanopia |
+|---|---|---|---|---|---|---|
+| Categórica, pior par vizinho | Claro | 3,22:1 | 23,8 | 20,6 | 15,9 | 19,0 |
+| Categórica, pior par vizinho | Escuro | 3,18:1 | 15,8 | 13,2 | 8,4 | 3,1 |
+| Sequencial, menor passo | Claro | 2,27:1 na ponta | 10,2 | 7,3 | 8,6 | 9,1 |
+| Sequencial, menor passo | Escuro | 2,06:1 na ponta | 10,2 | 7,3 | 8,6 | 9,0 |
+| Divergente, polos no mesmo degrau | Claro | 2,26:1 perto do meio | 18,3 | 12,9 | 9,6 | 7,0 |
+| Divergente, polos no mesmo degrau | Escuro | 2,06:1 perto do meio | 22,5 | 12,9 | 9,6 | 9,2 |
+
+A tritanopia aparece nos números, mas não reprova, porque é rara e o modelo é menos preciso para ela. No escuro, o roxo 60 e o ciano 50 ficam a 3,1 para quem tem tritanopia, e a legenda e o rótulo identificam essas duas séries. No escuro sem `backdrop-filter`, a ponta das rampas fica em 1,96:1 sobre a camada sólida, logo abaixo do piso de 2:1, exceção aceita em 2026-09-27 (ADR 0021, decisão 5).
+
+**Cores que já têm outro significado.** O roxo 70 é também a marca de Manter, e a divergente usa as matizes de Manter e de Entrar. Por isso vale a regra da etiqueta de quadrante: numa tela com a matriz ou com etiquetas de quadrante, essas paletas não entram com outro significado.
 
 ### Tipografia · Carbon
 
@@ -310,6 +353,64 @@ Não usar: o amarelo de atenção para qualquer outra coisa na mesma tela.
 - **Erro:** diz o problema e oferece a ação de tentar de novo.
 - **Chat acordando:** um orbe de vidro que respira devagar, com o aviso de que as outras telas continuam funcionando.
 
+## Componentes de gráfico · nossos, sobre o ECharts
+
+Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-framework.md)), com o tema montado a partir dos tokens, e moram em `dashboard/src/graficos/`. Todos aparecem no [catálogo](../../dashboard/catalogo.html), nos dois temas e com dado real do projeto. As decisões de 2026-09-27 saíram da revisão visual da #63.
+
+**Tema e comportamento, comuns a todos.**
+- **Cores dos tokens.** O ECharts não lê variáveis CSS, então o tema é montado em JavaScript por `tema.js`, com cada cor tirada do `tokens.json`. Nenhum hex é escrito à mão.
+- **Tema do lugar.** Cada gráfico usa o tema do lugar onde está: o do sistema, o do atributo `data-tema` ou o do painel do catálogo. Na impressão, é sempre o claro.
+- **Troca de tema sem recriar.** Quando o tema muda, a mesma instância recebe o tema novo e as cores novas. O gráfico não é destruído nem criado de novo, e um teste de ponta a ponta confere isso.
+- **Fonte e tamanho.** O desenho espera a IBM Plex carregar, porque o ECharts mede o texto ao desenhar, e acompanha o tamanho do elemento.
+- **Tela estreita.** Abaixo de 480 px de largura, o gráfico entra no modo estreito: nomes de eixo curtos, menos marcas e legendas abaixo do desenho.
+- **Movimento reduzido.** Com a preferência do sistema ligada, não há animação.
+- **Renderizador SVG.** As texturas saem como padrão vetorial, sem imagem embutida, o que respeita a política de segurança do site.
+
+**Cartão de gráfico.** O vidro regular, com o cabeçalho do padrão de uso: título em `heading-02` e data-base com a fonte em `label-01`.
+- **Quando usar:** em todo gráfico e número de destaque.
+- **Quando não usar:** com frase de conclusão no cabeçalho, que o padrão proíbe.
+- **Acessibilidade:** o título dá nome à região do cartão, e a data-base e a fonte são texto.
+
+**Mapa por UF.** Pinta cada UF pela classe do valor, com a malha do IBGE, e a legenda de classes fica em HTML, abaixo do mapa.
+- **O que é:** um mapa coroplético, com cinco classes em quintis na sequencial, ou três de cada lado mais o meio na divergente.
+- **Quando usar:** quando a pergunta é onde, no território, um número é alto ou baixo.
+- **Quando não usar:** quando os estados pequenos precisam ser lidos, porque o DF e Sergipe quase somem. Nesse caso, o cartograma. Também não serve para mostrar valor exato: o mapa mostra a classe, e o número fica na dica e na tabela.
+- **Acessibilidade:** a legenda é texto, e as fronteiras na cor do fundo separam vizinhas de cores próximas. Sem a malha, o cartão mostra o estado de erro e diz que o cartograma e a tabela continuam funcionando.
+
+**Cartograma de grade.** Cada UF vira um quadrado do mesmo tamanho, com a sigla, numa grade que preserva a posição aproximada no mapa, com as mesmas classes do mapa.
+- **Quando usar:** como alternativa ao mapa quando os estados pequenos importam (RF-103), e sempre que a malha não carregar, porque o cartograma não depende dela.
+- **Quando não usar:** quando a área ou o formato do território fazem parte da leitura.
+- **Acessibilidade:** a sigla usa o texto que mais contrasta com o preenchimento.
+- **A grade,** revisada em 2026-09-27, em `ufs.js`: cada UF fica perto do centroide dela na malha do IBGE, e todo par de UFs vizinhas na grade aponta a menos de 60 graus da direção real. O teste `ufs.test.js` confere isso.
+
+**Matriz 2x2.** A matriz de espaço contra risco do [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md).
+- **O que é:** cada ponto é uma célula de UF e modalidade.
+  - O eixo horizontal é a carteira por empresa em vezes a mediana das UFs, em escala de base 2.
+  - O eixo vertical é a variação da inadimplência além da do país, em pontos percentuais.
+  - As linhas de corte ficam no 1 e no zero, e os pontos usam a marca do quadrante.
+- **Eixos invertidos** (decidido em 2026-09-27): Entrar fica no canto superior direito, Não entrar no inferior esquerdo, Manter no superior esquerdo e Observar no inferior direito.
+- **Quando usar:** na recomendação, para mostrar a regra de decisão e onde cada célula caiu.
+- **Quando não usar:** para comparar valores exatos entre células, que é papel do ranking e da tabela.
+- **Acessibilidade:** o quadrante aparece por três caminhos, e nunca só pela cor: a posição em relação às linhas de corte, a etiqueta com ícone e nome em cada canto, e a dica de cada ponto. Em tela estreita, as etiquetas descem para baixo do gráfico.
+
+**Série temporal com projeção.** Linha no tempo, na notação IBCS.
+- **O que é:** o realizado é uma linha sólida. A projeção é uma linha tracejada, com o intervalo hachurado em volta, e a legenda mostra as duas formas.
+- **Cor e espessura** (decidido em 2026-09-27): a primeira cor categórica, a mesma do ranking, com linha de 3 px.
+- **Quando usar:** para evolução mensal e para a projeção de três meses (RF-301).
+- **Quando não usar:** com mais de uma unidade no mesmo gráfico. Dois eixos verticais nunca: medidas diferentes vão em gráficos separados.
+- **Acessibilidade:** realizado e projeção se distinguem pela forma, sólida ou tracejada, e não pela cor. O intervalo aparece na dica de cada mês projetado.
+- **No catálogo,** a projeção é ilustrativa: repete o último mês, com um intervalo de dois desvios das variações mensais. A projeção do modelo chega com a #27.
+
+**Ranking.** Barras horizontais, da maior para a menor, com o valor na ponta de cada uma e uma linha de referência opcional, como a mediana das UFs.
+- **Quando usar:** para ordenar UFs ou modalidades por um número, e para achar um item pelo nome.
+- **Quando não usar:** com dezenas de itens, que é papel da tabela, nem com cor diferente por barra.
+- **Acessibilidade:** o valor fica escrito na ponta de cada barra, e o nome de cada item é texto no eixo.
+
+**Número de destaque.** Um número só, em `heading-07`, com o rótulo do que ele mede, numa frase que uma pessoa diria. É HTML, e não gráfico.
+- **Quando usar:** quando a resposta é um número, como a carteira onde a regra recomenda entrar.
+- **Quando não usar:** para vários números lado a lado, que é papel da tabela ou do painel de detalhe.
+- **Acessibilidade:** é lido como texto. Em tela estreita, desce para o `heading-05`, sem quebrar a unidade.
+
 ## Padrões de uso · Liquid Glass
 
 **Cabeçalho do gráfico, sem bloco de título na visão e sem conclusão escrita.** Decidido em 2026-09-26: as visões não têm bloco de título-conclusão no topo, e os gráficos não trazem conclusão escrita, para controlar o escopo. A visão abre nos filtros e na visualização, e cada gráfico traz um cabeçalho com duas partes:
@@ -376,26 +477,29 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 - **Tokens da camada Liquid Glass:** nomes próprios, como `material.vidro.regular`, `radius.capsula` e `motion.mola.media`.
 - **Onde moram:** `dashboard/tokens/`, em três pastas, `primitivos/`, `semanticos/` e `componentes/`. O `scripts/gerar-tokens.js` gera o `src/estilos/tokens.css` e o `tokens.json`, que nunca são editados à mão, e o CI reprova quando eles divergem dos tokens.
 - **Formato:** DTCG 2025.10, com a cor no formato novo, de espaço de cor e componentes. A mola é uma função `linear()` do CSS, que o DTCG não descreve; ela fica em `$extensions`, com a curva do Carbon como valor de reserva.
-- **Catálogo:** o [catálogo](../../dashboard/catalogo.html) mostra as fundações nos dois temas, lidas dos tokens, e o teste de contraste confere os pares de cor nos dois temas.
+- **Catálogo:** o [catálogo](../../dashboard/catalogo.html) mostra as fundações, as paletas e os componentes de gráfico nos dois temas, lidos dos tokens, e o teste de contraste confere os pares de cor nos dois temas.
 - **Mudança em fundação** (cor, tipo, espaço, grid) só com ADR, porque muda a relação com o Carbon oficial.
 - **Componente novo ou alterado** entra por PR que atualiza este guia e o protótipo no mesmo commit.
-- **Paleta nova ou alterada** passa pela validação de contraste e de daltonismo antes de entrar. O teste automatizado nasce na #63.
+- **Paleta nova ou alterada** passa pela validação de contraste e de daltonismo antes de entrar. O teste automatizado, `dashboard/tests/unit/paletas.test.js`, lê as paletas dos tokens e reprova a que ficar fora dos critérios do [ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md).
 
 ## Pendências
 
 | Pendência | Onde se resolve |
 |---|---|
-| Paleta categórica oficial do Carbon falha na validação | #63 |
-| Escolher as paletas sequencial e divergente do Carbon e validá-las | #63 |
+| A malha das UFs, simplificada e versionada, de que o mapa por UF depende. Até lá, o mapa do catálogo mostra o estado de erro, e o cartograma segue funcionando | #67 |
 | Texto de exemplo nos campos: o valor oficial do Carbon fica em 2,53:1 no claro e 3,60:1 no escuro, abaixo dos 4,5:1 de texto | #64, ao construir os campos |
 | Conferir a camada Liquid Glass em Safari e Firefox, e a alternativa sem `backdrop-filter` | #62 a #64 |
 | Nome e identidade visual do produto | Em aberto |
 
 ## Fontes
 
-Todas acessadas em 2026-09-26.
+Acessadas em 2026-09-26, menos as marcadas com outra data.
 
 - [Carbon Design System](https://carbondesignsystem.com/) e [paletas de visualização de dados do Carbon](https://carbondesignsystem.com/data-visualization/color-palettes/).
 - Código publicado dos pacotes `@carbon/themes` 11.82.0, `@carbon/colors` 11.59.0, `@carbon/type` 11.68.0, `@carbon/layout` 11.60.0 e `@carbon/grid` 11.63.0, de onde saíram os valores de cor, tipo, espaço e grid.
 - [Materiais, nas diretrizes de interface da Apple](https://developer.apple.com/design/human-interface-guidelines/materials), e o [anúncio do novo design da Apple](https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/), de 2025.
+- Código publicado do `@carbon/charts` 1.27.20, `scss/_color-palette.scss`, de onde saíram as paletas categóricas, monocromáticas e divergentes oficiais. Acessado em 2026-09-27.
+- G. M. Machado, M. M. Oliveira e L. A. F. Fernandes, ["A Physiologically-based Model for Simulation of Color Vision Deficiency"](https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html), IEEE TVCG 15(6), 2009, para a simulação de daltonismo. Acessado em 2026-09-27.
+- [OKLab, de Björn Ottosson](https://bottosson.github.io/posts/oklab/), para a luminosidade, o croma e a distância entre cores. Acessado em 2026-09-27.
+- [API de malhas do IBGE](https://servicodados.ibge.gov.br/api/docs/malhas), para os centroides que conferem a grade do cartograma, e a grade `br_states_grid1` do [geofacet](https://github.com/hafen/grid-designer), ponto de partida da grade. Acessados em 2026-09-27.
 - [Guia de glassmorphism da UX Pilot](https://uxpilot.ai/blogs/glassmorphism-ui), para as faixas de desfoque e de transparência e as regras de contraste sobre vidro.
