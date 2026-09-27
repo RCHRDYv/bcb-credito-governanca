@@ -1,0 +1,735 @@
+<!doctype html>
+<!-- Protótipo do design system do dashboard. O candidato "Carbon + Liquid Glass" foi aprovado em 2026-09-26 (ADR 0020);
+     os outros quatro ficam como registro da comparação. Abra no navegador: não faz parte do build do dashboard. -->
+<html lang="pt-BR" data-ds="fluent">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crédito PJ · protótipo de design system</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono&family=Geist:wght@400;500;600&family=Geist+Mono&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css" rel="stylesheet">
+<style>
+/* Tokens por candidato. Tudo o que muda entre os design systems mora aqui.
+   Tokens per candidate. Everything that differs between the design systems lives here. */
+[data-ds="fluent"] {
+  --fonte: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; --mono: "Cascadia Code", Consolas, monospace;
+  --fundo: #fafafa; --superficie: #ffffff; --tinta: #242424; --tinta-2: #424242; --tinta-3: #616161; --borda: #d1d1d1; --linha: #e0e0e0;
+  --acento: #0f6cbd; --acento-hover: #115ea3; --acento-ativo: #0c3b5e; --acento-texto: #fff; --acento-suave: #ebf3fc;
+  --ok: #107c10; --atencao: #bc4b09; --erro: #c50f1f; --info: #0f6cbd;
+  --r1: 2px; --r2: 4px; --r3: 8px; --r4: 12px; --controle: 32px;
+  --sombra-1: 0 0 2px rgba(0,0,0,.12), 0 2px 4px rgba(0,0,0,.14); --sombra-2: 0 0 2px rgba(0,0,0,.12), 0 8px 16px rgba(0,0,0,.14);
+  --vidro-1: rgba(252,252,252,.72); --vidro-1-blur: 30px; --vidro-2: rgba(243,243,243,.92); --vidro-2-blur: 60px; --veu: rgba(0,0,0,.4);
+  --vidro-borda: rgba(255,255,255,.6); --vidro-brilho: none;
+  --papel: radial-gradient(60% 80% at 20% 30%, #b9d3f0 0%, transparent 60%), radial-gradient(50% 70% at 80% 70%, #d6cde8 0%, transparent 60%), #eef1f6;
+  --ease: cubic-bezier(.33,0,.67,1); --ease-sai: cubic-bezier(0,0,0,1);
+  --q-entrar: #0f6cbd; --q-observar: #b8860b; --q-nao_entrar: #c50f1f; --q-manter: #0e8a6e;
+}
+[data-ds="carbon"] {
+  --fonte: "IBM Plex Sans", sans-serif; --mono: "IBM Plex Mono", monospace;
+  --fundo: #f4f4f4; --superficie: #ffffff; --tinta: #161616; --tinta-2: #525252; --tinta-3: #6f6f6f; --borda: #8d8d8d; --linha: #e0e0e0;
+  --acento: #0f62fe; --acento-hover: #0050e6; --acento-ativo: #002d9c; --acento-texto: #fff; --acento-suave: #edf5ff;
+  --ok: #24a148; --atencao: #b28600; --erro: #da1e28; --info: #0043ce;
+  --r1: 0px; --r2: 0px; --r3: 0px; --r4: 0px; --controle: 40px;
+  --sombra-1: 0 2px 6px rgba(0,0,0,.2); --sombra-2: 0 4px 12px rgba(0,0,0,.2);
+  --vidro-1: rgba(255,255,255,.72); --vidro-1-blur: 16px; --vidro-2: rgba(244,244,244,.62); --vidro-2-blur: 24px; --veu: rgba(22,22,22,.5);
+  --vidro-borda: rgba(224,224,224,.9); --vidro-brilho: none;
+  --papel: linear-gradient(135deg, #dde1e6 0%, #c1c7cd 45%, #e5e0f5 100%);
+  --ease: cubic-bezier(.2,0,.38,.9); --ease-sai: cubic-bezier(.4,.14,.3,1);
+  --q-entrar: #009d9a; --q-observar: #b28600; --q-nao_entrar: #da1e28; --q-manter: #6929c4;
+}
+[data-ds="apple"] {
+  --fonte: -apple-system, BlinkMacSystemFont, "Geist", sans-serif; --mono: "SF Mono", "Geist Mono", monospace;
+  --fundo: #f2f2f7; --superficie: #ffffff; --tinta: #1c1c1e; --tinta-2: #48484d; --tinta-3: #6c6c72; --borda: #c6c6c8; --linha: #e5e5ea;
+  --acento: #0a60d6; --acento-hover: #0852b8; --acento-ativo: #073f8f; --acento-texto: #fff; --acento-suave: #e6f0fd;
+  --ok: #248a3d; --atencao: #b58100; --erro: #c8001a; --info: #0a60d6;
+  --r1: 8px; --r2: 12px; --r3: 20px; --r4: 28px; --controle: 36px;
+  --sombra-1: 0 1px 3px rgba(0,0,0,.08), 0 6px 16px rgba(0,0,0,.06); --sombra-2: 0 10px 34px rgba(0,0,0,.14);
+  --vidro-1: rgba(255,255,255,.2); --vidro-1-blur: 10px; --vidro-2: rgba(255,255,255,.58); --vidro-2-blur: 26px; --veu: rgba(0,0,0,.25);
+  --vidro-borda: rgba(255,255,255,.7); --vidro-brilho: inset 0 1px 1px rgba(255,255,255,.9), inset 0 -1px 1px rgba(0,0,0,.06), inset 0 0 18px rgba(255,255,255,.35);
+  --papel: radial-gradient(50% 70% at 25% 30%, #c7d9f5 0%, transparent 60%), radial-gradient(45% 60% at 80% 65%, #f3d9c8 0%, transparent 60%), #eceef3;
+  --ease: cubic-bezier(.2,.9,.25,1.08); --ease-sai: cubic-bezier(.16,1,.3,1);
+  --q-entrar: #0a60d6; --q-observar: #b58100; --q-nao_entrar: #c8001a; --q-manter: #8944ab;
+}
+[data-ds="dribbble"] {
+  --fonte: "Manrope", sans-serif; --mono: "JetBrains Mono", monospace;
+  --fundo: #f3f2f8; --superficie: rgba(255,255,255,.66); --tinta: #1f1b2d; --tinta-2: #514c62; --tinta-3: #787387; --borda: #d9d6e4; --linha: #e7e4f0;
+  --acento: #5b4fe0; --acento-hover: #4b3fd0; --acento-ativo: #3a30a8; --acento-texto: #fff; --acento-suave: #eeecfd;
+  --ok: #1f9d6b; --atencao: #c27c0e; --erro: #d9485f; --info: #5b4fe0;
+  --r1: 8px; --r2: 12px; --r3: 20px; --r4: 28px; --controle: 42px;
+  --sombra-1: 0 8px 20px -10px rgba(60,50,120,.2); --sombra-2: 0 24px 48px -20px rgba(60,50,120,.28);
+  --vidro-1: rgba(255,255,255,.45); --vidro-1-blur: 20px; --vidro-2: rgba(255,255,255,.72); --vidro-2-blur: 28px; --veu: rgba(31,27,45,.35);
+  --vidro-borda: rgba(255,255,255,.85); --vidro-brilho: inset 0 1px 0 rgba(255,255,255,.95);
+  --papel: radial-gradient(50% 70% at 20% 25%, #ddd6ff 0%, transparent 60%), radial-gradient(45% 60% at 85% 70%, #ffdccb 0%, transparent 60%), #f3f1f8;
+  --ease: cubic-bezier(.25,.8,.25,1); --ease-sai: cubic-bezier(.16,1,.3,1);
+  --q-entrar: #3b5bdb; --q-observar: #c27c0e; --q-nao_entrar: #d9485f; --q-manter: #2a9d8f;
+}
+
+/* Híbrido: fundações do Carbon (cor, gráfico, tipo, espaço, grid) e a camada Liquid Glass
+   (material, raio, elevação, movimento e componentes).
+   Hybrid: Carbon foundations plus the Liquid Glass layer. */
+[data-ds="hibrido"] {
+  --fonte: "IBM Plex Sans", sans-serif; --mono: "IBM Plex Mono", monospace;
+  --fundo: #f4f4f4; --superficie: #ffffff; --tinta: #161616; --tinta-2: #525252; --tinta-3: #6f6f6f; --borda: #8d8d8d; --linha: #e0e0e0;
+  --acento: #0f62fe; --acento-hover: #0050e6; --acento-ativo: #002d9c; --acento-texto: #fff; --acento-suave: #edf5ff;
+  --ok: #24a148; --atencao: #f1c21b; --erro: #da1e28; --info: #0043ce;
+  --r1: 8px; --r2: 12px; --r3: 20px; --r4: 28px; --r5: 999px; --controle: 40px;
+  --q-entrar-texto: #005d5d; --q-observar-texto: #483700; --q-nao_entrar-texto: #a2191f; --q-manter-texto: #6929c4;
+  --sombra-1: 0 1px 3px rgba(0,0,0,.08), 0 6px 16px rgba(0,0,0,.06); --sombra-2: 0 10px 34px rgba(0,0,0,.14);
+  --vidro-1: rgba(255,255,255,.22); --vidro-1-blur: 10px; --vidro-2: rgba(255,255,255,.62); --vidro-2-blur: 26px; --veu: rgba(22,22,22,.28);
+  --vidro-borda: rgba(255,255,255,.78); --vidro-brilho: inset 0 1px 1px rgba(255,255,255,.95), inset 0 -1px 1px rgba(0,0,0,.05), inset 0 0 20px rgba(255,255,255,.35);
+  --papel: radial-gradient(50% 70% at 25% 30%, #a6c8ff 0%, transparent 60%), radial-gradient(45% 60% at 80% 65%, #d4bbff 0%, transparent 60%), #e8e8e8;
+  /* Mola suave, com leve passagem do ponto final, como no Liquid Glass. Gentle spring with a slight overshoot. */
+  --mola: linear(0, .02 1.6%, .08 3.3%, .18 5.1%, .33 7.2%, .62 11.3%, .84 15.6%, .96 20%, 1.02 25%, 1.04 30%, 1.035 36%, 1.015 45%, 1.003 55%, .999 70%, 1);
+  --ease: cubic-bezier(.2,0,.38,.9); --ease-sai: var(--mola);
+  --q-entrar: #009d9a; --q-observar: #b28600; --q-nao_entrar: #da1e28; --q-manter: #6929c4;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--fundo); }
+/* Campo de luz discreto, com as cores 30 do Carbon, para o vidro ter o que refratar. */
+[data-ds="hibrido"] body { background:
+  radial-gradient(40% 50% at 12% 18%, rgba(166,200,255,.5), transparent 70%),
+  radial-gradient(38% 45% at 88% 40%, rgba(212,187,255,.4), transparent 70%),
+  radial-gradient(40% 50% at 50% 96%, rgba(158,240,240,.3), transparent 70%), #f4f4f4 fixed; }
+body { margin: 0; font-family: var(--fonte); color: var(--tinta); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; transition: background .3s; }
+[data-ds="dribbble"] body { background: var(--papel) fixed; }
+::selection { background: var(--acento); color: var(--acento-texto); }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+code, pre, .mono { font-family: var(--mono); }
+a { color: var(--acento); text-underline-offset: 3px; }
+button { font: inherit; }
+
+/* Barra do protótipo. */
+.proto { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 12px; padding: 10px 24px; background: #0b0b0c; color: #ddd; font-family: "Geist", system-ui, sans-serif; font-size: 13px; flex-wrap: wrap; }
+.proto b { color: #fff; font-weight: 600; }
+.proto .sel { display: flex; gap: 4px; margin-left: auto; background: #1d1d1f; padding: 4px; border-radius: 999px; }
+.proto button { border: 0; background: transparent; color: #c9c9c9; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.proto button[aria-pressed="true"] { background: #fff; color: #0b0b0c; }
+
+.casca { display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 40px; max-width: 1360px; margin: 0 auto; padding: 28px 28px 80px; }
+.indice { position: sticky; top: 70px; align-self: start; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.indice a { color: var(--tinta-2); text-decoration: none; padding: 6px 10px; border-radius: var(--r2); }
+.indice a:hover { background: var(--linha); color: var(--tinta); }
+.indice .g { font-size: 11px; color: var(--tinta-3); margin: 14px 10px 4px; letter-spacing: .02em; }
+section.bloco { padding: 8px 0 36px; border-bottom: 1px solid var(--linha); margin-bottom: 30px; }
+h1 { font-size: 34px; letter-spacing: -.025em; line-height: 1.15; margin: 0 0 6px; font-weight: 600; }
+h2.tit { font-size: 22px; letter-spacing: -.015em; margin: 0 0 4px; font-weight: 600; }
+h3 { font-size: 15px; margin: 22px 0 10px; font-weight: 600; }
+.explica { color: var(--tinta-2); max-width: 78ch; margin: 0 0 16px; }
+
+/* Ficha do candidato. */
+.ficha { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-top: 18px; }
+.cartao { background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--r3); padding: 16px 18px; box-shadow: var(--sombra-1); }
+[data-ds="dribbble"] .cartao { background: var(--vidro-2); border-color: var(--vidro-borda); backdrop-filter: blur(20px); box-shadow: var(--vidro-brilho), var(--sombra-1); }
+.cartao h4 { margin: 0 0 8px; font-size: 13px; color: var(--tinta-2); font-weight: 600; }
+.cartao ul { margin: 0; padding-left: 18px; }
+.cartao li { margin-bottom: 4px; }
+
+/* Cor. */
+.amostras { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+.amostra { border-radius: var(--r2); overflow: hidden; border: 1px solid var(--linha); background: var(--superficie); }
+.amostra .cor { height: 58px; }
+.amostra .rot { padding: 7px 9px; font-size: 12px; }
+.amostra .rot b { display: block; font-weight: 600; font-size: 12px; }
+.amostra .rot span { color: var(--tinta-3); font-family: var(--mono); font-size: 11px; }
+.faixa { display: flex; border-radius: var(--r2); overflow: hidden; height: 44px; margin-bottom: 6px; }
+.faixa span { flex: 1; }
+.legenda-faixa { display: flex; justify-content: space-between; font-size: 12px; color: var(--tinta-3); margin-bottom: 14px; }
+.selo { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--linha); color: var(--tinta-2); margin: 0 0 10px; }
+.selo.falha { background: color-mix(in oklab, var(--erro) 12%, transparent); color: color-mix(in oklab, var(--erro) 80%, var(--tinta)); }
+.selo.ok { background: color-mix(in oklab, var(--ok) 12%, transparent); color: color-mix(in oklab, var(--ok) 80%, var(--tinta)); }
+
+/* Tipografia. */
+.tipo-linha { display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 16px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--linha); }
+.tipo-linha .nome { font-size: 12px; color: var(--tinta-3); font-family: var(--mono); }
+.tipo-linha .ex { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Espaço, raio, elevação. */
+.esp { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+.esp div { background: var(--acento); opacity: .75; border-radius: 2px; }
+.esp figure { margin: 0; text-align: center; font-size: 11px; color: var(--tinta-3); font-family: var(--mono); }
+.raios, .sombras { display: flex; gap: 18px; flex-wrap: wrap; }
+.raios div, .sombras div { width: 110px; height: 72px; background: var(--superficie); border: 1px solid var(--borda); display: grid; place-items: center; font-size: 12px; color: var(--tinta-2); }
+.sombras div { border-color: transparent; border-radius: var(--r3); }
+
+/* Materiais de vidro. */
+.papel { background: var(--papel); border-radius: var(--r4); padding: 28px; position: relative; overflow: hidden; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.papel::before { content: ""; position: absolute; width: 180px; height: 180px; border-radius: 50%; left: 32%; top: 20%; background: var(--acento); opacity: .55; filter: blur(2px); }
+.papel::after { content: ""; position: absolute; width: 120px; height: 120px; right: 12%; bottom: 8%; background: var(--q-observar); opacity: .45; transform: rotate(18deg); border-radius: var(--r2); }
+.material { position: relative; z-index: 1; min-height: 150px; border-radius: var(--r3); padding: 16px; border: 1px solid var(--vidro-borda); }
+.material b { display: block; font-size: 14px; margin-bottom: 4px; }
+.material p { margin: 0; font-size: 12px; color: var(--tinta-2); }
+.material.m1 { background: var(--vidro-1); backdrop-filter: blur(var(--vidro-1-blur)) saturate(140%); -webkit-backdrop-filter: blur(var(--vidro-1-blur)) saturate(140%); box-shadow: var(--vidro-brilho), var(--sombra-2); }
+.material.m2 { background: var(--vidro-2); backdrop-filter: blur(var(--vidro-2-blur)) saturate(140%); -webkit-backdrop-filter: blur(var(--vidro-2-blur)) saturate(140%); box-shadow: var(--vidro-brilho), var(--sombra-1); }
+.material.m3 { background: var(--veu); color: #fff; border-color: transparent; }
+.material.m3 p { color: rgba(255,255,255,.85); }
+[data-ds="fluent"] .material.m1 { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E"); }
+
+/* Movimento. */
+.mov { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.mov .pista { position: relative; height: 44px; border-radius: var(--r2); background: var(--linha); cursor: pointer; }
+.mov .bola { position: absolute; left: 6px; top: 8px; width: 28px; height: 28px; border-radius: var(--r2); background: var(--acento); }
+.mov .pista:hover .bola { left: calc(100% - 34px); }
+.mov figcaption { font-size: 12px; color: var(--tinta-3); margin-top: 6px; }
+
+/* Componentes. */
+.linha-comp { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.btn { height: var(--controle); padding: 0 16px; border-radius: var(--r2); border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: background .15s var(--ease), transform .15s var(--ease); }
+.btn.pri { background: var(--acento); color: var(--acento-texto); }
+.btn.pri:hover { background: var(--acento-hover); } .btn.pri:active { background: var(--acento-ativo); }
+.btn.sec { background: var(--superficie); color: var(--tinta); border-color: var(--borda); }
+.btn.sec:hover { background: var(--linha); }
+.btn.sut { background: transparent; color: var(--acento); }
+.btn.sut:hover { background: var(--acento-suave); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn .giro { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: giro .8s linear infinite; }
+@keyframes giro { to { transform: rotate(360deg); } }
+[data-ds="carbon"] .btn { height: 48px; padding: 0 64px 0 16px; font-weight: 400; position: relative; }
+[data-ds="carbon"] .btn .ti { position: absolute; right: 16px; }
+[data-ds="carbon"] .btn.sec { background: #393939; color: #fff; border-color: #393939; }
+[data-ds="apple"] .btn, [data-ds="dribbble"] .btn.pri { border-radius: 999px; }
+[data-ds="apple"] .btn.pri { box-shadow: var(--vidro-brilho); }
+[data-ds="apple"] .btn.sec { background: var(--vidro-2); backdrop-filter: blur(20px); border-color: var(--vidro-borda); box-shadow: var(--vidro-brilho); }
+[data-ds="dribbble"] .btn.pri { box-shadow: 0 10px 20px -10px var(--acento); }
+.segmentado { display: inline-flex; padding: 3px; gap: 2px; background: var(--linha); border-radius: calc(var(--r2) + 3px); }
+.segmentado button { border: 0; background: transparent; padding: 6px 14px; border-radius: var(--r2); cursor: pointer; color: var(--tinta-2); font-size: 13px; }
+.segmentado button[aria-pressed="true"] { background: var(--superficie); color: var(--tinta); box-shadow: var(--sombra-1); }
+[data-ds="carbon"] .segmentado { background: transparent; border-bottom: 1px solid var(--linha); padding: 0; gap: 0; }
+[data-ds="carbon"] .segmentado button { border-radius: 0; padding: 10px 16px; border-bottom: 2px solid transparent; }
+[data-ds="carbon"] .segmentado button[aria-pressed="true"] { box-shadow: none; background: transparent; border-bottom-color: var(--acento); font-weight: 600; }
+[data-ds="apple"] .segmentado, [data-ds="dribbble"] .segmentado { border-radius: 999px; }
+[data-ds="apple"] .segmentado button, [data-ds="dribbble"] .segmentado button { border-radius: 999px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--borda); background: var(--superficie); font-size: 13px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--acento-suave); border-color: var(--acento); color: var(--acento-ativo); }
+[data-ds="carbon"] .chip { border-radius: 24px; border-color: transparent; background: #e0e0e0; }
+.campo { display: flex; flex-direction: column; gap: 5px; width: 240px; font-size: 12px; color: var(--tinta-2); }
+.campo input { height: var(--controle); border: 1px solid var(--borda); border-radius: var(--r2); padding: 0 12px; font: inherit; font-size: 14px; color: var(--tinta); background: var(--superficie); outline: none; }
+.campo input:focus, .campo.foco input { border-color: var(--acento); box-shadow: 0 0 0 1px var(--acento); }
+.campo.erro input { border-color: var(--erro); box-shadow: 0 0 0 1px var(--erro); }
+.campo .msg { color: var(--erro); display: flex; gap: 4px; align-items: center; }
+.campo input:disabled { opacity: .5; }
+[data-ds="carbon"] .campo input { background: #f4f4f4; border: 0; border-bottom: 1px solid var(--borda); }
+[data-ds="carbon"] .campo.foco input { box-shadow: inset 0 0 0 2px var(--acento); }
+[data-ds="fluent"] .campo input { border-bottom-color: #616161; }
+[data-ds="fluent"] .campo.foco input { box-shadow: inset 0 -2px 0 var(--acento); border-color: var(--borda); border-bottom-color: var(--acento); }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: color-mix(in oklab, var(--cor) 13%, transparent); color: color-mix(in oklab, var(--cor) 78%, var(--tinta)); }
+[data-ds="carbon"] .tag { border-radius: 24px; font-weight: 400; }
+.tag .p { width: 7px; height: 7px; border-radius: 50%; background: var(--cor); }
+table.t { border-collapse: collapse; width: 100%; max-width: 640px; font-size: 13px; background: var(--superficie); border-radius: var(--r3); overflow: hidden; box-shadow: var(--sombra-1); }
+table.t th { text-align: left; font-weight: 600; color: var(--tinta-2); padding: 10px 12px; background: var(--linha); }
+table.t td { padding: 9px 12px; border-top: 1px solid var(--linha); font-variant-numeric: tabular-nums; }
+table.t .n { text-align: right; }
+table.t tr:hover td { background: var(--acento-suave); }
+.dica { display: inline-block; padding: 8px 12px; border-radius: var(--r2); background: #1d1d1f; color: #fff; font-size: 12px; box-shadow: var(--sombra-2); max-width: 260px; }
+[data-ds="apple"] .dica, [data-ds="dribbble"] .dica { background: var(--vidro-2); color: var(--tinta); backdrop-filter: blur(24px); border: 1px solid var(--vidro-borda); }
+.aviso { display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--r2); font-size: 13px; max-width: 560px; margin-bottom: 10px;
+  background: color-mix(in oklab, var(--cor) 9%, var(--superficie)); border: 1px solid color-mix(in oklab, var(--cor) 30%, transparent); }
+.aviso .ti { color: var(--cor); font-size: 18px; }
+[data-ds="carbon"] .aviso { border: 0; box-shadow: inset 3px 0 0 var(--cor); }
+.chat { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
+.bal-u { align-self: flex-end; padding: 9px 13px; border-radius: var(--r3) var(--r3) var(--r1) var(--r3); background: var(--acento); color: var(--acento-texto); font-size: 14px; max-width: 90%; }
+.bal-ia { padding: 13px; border-radius: var(--r3) var(--r3) var(--r3) var(--r1); background: var(--superficie); border: 1px solid var(--linha); box-shadow: var(--sombra-1); }
+[data-ds="apple"] .bal-ia, [data-ds="dribbble"] .bal-ia { background: var(--vidro-2); backdrop-filter: blur(24px); border-color: var(--vidro-borda); box-shadow: var(--vidro-brilho), var(--sombra-1); }
+.bal-ia .gr { font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+.bal-ia pre { font-size: 11.5px; background: var(--linha); padding: 10px; border-radius: var(--r2); white-space: pre-wrap; margin: 8px 0 0; }
+.bal-ia summary { cursor: pointer; color: var(--tinta-2); font-size: 13px; margin-top: 8px; }
+.esqueleto { width: 280px; display: flex; flex-direction: column; gap: 8px; }
+.esqueleto span { height: 12px; border-radius: var(--r1); background: linear-gradient(90deg, var(--linha), color-mix(in oklab, var(--linha) 40%, var(--superficie)), var(--linha)); background-size: 200% 100%; animation: brilho 1.4s linear infinite; }
+@keyframes brilho { to { background-position: -200% 0; } }
+.estado { width: 300px; padding: 16px; border-radius: var(--r3); border: 1px dashed var(--borda); font-size: 13px; color: var(--tinta-2); }
+.estado b { display: block; color: var(--tinta); margin-bottom: 4px; }
+
+/* Padrões. */
+.padrao { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid var(--linha); }
+.padrao .regra { font-size: 13px; color: var(--tinta-2); }
+.padrao .regra b { color: var(--tinta); }
+.anat { position: relative; padding: 16px; border-radius: var(--r3); background: var(--superficie); border: 1px solid var(--linha); box-shadow: var(--sombra-1); }
+.anat .marc { font-size: 10px; font-family: var(--mono); color: var(--acento); display: block; margin-bottom: 2px; }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: 13px; }
+.kv dt { color: var(--tinta-2); } .kv dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* Wireframes: blocos cinza, sem dado. Wireframes: grey blocks, no data. */
+.wf { display: grid; gap: 8px; padding: 12px; border-radius: var(--r3); background: #e9e9ec; border: 1px solid #d5d5da; }
+.wf div { background: #cfd0d6; border-radius: var(--r2); display: grid; place-items: center; font-size: 11px; color: #4d4f57; font-family: "Geist", sans-serif; min-height: 28px; text-align: center; padding: 4px; }
+.wf .v { background: #b9bbc3; }
+.grade12 { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gut, 16px); padding: 0 var(--mar, 24px); height: 90px; background: #e9e9ec; border-radius: var(--r2); }
+.grade12 span { background: color-mix(in oklab, var(--acento) 18%, transparent); }
+.wfs { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.rotulo-wf { font-size: 12px; color: var(--tinta-3); margin: 6px 0 16px; }
+.nota { font-size: 12px; color: var(--tinta-3); }
+
+/* Entrada do chat, comum a todos. Chat input, shared. */
+.entrada-chat { display: flex; align-items: center; gap: 8px; max-width: 420px; margin-top: 14px; padding: 4px 4px 4px 14px; border: 1px solid var(--borda); border-radius: var(--r2); background: var(--superficie); }
+.entrada-chat input { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 14px; color: var(--tinta); outline: none; height: 34px; }
+.entrada-chat button { width: 34px; height: 34px; border: 0; border-radius: var(--r2); background: var(--acento); color: var(--acento-texto); display: grid; place-items: center; cursor: pointer; }
+
+/* Selo de origem de cada seção, só no híbrido. Origin badge per section, hybrid only. */
+.origem { display: none; }
+[data-ds="hibrido"] .origem { display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; vertical-align: middle; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; letter-spacing: 0; }
+[data-ds="hibrido"] .origem.carbon { background: #e0e0e0; color: #161616; }
+[data-ds="hibrido"] .origem.lg { background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.85); box-shadow: var(--vidro-brilho); color: #0043ce; backdrop-filter: blur(12px); }
+
+/* Camada Liquid Glass sobre os componentes. Liquid Glass layer on components. */
+.segmentado { position: relative; }
+.gota, .orb { display: none; }
+[data-ds="hibrido"] :is(.cartao, .anat, table.t, .bal-ia, .dica, .estado) {
+  background: var(--vidro-2); backdrop-filter: blur(var(--vidro-2-blur)) saturate(180%); -webkit-backdrop-filter: blur(var(--vidro-2-blur)) saturate(180%);
+  border: 1px solid var(--vidro-borda); box-shadow: var(--vidro-brilho), var(--sombra-1); color: var(--tinta); }
+[data-ds="hibrido"] .cartao, [data-ds="hibrido"] .anat { border-radius: var(--r3); }
+[data-ds="hibrido"] table.t { border-radius: var(--r3); border-collapse: separate; border-spacing: 0; }
+[data-ds="hibrido"] table.t th { background: rgba(255,255,255,.35); }
+[data-ds="hibrido"] table.t tr:hover td { background: rgba(15,98,254,.06); }
+[data-ds="hibrido"] .dica { border-radius: var(--r2); box-shadow: var(--vidro-brilho), var(--sombra-2); }
+[data-ds="hibrido"] .estado { border-radius: var(--r3); }
+[data-ds="hibrido"] .aviso { border-radius: var(--r2); background: color-mix(in oklab, var(--cor) 8%, rgba(255,255,255,.62)); backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,.8); box-shadow: var(--vidro-brilho), var(--sombra-1); align-items: center; }
+[data-ds="hibrido"] .aviso .ti { width: 28px; height: 28px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 16px; background: color-mix(in oklab, var(--cor) 16%, #fff); }
+[data-ds="hibrido"] .btn { border-radius: 999px; padding: 0 20px; font-weight: 500; transition: transform .35s var(--mola), background .2s var(--ease), box-shadow .2s var(--ease); }
+[data-ds="hibrido"] .btn.pri { box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.18), 0 8px 18px -8px rgba(15,98,254,.6); }
+[data-ds="hibrido"] .btn.sec { background: var(--vidro-2); backdrop-filter: blur(20px) saturate(180%); border-color: var(--vidro-borda); box-shadow: var(--vidro-brilho), var(--sombra-1); }
+[data-ds="hibrido"] .btn.sut:hover { background: rgba(15,98,254,.08); }
+[data-ds="hibrido"] .btn:hover:not([disabled]) { transform: translateY(-1px); }
+[data-ds="hibrido"] .btn:active:not([disabled]) { transform: scale(.96); }
+[data-ds="hibrido"] .segmentado { border-radius: 999px; padding: 4px; gap: 2px; background: rgba(255,255,255,.35); backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--vidro-borda); box-shadow: var(--vidro-brilho); }
+[data-ds="hibrido"] .segmentado button { border-radius: 999px; position: relative; z-index: 1; transition: color .2s; }
+[data-ds="hibrido"] .segmentado button[aria-pressed="true"] { background: transparent; box-shadow: none; color: var(--tinta); font-weight: 500; }
+[data-ds="hibrido"] .gota { display: block; position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 999px; background: rgba(255,255,255,.94);
+  box-shadow: inset 0 1px 1px #fff, inset 0 -1px 1px rgba(0,0,0,.06), 0 4px 12px -4px rgba(0,0,0,.2); transition: left .5s var(--mola), width .5s var(--mola); }
+[data-ds="hibrido"] .chip { background: rgba(255,255,255,.5); backdrop-filter: blur(16px) saturate(170%); border: 1px solid var(--vidro-borda); box-shadow: var(--vidro-brilho);
+  transition: transform .35s var(--mola), background .2s; }
+[data-ds="hibrido"] .chip:active { transform: scale(.95); }
+[data-ds="hibrido"] .chip[aria-pressed="true"] { background: rgba(15,98,254,.12); border-color: rgba(15,98,254,.35); color: #0043ce; }
+[data-ds="hibrido"] .campo input { border-radius: var(--r2); background: rgba(255,255,255,.62); backdrop-filter: blur(16px) saturate(170%); border: 1px solid rgba(22,22,22,.14);
+  box-shadow: var(--vidro-brilho); transition: box-shadow .25s var(--ease), border-color .2s; }
+[data-ds="hibrido"] .campo input:focus, [data-ds="hibrido"] .campo.foco input { border-color: var(--acento); box-shadow: var(--vidro-brilho), 0 0 0 4px rgba(15,98,254,.16); }
+[data-ds="hibrido"] .campo.erro input { border-color: var(--erro); box-shadow: var(--vidro-brilho), 0 0 0 4px rgba(218,30,40,.14); }
+[data-ds="hibrido"] .tag { background: color-mix(in oklab, var(--cor) 12%, rgba(255,255,255,.55)); border: 1px solid color-mix(in oklab, var(--cor) 22%, rgba(255,255,255,.8));
+  backdrop-filter: blur(14px) saturate(170%); font-weight: 500; }
+[data-ds="hibrido"] .tag { color: var(--cor-texto, color-mix(in oklab, var(--cor) 78%, var(--tinta))); }
+[data-ds="hibrido"] .tag.alerta { background: #fcf4d6; border-color: #f1c21b; color: #483700; }
+[data-ds="hibrido"] .aviso.atencao .ti { background: #f1c21b; color: #161616; }
+[data-ds="hibrido"] .bal-u { border-radius: 20px 20px 6px 20px; box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 8px 18px -10px rgba(15,98,254,.6); }
+[data-ds="hibrido"] .bal-ia { border-radius: 20px 20px 20px 6px; }
+[data-ds="hibrido"] .entrada-chat { border-radius: 999px; background: rgba(255,255,255,.55); backdrop-filter: blur(22px) saturate(180%); border-color: var(--vidro-borda); box-shadow: var(--vidro-brilho), var(--sombra-2); }
+[data-ds="hibrido"] .entrada-chat button { border-radius: 50%; box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 6px 14px -6px rgba(15,98,254,.6); }
+[data-ds="hibrido"] .esqueleto span { border-radius: 999px; }
+[data-ds="hibrido"] .orb { display: block; width: 34px; height: 34px; border-radius: 50%; margin-bottom: 10px;
+  background: radial-gradient(circle at 35% 30%, #fff, rgba(166,200,255,.95) 45%, rgba(15,98,254,.6)); box-shadow: inset 0 1px 2px #fff, 0 6px 16px -6px rgba(15,98,254,.6);
+  animation: respira 2.4s ease-in-out infinite; }
+@keyframes respira { 50% { transform: scale(1.08); opacity: .8; } }
+/* Grid do Carbon e modelos de página. Carbon grid and page templates. */
+.reguas { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 16px; }
+.reguas-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.calhas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.regua { display: grid; grid-template-columns: repeat(var(--c), 1fr); gap: var(--g, 8px); height: 44px; padding: 0 8px; background: #e9e9ec; border-radius: var(--r2); }
+.regua span { background: color-mix(in oklab, var(--acento) 22%, transparent); border-radius: 2px; }
+.legenda-wf { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--tinta-2); margin-bottom: 14px; }
+.legenda-wf .bl { display: inline-block; width: 18px; height: 12px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+.bl.opc { border: 1.5px dashed #8b8e98; } .bl.chat { background: #9fb3d9; } .bl.flut { background: rgba(255,255,255,.85); border: 1px solid #b9bbc3; }
+.modelos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+.modelo h4 { margin: 12px 0 2px; font-size: 15px; }
+.modelo p { margin: 0 0 8px; color: var(--tinta-2); font-size: 13px; }
+.tags-wf { display: flex; gap: 6px; flex-wrap: wrap; }
+.tags-wf span { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--linha); color: var(--tinta-2); }
+.tags-wf .com { background: #dbe6fb; color: #0043ce; }
+.tags-wf .opc-t { background: transparent; border: 1px dashed #8b8e98; }
+.wf16, .wf4 { display: grid; grid-template-columns: repeat(16, 1fr); grid-auto-rows: minmax(26px, auto); gap: 6px; padding: 10px;
+  background: #e9e9ec; border-radius: var(--r3); border: 1px solid #d5d5da; }
+.wf16.cheia { grid-auto-rows: minmax(38px, auto); }
+.wf16.condensado { gap: 1px; }
+.wf4 { grid-template-columns: repeat(4, 1fr); width: 190px; border-radius: 28px; padding: 14px 10px; }
+.fones { display: flex; gap: 28px; justify-content: center; }
+.wf16 .col, .wf4 .col { height: 5px; background: color-mix(in oklab, var(--acento) 32%, transparent); border-radius: 2px; }
+.wf16 .b, .wf4 .b { background: #cfd0d6; border-radius: calc(var(--r2) * .6); display: grid; place-items: center; min-height: 26px; padding: 4px;
+  font-size: 11px; color: #4d4f57; font-family: "Geist", system-ui, sans-serif; text-align: center; }
+.wf16 .b.nav, .wf4 .b.nav { background: #b9bbc3; }
+.wf16 .b.opc, .wf4 .b.opc { background: transparent; border: 1.5px dashed #8b8e98; color: #5d606a; }
+.wf16 .b.chat, .wf4 .b.chat { background: #9fb3d9; color: #1f2d4d; }
+.wf16 .b.fundo { background: linear-gradient(135deg, #c9cbd2, #b1b4bd); place-items: end center; padding-bottom: 8px; }
+.wf16 .b.flut { background: rgba(255,255,255,.74); border: 1px solid rgba(255,255,255,.95); box-shadow: 0 4px 12px -6px rgba(0,0,0,.28); }
+.wf16 .b.opc.flut { background: rgba(255,255,255,.35); border: 1.5px dashed #8b8e98; }
+.wf16 .b.chat.flut { background: rgba(159,179,217,.9); }
+.wf16 .b.linha { min-height: 16px; background: #d8d9de; }
+.regras-wf { padding-left: 18px; max-width: 80ch; } .regras-wf li { margin-bottom: 6px; }
+.aberto { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px dashed #b28600; color: #8e6a00; margin-right: 8px; vertical-align: 1px; }
+.grade12 { grid-template-columns: repeat(var(--n, 12), 1fr); }
+@media (max-width: 1000px) { .modelos, .reguas, .calhas { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (max-width: 1000px) {
+  .casca { grid-template-columns: 1fr; padding: 18px 16px 60px; }
+  .indice { display: none; }
+  .ficha, .papel, .mov, .padrao, .wfs, #chat > div { grid-template-columns: 1fr !important; }
+  .proto .sel { margin-left: 0; flex-wrap: wrap; }
+  h1 { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="proto" role="group" aria-label="Candidato">
+  <b>Protótipo de design system</b><span>Crédito PJ · compare os cinco candidatos</span>
+  <div class="sel" id="sel"></div>
+</div>
+
+<div class="casca">
+  <nav class="indice" aria-label="Seções">
+    <span class="g">CANDIDATO</span><a href="#ficha">Ficha</a>
+    <span class="g">FUNDAÇÕES</span><a href="#cor">Cor</a><a href="#graficos">Paletas de gráfico</a><a href="#tipo">Tipografia</a><a href="#espaco">Espaço e grid</a><a href="#forma">Raio e elevação</a><a href="#vidro">Materiais de vidro</a><a href="#movimento">Movimento</a>
+    <span class="g">COMPONENTES</span><a href="#comp">Controles</a><a href="#dados">Dados e avisos</a><a href="#chat">Chat</a><a href="#estados">Estados</a>
+    <span class="g">PADRÕES</span><a href="#padroes">Padrões de uso</a>
+    <span class="g">WIREFRAMES</span><a href="#wireframes">Grid e modelos</a>
+  </nav>
+
+  <main>
+    <section class="bloco" id="ficha">
+      <h1 id="nome-ds"></h1>
+      <p class="explica" id="resumo-ds"></p>
+      <div class="ficha" id="ficha-ds"></div>
+    </section>
+
+    <section class="bloco" id="cor">
+      <h2 class="tit">Cor</h2>
+      <p class="explica">Neutros para quase toda a interface, um acento para ação e seleção, cores de estado com ícone, e os quatro quadrantes, que só aparecem onde há decisão. O contraste de cada amostra é calculado contra a superfície.</p>
+      <h3>Neutros e acento</h3><div class="amostras" id="neutros"></div>
+      <h3>Estado</h3><div class="amostras" id="estado-cores"></div>
+      <h3>Quadrantes da recomendação</h3><div id="selo-q"></div><div class="amostras" id="quadrantes"></div>
+    </section>
+
+    <section class="bloco" id="graficos">
+      <h2 class="tit">Paletas de gráfico</h2>
+      <p class="explica">Categórica para identidade (até seis modalidades, em ordem fixa), sequencial para magnitude e divergente para desvio contra o país, com cinza no ponto neutro. Resultado do validador de daltonismo e contraste ao lado de cada uma.</p>
+      <h3>Categórica</h3><div id="selo-cat"></div><div class="faixa" id="categorica"></div><div class="legenda-faixa" id="leg-cat"></div>
+      <h3>Sequencial</h3><div class="faixa" id="sequencial"></div><div class="legenda-faixa"><span>menos carteira</span><span>mais carteira</span></div>
+      <h3>Divergente</h3><div class="faixa" id="divergente"></div><div class="legenda-faixa"><span>risco melhora mais que no país</span><span>igual ao país</span><span>risco piora mais que no país</span></div>
+    </section>
+
+    <section class="bloco" id="tipo">
+      <h2 class="tit">Tipografia</h2>
+      <p class="explica" id="tipo-explica"></p>
+      <div id="escala"></div>
+      <h3>Números tabulares</h3>
+      <table class="t" style="max-width:360px"><tbody><tr><td>Carteira PJ</td><td class="n">R$ 485,5 bi</td></tr><tr><td>Custo de não entrar</td><td class="n">R$ 141,1 bi</td></tr><tr><td>Variação em 6 meses</td><td class="n">+0,15 p.p.</td></tr></tbody></table>
+    </section>
+
+    <section class="bloco" id="espaco">
+      <h2 class="tit">Espaço e grid</h2>
+      <p class="explica" id="esp-explica"></p>
+      <div class="esp" id="espacos"></div>
+      <h3 id="grade-tit">Grid</h3><div class="grade12" id="grade12"></div><p class="rotulo-wf" id="grade-rot"></p>
+    </section>
+
+    <section class="bloco" id="forma">
+      <h2 class="tit">Raio e elevação</h2>
+      <h3>Raios</h3><div class="raios" id="raios"></div>
+      <h3>Elevação</h3><div class="sombras"><div style="box-shadow:var(--sombra-1)">Nível 1<br>cartões</div><div style="box-shadow:var(--sombra-2)">Nível 2<br>flutuantes</div></div>
+    </section>
+
+    <section class="bloco" id="vidro">
+      <h2 class="tit">Materiais de vidro</h2>
+      <p class="explica" id="vidro-explica"></p>
+      <div class="papel" id="materiais"></div>
+      <p class="nota" id="vidro-regra"></p>
+    </section>
+
+    <section class="bloco" id="movimento">
+      <h2 class="tit">Movimento</h2>
+      <p class="explica">Passe o mouse em cada pista para ver a curva e a duração. Movimento só comunica mudança de estado, e some com a preferência de movimento reduzido do sistema.</p>
+      <div class="mov" id="mov"></div>
+    </section>
+
+    <section class="bloco" id="comp">
+      <h2 class="tit">Controles</h2>
+      <h3>Botões: primário, secundário, sutil, desativado e carregando</h3>
+      <div class="linha-comp">
+        <button class="btn pri">Aplicar filtro<i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+        <button class="btn sec">Exportar PDF<i class="ti ti-download" aria-hidden="true"></i></button>
+        <button class="btn sut">Ver o SQL</button>
+        <button class="btn pri" disabled>Desativado</button>
+        <button class="btn pri"><span class="giro" aria-hidden="true"></span>Carregando</button>
+      </div>
+      <h3>Controle segmentado e abas</h3>
+      <div class="linha-comp"><div class="segmentado"><button>Onde está o crédito</button><button>Onde o risco piora</button><button aria-pressed="true">Recomendação</button></div></div>
+      <h3>Chips de filtro</h3>
+      <div class="linha-comp"><button class="chip" aria-pressed="true"><i class="ti ti-check" aria-hidden="true"></i>Todos</button><button class="chip">Empréstimos</button><button class="chip">Financiamentos</button><button class="chip">Fin. rurais</button></div>
+      <h3>Campo de texto: normal, foco, erro e desativado</h3>
+      <div class="linha-comp" style="align-items:flex-start">
+        <label class="campo">Estado<input placeholder="Ex.: SP"></label>
+        <label class="campo foco">Modalidade<input value="Empréstimos"></label>
+        <label class="campo erro">Estado<input value="XX"><span class="msg"><i class="ti ti-alert-circle" aria-hidden="true"></i>Não existe UF com essa sigla. Use duas letras, como SP.</span></label>
+        <label class="campo">Pergunta<input disabled placeholder="Chat indisponível"></label>
+      </div>
+    </section>
+
+    <section class="bloco" id="dados">
+      <h2 class="tit">Dados e avisos</h2>
+      <h3>Marca de quadrante e alerta antecipado</h3>
+      <div class="linha-comp" id="tags"></div>
+      <h3>Tabela</h3>
+      <table class="t"><thead><tr><th>UF</th><th>Modalidade</th><th class="n">Carteira</th><th class="n">Espaço</th><th>Quadrante</th></tr></thead><tbody id="tabela"></tbody></table>
+      <h3>Dica flutuante</h3>
+      <span class="dica"><b>SP · Financiamentos</b><br>Índice de espaço 0,87 · piora além do país −0,04 p.p.</span>
+      <h3>Avisos</h3>
+      <div class="aviso" style="--cor:var(--info)"><i class="ti ti-info-circle" aria-hidden="true"></i><span>A UF é a da sede da empresa, e não onde o crédito foi usado.</span></div>
+      <div class="aviso atencao" style="--cor:var(--atencao)"><i class="ti ti-alert-triangle" aria-hidden="true"></i><span>A série cruza a mudança de critério do ativo problemático de jan/2025.</span></div>
+      <div class="aviso" style="--cor:var(--erro)"><i class="ti ti-circle-x" aria-hidden="true"></i><span>Não foi possível carregar os dados. Tente de novo em alguns segundos.</span></div>
+    </section>
+
+    <section class="bloco" id="chat">
+      <h2 class="tit">Chat</h2>
+      <p class="explica">Pergunta, resposta com o número tirado do dado, ressalva e SQL recolhido, e a abstenção quando o dado não permite responder.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="chat"><div class="bal-u">Qual a taxa de inadimplência de empréstimos PJ no RJ?</div>
+          <div class="bal-ia"><div class="gr num">7,60%</div><div>em jul/2026. Subiu 0,40 p.p. em seis meses, menos que o país (0,70 p.p.).</div>
+            <div class="aviso" style="--cor:var(--info);margin:10px 0 0"><i class="ti ti-info-circle" aria-hidden="true"></i><span>A UF é a da sede da empresa.</span></div>
+            <details><summary>Ver o SQL</summary><pre>SELECT sum(f.carteira_inadimplencia)
+     / sum(f.carteira_ativa) AS taxa
+FROM fct_carteira f
+JOIN dim_modalidade m USING (codigo_submodalidade)
+WHERE f.uf = 'RJ' AND f.cliente = 'PJ'
+  AND m.modalidade = 'Empréstimos'</pre></details></div></div>
+        <div class="chat"><div class="bal-u">Qual banco mais emprestou para empresas no RJ?</div>
+          <div class="bal-ia"><b>Não dá para responder com este dado.</b><div style="color:var(--tinta-2);margin-top:4px">O SCR.data é agregado por segmento e não identifica instituições. Para isso seria preciso o dado por instituição, que o BCB não publica aqui.</div></div></div>
+      </div>
+      <div class="entrada-chat"><input placeholder="Pergunte sobre crédito PJ" aria-label="Pergunta"><button aria-label="Enviar"><i class="ti ti-arrow-up" aria-hidden="true"></i></button></div>
+    </section>
+
+    <section class="bloco" id="estados">
+      <h2 class="tit">Estados</h2>
+      <div class="linha-comp" style="align-items:flex-start">
+        <div><h3 style="margin-top:0">Carregando</h3><div class="esqueleto"><span style="width:60%"></span><span></span><span style="width:80%"></span></div></div>
+        <div class="estado"><b>Nenhuma célula neste filtro</b>Nenhuma combinação de estado e modalidade passa no corte de R$ 1 bi com esse filtro. Tire um dos filtros para ver mais.</div>
+        <div class="estado"><span class="orb" aria-hidden="true"></span><b>O chat está acordando</b>O modelo leva alguns segundos para carregar na primeira pergunta. As telas continuam funcionando enquanto isso.</div>
+      </div>
+    </section>
+
+    <section class="bloco" id="padroes">
+      <h2 class="tit">Padrões de uso</h2>
+      <div class="padrao"><div class="anat"><span class="marc">TÍTULO-CONCLUSÃO</span><div style="font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.2">Em 35 combinações de estado e modalidade, dá para crescer sem que o risco piore mais que no país</div>
+        <span class="marc" style="margin-top:8px">APOIO</span><div style="color:var(--tinta-2)">Elas somam R$ 485,5 bi em carteira PJ.</div><span class="marc" style="margin-top:8px">FONTE</span><div class="nota">Data-base jul/2026 · SCR.data, Banco Central</div></div>
+        <div class="regra"><span class="aberto">Em aberto</span><b>Ainda não está decidido se as visões terão este bloco.</b> Se for adotado, o título diz o que o gráfico prova, numa frase que um executivo repetiria, e não um rótulo como "Matriz de risco".</div></div>
+      <div class="padrao"><div class="anat"><div class="linha-comp" style="margin:0"><div class="segmentado"><button aria-pressed="true">Todos</button><button>Entrar</button><button>Observar</button></div><button class="chip">Empréstimos</button><button class="chip">Financiamentos</button></div></div>
+        <div class="regra"><b>Filtros numa linha só, acima do conteúdo.</b> Filtrar nunca repinta as cores: cada quadrante mantém a sua cor com ou sem filtro.</div></div>
+      <div class="padrao"><div class="anat"><span class="marc">DETALHE</span><dl class="kv"><dt>Carteira PJ</dt><dd>R$ 219,4 bi</dd><dt>Índice de espaço</dt><dd>0,87</dd><dt>Variação em 6 meses</dt><dd>+0,15 p.p.</dd><dt>No país</dt><dd>+0,19 p.p.</dd></dl></div>
+        <div class="regra"><b>Detalhe em lista de chave e valor.</b> Números alinhados à direita, com unidade. Aparece ao lado, sem janela que cubra a tela.</div></div>
+      <div class="padrao"><div class="anat"><span class="marc">FRONTEIRA DO DADO</span><div class="linha-comp" style="margin:4px 0 0"><span class="chip"><i class="ti ti-receipt-off" aria-hidden="true"></i>Sem juros nem receita</span><span class="chip"><i class="ti ti-building-bank" aria-hidden="true"></i>Nenhuma instituição</span><span class="chip"><i class="ti ti-map-pin" aria-hidden="true"></i>UF da sede</span></div></div>
+        <div class="regra"><b>O que o dado não permite afirmar fica junto da recomendação.</b> Nunca no rodapé nem escondido em nota.</div></div>
+    </section>
+
+    <section class="bloco" id="wireframes">
+      <h2 class="tit">Grid e modelos de página</h2>
+      <p class="explica">O grid é o padrão do Carbon. Os modelos são esqueletos genéricos, sem dado e sem ligação com uma visão específica: cada visão do dashboard escolhe o modelo que serve à pergunta dela. O chat só aparece nos modelos que o preveem, e o bloco de título e apoio é opcional em todos, porque ainda está em aberto.</p>
+      <h3>Grid 2x do Carbon</h3>
+      <table class="t"><thead><tr><th>Ponto de quebra</th><th class="n">A partir de</th><th class="n">Colunas</th><th class="n">Margem</th></tr></thead><tbody><tr><td>sm, celular</td><td class="n">320 px</td><td class="n">4</td><td class="n">0</td></tr><tr><td>md, tablet</td><td class="n">672 px</td><td class="n">8</td><td class="n">16 px</td></tr><tr><td>lg, notebook</td><td class="n">1056 px</td><td class="n">16</td><td class="n">16 px</td></tr><tr><td>xlg, desktop</td><td class="n">1312 px</td><td class="n">16</td><td class="n">16 px</td></tr><tr><td>max, tela grande</td><td class="n">1584 px</td><td class="n">16</td><td class="n">24 px</td></tr></tbody></table>
+      <div class="reguas">
+        <div><div class="regua" style="--c:16"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><p class="rotulo-wf">16 colunas, a partir de 1056 px</p></div>
+        <div class="reguas-2"><div><div class="regua" style="--c:8"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><p class="rotulo-wf">8 colunas, a partir de 672 px</p></div><div><div class="regua" style="--c:4"><span></span><span></span><span></span><span></span></div><p class="rotulo-wf">4 colunas, no celular</p></div></div>
+      </div>
+      <h3>Calhas</h3>
+      <div class="calhas">
+        <div><div class="regua" style="--c:6;--g:14px"><span></span><span></span><span></span><span></span><span></span><span></span></div><p class="rotulo-wf"><b>Larga, 32 px.</b> O padrão, para páginas com respiro.</p></div>
+        <div><div class="regua" style="--c:6;--g:7px"><span></span><span></span><span></span><span></span><span></span><span></span></div><p class="rotulo-wf"><b>Estreita, 16 px.</b> Para painéis e conteúdo mais junto.</p></div>
+        <div><div class="regua" style="--c:6;--g:1px"><span></span><span></span><span></span><span></span><span></span><span></span></div><p class="rotulo-wf"><b>Condensada, 1 px.</b> Para tabelas e listas densas.</p></div>
+      </div>
+      <p class="nota">Valores dos pacotes @carbon/layout e @carbon/grid, conferidos em 2026-09-26. As réguas estão em escala reduzida.</p>
+      <h3>Modelos de página</h3>
+      <div class="legenda-wf"><span><i class="bl opc"></i>Opcional, em aberto</span><span><i class="bl chat"></i>Chat</span><span><i class="bl flut"></i>Painel de vidro flutuante</span></div>
+      <div class="modelos"><article class="modelo"><div class="wf16"><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><div class="b nav" style="grid-column:1/-1;">Navegação</div><div class="b opc" style="grid-column:1/-1;">Título e apoio</div><div class="b " style="grid-column:1/-1;">Barra de filtros</div><div class="b " style="grid-column:1/-1;min-height:120px">Visualização principal</div><div class="b " style="grid-column:1/9;min-height:56px">Apoio</div><div class="b " style="grid-column:9/-1;min-height:56px">Apoio</div></div><h4>Visualização em largura total</h4><p>Uma visualização domina a visão, como um mapa ou uma série no tempo.</p><div class="tags-wf"><span class="">Sem chat</span><span class="">Visualização 16</span><span class="">Apoio 8 + 8</span></div></article><article class="modelo"><div class="wf16"><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><div class="b nav" style="grid-column:1/-1;">Navegação</div><div class="b opc" style="grid-column:1/-1;">Título e apoio</div><div class="b " style="grid-column:1/-1;">Barra de filtros</div><div class="b " style="grid-column:1/12;min-height:150px">Visualização</div><div class="b " style="grid-column:12/-1;min-height:150px">Painel de detalhe</div><div class="b " style="grid-column:1/-1;">Tabela alternativa</div></div><h4>Visualização com painel de detalhe</h4><p>Clicar num elemento abre o detalhe ao lado, sem janela por cima.</p><div class="tags-wf"><span class="">Sem chat</span><span class="">Visualização 11</span><span class="">Detalhe 5</span></div></article><article class="modelo"><div class="wf16"><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><div class="b nav" style="grid-column:1/-1;">Navegação</div><div class="b opc" style="grid-column:1/13;">Título e apoio</div><div class="b chat" style="grid-column:13/-1;grid-row:3/7">Trilho do chat</div><div class="b " style="grid-column:1/13;">Barra de filtros</div><div class="b " style="grid-column:1/13;min-height:120px">Visualização principal</div><div class="b " style="grid-column:1/7;min-height:56px">Apoio</div><div class="b " style="grid-column:7/13;min-height:56px">Apoio</div></div><h4>Com trilho do chat</h4><p>Para as visões em que perguntar aos dados ajuda a explorar. O chat fica ao lado e não cobre o conteúdo.</p><div class="tags-wf"><span class="com">Com chat</span><span class="">Conteúdo 12</span><span class="">Chat 4</span></div></article><article class="modelo"><div class="wf16 cheia"><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><div class="b fundo" style="grid-column:1/-1;grid-row:2/7">Visual em tela cheia</div><div class="b nav flut" style="grid-column:5/13;grid-row:2">Navegação</div><div class="b flut" style="grid-column:1/5;grid-row:3/5">Controles e filtros</div><div class="b flut" style="grid-column:13/-1;grid-row:3/6">Painel de detalhe</div><div class="b opc flut" style="grid-column:1/5;grid-row:5/7">Título e apoio</div><div class="b chat flut" style="grid-column:14/-1;grid-row:6">Chat</div></div><h4>Visual em tela cheia com painéis de vidro</h4><p>O visual ocupa a tela, e os controles flutuam por cima em vidro, como no Liquid Glass. Serve a visuais espaciais, como um mapa.</p><div class="tags-wf"><span class="opc-t">Chat opcional, em botão</span><span class="">Painéis 4 + 4</span></div></article><article class="modelo"><div class="wf16 condensado"><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><div class="b nav" style="grid-column:1/-1;">Navegação</div><div class="b opc" style="grid-column:1/-1;">Título e apoio</div><div class="b " style="grid-column:1/-1;">Barra de filtros e ordenação</div><div class="b linha" style="grid-column:1/-1;"></div><div class="b linha" style="grid-column:1/-1;"></div><div class="b linha" style="grid-column:1/-1;"></div><div class="b linha" style="grid-column:1/-1;"></div><div class="b linha" style="grid-column:1/-1;"></div><div class="b linha" style="grid-column:1/-1;"></div><div class="b " style="grid-column:1/-1;">Resumo e paginação</div></div><h4>Tabela ou lista densa</h4><p>Ranking e consulta de muitas linhas, com a calha condensada do Carbon.</p><div class="tags-wf"><span class="">Sem chat</span><span class="">Tabela 16</span><span class="">Calha 1 px</span></div></article><article class="modelo celulares"><div class="fones"><div class="wf4"><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><div class="b nav" style="grid-column:1/-1;">Navegação</div><div class="b opc" style="grid-column:1/-1;">Título</div><div class="b " style="grid-column:1/-1;">Filtros</div><div class="b " style="grid-column:1/-1;min-height:90px">Visualização</div><div class="b " style="grid-column:1/-1;">Detalhe em folha</div><div class="b nav" style="grid-column:1/-1;">Abas</div></div><div class="wf4"><span class="col"></span><span class="col"></span><span class="col"></span><span class="col"></span><div class="b nav" style="grid-column:1/-1;">Navegação</div><div class="b opc" style="grid-column:1/-1;">Título</div><div class="b " style="grid-column:1/-1;">Filtros</div><div class="b " style="grid-column:1/-1;min-height:90px">Visualização</div><div class="b chat" style="grid-column:3/-1;">Chat</div><div class="b nav" style="grid-column:1/-1;">Abas</div></div></div><h4>No celular, 4 colunas</h4><p>Tudo empilha. O detalhe abre numa folha que sobe de baixo. Quando a visão tem chat, ele vira um botão que abre a conversa por cima.</p><div class="tags-wf"><span>Sem chat</span><span class="com">Com chat</span></div></article></div>
+      <h3>Regras propostas para os modelos</h3>
+      <ul class="regras-wf">
+        <li><b>Cada visão escolhe o seu modelo</b> pela pergunta que responde. Visões diferentes podem usar grids diferentes.</li>
+        <li><b>O chat é opcional por visão.</b> Quando existe, fica num trilho de 4 colunas à direita no desktop, ou num botão flutuante nos modelos de tela cheia e no celular.</li>
+        <li><b>O bloco de título e apoio está em aberto.</b> Os modelos reservam o lugar dele, tracejado. Se for adotado, entra acima dos filtros e ocupa só as colunas do conteúdo.</li>
+        <li><b>Toda visão tem uma alternativa em tabela</b> para quem não lê cor ou prefere números.</li>
+      </ul>
+    </section>
+    <p class="nota">Protótipo para escolha do design system. Os tokens das bases oficiais foram transcritos para comparação e precisam de conferência fina na documentação de cada uma antes de adotar. Os números de exemplo são reais, de docs/recomendacao.md.</p>
+  </main>
+</div>
+
+<script>
+/* Conteúdo que muda por candidato. Content that changes per candidate. */
+const DS = {
+  hibrido: {
+    nome: "Carbon com a camada Liquid Glass",
+    resumo: "Escolhido em 2026-09-26 como o design system oficial do dashboard (ADR 0020). As fundações e a documentação do Carbon (cor, gráficos, tipografia, espaço e grid) com a linguagem do Liquid Glass no material, na forma, no movimento e nos componentes. Cada seção abaixo tem um selo dizendo de onde vem a regra.",
+    rotOficial: "O que vem do Carbon, oficial", rotNosso: "O que vem do Liquid Glass, documentado por nós",
+    oficial: ["Cor, paletas de gráfico, tipografia IBM Plex, espaço e grid 2x", "Guia de dashboards e de acessibilidade, para citar e defender", "Carbon MCP para consulta durante o desenho"],
+    nosso: ["Materiais de vidro, raio, elevação e movimento de mola", "Componentes em cápsula e vidro, com todos os estados", "Chat, estados e padrões de uso"],
+    fortes: ["As fundações têm documentação oficial para citar", "O visual atual aparece onde o usuário mais sente: nos controles, no chat e nos painéis", "A camada nova é pequena e fica toda documentada no nosso design system"],
+    riscos: ["Os componentes deixam de ser os do Carbon: a documentação deles passa a ser nossa", "IBM Plex com formas arredondadas pede cuidado para não parecerem duas linguagens", "A paleta categórica oficial do Carbon ainda falha no validador e vai precisar de ajuste"],
+    fontes: [["Carbon", "https://carbondesignsystem.com/"], ["Paletas de dados", "https://carbondesignsystem.com/data-visualization/color-palettes/"], ["Materiais, HIG", "https://developer.apple.com/design/human-interface-guidelines/materials"]],
+    tipo: "IBM Plex Sans e Plex Mono, do Carbon, com licença aberta. Escala produtiva do Carbon, de 12 a 42 px.",
+    escala: [["Heading 07 · 54/64", 54, 300], ["Heading 06 · 42/50", 42, 300], ["Heading 05 · 32/40", 32, 400], ["Heading 04 · 28/36", 28, 400], ["Heading 03 · 20/28", 20, 400], ["Heading 02 · 16/24", 16, 600], ["Body 01 · 14/20", 14, 400], ["Label 01 · 12/16", 12, 400]],
+    espacos: [2, 4, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96, 160], esp: "Escala do Carbon, de spacing-01 (2 px) a spacing-13 (160 px).", gut: 32, mar: 16, colunas: 16,
+    raios: [["Pequeno", "--r1"], ["Controle", "--r2"], ["Cartão", "--r3"], ["Painel", "--r4"], ["Cápsula", "--r5"]],
+    materiais: [["Vidro claro", "Quase transparente, com brilho na borda. Para o que flutua sobre o conteúdo, como filtros e o botão do chat."], ["Vidro regular", "Mais fosco, para barras, dicas, tabelas e painéis com texto."], ["Escurecimento", "Diminui o fundo quando algo precisa de atenção, como o chat aberto no celular."]],
+    vidroExplica: "Os materiais do Liquid Glass recriados em CSS sobre o cinza do Carbon. O campo de luz atrás usa as cores 30 do próprio Carbon: azul, roxo e verde-azulado.",
+    regra: "Regra no dashboard: vidro claro no que flutua (navegação, filtros, botão do chat) e vidro regular, quase opaco, em tabelas, dicas e painéis de detalhe, para o dado nunca perder contraste.",
+    categorica: ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#fa4d56", "#570408"], catOrigem: "Paleta categórica oficial do Carbon",
+    catSelo: ["falha", "Falha no validador: o vinho quase preto sai da faixa de luminosidade e o verde-escuro tem pouca saturação. Fica como está, por ser o padrão do Carbon, e o ajuste é decidido na adoção"],
+    qSelo: ["ok", "Passa no validador. O par vermelho e amarelo pede ícone e rótulo, que o componente já traz"],
+    mov: [["Mola curta · 200 ms", "200ms"], ["Mola média · 350 ms", "350ms"], ["Mola longa · 500 ms", "500ms"]],
+  },
+  fluent: {
+    nome: "Fluent 2, da Microsoft, com os materiais de vidro oficiais",
+    resumo: "O design system do Windows 11 e do Microsoft 365. É o único dos quatro com vidro documentado pela própria fonte: Acrylic para superfícies passageiras, Mica para o fundo das janelas e Smoke para escurecer o que fica atrás.",
+    oficial: ["Tokens de cor, tipo, espaço, raio, sombra e movimento", "Materiais de vidro Acrylic, Mica e Smoke", "Componentes web e biblioteca de gráficos"],
+    nosso: ["Cores dos quadrantes, validadas", "Regras de uso do vidro no dashboard"],
+    fortes: ["Vidro oficial, com documentação para citar", "Familiar para executivo que vive no Microsoft 365", "Tokens públicos, prontos para o formato DTCG"],
+    riscos: ["A paleta oficial de gráficos falha no validador de daltonismo", "A fonte Segoe UI é do sistema e não pode ser embutida: fora do Windows a tela muda", "Visual corporativo de escritório, pouco memorável"],
+    fontes: [["Fluent 2", "https://fluent2.microsoft.design/"], ["Materiais", "https://fluent2.microsoft.design/material"]],
+    tipo: "Segoe UI Variable, a fonte do sistema no Windows. Escala do Fluent 2, de 12 a 40 px, com peso semibold nos títulos.",
+    escala: [["Large title · 40/52", 40, 600], ["Title 1 · 32/40", 32, 600], ["Title 3 · 24/32", 24, 600], ["Subtitle 1 · 20/28", 20, 600], ["Body 1 · 14/20", 14, 400], ["Caption 1 · 12/16", 12, 400]],
+    espacos: [2, 4, 6, 8, 10, 12, 16, 20, 24, 32], esp: "Base de 4 px, com passos pequenos de 2 e 6 para controles densos.", gut: 16, mar: 24,
+    materiais: [["Acrylic", "Vidro fosco e semitransparente, com ruído leve. Para menus, dicas e painéis que abrem e fecham."], ["Mica", "Quase opaco, tingido pelo fundo. Para a base da aplicação e a navegação."], ["Smoke", "Escurece o que fica atrás para destacar uma superfície importante."]],
+    vidroExplica: "Os três materiais oficiais do Fluent 2, sobre um fundo com formas, para o vidro ter o que refratar.",
+    regra: "Regra no dashboard: Mica na navegação e no fundo, Acrylic só no que flutua (filtros abertos, dicas, chat). Gráfico e tabela ficam em superfície sólida.",
+    categorica: ["#637cef", "#e3008c", "#2aa0a4", "#9373c0", "#13a10e", "#3a96dd"], catOrigem: "Paleta oficial dos gráficos do Fluent",
+    catSelo: ["falha", "Falha no validador: rosa e verde-azulado se confundem para quem tem daltonismo, e o verde-azulado tem pouca saturação"],
+    qSelo: ["ok", "Passa no validador. O par vermelho e amarelo pede ícone e rótulo, que o componente já traz"],
+    mov: [["Rápido · 100 ms", "100ms"], ["Normal · 200 ms", "200ms"], ["Lento · 300 ms", "300ms"]],
+  },
+  carbon: {
+    nome: "IBM Carbon, com uma camada de vidro acrescentada",
+    resumo: "O design system da IBM, com o guia de visualização de dados e de dashboards mais completo entre os públicos. Não tem vidro próprio: a camada de vidro seria nossa, aplicada sobre as camadas do Carbon.",
+    oficial: ["Tokens, tipografia IBM Plex e grid de 2x", "Guia de gráficos, paletas e dashboards", "Componentes web, Carbon Charts, Carbon AI Chat e o Carbon MCP"],
+    nosso: ["A camada de vidro inteira", "Cores dos quadrantes, validadas"],
+    fortes: ["A documentação mais completa para citar e defender", "Acessibilidade documentada componente por componente", "Tem componente oficial de chat com IA"],
+    riscos: ["O vidro é um enxerto: o Carbon foi desenhado para superfícies sólidas", "Cantos retos e cara de produto IBM", "A paleta categórica oficial tem um tom quase preto e um verde-escuro sem saturação"],
+    fontes: [["Carbon", "https://carbondesignsystem.com/"], ["Paletas de dados", "https://carbondesignsystem.com/data-visualization/color-palettes/"]],
+    tipo: "IBM Plex Sans e Plex Mono, com licença aberta. Escala produtiva do Carbon, de 12 a 42 px.",
+    escala: [["Heading 07 · 54/64", 54, 300], ["Heading 06 · 42/50", 42, 300], ["Heading 05 · 32/40", 32, 400], ["Heading 04 · 28/36", 28, 400], ["Heading 03 · 20/28", 20, 400], ["Heading 02 · 16/24", 16, 600], ["Body 01 · 14/20", 14, 400], ["Label 01 · 12/16", 12, 400]],
+    espacos: [2, 4, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96, 160], esp: "Escala do Carbon, de spacing-01 (2 px) a spacing-13 (160 px).", gut: 32, mar: 16, colunas: 16,
+    materiais: [["Vidro camada 01", "Superfície translúcida sobre o fundo cinza, no lugar do layer 01 sólido."], ["Vidro camada 02", "Mais transparente, para o que flutua sobre a camada 01."], ["Véu", "O overlay do Carbon, para modais e foco."]],
+    vidroExplica: "O Carbon não tem vidro. Estas três superfícies são a nossa adaptação das camadas dele.",
+    regra: "Regra no dashboard: o vidro substitui as camadas 01 e 02 só na navegação e nos painéis flutuantes. Os gráficos seguem o guia do Carbon, em superfície sólida.",
+    categorica: ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#fa4d56", "#570408"], catOrigem: "Paleta categórica oficial do Carbon",
+    catSelo: ["falha", "Falha no validador: o vinho quase preto sai da faixa de luminosidade e o verde-escuro tem pouca saturação"],
+    qSelo: ["ok", "Passa no validador. O par vermelho e amarelo pede ícone e rótulo, que o componente já traz"],
+    mov: [["Produtivo rápido · 110 ms", "110ms"], ["Produtivo moderado · 240 ms", "240ms"], ["Expressivo lento · 400 ms", "400ms"]],
+  },
+  apple: {
+    nome: "Liquid Glass, a linguagem de vidro da Apple, interpretada para a web",
+    resumo: "O visual de vidro mais atual, lançado pela Apple em 2025. A Apple publica diretrizes, mas nenhum token, componente ou código para web. Tudo aqui é interpretação nossa das diretrizes.",
+    oficial: ["Diretrizes de materiais e de Liquid Glass", "Escala de tipo e cores de sistema como referência"],
+    nosso: ["Todos os tokens e componentes", "A fonte substituta, porque a SF não pode ser usada na web"],
+    fortes: ["O vidro mais bonito e atual dos quatro", "Cápsulas, cantos contínuos e brilho na borda", "Muito alinhado ao que se vê nas melhores interfaces de 2026"],
+    riscos: ["Nada oficial para citar em tokens: é uma interpretação", "Pode parecer imitação de produto Apple", "A fonte SF só aparece em aparelhos Apple; no Windows a tela usa Geist"],
+    fontes: [["Materiais, HIG", "https://developer.apple.com/design/human-interface-guidelines/materials"], ["Anúncio do novo design", "https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/"]],
+    tipo: "Fonte do sistema nos aparelhos Apple e Geist no restante. Escala inspirada no tipo dinâmico da Apple, de 12 a 34 px.",
+    escala: [["Large title · 34", 34, 600], ["Title 1 · 28", 28, 600], ["Title 2 · 22", 22, 600], ["Headline · 17", 17, 600], ["Body · 17", 17, 400], ["Footnote · 13", 13, 400]],
+    espacos: [4, 8, 12, 16, 20, 24, 32, 44], esp: "Base de 4 px, com 44 px como área mínima de toque.", gut: 20, mar: 32,
+    materiais: [["Vidro claro", "Quase transparente, com brilho na borda. Para controles que flutuam sobre o conteúdo."], ["Vidro regular", "Mais fosco, para barras e painéis com texto."], ["Escurecimento", "Diminui o fundo quando algo precisa de atenção."]],
+    vidroExplica: "Os materiais do Liquid Glass como a Apple descreve, recriados em CSS: transparência, desfoque e brilho na borda.",
+    regra: "Regra no dashboard: o vidro fica na camada de navegação e controles, que flutua sobre o conteúdo. O conteúdo em si (gráfico, tabela, texto) não é vidro, como na diretriz da Apple.",
+    categorica: ["#0a60d6", "#d97a00", "#8944ab", "#2e9e57", "#d70015", "#0f8fb0"], catOrigem: "Interpretação nossa das cores de sistema da Apple",
+    catSelo: ["ok", "Passa no validador, com alerta: o laranja fica abaixo de 3:1 e pede rótulo visível"],
+    qSelo: ["ok", "Passa no validador. O par vermelho e amarelo pede ícone e rótulo, que o componente já traz"],
+    mov: [["Mola curta · 200 ms", "200ms"], ["Mola média · 350 ms", "350ms"], ["Mola longa · 500 ms", "500ms"]],
+  },
+  dribbble: {
+    nome: "Próprio, a partir do glassmorphism mais comum no Dribbble",
+    resumo: "Um design system nosso, tirado dos dashboards de vidro mais vistos no Dribbble: fundo com manchas de luz suaves, cartões de vidro fosco com borda branca e sombra colorida leve. Nenhuma base oficial.",
+    oficial: ["Nada: é referência visual, sem documentação"],
+    nosso: ["Todos os tokens, componentes e regras", "Cores dos quadrantes e de gráfico, validadas"],
+    fortes: ["O mais livre para chegar num visual próprio", "Parecido com o que você viu no Dribbble", "Fonte Manrope, com licença aberta"],
+    riscos: ["Nada oficial para citar e defender numa entrevista", "Tende a envelhecer rápido, como toda tendência de vitrine", "Três cores da paleta de gráfico ficam abaixo de 3:1 e pedem rótulo"],
+    fontes: [["Busca no Dribbble", "https://dribbble.com/search/glassmorphism-dashboard"], ["Guia de glassmorphism", "https://uxpilot.ai/blogs/glassmorphism-ui"]],
+    tipo: "Manrope, com licença aberta. Escala própria de 12 a 36 px, com títulos em peso 700.",
+    escala: [["Display · 36", 36, 700], ["Título 1 · 28", 28, 700], ["Título 2 · 22", 22, 700], ["Subtítulo · 18", 18, 600], ["Corpo · 14", 14, 400], ["Legenda · 12", 12, 500]],
+    espacos: [4, 8, 12, 16, 20, 24, 32, 40], esp: "Base de 4 px, com respiro generoso entre blocos.", gut: 24, mar: 32,
+    materiais: [["Vidro fosco", "Cartão padrão: branco translúcido, borda branca e sombra suave."], ["Vidro forte", "Mais opaco, para texto longo e tabelas."], ["Véu", "Escurece o fundo para destacar um painel."]],
+    vidroExplica: "O vidro do Dribbble: branco translúcido sobre manchas de luz suaves, com borda clara e sombra levemente colorida.",
+    regra: "Regra no dashboard: o fundo com manchas de luz é fixo e discreto. Todo cartão é vidro fosco, e o vidro forte fica para tabela e texto longo.",
+    categorica: ["#5b4fe0", "#e0629a", "#2d9cdb", "#e08a2d", "#27a37a", "#9b59d0"], catOrigem: "Paleta própria",
+    catSelo: ["ok", "Passa no validador, com alerta: três cores ficam abaixo de 3:1 e pedem rótulo visível"],
+    qSelo: ["ok", "Passa no validador. O par verde-azulado e rosa pede ícone e rótulo, que o componente já traz"],
+    mov: [["Rápido · 180 ms", "180ms"], ["Normal · 280 ms", "280ms"], ["Entrada · 400 ms", "400ms"]],
+  },
+};
+const QN = { entrar: ["Entrar", "ti-arrow-up-right"], observar: ["Observar", "ti-eye"], nao_entrar: ["Não entrar", "ti-ban"], manter: ["Manter", "ti-equal"] };
+const $ = id => document.getElementById(id);
+const v = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* Contraste WCAG entre duas cores hex. */
+function lum(hex) { const c = hex.replace("#", "").match(/../g).map(x => parseInt(x, 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; }
+function contraste(a, b) { if (!/^#[0-9a-f]{6}$/i.test(a) || !/^#[0-9a-f]{6}$/i.test(b)) return null; const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + .05) / (y + .05); }
+const fc = r => r == null ? "" : ` · ${r.toFixed(1).replace(".", ",")}:1`;
+
+function amostra(nome, hex, fundo) {
+  const r = contraste(hex, fundo);
+  return `<div class="amostra"><div class="cor" style="background:${hex}"></div><div class="rot"><b>${nome}</b><span>${hex}${fc(r)}</span></div></div>`;
+}
+function selo(el, [tipo, txt]) { $(el).innerHTML = `<span class="selo ${tipo}"><i class="ti ${tipo === "ok" ? "ti-circle-check" : "ti-alert-triangle"}" aria-hidden="true"></i>${txt}</span>`; }
+
+function aplicar(chave) {
+  document.documentElement.dataset.ds = chave;
+  const d = DS[chave], sup = v("--fundo");
+  document.querySelectorAll("#sel button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === chave));
+  $("nome-ds").textContent = d.nome; $("resumo-ds").textContent = d.resumo;
+  const lista = xs => "<ul>" + xs.map(x => `<li>${x}</li>`).join("") + "</ul>";
+  $("ficha-ds").innerHTML = `<div class="cartao"><h4>${d.rotOficial || "O que vem da base oficial"}</h4>${lista(d.oficial)}<h4 style="margin-top:12px">${d.rotNosso || "O que seria nosso"}</h4>${lista(d.nosso)}</div>
+    <div class="cartao"><h4>Pontos fortes</h4>${lista(d.fortes)}</div>
+    <div class="cartao"><h4>Riscos</h4>${lista(d.riscos)}<h4 style="margin-top:12px">Fontes</h4>${d.fontes.map(([n, u]) => `<a href="${u}" target="_blank" rel="noopener">${n}</a>`).join(" · ")}</div>`;
+  $("neutros").innerHTML = [["Fundo", "--fundo"], ["Superfície", "--superficie"], ["Linha", "--linha"], ["Borda", "--borda"], ["Texto 3", "--tinta-3"], ["Texto 2", "--tinta-2"], ["Texto", "--tinta"], ["Acento", "--acento"], ["Acento ativo", "--acento-ativo"], ["Acento suave", "--acento-suave"]]
+    .map(([n, t]) => amostra(n, v(t), sup)).join("");
+  $("estado-cores").innerHTML = [["Sucesso", "--ok"], ["Atenção", "--atencao"], ["Erro", "--erro"], ["Informação", "--info"]].map(([n, t]) => amostra(n, v(t), sup)).join("");
+  $("quadrantes").innerHTML = Object.keys(QN).map(q => amostra(QN[q][0], v("--q-" + q), sup)).join("");
+  selo("selo-q", d.qSelo); selo("selo-cat", d.catSelo);
+  $("categorica").innerHTML = d.categorica.map(c => `<span style="background:${c}"></span>`).join("");
+  $("leg-cat").innerHTML = `<span>${d.catOrigem}</span><span class="mono">${d.categorica.join(" ")}</span>`;
+  $("sequencial").innerHTML = [8, 20, 34, 50, 66, 82, 100].map(p => `<span style="background:color-mix(in oklab, var(--acento) ${p}%, var(--superficie))"></span>`).join("");
+  $("divergente").innerHTML = [100, 70, 40, 0, 40, 70, 100].map((p, i) => `<span style="background:color-mix(in oklab, ${i < 3 ? "var(--q-entrar)" : i > 3 ? "var(--q-nao_entrar)" : "var(--tinta-3)"} ${i === 3 ? 30 : p}%, var(--superficie))"></span>`).join("");
+  $("tipo-explica").textContent = d.tipo;
+  $("escala").innerHTML = d.escala.map(([n, s, w]) => `<div class="tipo-linha"><span class="nome">${n}</span><span class="ex" style="font-size:${s}px;font-weight:${w};letter-spacing:${s > 24 ? "-.02em" : "0"}">Onde crescer em crédito PJ</span></div>`).join("");
+  $("esp-explica").textContent = d.esp;
+  $("espacos").innerHTML = d.espacos.map(e => `<figure><div style="width:${e}px;height:${e}px"></div><figcaption>${e}</figcaption></figure>`).join("");
+  $("grade12").style.setProperty("--gut", d.gut / 3 + "px"); $("grade12").style.setProperty("--mar", d.mar / 3 + "px");
+  const n = d.colunas || 12; $("grade12").style.setProperty("--n", n); $("grade12").innerHTML = "<span></span>".repeat(n);
+  $("grade-tit").textContent = `Grid de ${n} colunas${n === 16 ? ", padrão do Carbon a partir de 1056 px" : ""}`;
+  $("grade-rot").textContent = `Calha de ${d.gut} px e margem de ${d.mar} px (desenho em escala reduzida).`;
+  $("raios").innerHTML = (d.raios || [["Pequeno", "--r1"], ["Controle", "--r2"], ["Cartão", "--r3"], ["Painel", "--r4"]]).map(([n, t]) => `<div style="border-radius:var(${t})">${n}<br>${v(t)}</div>`).join("");
+  $("vidro-explica").textContent = d.vidroExplica; $("vidro-regra").textContent = d.regra;
+  $("materiais").innerHTML = d.materiais.map(([n, t], i) => `<div class="material m${i + 1}"><b>${n}</b><p>${t}</p></div>`).join("");
+  $("mov").innerHTML = d.mov.map(([n, t]) => `<figure style="margin:0"><div class="pista"><div class="bola" style="transition:left ${t} var(--ease-sai)"></div></div><figcaption>${n}</figcaption></figure>`).join("");
+  $("tags").innerHTML = Object.keys(QN).map(q => `<span class="tag" style="--cor:var(--q-${q});--cor-texto:var(--q-${q}-texto)"><span class="p"></span><i class="ti ${QN[q][1]}" aria-hidden="true"></i>${QN[q][0]}</span>`).join("") +
+    `<span class="tag alerta" style="--cor:var(--atencao)"><i class="ti ti-bell-ringing" aria-hidden="true"></i>Alerta antecipado</span>`;
+  $("tabela").innerHTML = [["SP", "Financiamentos", "219,4", "0,87", "entrar"], ["PR", "Financiamentos", "44,8", "0,71", "observar"], ["RS", "Empréstimos", "76,8", "1,43", "nao_entrar"], ["SP", "Empréstimos", "459,0", "1,71", "manter"]]
+    .map(([u, m, c, e, q]) => `<tr><td><b>${u}</b></td><td>${m}</td><td class="n">R$ ${c} bi</td><td class="n">${e}</td><td><span class="tag" style="--cor:var(--q-${q});--cor-texto:var(--q-${q}-texto)"><span class="p"></span><i class="ti ${QN[q][1]}" aria-hidden="true"></i>${QN[q][0]}</span></td></tr>`).join("");
+}
+/* Selo de origem de cada seção no híbrido: de qual base vem a regra. */
+const ORIGEM = { cor: "carbon", graficos: "carbon", tipo: "carbon", espaco: "carbon", forma: "lg", vidro: "lg", movimento: "lg",
+  comp: "lg", dados: "lg", chat: "lg", estados: "lg", padroes: "lg", wireframes: "misto" };
+function selosDeOrigem() {
+  Object.entries(ORIGEM).forEach(([id, o]) => {
+    const h = document.querySelector(`#${id} h2.tit`); if (!h) return;
+    h.querySelectorAll(".origem").forEach(x => x.remove());
+    h.insertAdjacentHTML("beforeend", o === "carbon" ? '<span class="origem carbon">Padrão Carbon</span>'
+      : o === "misto" ? '<span class="origem carbon">Grid do Carbon</span><span class="origem lg">Modelos propostos por nós</span>'
+      : '<span class="origem lg"><i class="ti ti-sparkles" aria-hidden="true"></i>Camada Liquid Glass</span>');
+  });
+}
+/* A gota de vidro que desliza até a opção escolhida no controle segmentado. */
+function posicionarGotas() {
+  document.querySelectorAll(".segmentado").forEach(s => {
+    let g = s.querySelector(".gota");
+    if (!g) { g = document.createElement("span"); g.className = "gota"; g.setAttribute("aria-hidden", "true"); s.prepend(g); }
+    const b = s.querySelector('button[aria-pressed="true"]') || s.querySelector("button");
+    g.style.left = b.offsetLeft + "px"; g.style.width = b.offsetWidth + "px";
+  });
+}
+document.querySelectorAll(".segmentado").forEach(s => s.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  s.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); posicionarGotas();
+}));
+document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") !== "true")));
+addEventListener("resize", posicionarGotas);
+document.fonts?.ready.then(posicionarGotas);
+$("sel").innerHTML = [["hibrido", "Carbon + Liquid Glass"], ["fluent", "Fluent 2"], ["carbon", "Carbon + vidro"], ["apple", "Liquid Glass"], ["dribbble", "Próprio, do Dribbble"]]
+  .map(([k, n]) => `<button data-k="${k}">${n}</button>`).join("");
+document.querySelectorAll("#sel button").forEach(b => b.onclick = () => { aplicar(b.dataset.k); selosDeOrigem(); requestAnimationFrame(posicionarGotas); });
+aplicar("hibrido"); selosDeOrigem(); requestAnimationFrame(posicionarGotas);
+</script>
+</body>
+</html>
