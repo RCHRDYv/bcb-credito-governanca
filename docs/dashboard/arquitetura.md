@@ -104,7 +104,7 @@ flowchart TB
     duck -- "carregado na partida" --> parquet
 
     classDef planejado stroke-dasharray: 5 5
-    class visoes,filtros,carga,graficos,componentes,cliente,json,malha,tokens,publica,modelo,contexto,travas,duck,parquet planejado
+    class visoes,filtros,carga,graficos,componentes,cliente,json,malha,publica,modelo,contexto,travas,duck,parquet planejado
 ```
 
 ## Fluxo do dado
@@ -230,8 +230,11 @@ dashboard/                        raiz do site, no Vite (#65)
 ├── contrato-dos-dados.yml        contrato dos arquivos que o site lê
 ├── prototipo-design-system/      protótipo aprovado no ADR 0020
 ├── index.html                    (#65)
+├── catalogo.html                 catálogo do design system (#62 e #64)
 ├── src/
 │   ├── visoes/                   uma pasta por visão, com render(el, dados) (#69 a #72)
+│   ├── catalogo/                 as seções do catálogo (#62 e #64)
+│   ├── cor/                      contraste pela WCAG (#62)
 │   ├── componentes/              componentes do design system (#64)
 │   ├── graficos/                 tema do ECharts e componentes de gráfico (#63)
 │   ├── chat/                     cliente do Space e montagem da resposta (#51)

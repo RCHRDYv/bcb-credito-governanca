@@ -101,10 +101,10 @@ Os dois primeiros formam o público que o produto serve. O terceiro é quem abre
 
 | ID | Requisito | Meta | Como medir | Situação |
 |---|---|---|---|---|
-| RNF-01 | Desempenho percebido | Core Web Vitals no nível "bom", no 75º percentil, no celular e no computador: LCP de até 2,5 s, INP de até 200 ms e CLS de até 0,1 [1] | Lighthouse no CI, como aproximação de laboratório. O INP só se mede em uso real, e no laboratório o tempo de bloqueio faz o papel dele | Limites oficiais. Medido no CI desde a #65: na página vazia, LCP de 0,9 s no celular e 0,2 s no computador, CLS 0 e tempo de bloqueio 0. A medida com as visões vem com elas e com a #68 |
+| RNF-01 | Desempenho percebido | Core Web Vitals no nível "bom", no 75º percentil, no celular e no computador: LCP de até 2,5 s, INP de até 200 ms e CLS de até 0,1 [1] | Lighthouse no CI, como aproximação de laboratório. O INP só se mede em uso real, e no laboratório o tempo de bloqueio faz o papel dele | Limites oficiais. Medido no CI desde a #65: na página vazia, com as fontes da #62, LCP de 1,4 s no celular e 0,3 s no computador, CLS 0 e tempo de bloqueio 0. A medida com as visões vem com elas e com a #68 |
 | RNF-02 | Nota do Lighthouse | Desempenho de pelo menos 90 no computador e 80 no celular, acessibilidade 100, boas práticas de pelo menos 95 | Lighthouse no CI | Meta proposta, conferida no CI desde a #65, que falha abaixo dela. Na página vazia, 100 nas três notas, no celular e no computador |
-| RNF-03 | Orçamento de carga da primeira visão | JavaScript de até 350 KB e dados de até 300 KB, comprimidos. Malha das UFs de até 100 KB. Fontes só com os pesos usados | Relatório do build | Meta proposta. O limite de JavaScript é conferido no CI desde a #65, com 0,8 KB na página vazia. Os de dados e de malha entram na #66 e na #67 |
-| RNF-04 | Acessibilidade | WCAG 2.2 AA; axe sem violação nos dois temas; tudo operável pelo teclado; área de toque de pelo menos 24 px | Playwright com axe no CI | Definido no ADR 0018. O axe roda no CI desde a #65, e os dois temas entram com a #62 |
+| RNF-03 | Orçamento de carga da primeira visão | JavaScript de até 350 KB e dados de até 300 KB, comprimidos. Malha das UFs de até 100 KB. Fontes só com os pesos usados | Relatório do build | Meta proposta. O limite de JavaScript é conferido no CI desde a #65, com 0,8 KB na página vazia. Os de dados e de malha entram na #66 e na #67. As fontes entram no relatório desde a #62, com 83 KB nos quatro arquivos usados |
+| RNF-04 | Acessibilidade | WCAG 2.2 AA; axe sem violação nos dois temas; tudo operável pelo teclado; área de toque de pelo menos 24 px | Playwright com axe no CI | Definido no ADR 0018. O axe roda no CI desde a #65, nos dois temas desde a #62, e o teste de contraste confere os pares de cor nos dois temas |
 | RNF-05 | Telas | De 360 a 1920 px, com os pontos de quebra do Carbon e sem rolagem horizontal | Teste de ponta a ponta em 360, 672, 1056, 1312 e 1920 px | Conferido no CI desde a #65 |
 | RNF-06 | Navegadores | As duas últimas versões estáveis do Chrome, do Edge, do Firefox e do Safari, no computador e no celular. O `backdrop-filter` funciona nos quatro desde set/2024, e a curva `linear()` desde dez/2023 [2, 3]. Sem suporte, o vidro vira superfície sólida e a mola vira a curva do Carbon | Playwright com Chromium, Firefox e WebKit | Os três motores são testados no CI desde a #65 |
 | RNF-07 | Independência do chat | Com o Space fora do ar, todas as visões abrem e funcionam | Teste de ponta a ponta com a chamada ao Space bloqueada | Definido no ADR 0016 |
@@ -155,6 +155,8 @@ As três visões da v0.1 publicadas, com os requisitos gerais e os de cada visã
 | 2026-09-26 | Design system oficial: o Carbon com uma camada Liquid Glass | ADR 0020 |
 | 2026-09-26 | As visões não têm bloco de título-conclusão | Este documento; design system; ADR 0020 |
 | 2026-09-26 | Os gráficos não trazem conclusão escrita, para controlar o escopo; quem quiser uma conclusão pergunta ao chat | Este documento; design system; ADR 0020 |
+| 2026-09-27 | O tema escuro é o g100 do Carbon | Design system; ADR 0018 |
+| 2026-09-27 | O site segue o tema do sistema do visitante, e a impressão sai sempre clara | Design system; ADR 0018 |
 | Em aberto | O nome do produto | `dashboard/PRODUCT.md` |
 | Em aberto | Quais visões terão o chat | #51 |
 

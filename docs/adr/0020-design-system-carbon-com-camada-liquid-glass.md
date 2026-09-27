@@ -52,7 +52,7 @@ São seis modelos genéricos, e cada visão do dashboard escolhe o seu pela perg
 
 ### O que continua valendo do ADR 0018
 
-Tokens em DTCG com três camadas, geração pelo Style Dictionary, tema claro por padrão com o escuro derivado, WCAG 2.2 AA, paleta de risco separada da categórica e quadrantes sempre com ícone e rótulo.
+Tokens em DTCG com três camadas, geração pelo Style Dictionary, o escuro derivado dos mesmos tokens (a escolha do tema foi revista em 2026-09-27: segue o sistema do visitante), WCAG 2.2 AA, paleta de risco separada da categórica e quadrantes sempre com ícone e rótulo.
 
 ## Alternativas descartadas
 

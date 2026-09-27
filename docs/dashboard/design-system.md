@@ -4,7 +4,7 @@ O guia visual do dashboard de crédito PJ: as cores, os tipos, os espaços, os m
 
 - **Situação:** oficial desde 2026-09-26 ([ADR 0020](../adr/0020-design-system-carbon-com-camada-liquid-glass.md)).
 - **Protótipo navegável:** [`dashboard/prototipo-design-system/`](../../dashboard/prototipo-design-system/index.html). Abra no navegador e escolha "Carbon + Liquid Glass" no topo. Os outros quatro candidatos ficam lá como registro da comparação.
-- **Como é construído:** tokens no formato W3C DTCG, gerados para CSS pelo Style Dictionary ([ADR 0018](../adr/0018-design-system-por-tokens-dtcg.md)). O arquivo de tokens nasce na #62.
+- **Como é construído:** tokens no formato W3C DTCG, gerados para CSS pelo Style Dictionary ([ADR 0018](../adr/0018-design-system-por-tokens-dtcg.md)). Os tokens moram em `dashboard/tokens/`, e o [catálogo](../../dashboard/catalogo.html) mostra as fundações nos dois temas, lidas dos próprios tokens.
 
 ## De onde vem cada regra
 
@@ -73,6 +73,57 @@ Validação de daltonismo em 2026-09-26: a paleta passa em todos os critérios. 
 
 O **alerta antecipado** usa o par do Carbon para atenção: fundo amarelo 10 (#fcf4d6) e texto amarelo 80 (#483700), com 10,46:1.
 
+### Tema escuro · Carbon g100
+
+O escuro é o tema **g100** do Carbon, conferido no `@carbon/themes` 11.82.0 em 2026-09-27. Não é uma segunda paleta mantida à parte: cada cor semântica guarda o valor claro e o escuro, e o CSS escreve os dois com `light-dark()` ([ADR 0018](../adr/0018-design-system-por-tokens-dtcg.md)).
+
+**Como o tema é escolhido,** decidido em 2026-09-27:
+- o site segue o sistema do visitante: abre escuro para quem usa o modo escuro, e claro para os outros;
+- quando o sistema não indica preferência, o site abre claro;
+- a impressão e o PDF saem sempre claros;
+- uma escolha manual pelo atributo `data-tema` já funciona, mas o botão de troca **está em aberto** e, se entrar, entra na #64.
+
+**Neutros e ação.** O contraste é medido contra o fundo (#161616) e contra o vidro regular sobre o fundo (#222222).
+
+| Uso | Token do Carbon | Valor | Contraste no fundo | No vidro |
+|---|---|---|---|---|
+| Fundo da página | `background` | #161616 (cinza 100) | | |
+| Camada sólida | `layer-01` | #262626 (cinza 90) | | |
+| Borda sutil | `border-subtle-01` | #525252 | | |
+| Borda sutil em camada | `border-subtle-00` | #393939 | | |
+| Borda forte | `border-strong-01` | #6f6f6f | 3,60:1 | 3,17:1 |
+| Texto principal | `text-primary` | #f4f4f4 | 16,45:1 | 14,47:1 |
+| Texto secundário | `text-secondary` | #c6c6c6 | 10,59:1 | 9,31:1 |
+| Texto de ajuda | `text-helper` | #a8a8a8 | 7,61:1 | 6,69:1 |
+| Texto de exemplo nos campos | `text-placeholder` | `rgba(244, 244, 244, 0.4)` | 3,60:1 | |
+| Ação | `interactive` | #4589ff (azul 50) | 5,41:1 | 4,75:1 |
+| Link | `link-primary` | #78a9ff (azul 40) | 7,68:1 | 6,76:1 |
+| Foco | `focus` | #ffffff | 18,10:1 | 15,91:1 |
+| Botão primário | `button-primary` | #0f62fe, igual ao claro, com o texto branco a 5,00:1 | | |
+| Fundo de seleção | azul 90 | #001d6c | | |
+
+**Estado**
+
+| Estado | Token do Carbon | Valor | Contraste no fundo | Como usar |
+|---|---|---|---|---|
+| Informação | `support-info` | #4589ff | 5,41:1 | Ícone e texto |
+| Sucesso | `support-success` | #42be65 | 7,57:1 | Só ícone e marca, como no claro |
+| Erro | `support-error` | #fa4d56 | 5,40:1 | Ícone, borda e texto |
+| Atenção | `support-warning` | #f1c21b | 10,75:1 | Só preenchimento de ícone, com o glifo em #161616, como no claro |
+
+**Quadrantes da recomendação.** O Carbon não tem estes tokens, e o escuro foi proposto na #62. As marcas ficam nos mesmos degraus do claro, menos o roxo, que sobe para o 50 para ter contraste. Os textos usam degraus claros da mesma família.
+
+| Quadrante | Marca | Contraste no fundo | Texto | Contraste do texto |
+|---|---|---|---|---|
+| Entrar | verde-azulado 50, #009d9a | 5,42:1 | verde-azulado 30, #3ddbd9 | 10,63:1 |
+| Observar | amarelo 50, #b28600 | 5,43:1 | amarelo 20, #fddc69 | 13,46:1 |
+| Não entrar | vermelho 60, #da1e28 | 3,62:1 | vermelho 30, #ffb3b8 | 10,68:1 |
+| Manter | roxo 50, #a56eff | 5,41:1 | roxo 30, #d4bbff | 10,64:1 |
+
+Validação de daltonismo em 2026-09-27, com todos os pares: as marcas do escuro passam em todos os critérios, com o mesmo alerta do claro, vermelho e amarelo a 7,0 para deuteranopia, aceito pelo mesmo motivo. Uma primeira proposta, com o verde-azulado 40 e o amarelo 40, reprovou por ficar clara demais para a faixa de luminosidade do tema escuro.
+
+O **alerta antecipado** usa fundo amarelo 90 (#302400) e texto amarelo 20 (#fddc69), com 11,33:1.
+
 ### Paletas de gráfico · Carbon
 
 - **Categórica,** para identidade, como modalidades: a paleta categórica oficial do Carbon, em ordem fixa (#6929c4, #1192e8, #005d5d, #9f1853, #fa4d56, #570408).
@@ -102,6 +153,8 @@ IBM Plex Sans para a interface e IBM Plex Mono para SQL e código, as duas com l
 | `code-01` | 12/16, mono | 400 | SQL e código |
 
 Números em tabelas, painéis e rótulos usam algarismos tabulares, para alinharem em coluna.
+
+As fontes são servidas pelo próprio site, dos pacotes oficiais `@ibm/plex-sans` 1.1.0 e `@ibm/plex-mono` 2.5.0. Entram só os pesos da escala (300, 400 e 600 no Sans, 400 no Mono) e só o arquivo Latin1, que cobre o português: 83 KB no total. Nos tokens, a altura de linha é a razão oficial do Carbon; no `heading-07` e no `heading-06`, a razão 1,199 dá cerca de 65 e 50 px, que a tabela arredonda.
 
 ### Espaçamento · Carbon
 
@@ -146,6 +199,8 @@ Calhas: **larga, 32 px** (o padrão), **estreita, 16 px** (painéis e conteúdo 
 | 2 | `0 10px 34px rgba(0,0,0,.14)` | O que flutua: dicas e a entrada do chat |
 | Brilho na borda | `inset 0 1px 1px rgba(255,255,255,.95), inset 0 -1px 1px rgba(0,0,0,.05), inset 0 0 20px rgba(255,255,255,.35)` | Toda superfície de vidro |
 
+No escuro, a sombra precisa ser mais forte para aparecer, e o brilho mais fraco para não parecer uma borda acesa: o nível 1 usa preto a 40% e a 30%, o nível 2 usa preto a 50%, e o brilho usa branco a 14% no topo, preto a 30% na base e branco a 4% por dentro. As cores das sombras e do brilho são tokens semânticos, então a elevação muda de tema sem um valor próprio.
+
 ### Materiais de vidro · Liquid Glass
 
 | Material | Preenchimento | Desfoque | Onde |
@@ -154,9 +209,9 @@ Calhas: **larga, 32 px** (o padrão), **estreita, 16 px** (painéis e conteúdo 
 | Vidro regular | branco a 62% | 26 px, saturação 180% | Tabelas, dicas, painéis de detalhe e bolhas do chat |
 | Escurecimento | #161616 a 28% | nenhum | Por trás de uma superfície que pede foco, como o chat aberto no celular |
 
-Toda superfície de vidro tem borda branca a 78% e o brilho na borda da elevação.
+Toda superfície de vidro tem borda branca a 78% e o brilho na borda da elevação. No escuro, o preenchimento é o cinza 90 (#262626), a 40% no vidro claro e a 72% no regular, a borda é branca a 12%, e o escurecimento é preto a 50%.
 
-**Campo de luz.** O vidro precisa de algo atrás para parecer vidro. O fundo da página leva manchas suaves com as próprias cores do Carbon, sobre o cinza 10: azul 30 (#a6c8ff), roxo 30 (#d4bbff) e verde-azulado 20 (#9ef0f0), de 30% a 50% de opacidade.
+**Campo de luz.** O vidro precisa de algo atrás para parecer vidro. O fundo da página leva manchas suaves com as próprias cores do Carbon, sobre o cinza 10: azul 30 (#a6c8ff), roxo 30 (#d4bbff) e verde-azulado 20 (#9ef0f0), de 30% a 50% de opacidade. No escuro, as manchas usam o azul 80 (#002d9c), o roxo 80 (#491d8b) e o verde-azulado 80 (#004144), com a mesma opacidade.
 
 **Regras do vidro:**
 - **Onde vai cada vidro:** o claro só no que flutua, e o regular em tudo que tem dado ou texto. O texto de ajuda mantém 4,86:1 sobre o vidro regular.
@@ -319,6 +374,9 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 
 - **Nomes dos tokens:** seguem o Atlassian (ADR 0018), com a referência ao token do Carbon de onde vêm. Por exemplo, `color.text.secondary` vem de `text-secondary` (#525252), e `color.chart.categorical.1` é a primeira cor categórica.
 - **Tokens da camada Liquid Glass:** nomes próprios, como `material.vidro.regular`, `radius.capsula` e `motion.mola.media`.
+- **Onde moram:** `dashboard/tokens/`, em três pastas, `primitivos/`, `semanticos/` e `componentes/`. O `scripts/gerar-tokens.js` gera o `src/estilos/tokens.css` e o `tokens.json`, que nunca são editados à mão, e o CI reprova quando eles divergem dos tokens.
+- **Formato:** DTCG 2025.10, com a cor no formato novo, de espaço de cor e componentes. A mola é uma função `linear()` do CSS, que o DTCG não descreve; ela fica em `$extensions`, com a curva do Carbon como valor de reserva.
+- **Catálogo:** o [catálogo](../../dashboard/catalogo.html) mostra as fundações nos dois temas, lidas dos tokens, e o teste de contraste confere os pares de cor nos dois temas.
 - **Mudança em fundação** (cor, tipo, espaço, grid) só com ADR, porque muda a relação com o Carbon oficial.
 - **Componente novo ou alterado** entra por PR que atualiza este guia e o protótipo no mesmo commit.
 - **Paleta nova ou alterada** passa pela validação de contraste e de daltonismo antes de entrar. O teste automatizado nasce na #63.
@@ -329,7 +387,7 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 |---|---|
 | Paleta categórica oficial do Carbon falha na validação | #63 |
 | Escolher as paletas sequencial e divergente do Carbon e validá-las | #63 |
-| Tema escuro, derivado dos mesmos tokens (ADR 0018) | #62 |
+| Texto de exemplo nos campos: o valor oficial do Carbon fica em 2,53:1 no claro e 3,60:1 no escuro, abaixo dos 4,5:1 de texto | #64, ao construir os campos |
 | Conferir a camada Liquid Glass em Safari e Firefox, e a alternativa sem `backdrop-filter` | #62 a #64 |
 | Nome e identidade visual do produto | Em aberto |
 
