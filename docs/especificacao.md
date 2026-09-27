@@ -79,7 +79,7 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 | Diagramas de arquitetura | Mermaid dentro do markdown, sem imagem exportada | O diagrama muda na mesma PR que o modelo. Ver [ADR 0008](adr/0008-diagramas-como-codigo-em-mermaid.md) |
 | Site do dashboard | Estático, no GitHub Pages, publicado por Actions sem nenhum segredo | Grátis, não dorme e fica no mesmo lugar que o código ([ADR 0016](adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md)) |
 | Stack da interface | JavaScript com ES modules, Vite e ECharts, sem framework | Menos coisa para aprender e manter ([ADR 0017](adr/0017-interface-em-javascript-sem-framework.md)) |
-| Design system | Tokens no formato W3C DTCG, gerados para CSS pelo Style Dictionary, com a estrutura do IBM Carbon | O visual muda num lugar só, para a interface e para os gráficos ([ADR 0018](adr/0018-design-system-por-tokens-dtcg.md)) |
+| Design system | O Carbon oficial nas fundações (cor, gráfico, tipo, espaço e grid) e uma camada Liquid Glass nossa no material, na forma, no movimento e nos componentes, em tokens W3C DTCG gerados pelo Style Dictionary | Documentação citável e visual atual ao mesmo tempo ([ADR 0018](adr/0018-design-system-por-tokens-dtcg.md), [ADR 0020](adr/0020-design-system-carbon-com-camada-liquid-glass.md)) |
 | O que o chat consulta | Só o esquema estrela, com a ontologia como contexto, e nada do experimento | O dashboard não é o experimento ([ADR 0019](adr/0019-chat-consulta-so-o-esquema-estrela.md)) |
 
 ## Estrutura
@@ -113,7 +113,8 @@ Oito artefatos, cada um com um público e uma origem versionada. A coluna de sit
 | Problema de negócio | Qualquer leitor | README | Entregue |
 | Glossário de negócio | Negócio | `ontology/modalidades.yml`, `ontology/dimensoes.yml`, `ontology/metricas.yml` | Entregue |
 | Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para seeds, staging, intermediate e marts |
-| ADR | Técnico sênior | `docs/adr/` | Entregue, dezenove decisões |
+| ADR | Técnico sênior | `docs/adr/` | Entregue, vinte decisões |
+| Design system do dashboard | Ambos | [`docs/dashboard/design-system.md`](dashboard/design-system.md) e o protótipo em `dashboard/prototipo-design-system/` | Entregue |
 | Diagramas de arquitetura | Ambos | Mermaid no `README.md` e em [`docs/arquitetura.md`](arquitetura.md) | Entregue |
 | Linhagem | Ambos | Gerada pelo `dbt docs` | v0.2 |
 | Contrato de dados | Consumidor | `ontology/contratos.yml` | v0.2 |
