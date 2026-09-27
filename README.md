@@ -256,6 +256,8 @@ uv run python -m scripts.analises.qa_gabarito
 | [ADR 0017](docs/adr/0017-interface-em-javascript-sem-framework.md) | A interface é JavaScript sem framework, com Vite e ECharts |
 | [ADR 0018](docs/adr/0018-design-system-por-tokens-dtcg.md) | O design system nasce de tokens no formato DTCG |
 | [ADR 0019](docs/adr/0019-chat-consulta-so-o-esquema-estrela.md) | O chat do dashboard consulta só o esquema estrela, e não é o experimento |
+| [ADR 0020](docs/adr/0020-design-system-carbon-com-camada-liquid-glass.md) | O design system oficial é o Carbon com uma camada Liquid Glass |
+| [Design system do dashboard](docs/dashboard/design-system.md) | Cores, tipos, espaços, vidro, movimento, componentes, padrões e modelos de página, com o [protótipo navegável](dashboard/prototipo-design-system/index.html) |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Perguntas do experimento, conjunto v3](evaluation/questions_v3.yml) | As 41 do v2, com a janela de três perguntas ajustada ao recorte do projeto e mais uma nota corrigida. Registrado em 25/09/2026, antes de qualquer execução, e é o que vale para o experimento |

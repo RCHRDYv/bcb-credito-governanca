@@ -1,6 +1,6 @@
 # ADR 0018: O design system nasce de tokens no formato DTCG
 
-**Status:** Aceito
+**Status:** Aceito. Complementado pelo [ADR 0020](0020-design-system-carbon-com-camada-liquid-glass.md) em 2026-09-26, que escolhe o design system oficial: o Carbon com uma camada Liquid Glass.
 **Data:** 2026-09-25
 
 ## Contexto
