@@ -659,6 +659,79 @@
       },
       "$description": "Família magenta do Carbon"
     },
+    "orange": {
+      "10": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 0.94902, 0.909804],
+          "hex": "#fff2e8"
+        }
+      },
+      "20": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 0.85098, 0.745098],
+          "hex": "#ffd9be"
+        }
+      },
+      "30": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 0.717647, 0.517647],
+          "hex": "#ffb784"
+        }
+      },
+      "40": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 0.513725, 0.168627],
+          "hex": "#ff832b"
+        }
+      },
+      "50": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.921569, 0.384314, 0],
+          "hex": "#eb6200"
+        }
+      },
+      "60": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.729412, 0.305882, 0],
+          "hex": "#ba4e00"
+        }
+      },
+      "70": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.541176, 0.219608, 0],
+          "hex": "#8a3800"
+        }
+      },
+      "80": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.368627, 0.160784, 0],
+          "hex": "#5e2900"
+        }
+      },
+      "90": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.243137, 0.101961, 0],
+          "hex": "#3e1a00"
+        }
+      },
+      "100": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.137255, 0.062745, 0],
+          "hex": "#231000"
+        }
+      },
+      "$description": "Família laranja do Carbon, usada pela paleta categórica de gráfico (#63)"
+    },
     "hover": {
       "$description": "Tons de hover que o Carbon publica fora da escala de 10 em 10",
       "blue-60": {

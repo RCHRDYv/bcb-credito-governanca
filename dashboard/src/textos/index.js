@@ -16,15 +16,26 @@ import { ptBR } from "./pt-BR.js";
 /** @typedef {keyof typeof ptBR} ChaveDeTexto */
 
 /**
- * PT: Devolve o texto da chave, ou lança um erro se ela não existe.
+ * PT: Devolve o texto da chave, ou lança um erro se ela não existe. Um texto
+ *     pode ter lacunas, como `{de}`, preenchidas pelos valores: assim a
+ *     ordem das palavras fica no arquivo de tradução, e não no componente.
  * EN: Returns the text for a key, or throws if the key does not exist.
+ *     Placeholders such as `{de}` are filled from `valores`.
  *
  * @param {ChaveDeTexto} chave
+ * @param {Record<string, string>} [valores]
  * @returns {string}
  */
-export function t(chave) {
+export function t(chave, valores) {
   if (!Object.hasOwn(ptBR, chave)) {
     throw new Error(`Texto sem chave no arquivo de tradução: ${chave}`);
   }
-  return ptBR[chave];
+  const texto = ptBR[chave];
+  if (!valores) return texto;
+  return texto.replace(/\{(\w+)\}/g, (_lacuna, nome) => {
+    if (!Object.hasOwn(valores, nome)) {
+      throw new Error(`Valor sem lacuna preenchida em ${chave}: ${nome}`);
+    }
+    return valores[nome];
+  });
 }

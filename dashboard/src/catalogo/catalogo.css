@@ -371,4 +371,86 @@
   .movimento__botao:active {
     background: var(--botao-primario-fundo-pressionado);
   }
+
+  /* PT: paletas de gráfico: cada faixa com o nome da visão ao lado (#63) */
+  /* EN: chart palettes: one row per vision type */
+  .paleta-de-grafico + .paleta-de-grafico {
+    margin-block-start: var(--space-06);
+  }
+
+  .paleta-de-grafico__nome {
+    margin-block-end: var(--space-03);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .faixa {
+    display: grid;
+    grid-template-columns: minmax(6rem, 8rem) 1fr;
+    align-items: center;
+    gap: var(--space-03);
+    margin-block-start: var(--space-02);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-helper);
+  }
+
+  .faixa__cores {
+    display: flex;
+    gap: var(--space-01);
+  }
+
+  .faixa__cor {
+    flex: 1;
+    block-size: var(--space-06);
+    border-radius: var(--radius-pequeno);
+  }
+
+  /* PT: gráficos: os cartões empilhados em cada painel (#63) */
+  /* EN: charts: cards stacked in each panel */
+  .graficos {
+    display: grid;
+    gap: var(--space-06);
+  }
+
+  .catalogo__nota {
+    max-inline-size: 65ch;
+    margin-block-start: var(--space-03);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-helper);
+  }
+
+  .demonstracao-de-tema {
+    display: grid;
+    gap: var(--space-05);
+    max-inline-size: calc(10 * var(--space-10));
+    margin-block-start: var(--space-10);
+  }
+
+  .demonstracao-de-tema h3 {
+    font: var(--type-heading-03);
+  }
+
+  .botao-de-tema {
+    justify-self: start;
+    block-size: var(--botao-altura);
+    padding-inline: var(--space-06);
+    border: 0;
+    border-radius: var(--botao-raio);
+    background: var(--botao-primario-fundo);
+    color: var(--botao-primario-texto);
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    cursor: pointer;
+    transition: background-color var(--motion-duracao-curta) var(--motion-curva-produtiva);
+  }
+
+  .botao-de-tema:hover {
+    background: var(--botao-primario-fundo-hover);
+  }
+
+  .botao-de-tema:active {
+    background: var(--botao-primario-fundo-pressionado);
+  }
 }

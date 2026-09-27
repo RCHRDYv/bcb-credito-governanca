@@ -1,0 +1,1689 @@
+{
+  "fonte": "SCR.data, do Banco Central, na camada gold do projeto",
+  "data_base": "2026-07-31",
+  "carteira_por_modalidade": {
+    "meses": [
+      "2024-01-31",
+      "2024-02-29",
+      "2024-03-31",
+      "2024-04-30",
+      "2024-05-31",
+      "2024-06-30",
+      "2024-07-31",
+      "2024-08-31",
+      "2024-09-30",
+      "2024-10-31",
+      "2024-11-30",
+      "2024-12-31",
+      "2025-01-31",
+      "2025-02-28",
+      "2025-03-31",
+      "2025-04-30",
+      "2025-05-31",
+      "2025-06-30",
+      "2025-07-31",
+      "2025-08-31",
+      "2025-09-30",
+      "2025-10-31",
+      "2025-11-30",
+      "2025-12-31",
+      "2026-01-31",
+      "2026-02-28",
+      "2026-03-31",
+      "2026-04-30",
+      "2026-05-31",
+      "2026-06-30",
+      "2026-07-31"
+    ],
+    "series": [
+      {
+        "codigo": "02",
+        "nome": "Empréstimos",
+        "valores": [
+          871064608519, 862748612546, 877609684267, 877414520633, 882058570960, 914337506432,
+          915326017607, 925253706897, 924847791026, 931876550816, 960266658337, 949785162073,
+          918235935571, 945145825571, 965382007395, 968490986505, 970939235283, 988216247569,
+          991723014881, 996973163605, 1040900362026, 1064839998705, 1084849504690, 1106015834618,
+          1109127505670, 1093629865152, 1094860605335, 1111279169739, 1111150655817, 1119059688389,
+          1096668600097
+        ]
+      },
+      {
+        "codigo": "04",
+        "nome": "Financiamentos",
+        "valores": [
+          693352650289, 693739734909, 697156728278, 703181667534, 708174961196, 707678676335,
+          716685101423, 724697331480, 736286233619, 747684399213, 755819439005, 769825814890,
+          754056811395, 766069556259, 755965530685, 758637925573, 766167123481, 768478049147,
+          771227113722, 779455540121, 833018605411, 809853870700, 813108189047, 835560870326,
+          824203579478, 822901303795, 830986117132, 830690535913, 836639081443, 851686003685,
+          851371823760
+        ]
+      },
+      {
+        "codigo": "05",
+        "nome": "Financiamentos à exportação",
+        "valores": [
+          237273708117, 239180719641, 243219091935, 253352830816, 259732461325, 269466769256,
+          274575928758, 276820779680, 276141842099, 281487516515, 281834448926, 284627499860,
+          290449578140, 289970328283, 280710378370, 292505112844, 294490333257, 298821911978,
+          299243662271, 301740072983, 301398253515, 299574410363, 294032555936, 293234407304,
+          285158916812, 289744701367, 288309113793, 279821777297, 284222968488, 284922786000,
+          290445705263
+        ]
+      },
+      {
+        "codigo": "13",
+        "nome": "Outros créditos",
+        "valores": [
+          187722482588, 184589066406, 204411374371, 183994341969, 181659508806, 203119340459,
+          179767620664, 181629706997, 205089447257, 197332024683, 207150778577, 239391146586,
+          202141390763, 203175153498, 222254549866, 201254323804, 213132443776, 212024439824,
+          188702959967, 199393216524, 209604903766, 200159772939, 202335063748, 241276303809,
+          204422232238, 201463349999, 230203265075, 211327225620, 215243759109, 236717788703,
+          220226973709
+        ]
+      },
+      {
+        "codigo": "08",
+        "nome": "Financiamentos rurais",
+        "valores": [
+          108845088085, 109064127618, 110967546985, 112467572344, 112645062049, 116316229440,
+          114741409361, 115505368268, 116637293024, 115945094319, 117112922580, 118226238361,
+          117865032460, 118399199856, 118581097099, 123217573241, 134133251342, 128965102124,
+          129348672868, 128100924981, 131763349557, 135484810988, 137953582690, 143541541292,
+          145803088150, 148726942504, 154005444515, 156068789493, 158877181817, 160434504994,
+          160156172235
+        ]
+      },
+      {
+        "codigo": "11",
+        "nome": "Financiamentos de infraestrutura e desenvolvimento",
+        "valores": [
+          110515147621, 110866645318, 112037934809, 112665279921, 113528801063, 114363516507,
+          115795642013, 116703992879, 117779553668, 119426317564, 121269897457, 121576821572,
+          121112283855, 121559074636, 121747644179, 121830196506, 122572894129, 123997815947,
+          124947814209, 125243969064, 125861404001, 126166089318, 125220156046, 126130628635,
+          126698591402, 126034935202, 125870883920, 126197617545, 122243515125, 122663423347,
+          123102657219
+        ]
+      },
+      {
+        "codigo": "outros",
+        "nome": "Outros",
+        "valores": [
+          134603243331, 136538326659, 140981595460, 141560576533, 140417867449, 149349478371,
+          148539279074, 149509479930, 154477693667, 154324557624, 157355324848, 160812940502,
+          157541083219, 157908451545, 160908736860, 160672546279, 163354035738, 161216269531,
+          163429149307, 163918995888, 167199680579, 169332929767, 169560157660, 173424368371,
+          171892810948, 170437969244, 173932936584, 172763790035, 172823883719, 176242962617,
+          168082298212
+        ]
+      }
+    ]
+  },
+  "taxa_do_pais": {
+    "meses": [
+      "2024-01-31",
+      "2024-02-29",
+      "2024-03-31",
+      "2024-04-30",
+      "2024-05-31",
+      "2024-06-30",
+      "2024-07-31",
+      "2024-08-31",
+      "2024-09-30",
+      "2024-10-31",
+      "2024-11-30",
+      "2024-12-31",
+      "2025-01-31",
+      "2025-02-28",
+      "2025-03-31",
+      "2025-04-30",
+      "2025-05-31",
+      "2025-06-30",
+      "2025-07-31",
+      "2025-08-31",
+      "2025-09-30",
+      "2025-10-31",
+      "2025-11-30",
+      "2025-12-31",
+      "2026-01-31",
+      "2026-02-28",
+      "2026-03-31",
+      "2026-04-30",
+      "2026-05-31",
+      "2026-06-30",
+      "2026-07-31"
+    ],
+    "taxa": [
+      0.022799, 0.023095, 0.022463, 0.022608, 0.023106, 0.021492, 0.02104, 0.021062, 0.02128,
+      0.020929, 0.020629, 0.019663, 0.022214, 0.023434, 0.023228, 0.02562, 0.025631, 0.0256,
+      0.026851, 0.02753, 0.025631, 0.026791, 0.026022, 0.024907, 0.0269, 0.028726, 0.027937,
+      0.030552, 0.030339, 0.029368, 0.030184
+    ]
+  },
+  "por_uf": {
+    "codigo_modalidade": "02",
+    "modalidade": "Empréstimos",
+    "mediana_carteira_por_empresa": 75142,
+    "uf": [
+      "AC",
+      "AL",
+      "AM",
+      "AP",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MG",
+      "MS",
+      "MT",
+      "PA",
+      "PB",
+      "PE",
+      "PI",
+      "PR",
+      "RJ",
+      "RN",
+      "RO",
+      "RR",
+      "RS",
+      "SC",
+      "SE",
+      "SP",
+      "TO"
+    ],
+    "carteira_por_empresa": [
+      71924, 91285, 94102, 78917, 66429, 62520, 117647, 109300, 75532, 59161, 75142, 74243, 88000,
+      91344, 52696, 69618, 58270, 91458, 64855, 59989, 80462, 71231, 107692, 100313, 57360, 128762,
+      70601
+    ],
+    "desvio_do_risco": [
+      0.008371, -0.002819, 0.006988, 0.000169, 0.000806, -0.005184, -0.007679, 0.002133, 0.002767,
+      0.015761, 0.000407, -0.009824, 0.00167, -0.00092, 0.001476, -0.001482, 0.018155, 0.001215,
+      -0.003042, -0.001183, 0.006214, -0.002416, 0.005571, -0.001633, -0.021714, -0.001413, 0.008003
+    ]
+  },
+  "matriz": {
+    "celulas": [
+      {
+        "uf": "AC",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 1679292038,
+        "indice_de_espaco": 0.957183,
+        "desvio_do_risco": 0.008371,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "AL",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 7862488354,
+        "indice_de_espaco": 1.214839,
+        "desvio_do_risco": -0.002819,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "AM",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 11428278064,
+        "indice_de_espaco": 1.252322,
+        "desvio_do_risco": 0.006988,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "AP",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 1871360652,
+        "indice_de_espaco": 1.050242,
+        "desvio_do_risco": 0.000169,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "BA",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 32587573779,
+        "indice_de_espaco": 0.884044,
+        "desvio_do_risco": 0.000806,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "CE",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 19214719593,
+        "indice_de_espaco": 0.832025,
+        "desvio_do_risco": -0.005184,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "DF",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 25977446705,
+        "indice_de_espaco": 1.565662,
+        "desvio_do_risco": -0.007679,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "ES",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 23839225770,
+        "indice_de_espaco": 1.454584,
+        "desvio_do_risco": 0.002133,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 31879541046,
+        "indice_de_espaco": 1.005199,
+        "desvio_do_risco": 0.002767,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MA",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 10381158568,
+        "indice_de_espaco": 0.787329,
+        "desvio_do_risco": 0.015761,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 84017181768,
+        "indice_de_espaco": 1.0,
+        "desvio_do_risco": 0.000407,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MS",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 11472108632,
+        "indice_de_espaco": 0.988033,
+        "desvio_do_risco": -0.009824,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "MT",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 21685170649,
+        "indice_de_espaco": 1.171116,
+        "desvio_do_risco": 0.00167,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PA",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 22001340344,
+        "indice_de_espaco": 1.215624,
+        "desvio_do_risco": -0.00092,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "PB",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 6739237648,
+        "indice_de_espaco": 0.701282,
+        "desvio_do_risco": 0.001476,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "PE",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 19950489601,
+        "indice_de_espaco": 0.926488,
+        "desvio_do_risco": -0.001482,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PI",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 6253298064,
+        "indice_de_espaco": 0.775474,
+        "desvio_do_risco": 0.018155,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 81029972511,
+        "indice_de_espaco": 1.217142,
+        "desvio_do_risco": 0.001215,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 52494312147,
+        "indice_de_espaco": 0.863107,
+        "desvio_do_risco": -0.003042,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RN",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 7080614700,
+        "indice_de_espaco": 0.79835,
+        "desvio_do_risco": -0.001183,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RO",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 5612940961,
+        "indice_de_espaco": 1.070801,
+        "desvio_do_risco": 0.006214,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RR",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 1405604976,
+        "indice_de_espaco": 0.947957,
+        "desvio_do_risco": -0.002416,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 76817262705,
+        "indice_de_espaco": 1.433186,
+        "desvio_do_risco": 0.005571,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 65583126820,
+        "indice_de_espaco": 1.334988,
+        "desvio_do_risco": -0.001633,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "SE",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 3804333658,
+        "indice_de_espaco": 0.763354,
+        "desvio_do_risco": -0.021714,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 459011952874,
+        "indice_de_espaco": 1.713583,
+        "desvio_do_risco": -0.001413,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "TO",
+        "codigo_modalidade": "02",
+        "modalidade": "Empréstimos",
+        "carteira_ativa": 4988567470,
+        "indice_de_espaco": 0.939565,
+        "desvio_do_risco": 0.008003,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "03",
+        "modalidade": "Direitos creditórios descontados",
+        "carteira_ativa": 1402304317,
+        "indice_de_espaco": 1.0,
+        "desvio_do_risco": 0.003505,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "03",
+        "modalidade": "Direitos creditórios descontados",
+        "carteira_ativa": 3585107489,
+        "indice_de_espaco": 0.965054,
+        "desvio_do_risco": 0.00723,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "03",
+        "modalidade": "Direitos creditórios descontados",
+        "carteira_ativa": 3496830597,
+        "indice_de_espaco": 1.187921,
+        "desvio_do_risco": 0.003487,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "03",
+        "modalidade": "Direitos creditórios descontados",
+        "carteira_ativa": 1336556721,
+        "indice_de_espaco": 0.497001,
+        "desvio_do_risco": 0.000707,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "03",
+        "modalidade": "Direitos creditórios descontados",
+        "carteira_ativa": 2230845852,
+        "indice_de_espaco": 0.941306,
+        "desvio_do_risco": 0.01187,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "03",
+        "modalidade": "Direitos creditórios descontados",
+        "carteira_ativa": 4752160359,
+        "indice_de_espaco": 2.187732,
+        "desvio_do_risco": -0.009522,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "03",
+        "modalidade": "Direitos creditórios descontados",
+        "carteira_ativa": 13566461043,
+        "indice_de_espaco": 1.145422,
+        "desvio_do_risco": -0.003175,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "AC",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 2186764985,
+        "indice_de_espaco": 1.317057,
+        "desvio_do_risco": -0.00479,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "AL",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 5124980689,
+        "indice_de_espaco": 0.836729,
+        "desvio_do_risco": 0.003037,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "AM",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 16759270042,
+        "indice_de_espaco": 1.940546,
+        "desvio_do_risco": 0.005127,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "AP",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 3229511873,
+        "indice_de_espaco": 1.915148,
+        "desvio_do_risco": 0.003121,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "BA",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 34885467192,
+        "indice_de_espaco": 1.0,
+        "desvio_do_risco": -0.000802,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "CE",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 28342216195,
+        "indice_de_espaco": 1.29679,
+        "desvio_do_risco": -0.006595,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "DF",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 22313371574,
+        "indice_de_espaco": 1.421021,
+        "desvio_do_risco": -0.002983,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "ES",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 13566553254,
+        "indice_de_espaco": 0.874682,
+        "desvio_do_risco": 0.000263,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 25816123256,
+        "indice_de_espaco": 0.860131,
+        "desvio_do_risco": 0.002913,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "MA",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 10395170551,
+        "indice_de_espaco": 0.833059,
+        "desvio_do_risco": 0.001375,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 57396362399,
+        "indice_de_espaco": 0.721855,
+        "desvio_do_risco": 0.000352,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "MS",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 12217451825,
+        "indice_de_espaco": 1.11184,
+        "desvio_do_risco": -0.004887,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MT",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 24687405389,
+        "indice_de_espaco": 1.40879,
+        "desvio_do_risco": -0.002643,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PA",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 17737843886,
+        "indice_de_espaco": 1.035582,
+        "desvio_do_risco": 0.003346,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "PB",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 4385435233,
+        "indice_de_espaco": 0.482201,
+        "desvio_do_risco": -0.000516,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "PE",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 13684023535,
+        "indice_de_espaco": 0.671481,
+        "desvio_do_risco": 0.00158,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "PI",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 17971965997,
+        "indice_de_espaco": 2.35498,
+        "desvio_do_risco": -0.001434,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 44807105486,
+        "indice_de_espaco": 0.711174,
+        "desvio_do_risco": 0.004515,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 136973591292,
+        "indice_de_espaco": 2.379704,
+        "desvio_do_risco": -0.00169,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RN",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 6834238886,
+        "indice_de_espaco": 0.814228,
+        "desvio_do_risco": 0.000849,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RO",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 3802412856,
+        "indice_de_espaco": 0.766498,
+        "desvio_do_risco": 0.000298,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RR",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 1565935464,
+        "indice_de_espaco": 1.115919,
+        "desvio_do_risco": 0.002228,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 50435942382,
+        "indice_de_espaco": 0.9943,
+        "desvio_do_risco": 0.001881,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 67084171222,
+        "indice_de_espaco": 1.44291,
+        "desvio_do_risco": 0.002294,
+        "quadrante": "não entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "SE",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 2593128547,
+        "indice_de_espaco": 0.549801,
+        "desvio_do_risco": 0.012697,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 219416266800,
+        "indice_de_espaco": 0.865533,
+        "desvio_do_risco": -0.000419,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "TO",
+        "codigo_modalidade": "04",
+        "modalidade": "Financiamentos",
+        "carteira_ativa": 7159112952,
+        "indice_de_espaco": 1.424767,
+        "desvio_do_risco": -0.011244,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "AL",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 1215558048,
+        "indice_de_espaco": 0.627452,
+        "desvio_do_risco": -9.4e-5,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "AM",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 1051776341,
+        "indice_de_espaco": 0.385039,
+        "desvio_do_risco": -9.4e-5,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "BA",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 7533968391,
+        "indice_de_espaco": 0.682797,
+        "desvio_do_risco": -0.003136,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "CE",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 1188781090,
+        "indice_de_espaco": 0.171969,
+        "desvio_do_risco": 0.002633,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "ES",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 6052146540,
+        "indice_de_espaco": 1.233678,
+        "desvio_do_risco": -0.009675,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 6419416535,
+        "indice_de_espaco": 0.67621,
+        "desvio_do_risco": 0.003533,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 26443230223,
+        "indice_de_espaco": 1.051459,
+        "desvio_do_risco": -0.003084,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MS",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 6419594386,
+        "indice_de_espaco": 1.847062,
+        "desvio_do_risco": 0.006071,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MT",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 15857963046,
+        "indice_de_espaco": 2.861082,
+        "desvio_do_risco": -0.003452,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PA",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 5520552195,
+        "indice_de_espaco": 1.01901,
+        "desvio_do_risco": 0.000644,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PE",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 1759795663,
+        "indice_de_espaco": 0.27302,
+        "desvio_do_risco": -0.003499,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PI",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 1425966521,
+        "indice_de_espaco": 0.590763,
+        "desvio_do_risco": -9.4e-5,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 17068787313,
+        "indice_de_espaco": 0.856532,
+        "desvio_do_risco": 0.005752,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 44651754641,
+        "indice_de_espaco": 2.452657,
+        "desvio_do_risco": -0.002877,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 21967070237,
+        "indice_de_espaco": 1.369183,
+        "desvio_do_risco": 0.007778,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 14705129527,
+        "indice_de_espaco": 1.0,
+        "desvio_do_risco": 3e-5,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "05",
+        "modalidade": "Financiamentos à exportação",
+        "carteira_ativa": 106440978673,
+        "indice_de_espaco": 1.327504,
+        "desvio_do_risco": -0.000266,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "ES",
+        "codigo_modalidade": "06",
+        "modalidade": "Financiamentos à importação",
+        "carteira_ativa": 1586006430,
+        "indice_de_espaco": 2.192801,
+        "desvio_do_risco": -2.4e-5,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "06",
+        "modalidade": "Financiamentos à importação",
+        "carteira_ativa": 1399627133,
+        "indice_de_espaco": 1.0,
+        "desvio_do_risco": -2.4e-5,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "06",
+        "modalidade": "Financiamentos à importação",
+        "carteira_ativa": 1487906888,
+        "indice_de_espaco": 0.506429,
+        "desvio_do_risco": -2.4e-5,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "06",
+        "modalidade": "Financiamentos à importação",
+        "carteira_ativa": 3117274375,
+        "indice_de_espaco": 1.437832,
+        "desvio_do_risco": -2.9e-5,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "06",
+        "modalidade": "Financiamentos à importação",
+        "carteira_ativa": 4795276545,
+        "indice_de_espaco": 0.405642,
+        "desvio_do_risco": 0.000157,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "BA",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 12083539360,
+        "indice_de_espaco": 1.366012,
+        "desvio_do_risco": -0.001343,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "ES",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 1472823880,
+        "indice_de_espaco": 0.374486,
+        "desvio_do_risco": 0.002816,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 7190428370,
+        "indice_de_espaco": 0.944786,
+        "desvio_do_risco": 0.018166,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 14016429687,
+        "indice_de_espaco": 0.695197,
+        "desvio_do_risco": -0.002026,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "MS",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 4583341060,
+        "indice_de_espaco": 1.644935,
+        "desvio_do_risco": 0.001143,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MT",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 13962083258,
+        "indice_de_espaco": 3.142142,
+        "desvio_do_risco": -0.000284,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "PA",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 1198486814,
+        "indice_de_espaco": 0.275945,
+        "desvio_do_risco": 0.009013,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 34589543304,
+        "indice_de_espaco": 2.165104,
+        "desvio_do_risco": -0.001299,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 18798909622,
+        "indice_de_espaco": 1.461554,
+        "desvio_do_risco": 0.001913,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 11788975560,
+        "indice_de_espaco": 1.0,
+        "desvio_do_risco": -0.000395,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "08",
+        "modalidade": "Financiamentos rurais",
+        "carteira_ativa": 35406525924,
+        "indice_de_espaco": 0.550812,
+        "desvio_do_risco": -0.000987,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "BA",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 1317734696,
+        "indice_de_espaco": 0.43581,
+        "desvio_do_risco": -0.009743,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 4577933228,
+        "indice_de_espaco": 1.759775,
+        "desvio_do_risco": 0.002707,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 5218750116,
+        "indice_de_espaco": 0.757262,
+        "desvio_do_risco": -0.008134,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MT",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 1057954898,
+        "indice_de_espaco": 0.696549,
+        "desvio_do_risco": 0.000244,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PE",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 1137983070,
+        "indice_de_espaco": 0.644272,
+        "desvio_do_risco": 0.029264,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 6543930760,
+        "indice_de_espaco": 1.198345,
+        "desvio_do_risco": 0.005436,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 8280932950,
+        "indice_de_espaco": 1.65989,
+        "desvio_do_risco": -0.000187,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 3577844854,
+        "indice_de_espaco": 0.813791,
+        "desvio_do_risco": 0.005667,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 4780004335,
+        "indice_de_espaco": 1.186209,
+        "desvio_do_risco": -0.005795,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "09",
+        "modalidade": "Financiamentos imobiliários",
+        "carteira_ativa": 42979892690,
+        "indice_de_espaco": 1.956114,
+        "desvio_do_risco": -0.002403,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "AL",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 1028450041,
+        "indice_de_espaco": 1.03577,
+        "desvio_do_risco": -0.000223,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "BA",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 6763995110,
+        "indice_de_espaco": 1.196042,
+        "desvio_do_risco": 0.002881,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "CE",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 3175740300,
+        "indice_de_espaco": 0.896331,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "DF",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 12914677332,
+        "indice_de_espaco": 5.073486,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "ES",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 1572702979,
+        "indice_de_espaco": 0.625482,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 5436100771,
+        "indice_de_espaco": 1.117246,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 8776634003,
+        "indice_de_espaco": 0.680897,
+        "desvio_do_risco": -0.000182,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MS",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 1717636126,
+        "indice_de_espaco": 0.96423,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MT",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 1286350266,
+        "indice_de_espaco": 0.452812,
+        "desvio_do_risco": 0.001316,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PA",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 4631299435,
+        "indice_de_espaco": 1.667916,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PE",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 7741407583,
+        "indice_de_espaco": 2.343297,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PI",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 1030883606,
+        "indice_de_espaco": 0.833276,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 8386239100,
+        "indice_de_espaco": 0.821077,
+        "desvio_do_risco": -7e-5,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 14018720141,
+        "indice_de_espaco": 1.502388,
+        "desvio_do_risco": -0.000208,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RN",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 2808106550,
+        "indice_de_espaco": 2.063751,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 5887038258,
+        "indice_de_espaco": 0.715916,
+        "desvio_do_risco": -7.7e-5,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 4267188379,
+        "indice_de_espaco": 0.566172,
+        "desvio_do_risco": -0.00027,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SE",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 1008392861,
+        "indice_de_espaco": 1.31886,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 25488338472,
+        "indice_de_espaco": 0.620218,
+        "desvio_do_risco": -0.000208,
+        "quadrante": "entrar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "TO",
+        "codigo_modalidade": "11",
+        "modalidade": "Financiamentos de infraestrutura e desenvolvimento",
+        "carteira_ativa": 1119860758,
+        "indice_de_espaco": 1.37479,
+        "desvio_do_risco": -0.000207,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "12",
+        "modalidade": "Operações de arrendamento",
+        "carteira_ativa": 3247060356,
+        "indice_de_espaco": 1.553252,
+        "desvio_do_risco": 0.00633,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "12",
+        "modalidade": "Operações de arrendamento",
+        "carteira_ativa": 1609166431,
+        "indice_de_espaco": 0.97144,
+        "desvio_do_risco": 0.022959,
+        "quadrante": "observar",
+        "alerta_antecipado": true
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "12",
+        "modalidade": "Operações de arrendamento",
+        "carteira_ativa": 1313286825,
+        "indice_de_espaco": 0.867824,
+        "desvio_do_risco": 0.010353,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "12",
+        "modalidade": "Operações de arrendamento",
+        "carteira_ativa": 1222348373,
+        "indice_de_espaco": 1.0,
+        "desvio_do_risco": 0.006802,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "12",
+        "modalidade": "Operações de arrendamento",
+        "carteira_ativa": 12476387608,
+        "indice_de_espaco": 1.87193,
+        "desvio_do_risco": -0.010593,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "AM",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 1443663428,
+        "indice_de_espaco": 0.887093,
+        "desvio_do_risco": -0.03238,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "BA",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 7004161314,
+        "indice_de_espaco": 1.065482,
+        "desvio_do_risco": 0.003377,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "CE",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 3848729446,
+        "indice_de_espaco": 0.934518,
+        "desvio_do_risco": -0.000483,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "DF",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 4488063608,
+        "indice_de_espaco": 1.516802,
+        "desvio_do_risco": 0.00538,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "ES",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 3406459232,
+        "indice_de_espaco": 1.165516,
+        "desvio_do_risco": -0.004971,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "GO",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 3765002898,
+        "indice_de_espaco": 0.665692,
+        "desvio_do_risco": -0.000629,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MA",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 1431156376,
+        "indice_de_espaco": 0.608647,
+        "desvio_do_risco": -0.00114,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MG",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 22335256512,
+        "indice_de_espaco": 1.490703,
+        "desvio_do_risco": -0.00525,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MS",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 1620531075,
+        "indice_de_espaco": 0.782625,
+        "desvio_do_risco": -0.009548,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "MT",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 3984745825,
+        "indice_de_espaco": 1.206718,
+        "desvio_do_risco": -0.017178,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PA",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 2215502392,
+        "indice_de_espaco": 0.686421,
+        "desvio_do_risco": -0.003514,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PB",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 1217912347,
+        "indice_de_espaco": 0.710667,
+        "desvio_do_risco": -0.070327,
+        "quadrante": "entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PE",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 4758135589,
+        "indice_de_espaco": 1.239057,
+        "desvio_do_risco": -0.000897,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "PR",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 12770713047,
+        "indice_de_espaco": 1.075669,
+        "desvio_do_risco": -0.004419,
+        "quadrante": "manter",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RJ",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 19624177607,
+        "indice_de_espaco": 1.809306,
+        "desvio_do_risco": 0.026926,
+        "quadrante": "não entrar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "RS",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 8221151121,
+        "indice_de_espaco": 0.860091,
+        "desvio_do_risco": 0.005708,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SC",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 7388257265,
+        "indice_de_espaco": 0.843326,
+        "desvio_do_risco": 0.000171,
+        "quadrante": "observar",
+        "alerta_antecipado": false
+      },
+      {
+        "uf": "SP",
+        "codigo_modalidade": "13",
+        "modalidade": "Outros créditos",
+        "carteira_ativa": 106293130138,
+        "indice_de_espaco": 2.225126,
+        "desvio_do_risco": -0.00126,
+        "quadrante": "manter",
+        "alerta_antecipado": true
+      }
+    ]
+  },
+  "destaque": {
+    "quadrante": "entrar",
+    "carteira_ativa": 485503196800,
+    "celulas": 35
+  }
+}

@@ -4,8 +4,8 @@
  *     A razão de contraste compara a luminância relativa de duas cores
  *     opacas. Uma cor transparente, como o preenchimento do vidro, precisa
  *     antes ser composta sobre o que está atrás dela: é a cor que o olho vê.
- *     O teste de contraste dos tokens e o catálogo usam estas funções, e o
- *     tema dos gráficos da #63 vai usar também.
+ *     O teste de contraste dos tokens, o catálogo e a validação das paletas
+ *     de gráfico usam estas funções.
  *
  * EN: Color contrast per WCAG 2.2. A transparent color, such as the glass
  *     fill, is first composited over what is behind it. Used by the token
@@ -36,6 +36,24 @@ function canais(hex) {
 }
 
 /**
+ * PT: Os três canais em RGB linear, de 0 a 1: a cor sem a curva de gama do
+ *     sRGB. É a base da luminância e também do OKLab e da simulação de
+ *     daltonismo.
+ * EN: The three channels in linear RGB, from 0 to 1 (sRGB gamma removed).
+ *
+ * @param {string} hex
+ * @returns {[number, number, number]}
+ */
+export function linear(hex) {
+  return /** @type {[number, number, number]} */ (
+    canais(hex).map((canal) => {
+      const c = canal / 255;
+      return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    })
+  );
+}
+
+/**
  * PT: Luminância relativa, pela fórmula da WCAG.
  * EN: Relative luminance, per the WCAG formula.
  *
@@ -43,10 +61,7 @@ function canais(hex) {
  * @returns {number}
  */
 export function luminancia(hex) {
-  const [r, g, b] = canais(hex).map((canal) => {
-    const c = canal / 255;
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  });
+  const [r, g, b] = linear(hex);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 

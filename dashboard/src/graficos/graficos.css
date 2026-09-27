@@ -1,0 +1,223 @@
+/*
+ * PT: Estilo dos componentes de gráfico, só com tokens. O ECharts desenha o
+ *     gráfico em SVG com as cores do tema montado em JavaScript; este arquivo
+ *     cuida do que é HTML em volta: o cartão de vidro, o cabeçalho, o tamanho
+ *     de cada tipo de gráfico, as etiquetas da matriz e o número de destaque.
+ *
+ * EN: Chart component styles, tokens only: the glass card, header, sizes,
+ *     matrix labels and highlight number. ECharts draws the SVG itself.
+ */
+
+@layer componentes {
+  /* PT: cartão de vidro regular, como os painéis / EN: regular glass card */
+  .cartao-grafico {
+    display: grid;
+    gap: var(--space-05);
+    min-inline-size: 0;
+    padding: var(--space-05) var(--space-06) var(--space-06);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-cartao);
+    background: var(--material-vidro-regular-preenchimento);
+    backdrop-filter: blur(var(--material-vidro-regular-desfoque))
+      saturate(var(--material-vidro-regular-saturacao));
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+    color: var(--color-text-primary);
+  }
+
+  /* PT: sem backdrop-filter, a superfície vira sólida / EN: solid fallback */
+  @supports not (backdrop-filter: blur(1px)) {
+    .cartao-grafico {
+      background: var(--color-background-layer);
+    }
+  }
+
+  .cartao-grafico__titulo {
+    font: var(--type-heading-02);
+    letter-spacing: var(--type-heading-02-letter-spacing);
+  }
+
+  .cartao-grafico__origem {
+    margin-block-start: var(--space-02);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-helper);
+  }
+
+  .cartao-grafico__corpo {
+    min-inline-size: 0;
+  }
+
+  /* PT: a área do ECharts; os números alinham em coluna / EN: tabular figures */
+  .grafico {
+    inline-size: 100%;
+  }
+
+  .grafico svg text {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .grafico--mapa {
+    block-size: 360px;
+  }
+
+  .grafico--serie {
+    block-size: 300px;
+  }
+
+  .grafico--ranking {
+    block-size: calc(var(--itens, 10) * var(--space-07) + var(--space-07));
+  }
+
+  /* PT: o cartograma tem a proporção da grade, que o JavaScript informa,
+     para os quadrados continuarem quadrados em qualquer largura */
+  /* EN: the cartogram keeps the grid proportion, so tiles stay square */
+  .cartograma {
+    max-inline-size: calc(7 * var(--space-10));
+  }
+
+  .grafico--cartograma {
+    aspect-ratio: var(--colunas, 8) / var(--linhas, 8);
+  }
+
+  /* PT: matriz: a área do gráfico e as etiquetas nos cantos da área de
+     desenho, pelas margens que o JavaScript informa */
+  /* EN: matrix: plot plus labels at the plot-area corners */
+  .matriz {
+    position: relative;
+    container-type: inline-size;
+  }
+
+  .grafico--matriz {
+    block-size: 420px;
+  }
+
+  .matriz__etiqueta {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-02);
+    padding: var(--space-01) var(--space-03);
+    border-radius: var(--radius-capsula);
+    background: var(--material-vidro-regular-preenchimento);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    pointer-events: none;
+  }
+
+  .matriz__etiqueta--superior-esquerdo {
+    inset-block-start: calc(var(--matriz-topo) + var(--space-03));
+    inset-inline-start: calc(var(--matriz-esquerda) + var(--space-03));
+  }
+
+  .matriz__etiqueta--superior-direito {
+    inset-block-start: calc(var(--matriz-topo) + var(--space-03));
+    inset-inline-end: calc(var(--matriz-direita) + var(--space-03));
+  }
+
+  .matriz__etiqueta--inferior-esquerdo {
+    inset-block-end: calc(var(--matriz-base) + var(--space-03));
+    inset-inline-start: calc(var(--matriz-esquerda) + var(--space-03));
+  }
+
+  .matriz__etiqueta--inferior-direito {
+    inset-block-end: calc(var(--matriz-base) + var(--space-03));
+    inset-inline-end: calc(var(--matriz-direita) + var(--space-03));
+  }
+
+  /* PT: em tela estreita, as etiquetas descem para baixo do gráfico, em linha.
+     O limite, 480 px, é o LARGURA_ESTREITA de grafico.js */
+  /* EN: narrow: labels flow below the plot; same limit as grafico.js */
+  @container (width < 480px) {
+    .matriz__etiqueta {
+      position: static;
+      margin-block-start: var(--space-03);
+      margin-inline-end: var(--space-03);
+    }
+  }
+
+  .quadrante--entrar {
+    color: var(--color-quadrante-entrar-texto);
+  }
+
+  .quadrante--observar {
+    color: var(--color-quadrante-observar-texto);
+  }
+
+  .quadrante--nao-entrar {
+    color: var(--color-quadrante-nao-entrar-texto);
+  }
+
+  .quadrante--manter {
+    color: var(--color-quadrante-manter-texto);
+  }
+
+  .icone {
+    inline-size: var(--space-05);
+    block-size: var(--space-05);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* PT: legenda das classes de cor, em HTML / EN: HTML color-class legend */
+  .legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-02) var(--space-05);
+    margin: var(--space-04) 0 0;
+    padding: 0;
+    list-style: none;
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legenda__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-03);
+  }
+
+  .legenda__cor {
+    inline-size: var(--space-04);
+    block-size: var(--space-04);
+    border-radius: var(--space-01);
+  }
+
+  /* PT: número de destaque / EN: highlight number */
+  .destaque {
+    container-type: inline-size;
+  }
+
+  .destaque__numero {
+    font: var(--type-heading-07);
+    letter-spacing: var(--type-heading-07-letter-spacing);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* PT: em tela estreita, o número desce para o heading-05, sem quebrar a unidade */
+  /* EN: narrow: step down to heading-05, keeping the unit on the line */
+  @container (max-width: 319px) {
+    .destaque__numero {
+      font: var(--type-heading-05);
+      letter-spacing: var(--type-heading-05-letter-spacing);
+    }
+  }
+
+  .destaque__rotulo {
+    max-inline-size: 40ch;
+    margin-block-start: var(--space-03);
+    color: var(--color-text-secondary);
+  }
+
+  .grafico-erro {
+    padding: var(--space-05);
+    border-radius: var(--radius-controle);
+    background: var(--color-background-layer);
+    color: var(--color-text-secondary);
+  }
+}
