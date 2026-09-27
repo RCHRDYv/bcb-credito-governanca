@@ -105,6 +105,7 @@ flowchart LR
     ia["IA do experimento"]
     gab["Gabarito<br/>evaluation/gabarito"]
     dash["Dashboard #17"]
+    chat["Chat do dashboard #73"]
     dec["Camada de decisão<br/>mrt_decisao"]
 
     v2 -- "ingestion/" --> b2 --> s2 --> conf
@@ -116,14 +117,14 @@ flowchart LR
     cnpj & ibge & sgs & pix -- "ingestion/" --> bext --> sext --> rec --> estrela
     sext --> estrela
     estrela --> apres
-    estrela --> ia & gab
+    estrela --> ia & gab & chat
     apres --> dash & dec
 
     classDef planejado stroke-dasharray: 5 5
-    class ia,dash planejado
+    class ia,dash,chat planejado
 ```
 
-Tracejado é o que ainda não foi construído, com o número da issue. O esquema estrela, o caminho da ontologia até o modelo e as camadas de verificação estão desenhados em [`docs/arquitetura.md`](docs/arquitetura.md). Os diagramas são código, e não imagem, pelo motivo do [ADR 0008](docs/adr/0008-diagramas-como-codigo-em-mermaid.md).
+Tracejado é o que ainda não foi construído, com o número da issue. O esquema estrela, o caminho da ontologia até o modelo e as camadas de verificação estão desenhados em [`docs/arquitetura.md`](docs/arquitetura.md). O site, o dataset e o chat do dashboard estão em [`docs/dashboard/arquitetura.md`](docs/dashboard/arquitetura.md). Os diagramas são código, e não imagem, pelo motivo do [ADR 0008](docs/adr/0008-diagramas-como-codigo-em-mermaid.md).
 
 A camada gold tem duas famílias porque perguntas e dashboard puxam em direções opostas, e porque aquilo que a IA consulta define o que o experimento mede. O raciocínio está no [ADR 0007](docs/adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md).
 
@@ -259,6 +260,7 @@ uv run python -m scripts.analises.qa_gabarito
 | [ADR 0020](docs/adr/0020-design-system-carbon-com-camada-liquid-glass.md) | O design system oficial é o Carbon com uma camada Liquid Glass |
 | [Requisitos do dashboard](docs/dashboard/requisitos.md) | O que o dashboard precisa fazer, para quem e como se confere, com as [referências de design](docs/dashboard/referencias-de-design.md) pesquisadas |
 | [Design system do dashboard](docs/dashboard/design-system.md) | Cores, tipos, espaços, vidro, movimento, componentes, padrões e modelos de página, com o [protótipo navegável](dashboard/prototipo-design-system/index.html) |
+| [Arquitetura do dashboard](docs/dashboard/arquitetura.md) | Como site, dataset e chat se ligam, o que acontece quando um deles falha, e o [contrato dos arquivos](dashboard/contrato-dos-dados.yml) que o site lê |
 | [Perguntas do experimento, conjunto original](evaluation/questions.yml) | As 30 perguntas, pré-registradas em 20/08/2026 e preservadas sem alteração |
 | [Perguntas do experimento, conjunto v2](evaluation/questions_v2.yml) | As mesmas 30, com três notas corrigidas em campo de errata, mais 11 nascidas de achados posteriores. Registrado em 22/09/2026, ainda antes de qualquer execução |
 | [Perguntas do experimento, conjunto v3](evaluation/questions_v3.yml) | As 41 do v2, com a janela de três perguntas ajustada ao recorte do projeto e mais uma nota corrigida. Registrado em 25/09/2026, antes de qualquer execução, e é o que vale para o experimento |
@@ -325,7 +327,7 @@ The dataset is the Brazilian Central Bank's credit registry (SCR), published mon
 
 The ontology is distilled from the Central Bank's own official normative documents, with each definition citing its source, rather than authored from scratch. The modality dimension is generated from the versioned ontology file rather than hand-written in dbt, which makes drift between documentation and data structurally impossible.
 
-Architecture decisions and their discarded alternatives are recorded in `docs/adr/`. Architecture diagrams are written as Mermaid code, so they change in the same pull request as the models they show: the medallion flow is in the Portuguese section above, and the star schema, the ontology-to-model path and the verification layers are in [`docs/arquitetura.md`](docs/arquitetura.md). Methodological limitations are declared alongside results.
+Architecture decisions and their discarded alternatives are recorded in `docs/adr/`. Architecture diagrams are written as Mermaid code, so they change in the same pull request as the models they show: the medallion flow is in the Portuguese section above, and the star schema, the ontology-to-model path and the verification layers are in [`docs/arquitetura.md`](docs/arquitetura.md), and the dashboard's site, dataset and chat are in [`docs/dashboard/arquitetura.md`](docs/dashboard/arquitetura.md). Methodological limitations are declared alongside results.
 
 ## License
 

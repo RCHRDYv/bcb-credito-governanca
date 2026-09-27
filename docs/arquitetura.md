@@ -1,6 +1,6 @@
 # Arquitetura em diagramas
 
-Três diagramas que complementam o fluxo medalhão do [README](../README.md#arquitetura-medalhão). Eles são escritos em Mermaid e ficam neste arquivo, e não em imagem exportada, para que a PR que muda um modelo mude também o desenho. As regras estão no [ADR 0008](adr/0008-diagramas-como-codigo-em-mermaid.md).
+Três diagramas que complementam o fluxo medalhão do [README](../README.md#arquitetura-medalhão). Eles são escritos em Mermaid e ficam neste arquivo, e não em imagem exportada, para que a PR que muda um modelo mude também o desenho. As regras estão no [ADR 0008](adr/0008-diagramas-como-codigo-em-mermaid.md). Os diagramas do dashboard, com o site, o dataset e o chat, ficam em [`dashboard/arquitetura.md`](dashboard/arquitetura.md).
 
 No diagrama da ontologia, a seta pontilhada liga uma verificação àquilo que ela confere.
 

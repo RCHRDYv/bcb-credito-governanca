@@ -106,7 +106,7 @@ Swagger: https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/swa
 
 ## Arquitetura de documentação
 
-Oito artefatos, cada um com um público e uma origem versionada. A coluna de situação diz o que já existe, para a tabela não descrever como pronto o que ainda é plano:
+Onze artefatos, cada um com um público e uma origem versionada. A coluna de situação diz o que já existe, para a tabela não descrever como pronto o que ainda é plano:
 
 | Artefato | Público | Origem | Situação |
 |---|---|---|---|
@@ -116,7 +116,8 @@ Oito artefatos, cada um com um público e uma origem versionada. A coluna de sit
 | ADR | Técnico sênior | `docs/adr/` | Entregue, vinte decisões |
 | Design system do dashboard | Ambos | [`docs/dashboard/design-system.md`](dashboard/design-system.md) e o protótipo em `dashboard/prototipo-design-system/` | Entregue |
 | Requisitos do dashboard | Ambos | [`docs/dashboard/requisitos.md`](dashboard/requisitos.md), com as [referências de design](dashboard/referencias-de-design.md) | Entregue |
-| Diagramas de arquitetura | Ambos | Mermaid no `README.md` e em [`docs/arquitetura.md`](arquitetura.md) | Entregue |
+| Arquitetura do dashboard | Técnico | [`docs/dashboard/arquitetura.md`](dashboard/arquitetura.md), com o contrato dos arquivos do site em `dashboard/contrato-dos-dados.yml` | Entregue |
+| Diagramas de arquitetura | Ambos | Mermaid no `README.md`, em [`docs/arquitetura.md`](arquitetura.md) e em [`docs/dashboard/arquitetura.md`](dashboard/arquitetura.md) | Entregue |
 | Linhagem | Ambos | Gerada pelo `dbt docs` | v0.2 |
 | Contrato de dados | Consumidor | `ontology/contratos.yml` | v0.2 |
 | Runbook | Operação | `docs/runbook.md` | v0.2 |
@@ -186,7 +187,7 @@ Declarar essa fronteira é parte da entrega. Uma recomendação sem ela é palpi
 
 ### O dashboard conta a decisão
 
-Uma pergunta por tela, e não uma galeria de indicadores. As telas não têm bloco de título-conclusão no topo: abrem nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do próprio gráfico, gerada do dado (decidido em 2026-09-26, [design system](dashboard/design-system.md)):
+Uma pergunta por tela, e não uma galeria de indicadores. As telas não têm bloco de título-conclusão no topo, e os gráficos não trazem conclusão escrita: a tela abre nos filtros e na visualização, e quem quiser tirar uma conclusão pergunta ao chat (decidido em 2026-09-26, [design system](dashboard/design-system.md)):
 
 1. Onde está o crédito PJ hoje, e onde ele é escasso por empresa
 2. Onde o risco está piorando, com a distinção entre inadimplência e ativo problemático

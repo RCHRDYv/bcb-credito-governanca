@@ -3,6 +3,7 @@
 O que o dashboard precisa fazer, para quem, e como se confere que ele faz. Este documento conversa com:
 - o contexto de produto, em [`dashboard/PRODUCT.md`](../../dashboard/PRODUCT.md);
 - o [design system](design-system.md);
+- a [arquitetura](arquitetura.md), que diz como o site, o dataset e o chat se ligam;
 - as decisões dos ADRs [0016 a 0020](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md).
 
 **Como ler:**
@@ -42,7 +43,7 @@ Os dois primeiros formam o público que o produto serve. O terceiro é quem abre
 |---|---|---|---|
 | RF-G01 | A navegação mostra as visões disponíveis e marca a atual | Teste de ponta a ponta percorre as visões pela navegação | Design system, modelos de página |
 | RF-G02 | A visão abre nos filtros e na visualização, sem bloco de título-conclusão no topo | Inspeção de cada visão contra o modelo de página escolhido | Decisão de 2026-09-26 |
-| RF-G03 | Cada gráfico tem um cabeçalho com título, a conclusão quando houver e a data-base com a fonte. A conclusão é gerada do dado exportado, nunca digitada | Teste confere que o texto da conclusão vem do arquivo exportado e muda quando o dado muda | Design system, cabeçalho do gráfico |
+| RF-G03 | Cada gráfico tem um cabeçalho com título descritivo e a data-base com a fonte, sem conclusão escrita. Quem quiser tirar uma conclusão pergunta ao chat, nas visões que o têm | Inspeção de cada gráfico contra o padrão do cabeçalho | Design system, cabeçalho do gráfico; decisão de 2026-09-26 |
 | RF-G04 | Os filtros ficam numa linha, acima do conteúdo, e filtrar nunca muda a cor de uma categoria | Teste de ponta a ponta aplica um filtro e compara as cores antes e depois | Design system, barra de filtros |
 | RF-G05 | Clicar num elemento abre o detalhe num painel ao lado, sem janela por cima do conteúdo | Teste de ponta a ponta | Design system, painel de detalhe |
 | RF-G06 | Toda visão com gráfico tem uma tabela com os mesmos números | Teste compara os totais do gráfico e da tabela | Design system; WCAG 2.2 |
@@ -110,7 +111,7 @@ Os dois primeiros formam o público que o produto serve. O terceiro é quem abre
 | RNF-08 | Custo | Zero: todos os serviços em plano gratuito | Conferência dos planos a cada publicação | Definido nos ADRs 0012 e 0016 |
 | RNF-09 | Credenciais | Nenhuma credencial pessoal, de nenhum serviço, no repositório, no CI, na página ou no Space | gitleaks no pre-commit e no CI; nenhuma chave no JavaScript publicado | Definido no ADR 0016 |
 | RNF-10 | Experimento protegido | O dashboard não tem acesso ao gabarito nem às perguntas do experimento | Teste de empacotamento do Space; os arquivos do site vêm só dos marts de apresentação | Definido no ADR 0019 |
-| RNF-11 | Segurança do conteúdo | Política de segurança de conteúdo sem `unsafe-inline`, e texto do modelo sempre sanitizado antes de entrar na página | Inspeção da política publicada; teste com texto malicioso | Definido nos ADRs 0016 e 0017; verificação na #68 |
+| RNF-11 | Segurança do conteúdo | Política de segurança de conteúdo sem `unsafe-inline` em script e em folha de estilo. A única exceção é o estilo em atributo, que o ECharts exige ([arquitetura](arquitetura.md#política-de-segurança-de-conteúdo)). Texto do modelo sempre sanitizado antes de entrar na página, sem atributo de estilo | Inspeção da política publicada; teste com texto malicioso | Definido nos ADRs 0016 e 0017 e na arquitetura; verificação na #68 |
 | RNF-12 | Atualização do dado | Mensal, pela exportação feita na máquina local, com a data-base visível em cada número | A data-base da tela bate com a do mart | Definido no ADR 0016 |
 | RNF-13 | Idioma | Português do Brasil, com os textos num arquivo de tradução para o inglês entrar depois | Nenhum texto fixo nos componentes | Definido no ADR 0017 |
 | RNF-14 | Movimento | Nenhuma animação quando o sistema pede movimento reduzido | Teste com a preferência ligada | Definido no design system |
@@ -152,7 +153,8 @@ As três visões da v0.1 publicadas, com os requisitos gerais e os de cada visã
 | 2026-09-26 | O chat usa só a ontologia como contexto, sem busca nos documentos | ADR 0019 |
 | 2026-09-26 | Público com dois grupos de mesmo peso, e os dois diferenciais do produto | `dashboard/PRODUCT.md` |
 | 2026-09-26 | Design system oficial: o Carbon com uma camada Liquid Glass | ADR 0020 |
-| 2026-09-26 | As visões não têm bloco de título-conclusão; a conclusão, quando houver, fica no cabeçalho do gráfico | Este documento; design system; ADR 0020 |
+| 2026-09-26 | As visões não têm bloco de título-conclusão | Este documento; design system; ADR 0020 |
+| 2026-09-26 | Os gráficos não trazem conclusão escrita, para controlar o escopo; quem quiser uma conclusão pergunta ao chat | Este documento; design system; ADR 0020 |
 | Em aberto | O nome do produto | `dashboard/PRODUCT.md` |
 | Em aberto | Quais visões terão o chat | #51 |
 

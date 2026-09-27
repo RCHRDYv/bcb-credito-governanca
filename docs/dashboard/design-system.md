@@ -257,12 +257,13 @@ Não usar: o amarelo de atenção para qualquer outra coisa na mesma tela.
 
 ## Padrões de uso · Liquid Glass
 
-**Cabeçalho do gráfico, sem bloco de título na visão.** Decidido em 2026-09-26: as visões não têm bloco de título-conclusão no topo. A visão abre nos filtros e na visualização, e cada gráfico traz um cabeçalho com três partes:
+**Cabeçalho do gráfico, sem bloco de título na visão e sem conclusão escrita.** Decidido em 2026-09-26: as visões não têm bloco de título-conclusão no topo, e os gráficos não trazem conclusão escrita, para controlar o escopo. A visão abre nos filtros e na visualização, e cada gráfico traz um cabeçalho com duas partes:
 - **Título do gráfico,** em `heading-02`, dizendo o que o gráfico mostra, como "Espaço contra risco, por estado e modalidade".
-- **Conclusão, quando houver,** em `body-01` e numa frase só, gerada do dado e nunca digitada à mão.
 - **Data-base e fonte,** em `label-01`, sempre.
 
-Não usar: rótulo genérico como "Gráfico 1", nem conclusão escrita à mão, que envelhece quando o dado muda.
+Quem quiser tirar uma conclusão pergunta ao chat, nas visões que o têm.
+
+Não usar: rótulo genérico como "Gráfico 1", nem frase de conclusão no gráfico, digitada à mão ou gerada do dado.
 
 **Barra de filtros.** Numa linha só, acima do conteúdo. Controle segmentado para opções exclusivas, chips para filtros que se combinam. Filtrar nunca repinta as cores.
 
@@ -287,7 +288,7 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 
 **Regras dos modelos:**
 - **O chat é opcional por visão.** Quando existe, fica num trilho de 4 colunas à direita no desktop, ou num botão flutuante nos modelos de tela cheia e no celular. Nunca cobre o conteúdo no desktop.
-- **Nenhuma visão tem bloco de título no topo.** A visão abre nos filtros e na visualização, e a conclusão, quando houver, fica no cabeçalho do gráfico.
+- **Nenhuma visão tem bloco de título no topo.** A visão abre nos filtros e na visualização, e o cabeçalho de cada gráfico tem só o título e a data-base com a fonte.
 - **Toda visão tem a alternativa em tabela.**
 
 ## Conteúdo

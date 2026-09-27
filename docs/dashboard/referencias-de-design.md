@@ -19,7 +19,7 @@ Cada fonte tem link e data de acesso, no fim do documento. Análises de terceiro
 |---|---|---|
 | Menos cor, hierarquia calma | A Linear deixou a interface mais neutra em mar/2026 [1]. A Mercury usa um acento só sobre neutros [2, fonte secundária] | Princípio "cor só onde há significado": neutros do Carbon, o azul para ação e as cores dos quadrantes só onde há decisão |
 | Números tabulares | Algarismos de largura igual em tabelas e painéis, para alinharem em coluna [3] | Toda tabela, painel e rótulo com número usa algarismos tabulares |
-| Conclusão escrita junto do dado | A The Economist trata o título do gráfico como a mensagem [4], e o Tableau Pulse resume cada métrica em linguagem natural [5] | O cabeçalho de cada gráfico traz a conclusão, quando houver, gerada do dado. As visões não têm bloco de título no topo (decisão de 2026-09-26) |
+| Conclusão escrita junto do dado | A The Economist trata o título do gráfico como a mensagem [4], e o Tableau Pulse resume cada métrica em linguagem natural [5] | Não foi aproveitada. Em 2026-09-26 ficou decidido, para controlar o escopo, que os gráficos não trazem conclusão escrita: o cabeçalho tem o título e a data-base com a fonte, e quem quiser uma conclusão pergunta ao chat |
 | Notação padronizada para projeção | A notação IBCS diferencia realizado, plano e projeção. Um fabricante afirma que ela virou a norma ISO 24896 [6, fonte secundária, não conferida na ISO] | A série com projeção usa realizado sólido e projeção hachurada (#63) |
 | IA sobre dados que mostra a conta | O botão para ver o SQL no Databricks Genie [7], o raciocínio visível no Hex [8], as respostas verificadas no Power BI [9] e a citação ligada a cada afirmação [10] | O chat mostra o número tirado do dado, a ressalva e o SQL, e se abstém quando o dado não permite responder ([ADR 0019](../adr/0019-chat-consulta-so-o-esquema-estrela.md)). O selo de resposta verificada foi descartado |
 | Acessibilidade de verdade | WCAG 2.2 AA continua sendo a exigência. O APCA ainda é candidato e não está no texto normativo da WCAG 3 [11] | Contraste medido de cada cor, daltonismo validado e nenhum significado só por cor. APCA fica como checagem extra |
@@ -46,7 +46,7 @@ Cada fonte tem link e data de acesso, no fim do documento. Análises de terceiro
 | Databricks Genie [7, 17] | Mostrar o SQL e testar a IA com perguntas de resposta conhecida | O selo de resposta confiável, descartado no ADR 0019 |
 | Hex [8] | SQL e raciocínio visíveis | O público, que é o analista |
 | Power BI Copilot [9, 18] | A ideia de separar resposta verificada de resposta gerada | O selo, descartado no ADR 0019 |
-| Tableau Pulse [5] | Resumo em linguagem natural por métrica | Nada relevante |
+| Tableau Pulse [5] | Nada, depois da decisão de 2026-09-26 | O resumo escrito por métrica: os gráficos não trazem conclusão escrita, e quem quiser uma conclusão pergunta ao chat |
 | Mercury, demonstração pública [19] | Contenção de cor, número em destaque e cápsulas | Fontes proprietárias. As análises do visual são fontes secundárias [2] |
 | Linear [1] | Hierarquia sóbria, tema gerado por poucos tokens | É ferramenta de uso diário, e o executivo abre o dashboard de vez em quando |
 | Bloomberg Terminal [20] | Esquema alternativo de cor para quem tem daltonismo | A densidade de terminal. O material é de 2021 |
