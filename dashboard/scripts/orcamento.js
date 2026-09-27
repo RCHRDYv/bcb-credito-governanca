@@ -7,7 +7,9 @@
  *
  *     Os limites ficam num objeto só, `LIMITES`. Hoje só o JavaScript tem
  *     limite; os dados (300 KB) e a malha das UFs (100 KB) entram quando a
- *     #66 e a #67 criarem esses arquivos.
+ *     #66 e a #67 criarem esses arquivos. As fontes entram só no relatório,
+ *     sem limite, porque o requisito pede "só os pesos usados", e não um
+ *     número.
  *
  *     Uso: `npm run build` e depois `npm run budget`.
  *
@@ -34,7 +36,7 @@ const KB = 1000;
  * @typedef {object} Limite
  * @property {string} nome Nome do grupo de arquivos / file group name
  * @property {(caminho: string) => boolean} inclui Diz se o arquivo entra no grupo / whether a file belongs
- * @property {number} maximoKb Limite comprimido, em KB / compressed limit, in KB
+ * @property {number | null} maximoKb Limite comprimido em KB, ou null para só relatar / limit in KB, or null to report only
  * @property {string} origem Requisito que fixou o limite / requirement that set the limit
  */
 
@@ -45,6 +47,12 @@ const LIMITES = [
     inclui: (caminho) => extname(caminho) === ".js",
     maximoKb: 350,
     origem: "RNF-03",
+  },
+  {
+    nome: "Fontes",
+    inclui: (caminho) => extname(caminho) === ".woff2",
+    maximoKb: null,
+    origem: "RNF-03, só os pesos usados",
   },
 ];
 
@@ -95,14 +103,20 @@ async function main() {
     const doGrupo = arquivos.filter(limite.inclui);
     const tamanhos = await Promise.all(doGrupo.map(tamanhoComprimido));
     const total = tamanhos.reduce((soma, t) => soma + t, 0);
-    const passou = total > limite.maximoKb * KB;
+    const passou = limite.maximoKb !== null && total > limite.maximoKb * KB;
     estourou ||= passou;
 
-    console.log(`\n${limite.nome}, limite de ${limite.maximoKb} KB comprimido (${limite.origem})`);
+    const regra =
+      limite.maximoKb === null
+        ? "sem limite, só relatório"
+        : `limite de ${limite.maximoKb} KB comprimido`;
+    console.log(`\n${limite.nome}, ${regra} (${limite.origem})`);
     doGrupo.forEach((caminho, i) => {
       console.log(`  ${relative(DIST, caminho).replaceAll("\\", "/")}  ${emKb(tamanhos[i])}`);
     });
-    console.log(`  Total: ${emKb(total)}  ${passou ? "ACIMA DO LIMITE" : "dentro do limite"}`);
+    const situacao =
+      limite.maximoKb === null ? "" : passou ? "  ACIMA DO LIMITE" : "  dentro do limite";
+    console.log(`  Total: ${emKb(total)}${situacao}`);
   }
 
   if (estourou) {

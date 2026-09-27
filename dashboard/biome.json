@@ -8,7 +8,13 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!prototipo-design-system", "!.impeccable"]
+    "includes": [
+      "**",
+      "!prototipo-design-system",
+      "!.impeccable",
+      "!src/estilos/tokens.css",
+      "!src/estilos/tokens.json"
+    ]
   },
   "formatter": {
     "enabled": true,

@@ -1,6 +1,6 @@
 # ADR 0018: O design system nasce de tokens no formato DTCG
 
-**Status:** Aceito. Complementado pelo [ADR 0020](0020-design-system-carbon-com-camada-liquid-glass.md) em 2026-09-26, que escolhe o design system oficial: o Carbon com uma camada Liquid Glass.
+**Status:** Aceito. Complementado pelo [ADR 0020](0020-design-system-carbon-com-camada-liquid-glass.md) em 2026-09-26, que escolhe o design system oficial: o Carbon com uma camada Liquid Glass. A decisão 3 foi revista em 2026-09-27, na #62: o site segue o sistema do visitante, e o escuro é o g100 do Carbon.
 **Data:** 2026-09-25
 
 ## Contexto
@@ -37,6 +37,8 @@ O [Style Dictionary](https://styledictionary.com/info/dtcg/), versão 5.5.5 no n
 ### 3. Tema claro por padrão, e o escuro derivado dos mesmos tokens
 
 O executivo de crédito imprime, projeta em reunião e manda a tela em PDF. O claro é o padrão, e o escuro sai dos mesmos tokens semânticos, sem uma segunda paleta mantida à parte.
+
+**Revisto em 2026-09-27, na #62.** O site passa a seguir o sistema do visitante: abre escuro para quem usa o modo escuro, e claro quando o sistema não indica preferência. O motivo original continua atendido onde ele pesa, porque a impressão e o PDF saem sempre claros. O escuro é o tema g100 do Carbon, e os dois temas saem dos mesmos tokens, com `light-dark()` no CSS.
 
 ### 4. A estrutura segue o IBM Carbon, e os nomes seguem o Atlassian
 

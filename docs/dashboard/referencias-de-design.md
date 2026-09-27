@@ -32,7 +32,7 @@ Cada fonte tem link e data de acesso, no fim do documento. Análises de terceiro
 | Vidro em toda superfície e gradiente decorativo | O guia de glassmorphism da UX Pilot desaconselha espalhar vidro pela tela inteira [13], e o gradiente saturado briga com as cores dos quadrantes | Vidro só no que flutua. O campo de luz é discreto e usa as próprias cores do Carbon |
 | Chat em tela cheia como interface principal | O executivo quer a resposta pronta, e não uma conversa | O chat é opcional por visão, num trilho lateral ou num botão |
 | Raciocínio da IA aparecendo enquanto é gerado | Distrai quem só quer o número | A resposta traz o número, a frase, a ressalva e o SQL recolhido |
-| Tema escuro como padrão | Executivo imprime, projeta e manda PDF | Tema claro por padrão, e o escuro derivado dos mesmos tokens ([ADR 0018](../adr/0018-design-system-por-tokens-dtcg.md)) |
+| Tema escuro como padrão | Executivo imprime, projeta e manda PDF | O escuro não é o padrão: o site segue o sistema do visitante, abre claro quando o sistema não indica preferência e imprime sempre claro, com o escuro derivado dos mesmos tokens ([ADR 0018](../adr/0018-design-system-por-tokens-dtcg.md), revisto em 2026-09-27) |
 | Animação decorativa | Não comunica nada e cansa | Movimento só para mudança de estado, e nenhum com movimento reduzido ligado |
 
 ## Referências de produto

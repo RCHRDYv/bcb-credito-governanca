@@ -1,0 +1,116 @@
+{
+  "type": {
+    "$type": "typography",
+    "$description": "A escala produtiva do Carbon v11, com os nomes do Carbon, do pacote @carbon/type 11.68.0. As alturas de linha são as razões oficiais do Carbon. No heading-07 e no heading-06, a razão 1,199 dá cerca de 65 px e 50 px, que o guia arredonda para 64 e 50.",
+    "heading-07": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.54}",
+        "fontWeight": "{font.weight.light}",
+        "lineHeight": "{font.line-height.1-199}",
+        "letterSpacing": "{font.letter-spacing.0}"
+      },
+      "$description": "Número de destaque, raro"
+    },
+    "heading-06": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.42}",
+        "fontWeight": "{font.weight.light}",
+        "lineHeight": "{font.line-height.1-199}",
+        "letterSpacing": "{font.letter-spacing.0}"
+      },
+      "$description": "Título de página grande"
+    },
+    "heading-05": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.32}",
+        "fontWeight": "{font.weight.regular}",
+        "lineHeight": "{font.line-height.1-25}",
+        "letterSpacing": "{font.letter-spacing.0}"
+      },
+      "$description": "Título de página"
+    },
+    "heading-04": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.28}",
+        "fontWeight": "{font.weight.regular}",
+        "lineHeight": "{font.line-height.1-286}",
+        "letterSpacing": "{font.letter-spacing.0}"
+      },
+      "$description": "Número em painel"
+    },
+    "heading-03": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.20}",
+        "fontWeight": "{font.weight.regular}",
+        "lineHeight": "{font.line-height.1-4}",
+        "letterSpacing": "{font.letter-spacing.0}"
+      },
+      "$description": "Título de seção"
+    },
+    "heading-02": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.16}",
+        "fontWeight": "{font.weight.semibold}",
+        "lineHeight": "{font.line-height.1-5}",
+        "letterSpacing": "{font.letter-spacing.0}"
+      },
+      "$description": "Título de painel e título do gráfico"
+    },
+    "heading-compact-01": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.14}",
+        "fontWeight": "{font.weight.semibold}",
+        "lineHeight": "{font.line-height.1-286}",
+        "letterSpacing": "{font.letter-spacing.16}"
+      },
+      "$description": "Rótulo forte e cabeçalho de tabela"
+    },
+    "body-01": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.14}",
+        "fontWeight": "{font.weight.regular}",
+        "lineHeight": "{font.line-height.1-429}",
+        "letterSpacing": "{font.letter-spacing.16}"
+      },
+      "$description": "Texto corrido"
+    },
+    "body-compact-01": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.14}",
+        "fontWeight": "{font.weight.regular}",
+        "lineHeight": "{font.line-height.1-286}",
+        "letterSpacing": "{font.letter-spacing.16}"
+      },
+      "$description": "Texto de componente"
+    },
+    "label-01": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "{font.size.12}",
+        "fontWeight": "{font.weight.regular}",
+        "lineHeight": "{font.line-height.1-333}",
+        "letterSpacing": "{font.letter-spacing.32}"
+      },
+      "$description": "Rótulo, texto de ajuda, data-base e fonte"
+    },
+    "code-01": {
+      "$value": {
+        "fontFamily": "{font.family.mono}",
+        "fontSize": "{font.size.12}",
+        "fontWeight": "{font.weight.regular}",
+        "lineHeight": "{font.line-height.1-333}",
+        "letterSpacing": "{font.letter-spacing.32}"
+      },
+      "$description": "SQL e código"
+    }
+  }
+}

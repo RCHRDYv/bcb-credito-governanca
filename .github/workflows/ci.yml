@@ -180,15 +180,17 @@ jobs:
           dbt parse --profiles-dir ../.github/dbt --target ci --no-partial-parse
 
   # ---------------------------------------------------------------------------
-  # PT: O site do dashboard (issue #65, ADR 0017). Roda na pasta dashboard/ e
-  #     confere, nesta ordem: lint e formatação, tipos pelo JSDoc, testes
-  #     unitários, build, orçamento de carga (RNF-03), testes de ponta a ponta
-  #     com axe no Chromium, no Firefox e no WebKit (RNF-04 a RNF-06) e o
-  #     Lighthouse no celular e no computador (RNF-01 e RNF-02). Não usa
-  #     segredo nenhum: a permissão do workflow continua só de leitura.
-  # EN: The dashboard site. Lint, JSDoc types, unit tests, build, load budget,
-  #     end-to-end tests with axe on three engines, and Lighthouse on mobile
-  #     and desktop. No secrets; the workflow stays read-only.
+  # PT: O site do dashboard (issues #65 e #62, ADRs 0017 e 0018). Roda na pasta
+  #     dashboard/ e confere, nesta ordem: o CSS gerado em dia com os tokens,
+  #     lint e formatação, tipos pelo JSDoc, testes unitários, build, orçamento
+  #     de carga (RNF-03), testes de ponta a ponta com axe no Chromium, no
+  #     Firefox e no WebKit (RNF-04 a RNF-06) e o Lighthouse no celular e no
+  #     computador (RNF-01 e RNF-02). Não usa segredo nenhum: a permissão do
+  #     workflow continua só de leitura.
+  # EN: The dashboard site. Tokens in sync, lint, JSDoc types, unit tests,
+  #     build, load budget, end-to-end tests with axe on three engines, and
+  #     Lighthouse on mobile and desktop. No secrets; the workflow stays
+  #     read-only.
   # ---------------------------------------------------------------------------
   site-do-dashboard:
     name: Site do dashboard
@@ -210,6 +212,9 @@ jobs:
 
       - name: Instalar dependências
         run: npm ci
+
+      - name: Tokens em dia com o CSS gerado
+        run: npm run tokens:check
 
       - name: Lint e formatação
         run: npm run lint

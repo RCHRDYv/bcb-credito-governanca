@@ -1,0 +1,19 @@
+{
+  "space": {
+    "$type": "dimension",
+    "$description": "Escala de espaçamento do Carbon (spacing-01 a spacing-13), do pacote @carbon/layout 11.60.0. É usada direto pelo CSS, como no Carbon: de 2 a 16 px dentro de componentes, de 24 a 48 px entre blocos, e de 64 px para cima entre seções.",
+    "01": { "$value": { "value": 2, "unit": "px" } },
+    "02": { "$value": { "value": 4, "unit": "px" } },
+    "03": { "$value": { "value": 8, "unit": "px" } },
+    "04": { "$value": { "value": 12, "unit": "px" } },
+    "05": { "$value": { "value": 16, "unit": "px" } },
+    "06": { "$value": { "value": 24, "unit": "px" } },
+    "07": { "$value": { "value": 32, "unit": "px" } },
+    "08": { "$value": { "value": 40, "unit": "px" } },
+    "09": { "$value": { "value": 48, "unit": "px" } },
+    "10": { "$value": { "value": 64, "unit": "px" } },
+    "11": { "$value": { "value": 80, "unit": "px" } },
+    "12": { "$value": { "value": 96, "unit": "px" } },
+    "13": { "$value": { "value": 160, "unit": "px" } }
+  }
+}

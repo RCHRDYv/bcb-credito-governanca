@@ -1,0 +1,134 @@
+/*
+ * PT: Estilo de base da página, só com tokens (ADR 0018).
+ *
+ *     Nenhuma cor, tamanho ou duração é escrito aqui: tudo vem das variáveis
+ *     do tokens.css, que é gerado. Assim, trocar um token muda a página sem
+ *     editar este arquivo, e o tema escuro vem junto, porque as cores
+ *     semânticas já trazem os dois valores.
+ *
+ * EN: Base page styles, using tokens only. No color, size or duration is
+ *     written here, so changing a token changes the page without editing
+ *     this file, and the dark theme comes along.
+ */
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body,
+  h1,
+  h2,
+  h3,
+  p,
+  figure {
+    margin: 0;
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-background-page);
+    color: var(--color-text-primary);
+    font: var(--type-body-01);
+    letter-spacing: var(--type-body-01-letter-spacing);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  h1 {
+    font: var(--type-heading-05);
+    letter-spacing: var(--type-heading-05-letter-spacing);
+  }
+
+  h2 {
+    font: var(--type-heading-03);
+    letter-spacing: var(--type-heading-03-letter-spacing);
+  }
+
+  h3 {
+    font: var(--type-heading-02);
+    letter-spacing: var(--type-heading-02-letter-spacing);
+  }
+
+  code,
+  pre {
+    font: var(--type-code-01);
+    letter-spacing: var(--type-code-01-letter-spacing);
+  }
+
+  /* PT: o que o navegador desenha sozinho também segue os tokens */
+  /* EN: what the browser draws by itself follows the tokens too */
+  ::selection {
+    background: var(--color-background-selected);
+    color: var(--color-text-primary);
+  }
+
+  html {
+    accent-color: var(--color-interactive);
+  }
+
+  /* PT: números alinhados em coluna em toda tabela / EN: aligned numerals in tables */
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+
+  a {
+    color: var(--color-link-default);
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    color: var(--color-link-hover);
+  }
+
+  /* PT: foco sempre visível, com o anel do guia / EN: focus always visible */
+  :focus-visible {
+    outline: var(--foco-anel-largura) solid var(--foco-anel-cor);
+    outline-offset: var(--space-01);
+  }
+
+  /* PT: o link para pular ao conteúdo só aparece com o foco do teclado */
+  /* EN: the skip link only shows on keyboard focus */
+  .pular-para-o-conteudo {
+    position: absolute;
+    inset-block-start: var(--space-03);
+    inset-inline-start: var(--space-05);
+    padding: var(--space-03) var(--space-05);
+    border-radius: var(--radius-capsula);
+    background: var(--color-background-layer);
+    translate: 0 -200%;
+  }
+
+  .pular-para-o-conteudo:focus {
+    translate: 0 0;
+  }
+
+  /* PT: com movimento reduzido, nenhuma animação nem transição */
+  /* EN: with reduced motion, no animation or transition */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      /* biome-ignore lint/complexity/noImportantStyles: a preferência do sistema e a impressão têm de vencer qualquer componente */
+      animation-duration: 0.01ms !important;
+      /* biome-ignore lint/complexity/noImportantStyles: a preferência do sistema e a impressão têm de vencer qualquer componente */
+      animation-iteration-count: 1 !important;
+      /* biome-ignore lint/complexity/noImportantStyles: a preferência do sistema e a impressão têm de vencer qualquer componente */
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* PT: na impressão não há vidro; as superfícies ficam sólidas (RF-G09) */
+  /* EN: print has no glass; surfaces are solid */
+  @media print {
+    * {
+      /* biome-ignore lint/complexity/noImportantStyles: a preferência do sistema e a impressão têm de vencer qualquer componente */
+      backdrop-filter: none !important;
+      /* biome-ignore lint/complexity/noImportantStyles: a preferência do sistema e a impressão têm de vencer qualquer componente */
+      box-shadow: none !important;
+    }
+  }
+}

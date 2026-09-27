@@ -1,0 +1,25 @@
+{
+  "duration": {
+    "$type": "duration",
+    "$description": "Durações da camada Liquid Glass (ADR 0020)",
+    "200": { "$value": { "value": 200, "unit": "ms" } },
+    "350": { "$value": { "value": 350, "unit": "ms" } },
+    "500": { "$value": { "value": 500, "unit": "ms" } }
+  },
+  "easing": {
+    "$type": "cubicBezier",
+    "produtiva": {
+      "$value": [0.2, 0, 0.38, 0.9],
+      "$description": "A curva produtiva do Carbon. Serve para cor e opacidade, e substitui a mola onde a função linear() não é suportada."
+    },
+    "mola": {
+      "$value": [0.2, 0, 0.38, 0.9],
+      "$description": "A mola suave, que passa uns 4% do ponto final antes de assentar. O DTCG só descreve curvas cubicBezier, então a mola fica em $extensions como função linear() do CSS, e o $value guarda a curva do Carbon como alternativa.",
+      "$extensions": {
+        "credito-pj": {
+          "css": "linear(0, .02 1.6%, .08 3.3%, .18 5.1%, .33 7.2%, .62 11.3%, .84 15.6%, .96 20%, 1.02 25%, 1.04 30%, 1.035 36%, 1.015 45%, 1.003 55%, .999 70%, 1)"
+        }
+      }
+    }
+  }
+}

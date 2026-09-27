@@ -12,6 +12,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 4173 --strictPort",
+    "tokens": "node scripts/gerar-tokens.js",
+    "tokens:check": "node scripts/gerar-tokens.js --conferir",
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "tsc -p jsconfig.json",
@@ -19,7 +21,7 @@
     "test:e2e": "playwright test",
     "budget": "node scripts/orcamento.js",
     "lighthouse": "node scripts/lighthouse.js",
-    "check": "npm run lint && npm run typecheck && npm test && npm run build && npm run budget && npm run test:e2e && npm run lighthouse"
+    "check": "npm run tokens:check && npm run lint && npm run typecheck && npm test && npm run build && npm run budget && npm run test:e2e && npm run lighthouse"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -28,8 +30,13 @@
     "@types/node": "24.19.0",
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.5.0",
+    "style-dictionary": "5.5.5",
     "typescript": "7.0.2",
     "vite": "8.3.1",
     "vitest": "5.0.2"
+  },
+  "dependencies": {
+    "@ibm/plex-mono": "2.5.0",
+    "@ibm/plex-sans": "1.1.0"
   }
 }
