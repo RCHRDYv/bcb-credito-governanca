@@ -258,6 +258,7 @@ uv run python -m scripts.analises.qa_gabarito
 | [ADR 0018](docs/adr/0018-design-system-por-tokens-dtcg.md) | O design system nasce de tokens no formato DTCG |
 | [ADR 0019](docs/adr/0019-chat-consulta-so-o-esquema-estrela.md) | O chat do dashboard consulta só o esquema estrela, e não é o experimento |
 | [ADR 0020](docs/adr/0020-design-system-carbon-com-camada-liquid-glass.md) | O design system oficial é o Carbon com uma camada Liquid Glass |
+| [ADR 0021](docs/adr/0021-paletas-de-grafico-do-carbon-validadas.md) | As paletas de gráfico saem do Carbon, com a categórica ajustada e validação automatizada |
 | [Requisitos do dashboard](docs/dashboard/requisitos.md) | O que o dashboard precisa fazer, para quem e como se confere, com as [referências de design](docs/dashboard/referencias-de-design.md) pesquisadas |
 | [Design system do dashboard](docs/dashboard/design-system.md) | Cores, tipos, espaços, vidro, movimento, componentes, padrões e modelos de página, com o [protótipo navegável](dashboard/prototipo-design-system/index.html) |
 | [Arquitetura do dashboard](docs/dashboard/arquitetura.md) | Como site, dataset e chat se ligam, o que acontece quando um deles falha, e o [contrato dos arquivos](dashboard/contrato-dos-dados.yml) que o site lê |

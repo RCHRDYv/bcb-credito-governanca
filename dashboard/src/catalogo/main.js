@@ -12,6 +12,7 @@ import "../estilos/index.css";
 import "./catalogo.css";
 import { elemento } from "../dom.js";
 import { t } from "../textos/index.js";
+import { secaoGraficos, secaoPaletasDeGrafico } from "./graficos.js";
 import {
   secaoCores,
   secaoElevacao,
@@ -31,9 +32,10 @@ const ENDERECO_DO_GUIA =
  * EN: Builds the catalog inside the root.
  *
  * @param {HTMLElement} raiz
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function montarCatalogo(raiz) {
+export async function montarCatalogo(raiz) {
+  const graficos = secaoGraficos();
   const pular = elemento("a", {
     classe: "pular-para-o-conteudo",
     texto: t("pagina.pular-para-o-conteudo"),
@@ -63,10 +65,16 @@ export function montarCatalogo(raiz) {
       secaoElevacao(),
       secaoVidro(),
       secaoMovimento(),
+      secaoPaletasDeGrafico(),
+      graficos.elemento,
     ],
   );
 
   raiz.replaceChildren(pular, topo, principal);
+  // PT: os gráficos só são desenhados com a seção já na página, porque o tema
+  //     de cada um vem do painel onde ele está
+  // EN: charts are drawn once on the page, since each takes its panel theme
+  await graficos.desenhar();
 }
 
 document.title = t("catalogo.titulo-da-pagina");

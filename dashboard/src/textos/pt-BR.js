@@ -25,7 +25,7 @@ export const ptBR = Object.freeze({
   "catalogo.titulo-da-pagina": "Catálogo do design system · Crédito PJ",
   "catalogo.titulo": "Fundações do design system",
   "catalogo.introducao":
-    "Cores, tipos, espaços, raios, elevação, vidro e movimento, lidos direto dos tokens. As seções que mudam com o tema mostram o claro e o escuro lado a lado. Os componentes entram nesta página depois.",
+    "Cores, tipos, espaços, raios, elevação, vidro, movimento e gráficos, lidos direto dos tokens. As seções que mudam com o tema mostram o claro e o escuro lado a lado. Os componentes de interface entram nesta página com a #64.",
   "catalogo.guia": "Ler o guia do design system",
   "catalogo.tema-claro": "Tema claro",
   "catalogo.tema-escuro": "Tema escuro",
@@ -82,4 +82,59 @@ export const ptBR = Object.freeze({
   "catalogo.mola": "Mola",
   "catalogo.produtiva": "Curva produtiva do Carbon",
   "catalogo.mover": "Mover",
+
+  "catalogo.paletas-de-grafico": "Paletas de gráfico",
+  "catalogo.paletas-de-grafico-explicacao":
+    "Cada paleta tem um papel. A categórica diz qual série é qual; a sequencial diz quanto; a divergente diz para que lado de uma referência. As faixas de baixo mostram como cada paleta aparece para quem tem daltonismo, pela simulação de Machado, Oliveira e Fernandes (2009).",
+  "catalogo.paleta-categorica": "Categórica",
+  "catalogo.paleta-sequencial": "Sequencial",
+  "catalogo.paleta-divergente": "Divergente",
+  "catalogo.sem-daltonismo": "Sem daltonismo",
+  "catalogo.protanopia": "Protanopia",
+  "catalogo.deuteranopia": "Deuteranopia",
+  "catalogo.tritanopia": "Tritanopia",
+
+  "catalogo.graficos": "Gráficos",
+  "catalogo.graficos-explicacao":
+    "Os componentes de gráfico, com dado real do projeto. Cada cartão traz só o título e a data-base com a fonte, sem conclusão escrita. Passe o mouse sobre um elemento para ver os números.",
+  "catalogo.fonte-dos-exemplos": "SCR.data, do Banco Central",
+  "catalogo.exemplo-mapa": "Carteira PJ por empresa ativa em Empréstimos, por UF",
+  "catalogo.exemplo-cartograma-divergente":
+    "Variação da inadimplência contra a do país em Empréstimos, por UF",
+  "catalogo.exemplo-matriz": "Espaço contra risco, por UF e modalidade",
+  "catalogo.exemplo-serie": "Taxa de inadimplência PJ no país",
+  "catalogo.exemplo-ranking": "As dez UFs com mais carteira PJ por empresa ativa em Empréstimos",
+  "catalogo.exemplo-destaque": "Carteira PJ onde a regra recomenda entrar",
+  "catalogo.exemplo-destaque-rotulo":
+    "de carteira PJ nas {celulas} combinações de UF e modalidade em que a regra recomenda entrar",
+  "catalogo.projecao-ilustrativa": "Projeção ilustrativa",
+  "catalogo.nota-da-projecao":
+    "A projeção deste exemplo é ilustrativa: repete o último mês, com um intervalo de dois desvios das variações mensais. A projeção do modelo chega com a #27.",
+  "catalogo.nota-do-cartograma":
+    "O cartograma usa as mesmas classes do mapa, e cada UF tem o mesmo tamanho. É a alternativa quando os estados pequenos precisam ser lidos.",
+  "catalogo.mediana-das-ufs": "mediana das UFs",
+  "catalogo.troca-de-tema": "Troca de tema no mesmo gráfico",
+  "catalogo.troca-de-tema-explicacao":
+    "Este gráfico segue o tema da página. O botão troca o atributo data-tema da página, e o gráfico recebe o tema novo sem ser recriado.",
+  "catalogo.trocar-tema": "Trocar o tema da página",
+
+  "grafico.sem-dado": "sem dado",
+  "grafico.intervalo": "intervalo de {de} a {ate}",
+  "grafico.erro-da-malha":
+    "O mapa não carregou, porque a malha das UFs não está disponível. O cartograma e a tabela continuam com os mesmos números.",
+  "grafico.acima-do-pais": "Acima do país",
+  "grafico.abaixo-do-pais": "Abaixo do país",
+  "grafico.igual-ao-pais": "Igual ao país",
+
+  "matriz.eixo-espaco": "Carteira por empresa, em vezes a mediana das UFs",
+  "matriz.eixo-espaco-curto": "Carteira por empresa",
+  "matriz.eixo-risco": "Variação da inadimplência além da do país (p.p.)",
+  "matriz.eixo-risco-curto": "Variação além da do país",
+  "matriz.eixo-espaco-estreito": "Carteira por empresa ÷ mediana",
+  "matriz.eixo-risco-estreito": "Além do país (p.p.)",
+
+  "quadrante.entrar": "Entrar",
+  "quadrante.observar": "Observar",
+  "quadrante.nao-entrar": "Não entrar",
+  "quadrante.manter": "Manter",
 });

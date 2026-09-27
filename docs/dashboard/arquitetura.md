@@ -4,11 +4,12 @@ Como o site, o dataset e o chat se ligam, o que trafega entre eles e o que acont
 - onde cada peça roda: [ADR 0016](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md);
 - como a interface é feita: [ADR 0017](../adr/0017-interface-em-javascript-sem-framework.md);
 - o que o chat consulta: [ADR 0019](../adr/0019-chat-consulta-so-o-esquema-estrela.md);
-- como a interface se parece: [ADR 0020](../adr/0020-design-system-carbon-com-camada-liquid-glass.md).
+- como a interface se parece: [ADR 0020](../adr/0020-design-system-carbon-com-camada-liquid-glass.md);
+- as paletas de gráfico: [ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md).
 
 O que o dashboard precisa fazer está nos [requisitos](requisitos.md), e as colunas de cada arquivo que o site lê estão no [contrato dos dados](../../dashboard/contrato-dos-dados.yml).
 
-**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Hoje quase tudo está tracejado, porque o dashboard ainda não tem código. Existem a camada gold, a ontologia, o protótipo do design system e o contrato dos dados.
+**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens e os gráficos.
 
 ## As peças
 
@@ -69,7 +70,7 @@ flowchart TB
         visoes["Navegação e visões<br/>render(el, dados) · #69 a #72"]
         filtros["Estado dos filtros<br/>EventTarget · #65"]
         carga["Carregador de dados<br/>#66"]
-        graficos["Gráficos em ECharts<br/>ADR 0017 · #63"]
+        graficos["Gráficos em ECharts<br/>ADRs 0017 e 0021 · #63"]
         componentes["Componentes<br/>ADR 0020 · #64"]
         textos["Textos em pt-BR<br/>ADR 0017 · #65"]
         cliente["Cliente do chat<br/>@gradio/client · #51"]
@@ -104,7 +105,7 @@ flowchart TB
     duck -- "carregado na partida" --> parquet
 
     classDef planejado stroke-dasharray: 5 5
-    class visoes,filtros,carga,graficos,componentes,cliente,json,malha,publica,modelo,contexto,travas,duck,parquet planejado
+    class visoes,filtros,carga,componentes,cliente,json,malha,publica,modelo,contexto,travas,duck,parquet planejado
 ```
 
 ## Fluxo do dado
@@ -237,6 +238,7 @@ dashboard/                        raiz do site, no Vite (#65)
 │   ├── cor/                      contraste pela WCAG (#62)
 │   ├── componentes/              componentes do design system (#64)
 │   ├── graficos/                 tema do ECharts e componentes de gráfico (#63)
+│   ├── formatos.js               números e datas no padrão brasileiro (#63)
 │   ├── chat/                     cliente do Space e montagem da resposta (#51)
 │   ├── dados/                    carregador dos arquivos do contrato (#66)
 │   ├── textos/                   textos em pt-BR, prontos para o inglês (#65)
@@ -350,6 +352,9 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-09-26 | O contrato dos arquivos do site é um YAML, fonte única, lido pela exportação e pelo CI | Este documento; [contrato](../../dashboard/contrato-dos-dados.yml) |
 | 2026-09-26 | Um JSON por mart, por coluna, só com as colunas que alguma visão usa | Este documento; contrato |
 | 2026-09-26 | A política de segurança aceita estilo em atributo, porque o ECharts precisa. Script e folha de estilo continuam sem `unsafe-inline` | Este documento; requisitos, RNF-11 |
+| 2026-09-27 | As paletas de gráfico saem do Carbon, com a categórica ajustada, e um teste automatizado reprova paleta fora dos critérios | ADR 0021 |
+| 2026-09-27 | O tema de cada gráfico é o do lugar onde ele está, e a troca de tema atualiza a mesma instância do ECharts, sem recriar o gráfico. O renderizador é o SVG, cujas texturas não usam imagem embutida | Este documento; [design system](design-system.md) |
+| 2026-09-27 | Os exemplos do catálogo usam dado real, gerado dos marts por `scripts/gerar_exemplos_do_catalogo.py`, sem número digitado à mão | [Design system](design-system.md) |
 
 ## Pontos em aberto
 

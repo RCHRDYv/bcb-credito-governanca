@@ -1,6 +1,6 @@
 # Site do dashboard
 
-Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, e os tokens do design system da #62, com os dois temas e o catálogo das fundações.
+Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, e os gráficos da #63: o tema do ECharts, as paletas validadas e os componentes de gráfico, também no catálogo.
 
 Para entender o projeto antes do código:
 - [arquitetura](../docs/dashboard/arquitetura.md): como o site, o dataset e o chat se ligam;
@@ -67,13 +67,15 @@ O Lighthouse usa o Google Chrome instalado quando existe, pelo mesmo motivo.
 | Pasta ou arquivo | O que guarda |
 |---|---|
 | `index.html` | A página inicial, sem script nem estilo embutido |
-| `catalogo.html` | O catálogo do design system, com as fundações nos dois temas |
+| `catalogo.html` | O catálogo do design system, com as fundações, as paletas e os gráficos nos dois temas |
 | `tokens/` | Os tokens no formato DTCG, em três camadas: `primitivos/`, `semanticos/` e `componentes/` |
 | `src/main.js` | O ponto de entrada |
 | `src/textos/` | Os textos da interface, em pt-BR, e a função `t()` |
 | `src/estilos/` | O CSS: fontes, base e o `tokens.css` gerado, que nunca é editado à mão |
-| `src/catalogo/` | As seções do catálogo |
-| `src/cor/` | O contraste pela WCAG |
+| `src/catalogo/` | As seções do catálogo, e o `exemplos.json` com os dados reais dos gráficos, gerado por `scripts/gerar_exemplos_do_catalogo.py`, na raiz do repositório |
+| `src/cor/` | O contraste pela WCAG, o OKLab, a simulação de daltonismo e a validação das paletas (ADR 0021) |
+| `src/graficos/` | O ECharts importado por partes, o tema montado dos tokens e os componentes de gráfico |
+| `src/formatos.js` | Números e datas no padrão brasileiro |
 | `src/tokens.js` | A lista de tokens gerada, com tipo, para o JavaScript |
 | `src/dom.js` | Monta HTML sem `innerHTML` |
 | `public/` | Arquivos servidos como estão |

@@ -42,7 +42,7 @@ import { cor, TOKENS, token, valorLiteral } from "../tokens.js";
  * @param {Node[]} conteudo
  * @returns {HTMLElement}
  */
-function secao(id, titulo, explicacao, conteudo) {
+export function secao(id, titulo, explicacao, conteudo) {
   return elemento(
     "section",
     { classe: "secao", atributos: { "aria-labelledby": `titulo-${id}` } },
@@ -61,7 +61,7 @@ function secao(id, titulo, explicacao, conteudo) {
  * @param {(tema: Tema) => Node[]} montar
  * @returns {HTMLElement}
  */
-function ladoALado(montar) {
+export function ladoALado(montar) {
   /** @type {[Tema, ChaveDeTexto][]} */
   const temas = [
     ["claro", "catalogo.tema-claro"],
@@ -88,7 +88,7 @@ function ladoALado(montar) {
  * @param {Record<string, string>} propriedades
  * @returns {E}
  */
-function comEstilo(el, propriedades) {
+export function comEstilo(el, propriedades) {
   for (const [propriedade, valor] of Object.entries(propriedades)) {
     el.style.setProperty(propriedade, valor);
   }

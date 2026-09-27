@@ -557,7 +557,7 @@ const DS = {
     oficial: ["Cor, paletas de gráfico, tipografia IBM Plex, espaço e grid 2x", "Guia de dashboards e de acessibilidade, para citar e defender", "Carbon MCP para consulta durante o desenho"],
     nosso: ["Materiais de vidro, raio, elevação e movimento de mola", "Componentes em cápsula e vidro, com todos os estados", "Chat, estados e padrões de uso"],
     fortes: ["As fundações têm documentação oficial para citar", "O visual atual aparece onde o usuário mais sente: nos controles, no chat e nos painéis", "A camada nova é pequena e fica toda documentada no nosso design system"],
-    riscos: ["Os componentes deixam de ser os do Carbon: a documentação deles passa a ser nossa", "IBM Plex com formas arredondadas pede cuidado para não parecerem duas linguagens", "A paleta categórica oficial do Carbon ainda falha no validador e vai precisar de ajuste"],
+    riscos: ["Os componentes deixam de ser os do Carbon: a documentação deles passa a ser nossa", "IBM Plex com formas arredondadas pede cuidado para não parecerem duas linguagens", "A paleta categórica oficial do Carbon falhava no validador e foi ajustada no ADR 0021"],
     fontes: [["Carbon", "https://carbondesignsystem.com/"], ["Paletas de dados", "https://carbondesignsystem.com/data-visualization/color-palettes/"], ["Materiais, HIG", "https://developer.apple.com/design/human-interface-guidelines/materials"]],
     tipo: "IBM Plex Sans e Plex Mono, do Carbon, com licença aberta. Escala produtiva do Carbon, de 12 a 42 px.",
     escala: [["Heading 07 · 54/64", 54, 300], ["Heading 06 · 42/50", 42, 300], ["Heading 05 · 32/40", 32, 400], ["Heading 04 · 28/36", 28, 400], ["Heading 03 · 20/28", 20, 400], ["Heading 02 · 16/24", 16, 600], ["Body 01 · 14/20", 14, 400], ["Label 01 · 12/16", 12, 400]],
@@ -566,8 +566,10 @@ const DS = {
     materiais: [["Vidro claro", "Quase transparente, com brilho na borda. Para o que flutua sobre o conteúdo, como filtros e o botão do chat."], ["Vidro regular", "Mais fosco, para barras, dicas, tabelas e painéis com texto."], ["Escurecimento", "Diminui o fundo quando algo precisa de atenção, como o chat aberto no celular."]],
     vidroExplica: "Os materiais do Liquid Glass recriados em CSS sobre o cinza do Carbon. O campo de luz atrás usa as cores 30 do próprio Carbon: azul, roxo e verde-azulado.",
     regra: "Regra no dashboard: vidro claro no que flutua (navegação, filtros, botão do chat) e vidro regular, quase opaco, em tabelas, dicas e painéis de detalhe, para o dado nunca perder contraste.",
-    categorica: ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#fa4d56", "#570408"], catOrigem: "Paleta categórica oficial do Carbon",
-    catSelo: ["falha", "Falha no validador: o vinho quase preto sai da faixa de luminosidade e o verde-escuro tem pouca saturação. Fica como está, por ser o padrão do Carbon, e o ajuste é decidido na adoção"],
+    categorica: ["#6929c4", "#1192e8", "#eb6200", "#9f1853", "#4589ff", "#fa4d56"], catOrigem: "Paleta categórica oficial do Carbon, ajustada no ADR 0021",
+    catSelo: ["ok", "Passa no validador depois do ajuste de 2026-09-27 (ADR 0021): o verde-azulado, sem saturação, vira laranja 50, o vinho quase preto sai e o azul 50 entra"],
+    sequencial: ["#be95ff", "#a56eff", "#8a3ffc", "#6929c4", "#491d8b"],
+    divergente: ["#004144", "#007d79", "#08bdba", "#e0e0e0", "#be95ff", "#8a3ffc", "#491d8b"],
     qSelo: ["ok", "Passa no validador. O par vermelho e amarelo pede ícone e rótulo, que o componente já traz"],
     mov: [["Mola curta · 200 ms", "200ms"], ["Mola média · 350 ms", "350ms"], ["Mola longa · 500 ms", "500ms"]],
   },
@@ -679,8 +681,9 @@ function aplicar(chave) {
   selo("selo-q", d.qSelo); selo("selo-cat", d.catSelo);
   $("categorica").innerHTML = d.categorica.map(c => `<span style="background:${c}"></span>`).join("");
   $("leg-cat").innerHTML = `<span>${d.catOrigem}</span><span class="mono">${d.categorica.join(" ")}</span>`;
-  $("sequencial").innerHTML = [8, 20, 34, 50, 66, 82, 100].map(p => `<span style="background:color-mix(in oklab, var(--acento) ${p}%, var(--superficie))"></span>`).join("");
-  $("divergente").innerHTML = [100, 70, 40, 0, 40, 70, 100].map((p, i) => `<span style="background:color-mix(in oklab, ${i < 3 ? "var(--q-entrar)" : i > 3 ? "var(--q-nao_entrar)" : "var(--tinta-3)"} ${i === 3 ? 30 : p}%, var(--superficie))"></span>`).join("");
+  // Paletas adotadas no ADR 0021, quando o candidato as tem; senão, a mistura do acento
+  $("sequencial").innerHTML = (d.sequencial ? d.sequencial.map(c => `<span style="background:${c}"></span>`) : [8, 20, 34, 50, 66, 82, 100].map(p => `<span style="background:color-mix(in oklab, var(--acento) ${p}%, var(--superficie))"></span>`)).join("");
+  $("divergente").innerHTML = d.divergente ? d.divergente.map(c => `<span style="background:${c}"></span>`).join("") : [100, 70, 40, 0, 40, 70, 100].map((p, i) => `<span style="background:color-mix(in oklab, ${i < 3 ? "var(--q-entrar)" : i > 3 ? "var(--q-nao_entrar)" : "var(--tinta-3)"} ${i === 3 ? 30 : p}%, var(--superficie))"></span>`).join("");
   $("tipo-explica").textContent = d.tipo;
   $("escala").innerHTML = d.escala.map(([n, s, w]) => `<div class="tipo-linha"><span class="nome">${n}</span><span class="ex" style="font-size:${s}px;font-weight:${w};letter-spacing:${s > 24 ? "-.02em" : "0"}">Onde crescer em crédito PJ</span></div>`).join("");
   $("esp-explica").textContent = d.esp;

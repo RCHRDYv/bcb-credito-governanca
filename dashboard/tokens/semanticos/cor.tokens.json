@@ -395,6 +395,178 @@
           }
         }
       }
+    },
+    "chart": {
+      "$description": "Paletas de gráfico (ADR 0021, #63). Todas saem das rampas oficiais do Carbon e passaram no validador do projeto (src/cor/validacao.js) contra o vidro regular dos dois temas, em 2026-09-27.",
+      "categorical": {
+        "1": {
+          "$value": "{color.purple.70}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.60}"
+            }
+          }
+        },
+        "2": {
+          "$value": "{color.cyan.50}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.cyan.50}"
+            }
+          }
+        },
+        "3": {
+          "$value": "{color.orange.50}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.orange.50}"
+            }
+          }
+        },
+        "4": {
+          "$value": "{color.magenta.70}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.magenta.50}"
+            }
+          }
+        },
+        "5": {
+          "$value": "{color.blue.50}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.blue.50}"
+            }
+          }
+        },
+        "6": {
+          "$value": "{color.red.50}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.red.50}"
+            }
+          }
+        },
+        "$description": "Identidade de série, em ordem fixa: a série recebe a cor pela posição, e da sétima em diante tudo vira Outros. É a paleta categórica oficial do Carbon com a menor troca que passa nos dois temas: o verde-azulado 70 vira laranja 50 e o vermelho 90 vira azul 50, e o vermelho 50 passa para o fim."
+      },
+      "sequential": {
+        "1": {
+          "$value": "{color.purple.40}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.70}"
+            }
+          }
+        },
+        "2": {
+          "$value": "{color.purple.50}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.60}"
+            }
+          }
+        },
+        "3": {
+          "$value": "{color.purple.60}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.50}"
+            }
+          }
+        },
+        "4": {
+          "$value": "{color.purple.70}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.40}"
+            }
+          }
+        },
+        "5": {
+          "$value": "{color.purple.80}",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.purple.30}"
+            }
+          }
+        },
+        "$description": "Magnitude, do valor baixo ao alto, na rampa roxa oficial do Carbon sem o branco. No claro vai do claro ao escuro; no escuro, do escuro ao claro, porque o valor baixo é o que se aproxima do fundo."
+      },
+      "diverging": {
+        "$description": "Desvio contra uma referência, como a variação da inadimplência contra a do país: a paleta divergente roxo e verde-azulado do Carbon, com o meio em cinza no lugar do branco, que some no vidro. Os degraus vão do meio para a ponta.",
+        "negative": {
+          "1": {
+            "$value": "{color.teal.40}",
+            "$extensions": {
+              "credito-pj": {
+                "escuro": "{color.teal.70}"
+              }
+            }
+          },
+          "2": {
+            "$value": "{color.teal.60}",
+            "$extensions": {
+              "credito-pj": {
+                "escuro": "{color.teal.50}"
+              }
+            }
+          },
+          "3": {
+            "$value": "{color.teal.80}",
+            "$extensions": {
+              "credito-pj": {
+                "escuro": "{color.teal.40}"
+              }
+            }
+          },
+          "$description": "Abaixo da referência, em verde-azulado"
+        },
+        "neutral": {
+          "$value": "{color.gray.20}",
+          "$description": "Igual à referência",
+          "$extensions": {
+            "credito-pj": {
+              "escuro": "{color.gray.80}"
+            }
+          }
+        },
+        "positive": {
+          "1": {
+            "$value": "{color.purple.40}",
+            "$extensions": {
+              "credito-pj": {
+                "escuro": "{color.purple.70}"
+              }
+            }
+          },
+          "2": {
+            "$value": "{color.purple.60}",
+            "$extensions": {
+              "credito-pj": {
+                "escuro": "{color.purple.50}"
+              }
+            }
+          },
+          "3": {
+            "$value": "{color.purple.80}",
+            "$extensions": {
+              "credito-pj": {
+                "escuro": "{color.purple.40}"
+              }
+            }
+          },
+          "$description": "Acima da referência, em roxo"
+        }
+      },
+      "other": {
+        "$value": "{color.gray.50}",
+        "$description": "A série Outros, que junta as que passam da sexta, em cinza",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.60}"
+          }
+        }
+      }
     }
   }
 }
