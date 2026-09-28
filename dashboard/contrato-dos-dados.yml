@@ -37,6 +37,9 @@ destino: dashboard/public/data/
 formato:
   codificacao: utf-8
   exemplo: '{"arquivo": "decisao.json", "data_base": "2026-07-31", "colunas": {"uf": ["SP", "MG"], "carteira_ativa": [1.0e11, 4.2e10]}}'
+  data_base: "A data-base da exportação: o último mês do SCR no mrt_decisao. É a mesma em todos os arquivos, inclusive nos que trazem vários meses."
+  precisao: "Reais em reais inteiros. Frações, diferenças, variações e índices com 6 casas decimais. Os demais números são inteiros."
+  gravacao: "Uma coluna por linha do arquivo, para o diff da PR mostrar qual coluna mudou. Rodar de novo com o mesmo dado produz o mesmo arquivo, byte a byte."
   datas: "Texto no formato AAAA-MM-DD. Mês sem dia, como o retrato do CNPJ, no formato AAAA-MM."
   nulo: "null do JSON. Só onde a coluna diz nulo: true."
 
@@ -60,6 +63,17 @@ unidades:
   booleano: "Verdadeiro ou falso."
 
 # -----------------------------------------------------------------------------
+# PT: Chaves que a exportação lê, além das colunas (#66):
+#     - ordem: as colunas do grão, que fixam a ordem das linhas;
+#     - onde: o filtro em SQL, sobre o próprio mart;
+#     - ultimo_mes: só a data-base da exportação;
+#     - meses: quantos meses, contando do último para trás.
+#     O filtro em texto continua ao lado, para quem lê.
+# EN: Keys the export reads besides the columns: row order, SQL filter, last
+#     month only, and how many months back from the last one.
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # PT: Os arquivos da v0.1. O da visão 3 entra com a #27, na v0.2. O
 #     mrt_reconciliacao_versoes fica fora, porque nenhuma visão da v0.1 o usa.
 # EN: The v0.1 files. View 3's file comes with #27 in v0.2.
@@ -70,6 +84,7 @@ arquivos:
     origem: mrt_decisao
     grao: "UF e modalidade, só cliente PJ, no último mês do SCR"
     filtro: "Nenhum. Entram também as células não avaliadas, com o motivo."
+    ordem: [codigo_modalidade, uf]
     visoes: [1, 2, 4]
     colunas:
       - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
@@ -102,9 +117,14 @@ arquivos:
     origem: mrt_carteira_mensal
     grao: "Mês, UF e modalidade, só cliente PJ"
     filtro: >
-      cliente = 'PJ'. A faixa de meses sai da medida de tamanho da #66 contra
-      o orçamento do RNF-03, com pelo menos os sete meses que a janela de
-      seis meses usa.
+      cliente = 'PJ', nos 31 meses mais recentes. A faixa saiu da medida de
+      tamanho da #66 contra o orçamento do RNF-03 (decidido em 2026-09-27):
+      com 31 meses, a série inteira da V2 desde jan/2024, a visão 2 carrega
+      228,8 KB comprimidos, dentro dos 300 KB. O número é fixo: a cada mês
+      novo, o mais antigo sai, e o peso não cresce.
+    onde: "cliente = 'PJ'"
+    meses: 31
+    ordem: [data_base, codigo_modalidade, uf]
     visoes: [2]
     colunas:
       - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
@@ -125,6 +145,8 @@ arquivos:
     origem: mrt_carteira_por_uf
     grao: "UF, no último mês do SCR"
     filtro: "data_base igual à do decisao.json, para as duas fontes da visão 1 falarem do mesmo mês."
+    ultimo_mes: true
+    ordem: [uf]
     visoes: [1]
     colunas:
       - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
@@ -142,6 +164,7 @@ arquivos:
     origem: mrt_limites_do_dado
     grao: "Mês"
     filtro: "Nenhum."
+    ordem: [data_base]
     visoes: [4]
     colunas:
       - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
@@ -161,6 +184,7 @@ arquivos:
     origem: mrt_erro_da_reconstrucao
     grao: "Retrato do CNPJ e UF"
     filtro: "Nenhum."
+    ordem: [retrato, uf]
     visoes: [4]
     colunas:
       - {nome: retrato, tipo: string, unidade: mes, nulo: false, definicao: "ontology/fontes_externas.yml#cnpj_aberto"}
@@ -181,8 +205,12 @@ auxiliares:
     conteudo: >
       Um registro por conceito citado em alguma coluna acima, com id, rótulo
       em português, definição, fonte normativa, grau de confiança e nota de
-      escopo. É o que o site mostra quando alguém pergunta de onde vem um
-      número (RF-G07). Gerado do YAML da ontologia, nunca digitado.
+      escopo. Entra também um registro por modalidade que aparece nos dados,
+      com a definição do BCB, porque as colunas de modalidade apontam para o
+      arquivo inteiro de modalidades (decidido em 2026-09-27, na #66). Junto
+      vai o mapa de cada coluna para a sua definição, um conceito ou um ADR,
+      que é o que deixa o site ir do número à definição (RF-G07). Gerado do
+      YAML da ontologia, nunca digitado.
     visoes: [1, 2, 4]
 
   - arquivo: manifesto.json
@@ -190,9 +218,11 @@ auxiliares:
     conteudo: >
       A data-base do último mês, os parâmetros da decisão lidos do
       dbt_project.yml (corte de materialidade, meses da tendência e mínimo de
-      UFs), e o número de linhas e o sha256 de cada arquivo. Não guarda data
-      de geração: rodar de novo com o mesmo dado produz os mesmos arquivos,
-      byte a byte, como a docs/recomendacao.md.
+      UFs) e, por arquivo, o número de linhas, o sha256 e as visões que o
+      usam. As visões servem ao orçamento de carga, que soma o peso de cada
+      visão sem ler este YAML. Não guarda data de geração: rodar de novo com
+      o mesmo dado produz os mesmos arquivos, byte a byte, como a
+      docs/recomendacao.md.
     visoes: [1, 2, 4]
 
   - arquivo: geo/ufs.json

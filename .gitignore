@@ -13,6 +13,13 @@ data/
 *.csv
 !dbt/seeds/*.csv
 
+# PT: A exceção é a pasta de dados do site (#66). Ela não guarda dado bruto:
+#     guarda os recortes agregados dos marts de apresentação, em JSON, que o
+#     CI confere contra o contrato (dashboard/contrato-dos-dados.yml).
+# EN: The exception is the site's data folder: aggregated cuts of the
+#     presentation marts, checked by CI against the contract.
+!dashboard/public/data/
+
 # PT: Artefatos de build do dbt / EN: dbt build artifacts
 dbt/target/
 dbt/dbt_packages/

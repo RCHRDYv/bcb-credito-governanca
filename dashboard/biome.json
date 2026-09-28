@@ -13,7 +13,8 @@
       "!prototipo-design-system",
       "!.impeccable",
       "!src/estilos/tokens.css",
-      "!src/estilos/tokens.json"
+      "!src/estilos/tokens.json",
+      "!public/data"
     ]
   },
   "formatter": {

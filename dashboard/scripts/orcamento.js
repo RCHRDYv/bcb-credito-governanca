@@ -5,18 +5,24 @@
  *     Pages entrega, soma por tipo e compara com o limite do requisito. Falha
  *     quando algum tipo passa do limite, para o CI barrar a PR que pesa demais.
  *
- *     Os limites ficam num objeto só, `LIMITES`. Hoje só o JavaScript tem
- *     limite; os dados (300 KB) e a malha das UFs (100 KB) entram quando a
- *     #66 e a #67 criarem esses arquivos. As fontes entram só no relatório,
- *     sem limite, porque o requisito pede "só os pesos usados", e não um
- *     número.
+ *     Os limites por tipo de arquivo ficam num objeto só, `LIMITES`. As
+ *     fontes entram só no relatório, sem limite, porque o requisito pede "só
+ *     os pesos usados", e não um número. A malha das UFs (100 KB) entra
+ *     quando a #67 criar o arquivo.
+ *
+ *     Os dados têm conta própria, por visão (#66): cada visão, quando é a
+ *     primeira a abrir, carrega até 300 KB comprimidos. A soma usa as visões
+ *     que o `manifesto.json` registra para cada arquivo, mais o próprio
+ *     manifesto, que toda visão lê.
  *
  *     Uso: `npm run build` e depois `npm run budget`.
  *
  * EN: Checks the built site's load budget (requirement RNF-03). Each file in
  *     `dist/` is gzipped, as GitHub Pages serves it, summed by type and
  *     compared with the limit. It fails when a type goes over, so CI blocks a
- *     pull request that weighs too much. Limits live in `LIMITES`.
+ *     pull request that weighs too much. Limits live in `LIMITES`. Data is
+ *     checked per view: each view, when opened first, loads at most 300 KB,
+ *     summed from the views the manifest records for each file.
  */
 
 import { existsSync } from "node:fs";
@@ -57,6 +63,23 @@ const LIMITES = [
 ];
 
 /**
+ * PT: Limite de dados de cada visão, em KB comprimidos (RNF-03). Vale por
+ *     visão, e não para todos os arquivos juntos (decidido em 2026-09-27, na
+ *     #66).
+ * EN: Per-view data limit, in compressed KB.
+ */
+const DADOS_POR_VISAO_KB = 300;
+
+/**
+ * PT: O que o orçamento lê do manifesto dos dados.
+ * EN: What the budget reads from the data manifest.
+ *
+ * @typedef {object} ManifestoDosDados
+ * @property {number[]} visoes_do_manifesto
+ * @property {{ arquivo: string, visoes: number[] }[]} arquivos
+ */
+
+/**
  * PT: Lista todos os arquivos de uma pasta, descendo nas subpastas.
  * EN: Lists every file under a folder, recursively.
  *
@@ -90,6 +113,50 @@ function emKb(bytes) {
   return `${(bytes / KB).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} KB`;
 }
 
+/**
+ * PT: Soma, para cada visão, o peso comprimido dos arquivos de dados que ela
+ *     carrega, e compara com o limite. Sem o manifesto, falha: os dados são
+ *     versionados desde a #66, e o build precisa trazê-los.
+ * EN: Sums each view's compressed data files and compares with the limit.
+ *
+ * @returns {Promise<boolean>} true se alguma visão passou do limite / true if over
+ */
+async function conferirDados() {
+  const pasta = join(DIST, "data");
+  const caminhoDoManifesto = join(pasta, "manifesto.json");
+  console.log(`
+Dados por visão, limite de ${DADOS_POR_VISAO_KB} KB comprimido (RNF-03)`);
+  if (!existsSync(caminhoDoManifesto)) {
+    console.error("  Não achei dist/data/manifesto.json. Os dados precisam estar em public/data/.");
+    return true;
+  }
+
+  /** @type {ManifestoDosDados} */
+  const manifesto = JSON.parse(await readFile(caminhoDoManifesto, "utf-8"));
+  const tamanhoDoManifesto = await tamanhoComprimido(caminhoDoManifesto);
+  const visoes = [...new Set(manifesto.arquivos.flatMap((a) => a.visoes))].sort((a, b) => a - b);
+
+  let estourou = false;
+  for (const visao of visoes) {
+    const daVisao = manifesto.arquivos.filter((a) => a.visoes.includes(visao));
+    const tamanhos = await Promise.all(
+      daVisao.map((a) => tamanhoComprimido(join(pasta, a.arquivo))),
+    );
+    const doManifesto = manifesto.visoes_do_manifesto.includes(visao) ? tamanhoDoManifesto : 0;
+    const total = tamanhos.reduce((soma, t) => soma + t, doManifesto);
+    const passou = total > DADOS_POR_VISAO_KB * KB;
+    estourou ||= passou;
+
+    console.log(`  Visão ${visao}`);
+    daVisao.forEach((a, i) => {
+      console.log(`    ${a.arquivo}  ${emKb(tamanhos[i])}`);
+    });
+    if (doManifesto) console.log(`    manifesto.json  ${emKb(doManifesto)}`);
+    console.log(`    Total: ${emKb(total)}${passou ? "  ACIMA DO LIMITE" : "  dentro do limite"}`);
+  }
+  return estourou;
+}
+
 async function main() {
   if (!existsSync(DIST)) {
     console.error("Não achei dist/. Rode `npm run build` antes do orçamento.");
@@ -118,6 +185,8 @@ async function main() {
       limite.maximoKb === null ? "" : passou ? "  ACIMA DO LIMITE" : "  dentro do limite";
     console.log(`  Total: ${emKb(total)}${situacao}`);
   }
+
+  estourou = (await conferirDados()) || estourou;
 
   if (estourou) {
     process.exit(1);

@@ -8,7 +8,7 @@ PT: Gera dashboard/src/catalogo/exemplos.json, os dados reais que os gráficos
     Com o mesmo dado, a saída é a mesma, byte a byte.
 
     Os exemplos são do catálogo, e não das visões. As visões leem os arquivos
-    do contrato, que a exportação da #66 vai gerar.
+    do contrato, que a exportação da #66 gera.
 
 EN: Generates dashboard/src/catalogo/exemplos.json, the real data shown by
     the design system catalog's charts. Every number comes from a Databricks
