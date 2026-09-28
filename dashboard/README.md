@@ -1,6 +1,6 @@
 # Site do dashboard
 
-Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico) e os componentes de interface da #64, todos no catálogo.
+Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico), os componentes de interface da #64, todos no catálogo, e os dados das visões, exportados dos marts na #66.
 
 Para entender o projeto antes do código:
 - [arquitetura](../docs/dashboard/arquitetura.md): como o site, o dataset e o chat se ligam;
@@ -48,7 +48,7 @@ npx playwright install chromium firefox webkit
 | `typecheck` | Checa os tipos pelo JSDoc, com o TypeScript, sem gerar arquivo | ADR 0017 |
 | `test` | Testes unitários, com o Vitest | |
 | `test:e2e` | Testes de ponta a ponta com axe, no Chromium, no Firefox e no WebKit | RNF-04, RNF-05 e RNF-06 |
-| `budget` | Orçamento de carga do `dist/`, comprimido com gzip | RNF-03 |
+| `budget` | Orçamento de carga do `dist/`, comprimido com gzip, com os dados somados por visão | RNF-03 |
 | `lighthouse` | Lighthouse no celular e no computador, contra as metas | RNF-01 e RNF-02 |
 | `check` | Todos acima, na ordem do CI | |
 
@@ -61,6 +61,28 @@ npx playwright test --project=chromium --project=webkit
 ```
 
 O Lighthouse usa o Google Chrome instalado quando existe, pelo mesmo motivo.
+
+## Dados
+
+Os JSON de `public/data/` saem dos marts de apresentação, pela exportação da #66, e o [contrato](contrato-dos-dados.yml) diz o que cada um traz. Eles são gerados, e nunca editados à mão. Por isso ficam fora do Biome: quem confere o formato é a validação, contra o contrato.
+
+A exportação roda na raiz do repositório, na máquina com acesso ao Databricks, pelo login OAuth do perfil do CLI:
+
+```bash
+uv run python -m scripts.exportar_dados_do_dashboard
+```
+
+A validação é a mesma que o CI roda, sem credencial:
+
+```bash
+uv run python -m scripts.validar_dados_do_dashboard
+```
+
+Quando só a ontologia muda, o `ontologia.json` e o `manifesto.json` se refazem sem o Databricks, a partir dos arquivos já exportados:
+
+```bash
+uv run python -m scripts.exportar_dados_do_dashboard --sem-databricks
+```
 
 ## Estrutura
 
@@ -76,10 +98,12 @@ O Lighthouse usa o Google Chrome instalado quando existe, pelo mesmo motivo.
 | `src/cor/` | O contraste pela WCAG, o OKLab, a simulação de daltonismo e a validação das paletas (ADR 0021) |
 | `src/componentes/` | Os componentes de interface, um por módulo, com os ícones do Tabler e o controle de tema |
 | `src/graficos/` | O ECharts importado por partes, o tema montado dos tokens e os componentes de gráfico |
+| `src/dados/` | O carregador dos arquivos do contrato, que busca cada arquivo uma vez só e transforma a falha no motivo que a visão mostra |
 | `src/formatos.js` | Números e datas no padrão brasileiro |
 | `src/tokens.js` | A lista de tokens gerada, com tipo, para o JavaScript |
 | `src/dom.js` | Monta HTML sem `innerHTML` |
 | `public/` | Arquivos servidos como estão, como o `tema-inicial.js`, que aplica o tema escolhido antes da pintura |
+| `public/data/` | Os JSON do contrato, exportados dos marts, com o `ontologia.json` e o `manifesto.json` |
 | `tests/unit/` | Testes unitários |
 | `tests/e2e/` | Testes de ponta a ponta |
 | `scripts/` | O gerador dos tokens, o orçamento de carga e o Lighthouse |
