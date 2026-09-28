@@ -58,6 +58,7 @@ const PARES = [
     "color.text.primary",
     "color.text.secondary",
     "color.text.helper",
+    "color.text.placeholder",
     "color.link.default",
   ].flatMap(
     (texto) =>
@@ -86,6 +87,11 @@ const PARES = [
   ["color.interactive", "color.background.page", GRAFICO],
   ["color.focus", "color.background.page", GRAFICO],
   ["color.support.success", "color.background.page", GRAFICO],
+  // PT: componentes (#64): a borda do campo, o glifo do aviso de atenção e o
+  //     texto do botão sutil / EN: components
+  ["color.border.strong", "material.vidro.regular.preenchimento", GRAFICO],
+  ["aviso.atencao.glifo", "color.support.warning", GRAFICO],
+  ["color.link.default", "color.background.layer", TEXTO],
 ];
 
 describe("contraste.js", () => {
@@ -99,8 +105,8 @@ describe("contraste.js", () => {
   });
 
   it("compõe o vidro regular do guia sobre o fundo / composites the guide's regular glass", () => {
-    // PT: o guia registra #fbfbfb para o branco a 62% sobre #f4f4f4
-    expect(compor({ hex: "#ffffff", alpha: 0.62 }, "#f4f4f4")).toBe("#fbfbfb");
+    // PT: o guia registra #fdfdfd para o branco a 82% sobre #f4f4f4
+    expect(compor({ hex: "#ffffff", alpha: 0.82 }, "#f4f4f4")).toBe("#fdfdfd");
   });
 
   it("tem luminância 0 no preto e 1 no branco / has luminance 0 and 1", () => {

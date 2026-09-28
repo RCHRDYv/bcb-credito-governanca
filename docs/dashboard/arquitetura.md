@@ -9,7 +9,7 @@ Como o site, o dataset e o chat se ligam, o que trafega entre eles e o que acont
 
 O que o dashboard precisa fazer está nos [requisitos](requisitos.md), e as colunas de cada arquivo que o site lê estão no [contrato dos dados](../../dashboard/contrato-dos-dados.yml).
 
-**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens e os gráficos.
+**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens, os gráficos e os componentes.
 
 ## As peças
 
@@ -105,7 +105,7 @@ flowchart TB
     duck -- "carregado na partida" --> parquet
 
     classDef planejado stroke-dasharray: 5 5
-    class visoes,filtros,carga,componentes,cliente,json,malha,publica,modelo,contexto,travas,duck,parquet planejado
+    class visoes,filtros,carga,cliente,json,malha,publica,modelo,contexto,travas,duck,parquet planejado
 ```
 
 ## Fluxo do dado
@@ -236,7 +236,7 @@ dashboard/                        raiz do site, no Vite (#65)
 │   ├── visoes/                   uma pasta por visão, com render(el, dados) (#69 a #72)
 │   ├── catalogo/                 as seções do catálogo (#62 e #64)
 │   ├── cor/                      contraste pela WCAG (#62)
-│   ├── componentes/              componentes do design system (#64)
+│   ├── componentes/              componentes do design system, com os ícones do Tabler (#64)
 │   ├── graficos/                 tema do ECharts e componentes de gráfico (#63)
 │   ├── formatos.js               números e datas no padrão brasileiro (#63)
 │   ├── chat/                     cliente do Space e montagem da resposta (#51)
@@ -355,6 +355,8 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-09-27 | As paletas de gráfico saem do Carbon, com a categórica ajustada, e um teste automatizado reprova paleta fora dos critérios | ADR 0021 |
 | 2026-09-27 | O tema de cada gráfico é o do lugar onde ele está, e a troca de tema atualiza a mesma instância do ECharts, sem recriar o gráfico. O renderizador é o SVG, cujas texturas não usam imagem embutida | Este documento; [design system](design-system.md) |
 | 2026-09-27 | Os exemplos do catálogo usam dado real, gerado dos marts por `scripts/gerar_exemplos_do_catalogo.py`, sem número digitado à mão | [Design system](design-system.md) |
+| 2026-09-27 | Os ícones do Tabler entram pelo pacote, e o build junta só os usados. A fonte do Tabler pelo CDN, como no protótipo, violaria o `style-src` e o `font-src` da política de segurança | Este documento; [design system](design-system.md) |
+| 2026-09-27 | O tema escolhido pelo visitante é aplicado por um script pequeno e síncrono no `<head>`, servido pelo próprio site, que a política aceita em `script-src 'self'` | Este documento; ADR 0018 |
 
 ## Pontos em aberto
 

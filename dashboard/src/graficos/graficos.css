@@ -1,7 +1,7 @@
 /*
  * PT: Estilo dos componentes de gráfico, só com tokens. O ECharts desenha o
  *     gráfico em SVG com as cores do tema montado em JavaScript; este arquivo
- *     cuida do que é HTML em volta: o cartão de vidro, o cabeçalho, o tamanho
+ *     cuida do que é HTML em volta: o cartão sólido, o cabeçalho, o tamanho
  *     de cada tipo de gráfico, as etiquetas da matriz e o número de destaque.
  *
  * EN: Chart component styles, tokens only: the glass card, header, sizes,
@@ -9,7 +9,10 @@
  */
 
 @layer componentes {
-  /* PT: cartão de vidro regular, como os painéis / EN: regular glass card */
+  /* PT: cartão sólido: o dado fica firme (ADR 0020), e as cores dos gráficos
+     são validadas contra este fundo, e não contra o vidro (decidido em
+     2026-09-27, na #64) */
+  /* EN: solid card, the surface chart palettes are validated against */
   .cartao-grafico {
     display: grid;
     gap: var(--space-05);
@@ -17,18 +20,9 @@
     padding: var(--space-05) var(--space-06) var(--space-06);
     border: var(--border-fina) solid var(--material-vidro-borda);
     border-radius: var(--radius-cartao);
-    background: var(--material-vidro-regular-preenchimento);
-    backdrop-filter: blur(var(--material-vidro-regular-desfoque))
-      saturate(var(--material-vidro-regular-saturacao));
+    background: var(--color-chart-surface);
     box-shadow: var(--elevation-1), var(--elevation-brilho);
     color: var(--color-text-primary);
-  }
-
-  /* PT: sem backdrop-filter, a superfície vira sólida / EN: solid fallback */
-  @supports not (backdrop-filter: blur(1px)) {
-    .cartao-grafico {
-      background: var(--color-background-layer);
-    }
   }
 
   .cartao-grafico__titulo {
@@ -91,35 +85,30 @@
     block-size: 420px;
   }
 
-  .matriz__etiqueta {
+  /* PT: cada etiqueta de quadrante (#64) fica num canto da área de desenho,
+     pelas margens que o JavaScript informa */
+  /* EN: each quadrant tag sits at a plot-area corner */
+  .matriz__canto {
     position: absolute;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-02);
-    padding: var(--space-01) var(--space-03);
-    border-radius: var(--radius-capsula);
-    background: var(--material-vidro-regular-preenchimento);
-    font: var(--type-label-01);
-    letter-spacing: var(--type-label-01-letter-spacing);
     pointer-events: none;
   }
 
-  .matriz__etiqueta--superior-esquerdo {
+  .matriz__canto--superior-esquerdo {
     inset-block-start: calc(var(--matriz-topo) + var(--space-03));
     inset-inline-start: calc(var(--matriz-esquerda) + var(--space-03));
   }
 
-  .matriz__etiqueta--superior-direito {
+  .matriz__canto--superior-direito {
     inset-block-start: calc(var(--matriz-topo) + var(--space-03));
     inset-inline-end: calc(var(--matriz-direita) + var(--space-03));
   }
 
-  .matriz__etiqueta--inferior-esquerdo {
+  .matriz__canto--inferior-esquerdo {
     inset-block-end: calc(var(--matriz-base) + var(--space-03));
     inset-inline-start: calc(var(--matriz-esquerda) + var(--space-03));
   }
 
-  .matriz__etiqueta--inferior-direito {
+  .matriz__canto--inferior-direito {
     inset-block-end: calc(var(--matriz-base) + var(--space-03));
     inset-inline-end: calc(var(--matriz-direita) + var(--space-03));
   }
@@ -128,37 +117,12 @@
      O limite, 480 px, é o LARGURA_ESTREITA de grafico.js */
   /* EN: narrow: labels flow below the plot; same limit as grafico.js */
   @container (width < 480px) {
-    .matriz__etiqueta {
+    .matriz__canto {
       position: static;
+      display: inline-block;
       margin-block-start: var(--space-03);
       margin-inline-end: var(--space-03);
     }
-  }
-
-  .quadrante--entrar {
-    color: var(--color-quadrante-entrar-texto);
-  }
-
-  .quadrante--observar {
-    color: var(--color-quadrante-observar-texto);
-  }
-
-  .quadrante--nao-entrar {
-    color: var(--color-quadrante-nao-entrar-texto);
-  }
-
-  .quadrante--manter {
-    color: var(--color-quadrante-manter-texto);
-  }
-
-  .icone {
-    inline-size: var(--space-05);
-    block-size: var(--space-05);
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
 
   /* PT: legenda das classes de cor, em HTML / EN: HTML color-class legend */

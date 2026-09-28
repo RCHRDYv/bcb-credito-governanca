@@ -4,7 +4,7 @@
  *     O cabeçalho tem duas partes, e só elas (decisão de 2026-09-26): o
  *     título, que diz o que o gráfico mostra, e a data-base com a fonte.
  *     Não há frase de conclusão: quem quiser uma conclusão pergunta ao chat.
- *     O cartão é uma superfície de vidro regular, como os painéis.
+ *     O cartão é sólido, para o dado ficar firme (ADR 0020).
  *
  * EN: A chart card with the header the guide specifies: a descriptive title
  *     and the reference date with the source, never a written conclusion.

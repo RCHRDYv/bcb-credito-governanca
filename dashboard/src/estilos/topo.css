@@ -1,18 +1,40 @@
 /*
- * PT: A barra de topo com o nome do produto, comum a todas as páginas. A
- *     navegação entre as visões (RF-G01) entra aqui quando as visões chegarem.
- * EN: The top bar with the product name, shared by every page.
+ * PT: A barra de topo, comum a todas as páginas: o nome do produto e o
+ *     controle de tema (#64). A navegação entre as visões (RF-G01) entra aqui
+ *     quando as visões chegarem.
+ * EN: The shared top bar: product name and theme control.
  */
 
 @layer componentes {
+  /* PT: a navegação flutua sobre o conteúdo, em vidro claro, como o guia pede */
+  /* EN: navigation floats over content, on clear glass */
   .topo {
-    border-block-end: var(--border-fina) solid var(--color-border-subtle);
+    border-block-end: var(--border-fina) solid var(--material-vidro-borda);
+    background: var(--material-vidro-claro-preenchimento);
+    backdrop-filter: blur(var(--material-vidro-claro-desfoque))
+      saturate(var(--material-vidro-claro-saturacao));
+    box-shadow: var(--elevation-brilho);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .topo {
+      background: var(--color-background-layer);
+    }
+  }
+
+  /* PT: o nome à esquerda e o controle de tema à direita / EN: name left, theme control right */
+  .topo__conteudo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-04);
+    max-inline-size: calc(var(--grid-breakpoint-max) - 2 * var(--grid-margin-max));
+    margin-inline: auto;
+    padding: var(--space-03) var(--space-05);
   }
 
   .topo__nome {
-    max-inline-size: calc(var(--grid-breakpoint-max) - 2 * var(--grid-margin-max));
-    margin-inline: auto;
-    padding: var(--space-05);
     font: var(--type-heading-compact-01);
     letter-spacing: var(--type-heading-compact-01-letter-spacing);
   }

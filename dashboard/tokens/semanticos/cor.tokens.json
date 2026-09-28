@@ -127,11 +127,11 @@
         }
       },
       "placeholder": {
-        "$value": "{color.transparente.cinza-100.40}",
-        "$description": "Texto de exemplo nos campos (text-placeholder)",
+        "$value": "{color.gray.60}",
+        "$description": "Texto de exemplo nos campos. Decidido em 2026-09-27, na #64: usa o mesmo cinza do texto de ajuda, porque o text-placeholder do Carbon, preto a 40%, fica em 2,69:1 sobre o vidro, abaixo dos 4,5:1 da WCAG",
         "$extensions": {
           "credito-pj": {
-            "escuro": "{color.transparente.cinza-10.40}"
+            "escuro": "{color.gray.40}"
           }
         }
       },
@@ -398,6 +398,15 @@
     },
     "chart": {
       "$description": "Paletas de gráfico (ADR 0021, #63). Todas saem das rampas oficiais do Carbon e passaram no validador do projeto (src/cor/validacao.js) contra o vidro regular dos dois temas, em 2026-09-27.",
+      "surface": {
+        "$value": "{color.white}",
+        "$description": "Fundo sólido dos cartões de gráfico. O dado fica firme (ADR 0020): as cores dos gráficos são medidas contra este fundo, e no escuro o cinza 100 dá folga à ponta das rampas (ADR 0021)",
+        "$extensions": {
+          "credito-pj": {
+            "escuro": "{color.gray.100}"
+          }
+        }
+      },
       "categorical": {
         "1": {
           "$value": "{color.purple.70}",

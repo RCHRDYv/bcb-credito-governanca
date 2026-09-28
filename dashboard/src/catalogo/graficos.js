@@ -331,17 +331,20 @@ export function secaoGraficos() {
 
   /** @type {Peca[]} */
   const todas = [];
-  const paineis = ladoALado(() => {
-    const doTema = pecas(malhaCarregada);
-    todas.push(...doTema);
-    return [
-      elemento(
-        "div",
-        { classe: "graficos" },
-        doTema.map((peca) => peca.elemento),
-      ),
-    ];
-  });
+  const paineis = ladoALado(
+    () => {
+      const doTema = pecas(malhaCarregada);
+      todas.push(...doTema);
+      return [
+        elemento(
+          "div",
+          { classe: "graficos" },
+          doTema.map((peca) => peca.elemento),
+        ),
+      ];
+    },
+    { campoDeLuz: true },
+  );
 
   const demonstracaoEl = areaDoGrafico("grafico--serie");
   const botao = elemento("button", {

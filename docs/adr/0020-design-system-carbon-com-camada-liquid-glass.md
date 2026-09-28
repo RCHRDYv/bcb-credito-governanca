@@ -1,6 +1,6 @@
 # ADR 0020: O design system oficial é o Carbon com uma camada Liquid Glass
 
-**Status:** Aceito
+**Status:** Aceito. Dois valores da camada Liquid Glass foram revistos em 2026-09-27, na #64: o campo de luz vai para a cor cheia e o vidro regular fecha de 62% para 82%. Os detalhes estão na seção de revisão, no fim.
 **Data:** 2026-09-26
 
 ## Contexto
@@ -86,3 +86,14 @@ Todas as quatro foram montadas no mesmo protótipo e comparadas no mesmo formato
 - **Duas linguagens juntas:** IBM Plex com formas arredondadas pede cuidado para não parecer duas linguagens coladas.
 - **Paleta categórica:** a oficial do Carbon falha na validação, porque um tom quase preto sai da faixa de luminosidade e um verde-escuro tem pouca saturação. O ajuste foi decidido na #63, no [ADR 0021](0021-paletas-de-grafico-do-carbon-validadas.md), junto com a sequencial e a divergente.
 - **Valores interpretados:** transparências, desfoque e curvas de mola da camada Liquid Glass são interpretação nossa, e precisam ser conferidos em Safari e Firefox na implementação (#62 a #64).
+
+## Revisão de 2026-09-27, na #64
+
+Na revisão visual dos componentes, a transparência do vidro não aparecia: os componentes estavam sobre um fundo liso, e o campo de luz, com as manchas a 45%, era suave demais para o vidro ter o que mostrar. Quatro combinações foram montadas lado a lado, com os mesmos componentes, e a escolhida foi a do vidro mais visível que continua dentro da WCAG 2.2 AA:
+
+- **Campo de luz na cor cheia,** atrás da página inteira e parado em relação à janela. O token `material.campo-de-luz.opacidade` passa de 0,45 para 1. No protótipo, a cor cheia aparecia só no painel da seção de vidro, e o fundo da página tinha as manchas de 30% a 50%; agora a página inteira fica como aquele painel.
+- **Vidro regular mais fechado:** de branco a 62% para 82% no claro, e de cinza 90 a 72% para 88% no escuro. A cor que atravessa o vidro tira contraste do texto em cima dele. Com as manchas cheias e o vidro a 62%, o texto de ajuda cairia para 4,14:1 no centro de uma mancha. Com 82%, fica em 4,59:1 no pior ponto, e um teste confere isso.
+- **Cartões de gráfico sólidos,** no token `color.chart.surface`: branco no claro e cinza 100 no escuro. É a decisão 3 levada até o fim: o dado fica firme, e o campo de luz não muda o contraste das cores dos gráficos ([ADR 0021](0021-paletas-de-grafico-do-carbon-validadas.md)).
+- **Vidro claro no que flutua,** como a decisão 3 já dizia: o controle segmentado, os chips de filtro e a barra de topo. É onde a transparência mais aparece, porque o texto sobre ele é o principal, com mais de 14:1.
+
+**Alternativas descartadas:** as manchas a 30% ou a 45%, que passavam na WCAG mas deixavam o vidro quase invisível, e as manchas cheias com o vidro a 62%, que reprovariam a WCAG no centro das manchas.

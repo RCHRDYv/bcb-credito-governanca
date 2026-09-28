@@ -74,7 +74,7 @@
   --r1: 8px; --r2: 12px; --r3: 20px; --r4: 28px; --r5: 999px; --controle: 40px;
   --q-entrar-texto: #005d5d; --q-observar-texto: #483700; --q-nao_entrar-texto: #a2191f; --q-manter-texto: #6929c4;
   --sombra-1: 0 1px 3px rgba(0,0,0,.08), 0 6px 16px rgba(0,0,0,.06); --sombra-2: 0 10px 34px rgba(0,0,0,.14);
-  --vidro-1: rgba(255,255,255,.22); --vidro-1-blur: 10px; --vidro-2: rgba(255,255,255,.62); --vidro-2-blur: 26px; --veu: rgba(22,22,22,.28);
+  --vidro-1: rgba(255,255,255,.22); --vidro-1-blur: 10px; --vidro-2: rgba(255,255,255,.82); --vidro-2-blur: 26px; --veu: rgba(22,22,22,.28);
   --vidro-borda: rgba(255,255,255,.78); --vidro-brilho: inset 0 1px 1px rgba(255,255,255,.95), inset 0 -1px 1px rgba(0,0,0,.05), inset 0 0 20px rgba(255,255,255,.35);
   --papel: radial-gradient(50% 70% at 25% 30%, #a6c8ff 0%, transparent 60%), radial-gradient(45% 60% at 80% 65%, #d4bbff 0%, transparent 60%), #e8e8e8;
   /* Mola suave, com leve passagem do ponto final, como no Liquid Glass. Gentle spring with a slight overshoot. */
@@ -85,11 +85,12 @@
 
 * { box-sizing: border-box; }
 html { background: var(--fundo); }
-/* Campo de luz discreto, com as cores 30 do Carbon, para o vidro ter o que refratar. */
+/* Campo de luz na cor cheia, com as cores 30 do Carbon, para o vidro ter o que refratar.
+   Revisto em 2026-09-27, na #64: as manchas passaram de 30% a 50% para a cor cheia, e o vidro regular de 62% para 82% (ADR 0020). */
 [data-ds="hibrido"] body { background:
-  radial-gradient(40% 50% at 12% 18%, rgba(166,200,255,.5), transparent 70%),
-  radial-gradient(38% 45% at 88% 40%, rgba(212,187,255,.4), transparent 70%),
-  radial-gradient(40% 50% at 50% 96%, rgba(158,240,240,.3), transparent 70%), #f4f4f4 fixed; }
+  radial-gradient(40% 50% at 12% 18%, rgb(166,200,255), transparent 70%),
+  radial-gradient(38% 45% at 88% 40%, rgb(212,187,255), transparent 70%),
+  radial-gradient(40% 50% at 50% 96%, rgb(158,240,240), transparent 70%), #f4f4f4 fixed; }
 body { margin: 0; font-family: var(--fonte); color: var(--tinta); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; transition: background .3s; }
 [data-ds="dribbble"] body { background: var(--papel) fixed; }
 ::selection { background: var(--acento); color: var(--acento-texto); }
@@ -282,7 +283,7 @@ table.t tr:hover td { background: var(--acento-suave); }
 [data-ds="hibrido"] table.t tr:hover td { background: rgba(15,98,254,.06); }
 [data-ds="hibrido"] .dica { border-radius: var(--r2); box-shadow: var(--vidro-brilho), var(--sombra-2); }
 [data-ds="hibrido"] .estado { border-radius: var(--r3); }
-[data-ds="hibrido"] .aviso { border-radius: var(--r2); background: color-mix(in oklab, var(--cor) 8%, rgba(255,255,255,.62)); backdrop-filter: blur(20px) saturate(160%);
+[data-ds="hibrido"] .aviso { border-radius: var(--r2); background: color-mix(in oklab, var(--cor) 8%, rgba(255,255,255,.82)); backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid rgba(255,255,255,.8); box-shadow: var(--vidro-brilho), var(--sombra-1); align-items: center; }
 [data-ds="hibrido"] .aviso .ti { width: 28px; height: 28px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 16px; background: color-mix(in oklab, var(--cor) 16%, #fff); }
 [data-ds="hibrido"] .btn { border-radius: 999px; padding: 0 20px; font-weight: 500; transition: transform .35s var(--mola), background .2s var(--ease), box-shadow .2s var(--ease); }
@@ -301,7 +302,7 @@ table.t tr:hover td { background: var(--acento-suave); }
   transition: transform .35s var(--mola), background .2s; }
 [data-ds="hibrido"] .chip:active { transform: scale(.95); }
 [data-ds="hibrido"] .chip[aria-pressed="true"] { background: rgba(15,98,254,.12); border-color: rgba(15,98,254,.35); color: #0043ce; }
-[data-ds="hibrido"] .campo input { border-radius: var(--r2); background: rgba(255,255,255,.62); backdrop-filter: blur(16px) saturate(170%); border: 1px solid rgba(22,22,22,.14);
+[data-ds="hibrido"] .campo input { border-radius: var(--r2); background: rgba(255,255,255,.82); backdrop-filter: blur(16px) saturate(170%); border: 1px solid rgba(22,22,22,.14);
   box-shadow: var(--vidro-brilho); transition: box-shadow .25s var(--ease), border-color .2s; }
 [data-ds="hibrido"] .campo input:focus, [data-ds="hibrido"] .campo.foco input { border-color: var(--acento); box-shadow: var(--vidro-brilho), 0 0 0 4px rgba(15,98,254,.16); }
 [data-ds="hibrido"] .campo.erro input { border-color: var(--erro); box-shadow: var(--vidro-brilho), 0 0 0 4px rgba(218,30,40,.14); }

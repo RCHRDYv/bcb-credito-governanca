@@ -1,6 +1,6 @@
 # ADR 0017: A interface é JavaScript sem framework, com Vite e ECharts
 
-**Status:** Aceito. Complementado em 2026-09-27 pela #65 e pela #63, que mediu o ECharts importado por partes. O `checkJs` funciona no TypeScript 7.0.2 com JSDoc moderno, e um erro de tipo posto de propósito faz a checagem falhar. O Lighthouse entra no CI direto, na versão 13.5.0, sem o `@lhci/cli`, que está parado desde jun/2025 com o Lighthouse 12.6.1.
+**Status:** Aceito. Complementado em 2026-09-27 pela #65 e pela #63, que mediu o ECharts importado por partes, e pela #64, que acrescentou os ícones do Tabler e o jsdom para os testes de componente. O `checkJs` funciona no TypeScript 7.0.2 com JSDoc moderno, e um erro de tipo posto de propósito faz a checagem falhar. O Lighthouse entra no CI direto, na versão 13.5.0, sem o `@lhci/cli`, que está parado desde jun/2025 com o Lighthouse 12.6.1.
 **Data:** 2026-09-25
 
 ## Contexto
@@ -43,7 +43,7 @@ Camadas de cascata (`@layer`), container queries, cores em OKLCH e `light-dark()
 | Ferramenta | Papel |
 |---|---|
 | Biome | Lint e formatação, com um arquivo de configuração só |
-| Vitest | Testes unitários: formatação de número, regras de tela, montagem do tema |
+| Vitest | Testes unitários: formatação de número, regras de tela, montagem do tema e, com o jsdom, os componentes (#64) |
 | Playwright com axe | Testes de ponta a ponta e de acessibilidade, nos dois temas |
 | `tsc` com `checkJs` | Checagem de tipos a partir do JSDoc, sem escrever TypeScript |
 
@@ -65,6 +65,8 @@ Todo módulo tem JSDoc e comentários em português e em inglês, porque o repos
 | `vitest` | 5.0.2 |
 | `@playwright/test` | 1.63.0 |
 | `@axe-core/playwright` | 4.13.0 |
+| `@tabler/icons` | 3.48.0, conferida em 2026-09-27, na #64 |
+| `jsdom` | 30.1.1, conferida em 2026-09-27, na #64 |
 | `typescript` | 7.0.2 |
 
 As versões ficam fixadas no lockfile, e a atualização é feita de propósito, não por acidente.

@@ -123,6 +123,7 @@
     --color-transparente-branco-35: rgba(255, 255, 255, 0.35);
     --color-transparente-branco-62: rgba(255, 255, 255, 0.62);
     --color-transparente-branco-78: rgba(255, 255, 255, 0.78);
+    --color-transparente-branco-82: rgba(255, 255, 255, 0.82);
     --color-transparente-branco-95: rgba(255, 255, 255, 0.95);
     --color-transparente-branco-04: rgba(255, 255, 255, 0.04);
     --color-transparente-preto-14: rgba(0, 0, 0, 0.14);
@@ -135,6 +136,7 @@
     --color-transparente-cinza-10-40: rgba(244, 244, 244, 0.4);
     --color-transparente-cinza-90-40: rgba(38, 38, 38, 0.4);
     --color-transparente-cinza-90-72: rgba(38, 38, 38, 0.72);
+    --color-transparente-cinza-90-88: rgba(38, 38, 38, 0.88);
     --color-transparente-cinza-100-28: rgba(22, 22, 22, 0.28);
     --color-transparente-cinza-100-40: rgba(22, 22, 22, 0.4);
     --space-10: 64px;
@@ -221,7 +223,7 @@
     --color-text-primary: light-dark(var(--color-gray-100), var(--color-gray-10));
     --color-text-secondary: light-dark(var(--color-gray-70), var(--color-gray-30));
     --color-text-helper: light-dark(var(--color-gray-60), var(--color-gray-40));
-    --color-text-placeholder: light-dark(var(--color-transparente-cinza-100-40), var(--color-transparente-cinza-10-40));
+    --color-text-placeholder: light-dark(var(--color-gray-60), var(--color-gray-40));
     --color-text-on-color: light-dark(var(--color-white), var(--color-white));
     --color-interactive: light-dark(var(--color-blue-60), var(--color-blue-50));
     --color-link-default: light-dark(var(--color-blue-60), var(--color-blue-40));
@@ -250,6 +252,7 @@
     --color-brilho-topo: light-dark(var(--color-transparente-branco-95), var(--color-transparente-branco-14));
     --color-brilho-base: light-dark(var(--color-transparente-preto-05), var(--color-transparente-preto-30));
     --color-brilho-interno: light-dark(var(--color-transparente-branco-35), var(--color-transparente-branco-04));
+    --color-chart-surface: light-dark(var(--color-white), var(--color-gray-100));
     --color-chart-categorical-1: light-dark(var(--color-purple-70), var(--color-purple-60));
     --color-chart-categorical-2: light-dark(var(--color-cyan-50), var(--color-cyan-50));
     --color-chart-categorical-3: light-dark(var(--color-orange-50), var(--color-orange-50));
@@ -289,12 +292,12 @@
     --material-vidro-claro-preenchimento: light-dark(var(--color-transparente-branco-22), var(--color-transparente-cinza-90-40));
     --material-vidro-claro-desfoque: var(--blur-10);
     --material-vidro-claro-saturacao: var(--saturation-180);
-    --material-vidro-regular-preenchimento: light-dark(var(--color-transparente-branco-62), var(--color-transparente-cinza-90-72));
+    --material-vidro-regular-preenchimento: light-dark(var(--color-transparente-branco-82), var(--color-transparente-cinza-90-88));
     --material-vidro-regular-desfoque: var(--blur-26);
     --material-vidro-regular-saturacao: var(--saturation-180);
     --material-vidro-borda: light-dark(var(--color-transparente-branco-78), var(--color-transparente-branco-12));
     --material-escurecimento: light-dark(var(--color-transparente-cinza-100-28), var(--color-transparente-preto-50));
-    --material-campo-de-luz-opacidade: 0.45;
+    --material-campo-de-luz-opacidade: 1;
     --type-heading-07: var(--font-weight-light) var(--font-size-54)/var(--font-line-height-1-199) var(--font-family-sans);
     --type-heading-07-letter-spacing: var(--font-letter-spacing-0);
     --type-heading-06: var(--font-weight-light) var(--font-size-42)/var(--font-line-height-1-199) var(--font-family-sans);
@@ -327,6 +330,8 @@
     --botao-primario-texto: var(--color-text-on-color);
     --foco-anel-largura: var(--border-foco);
     --foco-anel-cor: var(--color-focus);
+    --segmentado-gota: light-dark(var(--color-transparente-branco-95), var(--color-transparente-branco-14));
+    --aviso-atencao-glifo: light-dark(var(--color-gray-100), var(--color-gray-100));
   }
 
   /* PT: escolha fixa do tema, se um dia houver botão de troca */

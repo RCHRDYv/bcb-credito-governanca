@@ -13,6 +13,7 @@
 
 import "./estilos/index.css";
 import "./estilos/pagina-inicial.css";
+import { topo } from "./componentes/topo.js";
 import { elemento } from "./dom.js";
 import { t } from "./textos/index.js";
 
@@ -31,9 +32,7 @@ export function montarPaginaInicial(raiz) {
     atributos: { href: "#conteudo" },
   });
 
-  const cabecalho = elemento("header", { classe: "topo" }, [
-    elemento("p", { classe: "topo__nome", texto: t("produto.nome") }),
-  ]);
+  const cabecalho = topo();
 
   const principal = elemento(
     "main",

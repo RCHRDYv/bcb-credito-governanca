@@ -29,6 +29,55 @@
 }
 
 @layer base {
+  /* PT: o campo de luz, do guia: manchas suaves com as cores do próprio
+     Carbon, para o vidro ter o que refratar. É uma variável, e não uma
+     classe, para o fundo da página e os painéis do catálogo usarem a mesma
+     definição. As cores são light-dark(), e resolvem no tema de quem usa.
+     EN: the light field behind the glass, shared by the page and panels */
+  :root {
+    --campo-de-luz:
+      radial-gradient(
+        40% 60% at 12% 18%,
+        color-mix(
+          in oklch,
+          var(--color-campo-de-luz-azul) calc(var(--material-campo-de-luz-opacidade) * 100%),
+          transparent
+        ),
+        transparent 70%
+      ),
+      radial-gradient(
+        45% 55% at 88% 30%,
+        color-mix(
+          in oklch,
+          var(--color-campo-de-luz-roxo) calc(var(--material-campo-de-luz-opacidade) * 100%),
+          transparent
+        ),
+        transparent 70%
+      ),
+      radial-gradient(
+        55% 60% at 45% 100%,
+        color-mix(
+          in oklch,
+          var(--color-campo-de-luz-verde-azulado)
+            calc(var(--material-campo-de-luz-opacidade) * 100%),
+          transparent
+        ),
+        transparent 70%
+      );
+  }
+
+  /* PT: o campo de luz fica parado atrás da página, do tamanho da janela,
+     para sempre haver cor atrás do vidro, em qualquer ponto da rolagem */
+  /* EN: the field stays fixed behind the page, viewport-sized */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--campo-de-luz);
+    pointer-events: none;
+  }
+
   html {
     background: var(--color-background-page);
     color: var(--color-text-primary);
@@ -124,6 +173,10 @@
   /* PT: na impressão não há vidro; as superfícies ficam sólidas (RF-G09) */
   /* EN: print has no glass; surfaces are solid */
   @media print {
+    body::before {
+      display: none;
+    }
+
     * {
       /* biome-ignore lint/complexity/noImportantStyles: a preferência do sistema e a impressão têm de vencer qualquer componente */
       backdrop-filter: none !important;
