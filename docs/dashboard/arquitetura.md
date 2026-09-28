@@ -105,7 +105,7 @@ flowchart TB
     duck -- "carregado na partida" --> parquet
 
     classDef planejado stroke-dasharray: 5 5
-    class visoes,filtros,carga,cliente,json,malha,publica,modelo,contexto,travas,duck,parquet planejado
+    class visoes,filtros,cliente,malha,publica,modelo,contexto,travas,duck,parquet planejado
 ```
 
 ## Fluxo do dado
@@ -150,7 +150,7 @@ flowchart TB
     ontologia -- "contexto do modelo" --> space
 
     classDef planejado stroke-dasharray: 5 5
-    class expjson,expparquet,simplifica,pr,ci,pages,dataset,space planejado
+    class expparquet,simplifica,pages,dataset,space planejado
 ```
 
 **Três fronteiras, que valem sempre:**
@@ -220,6 +220,17 @@ A exportação da #66 lê o contrato para saber o que exportar, e o CI reprova o
 - **O JSON é por coluna, e não por linha.** O nome da coluna não se repete a cada linha, e o `dataset` do ECharts lê essa forma direto.
 
 O manifesto não guarda data de geração. Rodar a exportação de novo com o mesmo dado produz os mesmos arquivos, byte a byte, como já acontece com a [`recomendacao.md`](../recomendacao.md).
+
+### Exportação e validação
+
+A exportação e a validação usam o mesmo módulo, [`scripts/contrato_do_dashboard.py`](../../scripts/contrato_do_dashboard.py), para ler o contrato, converter os valores e gravar os arquivos do mesmo jeito.
+- **A exportação,** [`scripts/exportar_dados_do_dashboard.py`](../../scripts/exportar_dados_do_dashboard.py), roda na máquina local, pelo OAuth do Databricks. Ela não tem regra própria por arquivo: as colunas, o filtro (`onde`, `ultimo_mes` e `meses`) e a ordem das linhas (`ordem`) vêm do contrato. Depois de gravar, confere cada arquivo contra o mart com uma consulta independente: a contagem de linhas precisa ser igual, e a soma das colunas de reais pode diferir só pelo arredondamento, de até meio real por linha.
+- **A validação,** [`scripts/validar_dados_do_dashboard.py`](../../scripts/validar_dados_do_dashboard.py), roda no CI, sem credencial. Ela confere colunas, tipos, nulos, valores permitidos, datas, a ordem do grão sem repetição, a data-base e a faixa de meses, a ausência de dado pessoal e que o `ontologia.json` e o `manifesto.json` são exatamente o que a exportação monta. O `--autoteste` estraga cópias dos arquivos de treze jeitos, e cada estrago precisa ser reprovado pelo motivo certo.
+- **O que o `ontologia.json` traz:** os conceitos citados nas colunas, as modalidades que aparecem nos dados e o mapa de cada coluna para a sua definição. Coluna definida por ADR, como o índice de espaço, aponta para o ADR, e a visão mostra esse ADR no lugar do conceito (RF-G07).
+- **Como os arquivos são gravados:** uma coluna por linha do arquivo, para o diff da PR mostrar qual coluna mudou. Reais vão em reais inteiros, e frações, diferenças, variações e índices, com seis casas.
+- **O carregador do site,** em `dashboard/src/dados/`, busca cada arquivo uma vez só, mesmo que duas visões peçam. A falha vira um erro com o motivo, rede ou formato, para o estado de erro da visão, e não fica guardada: tentar de novo busca outra vez.
+
+**Orçamento por visão.** O limite de 300 KB de dados do RNF-03 vale para cada visão, quando ela é a primeira a abrir. O `scripts/orcamento.js` soma os arquivos que o manifesto registra para cada visão, mais o próprio manifesto. Em jul/2026: 17,2 KB na visão 1, 226,3 KB na visão 2 e 18,6 KB na visão 4.
 
 ## Estrutura de pastas
 
@@ -325,7 +336,7 @@ O gitleaks roda no pre-commit e no CI.
 **A atualização de um mês novo,** em ordem:
 1. Ingestão e `dbt build` na máquina local, como hoje.
 2. `scripts/gerar_recomendacao.py` refaz a [`recomendacao.md`](../recomendacao.md).
-3. A exportação escreve os JSON e o manifesto (#66).
+3. A exportação escreve os JSON e o manifesto: `uv run python -m scripts.exportar_dados_do_dashboard` (#66).
 4. A exportação escreve os Parquet e envia ao dataset (#45).
 5. Uma PR leva a recomendação e os JSON, e o CI confere o contrato.
 6. Com o merge, o Actions publica o site.
@@ -357,6 +368,10 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-09-27 | Os exemplos do catálogo usam dado real, gerado dos marts por `scripts/gerar_exemplos_do_catalogo.py`, sem número digitado à mão | [Design system](design-system.md) |
 | 2026-09-27 | Os ícones do Tabler entram pelo pacote, e o build junta só os usados. A fonte do Tabler pelo CDN, como no protótipo, violaria o `style-src` e o `font-src` da política de segurança | Este documento; [design system](design-system.md) |
 | 2026-09-27 | O tema escolhido pelo visitante é aplicado por um script pequeno e síncrono no `<head>`, servido pelo próprio site, que a política aceita em `script-src 'self'` | Este documento; ADR 0018 |
+| 2026-09-27 | O limite de 300 KB de dados do RNF-03 vale por visão, quando ela é a primeira a abrir, e não para todos os arquivos juntos | Este documento; [requisitos](requisitos.md), RNF-03 |
+| 2026-09-27 | O `carteira_mensal_pj.json` leva os 31 meses mais recentes, a série inteira da V2 desde jan/2024. Com eles, a visão 2 carrega 226,3 KB. O número é fixo: a cada mês novo, o mais antigo sai | Este documento; contrato |
+| 2026-09-27 | O `ontologia.json` traz, além dos conceitos citados, um registro por modalidade presente nos dados e o mapa de cada coluna para a sua definição | Este documento; contrato |
+| 2026-09-27 | Os JSON são gravados com uma coluna por linha, reais em reais inteiros e frações com seis casas | Este documento; contrato |
 
 ## Pontos em aberto
 
@@ -365,7 +380,6 @@ O gitleaks roda no pre-commit e no CI.
 | O endereço exato do Space no `connect-src`, que só existe quando o Space for criado | #68 e #73 |
 | Como o erro de cota do ZeroGPU chega à função pública do Space, para virar um estado próprio | #73 |
 | Conferir, com o Space publicado, que a cota vale como a de visitante sem login | #73 |
-| A faixa de meses do `carteira_mensal_pj.json`, medida contra o orçamento do RNF-03 | #66 |
 | O denominador da visão 1 sem filtro de modalidade. O `mrt_carteira_por_uf` conta empresas de todas as naturezas jurídicas. O `mrt_decisao` conta só as de natureza empresarial, sem MEI, como decidiu o [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md). A visão precisa de um denominador só | #69 |
 
 ## Fontes

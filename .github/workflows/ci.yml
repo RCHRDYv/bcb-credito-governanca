@@ -156,6 +156,23 @@ jobs:
       - name: Gabarito das perguntas
         run: uv run python -m scripts.validar_gabarito
 
+      # PT: Os JSON do site dentro do contrato (#66): colunas, tipos, nulos,
+      #     grão, data-base, nenhum dado pessoal, e o ontologia.json e o
+      #     manifesto.json iguais ao que a exportação monta. O arquivo que
+      #     sair do contrato não chega ao site. A exportação roda só na
+      #     máquina com acesso ao Databricks; aqui só se confere o resultado.
+      # EN: The site's JSON files within the contract. The export runs only on
+      #     a machine with Databricks access; CI checks the result.
+      - name: Dados do dashboard
+        run: uv run python -m scripts.validar_dados_do_dashboard
+
+      # PT: Controle negativo: a validação precisa reprovar cópias estragadas
+      #     de propósito, cada uma pelo motivo certo.
+      # EN: Negative control: validation must reject deliberately broken
+      #     copies, each for the right reason.
+      - name: Dados do dashboard (controle negativo)
+        run: uv run python -m scripts.validar_dados_do_dashboard --autoteste
+
       # PT: Carga do projeto dbt: Jinja, macros, referências entre modelos,
       #     fontes e testes. Não conecta no warehouse e não precisa de
       #     credencial (ver .github/dbt/profiles.yml). É o que pega um `ref`

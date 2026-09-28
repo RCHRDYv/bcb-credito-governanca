@@ -1,0 +1,69 @@
+{
+  "arquivo": "manifesto.json",
+  "versao_do_contrato": 1,
+  "data_base": "2026-07-31",
+  "parametros_da_decisao": {
+    "decisao_carteira_minima": 1000000000,
+    "decisao_meses_de_tendencia": 6,
+    "decisao_minimo_de_ufs": 3
+  },
+  "visoes_do_manifesto": [
+    1,
+    2,
+    4
+  ],
+  "arquivos": [
+    {
+      "arquivo": "decisao.json",
+      "linhas": 309,
+      "sha256": "9ff9d0e1cdc1b07199e5843d716072a23e5a232e541a6d72688a821ab1f99ef3",
+      "visoes": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "arquivo": "carteira_mensal_pj.json",
+      "linhas": 9520,
+      "sha256": "c32a5180bac2616d7c07c1e78f398a4a302854936d03be97c947237084724208",
+      "visoes": [
+        2
+      ]
+    },
+    {
+      "arquivo": "carteira_por_uf.json",
+      "linhas": 27,
+      "sha256": "a36916900575def8d84433263bd4b69c7e877a1e4899e2e0896c6bd39ffcab8a",
+      "visoes": [
+        1
+      ]
+    },
+    {
+      "arquivo": "limites_do_dado.json",
+      "linhas": 31,
+      "sha256": "e833900a544873106b808be918ac058ec8f73b53acdbade7e5948ea6b8935392",
+      "visoes": [
+        4
+      ]
+    },
+    {
+      "arquivo": "erro_da_reconstrucao.json",
+      "linhas": 81,
+      "sha256": "1eb91320b204ddc53a0af97c36d4c5bef07efb2afb3b203cec5dc65d0cd6b07b",
+      "visoes": [
+        4
+      ]
+    },
+    {
+      "arquivo": "ontologia.json",
+      "linhas": 25,
+      "sha256": "bd61ff5a9e185f4d2282fe2974438d4a3c435de09c39eb8d949fb7a0a7516d51",
+      "visoes": [
+        1,
+        2,
+        4
+      ]
+    }
+  ]
+}
