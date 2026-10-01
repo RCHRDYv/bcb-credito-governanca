@@ -9,7 +9,7 @@ Como o site, o dataset e o chat se ligam, o que trafega entre eles e o que acont
 
 O que o dashboard precisa fazer está nos [requisitos](requisitos.md), e as colunas de cada arquivo que o site lê estão no [contrato dos dados](../../dashboard/contrato-dos-dados.yml).
 
-**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens, os gráficos e os componentes.
+**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens, os gráficos, os componentes, os arquivos de dados do site e a malha das UFs.
 
 ## As peças
 
@@ -105,7 +105,7 @@ flowchart TB
     duck -- "carregado na partida" --> parquet
 
     classDef planejado stroke-dasharray: 5 5
-    class visoes,filtros,cliente,malha,publica,modelo,contexto,travas,duck,parquet planejado
+    class visoes,filtros,cliente,publica,modelo,contexto,travas,duck,parquet planejado
 ```
 
 ## Fluxo do dado
@@ -126,7 +126,7 @@ flowchart TB
     subgraph maquina["Máquina local, por OAuth, ADR 0001"]
         expjson["Exportação para JSON<br/>#66"]
         expparquet["Exportação para Parquet<br/>#45"]
-        simplifica["Malha simplificada<br/>#67"]
+        geradormalha["Malha das UFs<br/>#67"]
     end
 
     subgraph caminhosite["Caminho do site"]
@@ -144,13 +144,13 @@ flowchart TB
     contrato --> expjson
     ontologia -- "recorte dos conceitos citados" --> expjson
     expjson --> pr
-    ibge --> simplifica --> pr
+    ibge --> geradormalha --> pr
     pr --> ci --> pages
     estrela --> expparquet --> dataset --> space
     ontologia -- "contexto do modelo" --> space
 
     classDef planejado stroke-dasharray: 5 5
-    class expparquet,simplifica,pages,dataset,space planejado
+    class expparquet,pages,dataset,space planejado
 ```
 
 **Três fronteiras, que valem sempre:**
@@ -231,6 +231,18 @@ A exportação e a validação usam o mesmo módulo, [`scripts/contrato_do_dashb
 - **O carregador do site,** em `dashboard/src/dados/`, busca cada arquivo uma vez só, mesmo que duas visões peçam. A falha vira um erro com o motivo, rede ou formato, para o estado de erro da visão, e não fica guardada: tentar de novo busca outra vez.
 
 **Orçamento por visão.** O limite de 300 KB de dados do RNF-03 vale para cada visão, quando ela é a primeira a abrir. O `scripts/orcamento.js` soma os arquivos que o manifesto registra para cada visão, mais o próprio manifesto. Em jul/2026: 17,2 KB na visão 1, 226,3 KB na visão 2 e 18,6 KB na visão 4.
+
+### Malha das UFs
+
+A malha do mapa por UF segue o padrão da ingestão, em duas etapas, as duas na máquina local e sem credencial:
+- **O download,** [`ingestion/baixar_malha.py`](../../ingestion/baixar_malha.py), baixa da API de malhas v3 do IBGE a malha territorial de 2022, na qualidade mínima, com o período escrito na URL [9]. Grava a resposta como veio, fora do git, e registra o sha256 no manifesto da ingestão. Antes, confere as 27 UFs de `dim_uf` pelo código do IBGE.
+- **O arquivo do site,** [`scripts/gerar_malha_do_dashboard.py`](../../scripts/gerar_malha_do_dashboard.py), grava o `public/geo/ufs.json` com a geometria sem alteração, a sigla de cada UF, tirada da ontologia, e a fonte e a licença no topo [10, 11]. Confere, número por número, que a geometria saiu igual à da malha crua.
+- **No CI,** a validação dos dados confere as 27 UFs, o par de código e sigla, os anéis, as casas decimais e o retângulo do Brasil. O controle negativo estraga a malha de sete jeitos.
+- **O QA,** [`scripts/analises/qa_malha.py`](../../scripts/analises/qa_malha.py), confere a malha contra os metadados oficiais de cada UF na API do IBGE: o centroide cai dentro do polígono certo, o retângulo coincide e a fatia de cada UF na área do país fica a menos de 0,5 ponto da oficial.
+
+**Por que a geometria não é simplificada.** A qualidade mínima já vem generalizada pelo IBGE e o arquivo do site pesa 28,9 KB comprimido, contra o limite de 100 KB do RNF-03. Arredondar as coordenadas para 3 casas economizaria 4,5 KB e faria sumir um polígono do Paraná. Simplificar UF por UF abriria frestas entre vizinhas, porque cada lado da mesma fronteira seria simplificado de um jeito.
+
+**O que a qualidade mínima não traz:** as ilhas oceânicas. Fernando de Noronha, de PE, e Trindade e Martim Vaz, do ES, não aparecem no mapa. A UF do SCR é a da sede da empresa, e uma empresa com sede em Noronha conta para PE do mesmo jeito: o mapa só não desenha a ilha.
 
 ## Estrutura de pastas
 
@@ -328,7 +340,7 @@ O gitleaks roda no pre-commit e no CI.
 | Peça | Como publica | De onde | Credencial | Quando | Issue |
 |---|---|---|---|---|---|
 | Arquivos do site | A exportação escreve em `dashboard/public/data/`, e o resultado entra por PR | Máquina local | O login OAuth do Databricks, só na máquina | A cada mês novo do SCR | #66 |
-| Malha das UFs | Baixada uma vez, simplificada e versionada | Máquina local | Nenhuma | Uma vez | #67 |
+| Malha das UFs | Baixada da API do IBGE, com o sha256 no manifesto da ingestão, e versionada por PR | Máquina local | Nenhuma | Quando o IBGE publicar outra malha | #67 |
 | Site | Workflow do Actions: build do Vite e publicação no Pages | GitHub | O token efêmero do workflow | A cada merge na `main` que mexe em `dashboard/` | #68 |
 | Dataset | Envio dos Parquet | Máquina local | Token de escopo fino, só na máquina | A cada mês novo do SCR | #45 |
 | Space | Envio da pasta montada pela lista do que pode ir | Máquina local | O mesmo token | Quando o código ou o modelo mudam | #73 |
@@ -372,6 +384,9 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-09-27 | O `carteira_mensal_pj.json` leva os 31 meses mais recentes, a série inteira da V2 desde jan/2024. Com eles, a visão 2 carrega 226,3 KB. O número é fixo: a cada mês novo, o mais antigo sai | Este documento; contrato |
 | 2026-09-27 | O `ontologia.json` traz, além dos conceitos citados, um registro por modalidade presente nos dados e o mapa de cada coluna para a sua definição | Este documento; contrato |
 | 2026-09-27 | Os JSON são gravados com uma coluna por linha, reais em reais inteiros e frações com seis casas | Este documento; contrato |
+| 2026-10-01 | A malha das UFs vai como o IBGE publica: a de 2022, na qualidade mínima, sem arredondar nem simplificar. Cabe em 28,9 KB comprimida, e arredondar para 3 casas economizaria 4,5 KB ao custo de um polígono do Paraná | Este documento; contrato |
+| 2026-10-01 | O mapa fica sem as ilhas oceânicas, que a qualidade mínima não traz: Fernando de Noronha e Trindade e Martim Vaz | Este documento; [design system](design-system.md) |
+| 2026-10-01 | O período da malha fica escrito na URL, e o download segue o padrão da ingestão, com o sha256 no manifesto | Este documento; `ingestion/fontes.py` |
 
 ## Pontos em aberto
 
@@ -397,3 +412,6 @@ O gitleaks roda no pre-commit e no CI.
 6. DuckDB, API de Python, acessado em 2026-09-26: `duckdb.connect(database=..., read_only=True)`. https://duckdb.org/docs/current/clients/python/dbapi.html
 7. DuckDB, "Securing DuckDB", acessado em 2026-09-26: `enable_external_access`, `autoload_known_extensions`, `autoinstall_known_extensions` e `lock_configuration`; tempo limite no nível da aplicação. https://duckdb.org/docs/current/operations_manual/securing_duckdb/overview.html
 8. GitHub Docs, "Using custom workflows with GitHub Pages", acessado em 2026-09-26: permissões `pages: write` e `id-token: write`. https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
+9. IBGE, API de malhas v3, documentação e respostas de 2026-10-01: sem o parâmetro `periodo`, a API devolve a malha de 2022, com o mesmo sha256 do pedido com `periodo=2022`, e os períodos de 2023 a 2025 devolviam erro 500. https://servicodados.ibge.gov.br/api/docs/malhas?versao=3
+10. IBGE, Leia-me da Malha Municipal Digital 2022, acessado em 2026-10-01: os limites são aproximados e não são a demarcação oficial da divisão político-administrativa. https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Leia_me.pdf
+11. IBGE, Plano de Dados Abertos 2020-2022, glossário, acessado em 2026-10-01: licença aberta é a que permite usar, reutilizar e redistribuir o dado, exigindo no máximo o crédito da autoria e o compartilhamento pela mesma licença. https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2020_2022_1arevisao.pdf

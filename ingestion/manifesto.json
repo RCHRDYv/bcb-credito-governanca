@@ -1108,6 +1108,12 @@
     }
   },
   "ibge": {
+    "malha_ufs_2022.json": {
+      "bytes": 98502,
+      "feicoes": 27,
+      "sha256": "07c671aa87aa1ab296c446de6294df9827112782537b996c0a160284907e7c0f",
+      "url": "https://servicodados.ibge.gov.br/api/v3/malhas/paises/BR?formato=application/vnd.geo%2Bjson&qualidade=minima&intrarregiao=UF&periodo=2022"
+    },
     "populacao_6579.json": {
       "bytes": 22483,
       "linhas": 81,

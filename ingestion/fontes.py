@@ -241,6 +241,28 @@ DIR_RAW_IBGE = DIR_RAW / "ibge"
 DIR_LANDING_IBGE = DIR_LANDING / "ibge"
 
 # -----------------------------------------------------------------------------
+# PT: Malha das UFs, pela API de malhas v3 do IBGE (issue #67). Só o site do
+#     dashboard a usa, no mapa por UF, e ela não vai ao Databricks.
+#     - qualidade=minima: a versão mais leve que o IBGE publica, já
+#       generalizada por ele, com as fronteiras das vizinhas coincidindo;
+#     - intrarregiao=UF: o país dividido nas 27 UFs, numa resposta só;
+#     - periodo=2022: a malha territorial de 2022. Sem o parâmetro, a API
+#       devolve exatamente a mesma resposta (sha256 conferido em
+#       2026-10-01), mas o período escrito na URL não muda de sentido no dia
+#       em que o IBGE publicar outra malha. Na mesma data, os períodos de
+#       2023 a 2025 devolviam erro 500.
+# EN: State mesh from IBGE's mesh API v3. Only the dashboard site uses it, and
+#     it does not go to Databricks. Minimum quality, split by state, period
+#     pinned to 2022, which is what the API serves by default (same sha256 on
+#     2026-10-01); 2023 to 2025 returned HTTP 500 that day.
+# -----------------------------------------------------------------------------
+
+MALHA_UFS = (
+    "https://servicodados.ibge.gov.br/api/v3/malhas/paises/BR"
+    "?formato=application/vnd.geo%2Bjson&qualidade=minima&intrarregiao=UF&periodo=2022"
+)
+
+# -----------------------------------------------------------------------------
 # PT: Séries do SGS, o Sistema Gerenciador de Séries Temporais do BCB (issue
 #     #37). A API é pública, sem login, e devolve JSON. A consulta sempre
 #     leva data final, a da extração: sem ela, séries como a meta da Selic

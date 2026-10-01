@@ -86,9 +86,11 @@ def arquivos_gerados(contrato: dict) -> list[str]:
     """
     PT: Os nomes dos arquivos que a exportação grava em dashboard/public/data:
         os dos marts, o ontologia.json e o manifesto.json. A malha das UFs
-        fica fora, porque mora em public/geo e vem da #67.
+        fica fora: mora em public/geo, é gravada por
+        scripts/gerar_malha_do_dashboard.py e conferida à parte (#67).
     EN: File names the export writes: the marts', ontologia.json and
-        manifesto.json. The state mesh lives elsewhere (#67).
+        manifesto.json. The state mesh lives in public/geo, is written by
+        scripts/gerar_malha_do_dashboard.py and checked separately (#67).
     """
     return [spec["arquivo"] for spec in contrato["arquivos"]] + [ONTOLOGIA, MANIFESTO]
 

@@ -413,6 +413,7 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
 - **Quando usar:** quando a pergunta é onde, no território, um número é alto ou baixo.
 - **Quando não usar:** quando os estados pequenos precisam ser lidos, porque o DF e Sergipe quase somem. Nesse caso, o cartograma. Também não serve para mostrar valor exato: o mapa mostra a classe, e o número fica na dica e na tabela.
 - **Acessibilidade:** a legenda é texto, e as fronteiras na cor do fundo separam vizinhas de cores próximas. Sem a malha, o cartão mostra o estado de erro e diz que o cartograma e a tabela continuam funcionando.
+- **A malha,** versionada desde a #67 em `public/geo/ufs.json`: a malha territorial de 2022 do IBGE, na qualidade mínima, com a geometria sem alteração. Essa qualidade não traz as ilhas oceânicas, então Fernando de Noronha, de PE, e Trindade e Martim Vaz, do ES, não aparecem no mapa.
 
 **Cartograma de grade.** Cada UF vira um quadrado do mesmo tamanho, com a sigla, numa grade que preserva a posição aproximada no mapa, com as mesmas classes do mapa.
 - **Quando usar:** como alternativa ao mapa quando os estados pequenos importam (RF-103), e sempre que a malha não carregar, porque o cartograma não depende dela.
@@ -524,7 +525,6 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 
 | Pendência | Onde se resolve |
 |---|---|
-| A malha das UFs, simplificada e versionada, de que o mapa por UF depende. Até lá, o mapa do catálogo mostra o estado de erro, e o cartograma segue funcionando | #67 |
 | Conferir o vidro no Firefox a olho. O WebKit, motor do Safari, foi conferido na #64, e o Firefox roda os testes de ponta a ponta e o axe no CI, mas não abre na máquina de desenvolvimento | Na primeira visão, #69 |
 | Nome e identidade visual do produto | Em aberto |
 

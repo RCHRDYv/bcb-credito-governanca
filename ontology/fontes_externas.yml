@@ -109,6 +109,43 @@ fontes:
     confianca: parafraseado
     fonte: "Documentação da API Pix_DadosAbertos e medição de 2026-09-24"
 
+  # PT: A malha não é denominador nem métrica: é o desenho das UFs no mapa
+  #     da Tela 1 (issue #67). Fica aqui porque é uma fonte externa por UF,
+  #     com a mesma exigência de fonte, data e confiança das outras.
+  # EN: The mesh is neither a denominator nor a metric: it draws the states
+  #     on the Screen 1 map. It lives here as an external source by state.
+  - id: malha_ibge_uf
+    prefLabel_pt: "Malha das unidades da federação, API de malhas do IBGE"
+    prefLabel_en: "State boundaries, IBGE mesh API"
+    publicador: "IBGE"
+    endereco: "https://servicodados.ibge.gov.br/api/v3/malhas/paises/BR?formato=application/vnd.geo%2Bjson&qualidade=minima&intrarregiao=UF&periodo=2022"
+    documentacao: "https://servicodados.ibge.gov.br/api/docs/malhas?versao=3"
+    periodicidade: >
+      Sem periodicidade fixa: o IBGE publica uma malha territorial por ano de
+      referência. Em 2026-10-01, a API servia a de 2022 por padrão e
+      devolvia erro 500 para os períodos de 2023 a 2025.
+    formato: >
+      GeoJSON, uma feição por UF, identificada pelo código de duas posições
+      do IBGE no campo codarea, sem sigla nem nome. Na qualidade mínima, as
+      coordenadas vêm com até 4 casas decimais. O servidor comprime a
+      resposta com gzip mesmo quando o pedido não diz que aceita.
+    data_de_referencia: "Malha territorial de 2022, fixada na URL pelo parâmetro periodo"
+    licenca: >
+      A API não declara licença própria. O Plano de Dados Abertos do IBGE
+      define licença aberta como a que permite usar, reutilizar e
+      redistribuir o dado, exigindo no máximo o crédito da autoria e o
+      compartilhamento pela mesma licença. O projeto credita o IBGE no
+      próprio arquivo do site, que segue as mesmas condições.
+    limitacao: >
+      O IBGE avisa que os limites da malha são aproximados e não são a
+      demarcação oficial da divisão político-administrativa. Para um mapa
+      que pinta UFs inteiras, a aproximação não muda nada.
+    confianca: parafraseado
+    fonte: >
+      Resposta da API de malhas em 2026-10-01; Leia-me da Malha Municipal
+      Digital 2022, seção de limitações de uso; Plano de Dados Abertos do
+      IBGE 2020-2022, glossário (licença aberta)
+
 conceitos:
 
   - id: empresa_ativa

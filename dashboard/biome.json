@@ -14,7 +14,8 @@
       "!.impeccable",
       "!src/estilos/tokens.css",
       "!src/estilos/tokens.json",
-      "!public/data"
+      "!public/data",
+      "!public/geo"
     ]
   },
   "formatter": {

@@ -7,8 +7,8 @@
  *
  *     Os limites por tipo de arquivo ficam num objeto só, `LIMITES`. As
  *     fontes entram só no relatório, sem limite, porque o requisito pede "só
- *     os pesos usados", e não um número. A malha das UFs (100 KB) entra
- *     quando a #67 criar o arquivo.
+ *     os pesos usados", e não um número. A malha das UFs, versionada desde
+ *     a #67, tem limite próprio de 100 KB.
  *
  *     Os dados têm conta própria, por visão (#66): cada visão, quando é a
  *     primeira a abrir, carrega até 300 KB comprimidos. A soma usa as visões
@@ -59,6 +59,12 @@ const LIMITES = [
     inclui: (caminho) => extname(caminho) === ".woff2",
     maximoKb: null,
     origem: "RNF-03, só os pesos usados",
+  },
+  {
+    nome: "Malha das UFs",
+    inclui: (caminho) => relative(DIST, caminho).replaceAll("\\", "/").startsWith("geo/"),
+    maximoKb: 100,
+    origem: "RNF-03, #67",
   },
 ];
 

@@ -226,8 +226,13 @@ auxiliares:
     visoes: [1, 2, 4]
 
   - arquivo: geo/ufs.json
-    origem: "API de malhas v3 do IBGE, baixada uma vez e simplificada (#67)"
+    origem: "API de malhas v3 do IBGE, malha territorial de 2022 na qualidade mínima (#67)"
     conteudo: >
-      A malha das 27 UFs, com a sigla e o código do IBGE de cada uma, e a
-      fonte e a licença registradas. Fica em dashboard/public/geo/.
+      A malha das 27 UFs, uma feição por UF, com o código do IBGE (codarea)
+      e a sigla, tirada de dim_uf na ontologia. A geometria vai como o IBGE
+      publica, sem alteração, porque a qualidade mínima já cabe no orçamento
+      de carga (decidido em 2026-10-01). No topo vão a fonte, o endereço, a
+      licença, a nota sobre a geometria e o sha256 da malha crua. Fica em
+      dashboard/public/geo/, é gravada por scripts/gerar_malha_do_dashboard.py
+      e conferida no CI pela mesma validação dos dados.
     visoes: [1]
