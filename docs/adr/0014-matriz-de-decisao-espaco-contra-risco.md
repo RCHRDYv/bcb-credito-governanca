@@ -64,6 +64,7 @@ Com uma célula só acima do corte, ela é a própria mediana, e a comparação 
 ### Onde a regra mora
 
 - **Mart:** `dbt/models/marts/mrt_decisao.sql`, mart de apresentação, que a IA do experimento não consulta (ADR 0007).
+- **O mesmo denominador na tela 1:** desde a issue #69, em 2026-10-01, o `dbt/models/marts/mrt_carteira_por_uf.sql` usa o denominador da decisão 1, com o mesmo filtro, e compara a carteira por empresa de cada UF com a mediana das UFs acima do corte no mês. Antes ele trazia as duas versões descartadas, todas as matrizes e as sem MEI. Assim, a tela 1 mostra todas as modalidades com o denominador da decisão, e o CI confere que os dois marts concordam.
 - **Parâmetros:** `vars` do `dbt/dbt_project.yml`, num lugar só.
 - **Documento:** `docs/recomendacao.md`, gerado por `scripts/gerar_recomendacao.py`, sem nenhum número digitado à mão.
 
