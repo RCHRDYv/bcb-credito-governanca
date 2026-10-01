@@ -204,10 +204,15 @@ jobs:
   #     Firefox e no WebKit (RNF-04 a RNF-06) e o Lighthouse no celular e no
   #     computador (RNF-01 e RNF-02). Não usa segredo nenhum: a permissão do
   #     workflow continua só de leitura.
+  #
+  #     Num push na main, o último passo guarda o dist/ como o artefato que o
+  #     job de publicação manda ao Pages (#68). É o mesmo dist/ que acabou de
+  #     passar em todos os passos acima.
   # EN: The dashboard site. Tokens in sync, lint, JSDoc types, unit tests,
   #     build, load budget, end-to-end tests with axe on three engines, and
   #     Lighthouse on mobile and desktop. No secrets; the workflow stays
-  #     read-only.
+  #     read-only. On a push to main, the last step stores dist/ as the
+  #     artifact the publishing job deploys: the same dist/ that just passed.
   # ---------------------------------------------------------------------------
   site-do-dashboard:
     name: Site do dashboard
@@ -256,3 +261,49 @@ jobs:
 
       - name: Lighthouse
         run: npm run lighthouse
+
+      - name: Guardar o site para a publicação
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dashboard/dist
+
+  # ---------------------------------------------------------------------------
+  # PT: Publicação do site no GitHub Pages (#68, ADR 0016). Roda só num push
+  #     na main e só depois que os três jobs acima passam, então o que vai ao
+  #     ar é o dist/ que passou no CI inteiro. Um workflow à parte rodaria em
+  #     paralelo ao CI, sem esperar os testes, porque a main não tem proteção
+  #     de branch.
+  #
+  #     As permissões ficam neste job, e são só as duas que a publicação
+  #     pede: pages: write, para criar a publicação, e id-token: write, para
+  #     o Pages conferir que ela vem deste workflow. O token é o efêmero que
+  #     o GitHub gera para cada execução, e o repositório não tem segredo
+  #     nenhum. O ambiente github-pages só aceita publicação da main.
+  # EN: GitHub Pages deployment. Runs only on a push to main, after the three
+  #     jobs above pass, so what ships is the dist/ that passed all of CI.
+  #     Permissions live in this job and are only the two deployment needs;
+  #     the token is the per-run ephemeral one, and the repository holds no
+  #     secret. The github-pages environment accepts deployments from main.
+  # ---------------------------------------------------------------------------
+  publicacao-do-site:
+    name: Publicação no Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [qualidade-e-seguranca, coerencia-dos-artefatos, site-do-dashboard]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    # PT: uma publicação por vez, sem cancelar a que já começou
+    # EN: one deployment at a time, never cancelling one in progress
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Publicar no Pages
+        id: publicacao
+        uses: actions/deploy-pages@v5

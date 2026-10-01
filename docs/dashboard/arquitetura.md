@@ -9,7 +9,7 @@ Como o site, o dataset e o chat se ligam, o que trafega entre eles e o que acont
 
 O que o dashboard precisa fazer está nos [requisitos](requisitos.md), e as colunas de cada arquivo que o site lê estão no [contrato dos dados](../../dashboard/contrato-dos-dados.yml).
 
-**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens, os gráficos, os componentes, os arquivos de dados do site e a malha das UFs.
+**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens, os gráficos, os componentes, os arquivos de dados do site, a malha das UFs e a publicação no Pages, com a política de segurança.
 
 ## As peças
 
@@ -57,7 +57,7 @@ flowchart TB
     exportacao -- "código e ontologia" --> space
 
     classDef planejado stroke-dasharray: 5 5
-    class actions,site,dataset,space,exportacao planejado
+    class dataset,space,exportacao planejado
 ```
 
 ## Containers
@@ -150,7 +150,7 @@ flowchart TB
     ontologia -- "contexto do modelo" --> space
 
     classDef planejado stroke-dasharray: 5 5
-    class expparquet,pages,dataset,space planejado
+    class expparquet,dataset,space planejado
 ```
 
 **Três fronteiras, que valem sempre:**
@@ -288,7 +288,13 @@ A estrutura fina dos arquivos fica com a #65, no site, e com a #73, no Space.
 
 ### Política de segurança de conteúdo
 
-Vai num `<meta>` do HTML, porque o Pages não deixa configurar cabeçalho HTTP ([ADR 0016](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md), decisão 1). A política proposta para a #68:
+Vai num `<meta>` do HTML, porque o Pages não deixa configurar cabeçalho HTTP ([ADR 0016](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md), decisão 1). Está em vigor desde a #68:
+- o texto mora num lugar só, [`dashboard/politica-de-seguranca.js`](../../dashboard/politica-de-seguranca.js);
+- um plugin do Vite põe a `<meta>` em toda página do build, logo depois do `charset`, e falha se a página não tiver onde pô-la;
+- só no build, porque o modo de desenvolvimento do Vite põe o CSS em elementos `<style>`, que a política bloquearia. O `vite preview`, que os testes de ponta a ponta e o Lighthouse usam, serve o build com a política ativa;
+- o teste `tests/e2e/seguranca.spec.js` confere, nos três motores, que as duas páginas trazem a política, que nenhuma a viola ao abrir, nos dois temas e com a troca de tema no catálogo, e que um script e um estilo embutidos são bloqueados.
+
+A política:
 
 ```text
 default-src 'none';
@@ -325,7 +331,7 @@ As quatro travas do [ADR 0019](../adr/0019-chat-consulta-so-o-esquema-estrela.md
 ### Nenhum segredo
 
 Quem publica o quê, e com que credencial, está na tabela da decisão 5 do [ADR 0016](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md), que este documento não repete. Duas consequências práticas:
-- O workflow do Pages pede só as permissões `pages: write` e `id-token: write` [8], e o repositório não tem nenhum segredo configurado para isso.
+- O job que publica pede só as permissões `pages: write` e `id-token: write` [8, 12], e o repositório não tem nenhum segredo configurado para isso. O resto do workflow continua só com leitura.
 - O Space não tem segredo: ele lê um dataset público.
 
 O gitleaks roda no pre-commit e no CI.
@@ -341,7 +347,7 @@ O gitleaks roda no pre-commit e no CI.
 |---|---|---|---|---|---|
 | Arquivos do site | A exportação escreve em `dashboard/public/data/`, e o resultado entra por PR | Máquina local | O login OAuth do Databricks, só na máquina | A cada mês novo do SCR | #66 |
 | Malha das UFs | Baixada da API do IBGE, com o sha256 no manifesto da ingestão, e versionada por PR | Máquina local | Nenhuma | Quando o IBGE publicar outra malha | #67 |
-| Site | Workflow do Actions: build do Vite e publicação no Pages | GitHub | O token efêmero do workflow | A cada merge na `main` que mexe em `dashboard/` | #68 |
+| Site | Último job do workflow do CI: publica no Pages o `dist/` que acabou de passar nos outros jobs | GitHub | O token efêmero do workflow | A cada push na `main`, depois que o CI passa | #68 |
 | Dataset | Envio dos Parquet | Máquina local | Token de escopo fino, só na máquina | A cada mês novo do SCR | #45 |
 | Space | Envio da pasta montada pela lista do que pode ir | Máquina local | O mesmo token | Quando o código ou o modelo mudam | #73 |
 
@@ -351,7 +357,7 @@ O gitleaks roda no pre-commit e no CI.
 3. A exportação escreve os JSON e o manifesto: `uv run python -m scripts.exportar_dados_do_dashboard` (#66).
 4. A exportação escreve os Parquet e envia ao dataset (#45).
 5. Uma PR leva a recomendação e os JSON, e o CI confere o contrato.
-6. Com o merge, o Actions publica o site.
+6. Com o merge, o CI roda de novo na `main` e, se passar, publica o site.
 
 ## Quando uma peça falha
 
@@ -387,12 +393,15 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-10-01 | A malha das UFs vai como o IBGE publica: a de 2022, na qualidade mínima, sem arredondar nem simplificar. Cabe em 28,9 KB comprimida, e arredondar para 3 casas economizaria 4,5 KB ao custo de um polígono do Paraná | Este documento; contrato |
 | 2026-10-01 | O mapa fica sem as ilhas oceânicas, que a qualidade mínima não traz: Fernando de Noronha e Trindade e Martim Vaz | Este documento; [design system](design-system.md) |
 | 2026-10-01 | O período da malha fica escrito na URL, e o download segue o padrão da ingestão, com o sha256 no manifesto | Este documento; `ingestion/fontes.py` |
+| 2026-10-01 | A publicação no Pages é o último job do workflow do CI, e não um workflow à parte. Sem proteção de branch na `main`, um workflow à parte publicaria em paralelo aos testes. Assim, só vai ao ar o `dist/` que passou em todos os passos, e o site é publicado a cada push na `main`, mesmo sem mudança em `dashboard/` | Este documento; `.github/workflows/ci.yml` |
+| 2026-10-01 | A política de segurança mora em `dashboard/politica-de-seguranca.js`, e o build a põe no `<meta>` de cada página, só no build | Este documento; [requisitos](requisitos.md), RNF-11 |
+| 2026-10-01 | O link do site entra no README da raiz com a Tela 1 (#69), e não na #68: até lá, o site tem só a página inicial e o catálogo | Este documento; #68 e #69 |
 
 ## Pontos em aberto
 
 | Ponto | Onde se resolve |
 |---|---|
-| O endereço exato do Space no `connect-src`, que só existe quando o Space for criado | #68 e #73 |
+| O endereço exato do Space no `connect-src`, que só existe quando o Space for criado | #51 e #73 |
 | Como o erro de cota do ZeroGPU chega à função pública do Space, para virar um estado próprio | #73 |
 | Conferir, com o Space publicado, que a cota vale como a de visitante sem login | #73 |
 | O denominador da visão 1 sem filtro de modalidade. O `mrt_carteira_por_uf` conta empresas de todas as naturezas jurídicas. O `mrt_decisao` conta só as de natureza empresarial, sem MEI, como decidiu o [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md). A visão precisa de um denominador só | #69 |
@@ -415,3 +424,4 @@ O gitleaks roda no pre-commit e no CI.
 9. IBGE, API de malhas v3, documentação e respostas de 2026-10-01: sem o parâmetro `periodo`, a API devolve a malha de 2022, com o mesmo sha256 do pedido com `periodo=2022`, e os períodos de 2023 a 2025 devolviam erro 500. https://servicodados.ibge.gov.br/api/docs/malhas?versao=3
 10. IBGE, Leia-me da Malha Municipal Digital 2022, acessado em 2026-10-01: os limites são aproximados e não são a demarcação oficial da divisão político-administrativa. https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2022/Leia_me.pdf
 11. IBGE, Plano de Dados Abertos 2020-2022, glossário, acessado em 2026-10-01: licença aberta é a que permite usar, reutilizar e redistribuir o dado, exigindo no máximo o crédito da autoria e o compartilhamento pela mesma licença. https://www.ibge.gov.br/np_download/novoportal/documentos_institucionais/Plano_de_Dados_Abertos_IBGE_2020_2022_1arevisao.pdf
+12. `actions/deploy-pages` 5.0.1, README, lido em 2026-10-01: o job que publica precisa no mínimo de `pages: write` e `id-token: write` e deve publicar no ambiente `github-pages`. A versão 5.0.0 do `actions/upload-pages-artifact` empacota a pasta do site. https://github.com/actions/deploy-pages

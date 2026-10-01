@@ -7,13 +7,19 @@
  *     subcaminho do Pages (`/bcb-credito-governanca/`), sem configurar o
  *     endereço em lugar nenhum.
  *
+ *     O plugin da política de segurança de conteúdo põe a `<meta>` da
+ *     política em toda página do build, e só no build (#68). O texto mora em
+ *     `politica-de-seguranca.js`.
+ *
  * EN: Vite configuration: the dev server and the static build published on
  *     GitHub Pages. A relative `base` lets the same `dist/` work in preview,
- *     at a domain root and under the Pages subpath.
+ *     at a domain root and under the Pages subpath. The content security
+ *     policy plugin adds the policy `<meta>` to every built page.
  */
 
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
+import { politicaDeSeguranca } from "./politica-de-seguranca.js";
 
 /**
  * PT: Caminho absoluto de um arquivo desta pasta.
@@ -26,6 +32,7 @@ const aqui = (arquivo) => fileURLToPath(new URL(arquivo, import.meta.url));
 
 export default defineConfig({
   base: "./",
+  plugins: [politicaDeSeguranca()],
   build: {
     outDir: "dist",
     // PT: sem mapa de código no site publicado, que é só para leitura

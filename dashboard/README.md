@@ -1,6 +1,6 @@
 # Site do dashboard
 
-Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico), os componentes de interface da #64, todos no catálogo, os dados das visões, exportados dos marts na #66, e a malha das UFs da #67, que o mapa usa.
+Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico), os componentes de interface da #64, todos no catálogo, os dados das visões, exportados dos marts na #66, a malha das UFs da #67, que o mapa usa, e a publicação no Pages da #68, com a política de segurança de conteúdo.
 
 Para entender o projeto antes do código:
 - [arquitetura](../docs/dashboard/arquitetura.md): como o site, o dataset e o chat se ligam;
@@ -98,6 +98,14 @@ uv run python -m scripts.gerar_malha_do_dashboard
 
 A primeira baixa a malha e registra o sha256 no manifesto da ingestão. A segunda grava o arquivo do site e confere que a geometria saiu igual à baixada. A validação dos dados, a mesma do CI, confere também a malha. O porquê de não simplificar está na [arquitetura](../docs/dashboard/arquitetura.md#malha-das-ufs).
 
+## Publicação
+
+O site fica em https://rchrdyv.github.io/bcb-credito-governanca/, e o catálogo do design system, em `catalogo.html`, no mesmo endereço.
+
+Ninguém publica à mão. A publicação é o último job do [workflow do CI](../.github/workflows/ci.yml), e roda a cada push na `main`, depois que todos os outros jobs passam. O que vai ao ar é o `dist/` que acabou de passar no lint, nos testes, no axe, no orçamento e no Lighthouse. O job usa só o token efêmero do workflow, com as permissões `pages: write` e `id-token: write`, e o repositório não tem segredo nenhum ([ADR 0016](../docs/adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md)).
+
+A política de segurança de conteúdo mora em [`politica-de-seguranca.js`](politica-de-seguranca.js). O build a põe num `<meta>` de cada página, porque o Pages não deixa configurar cabeçalho HTTP. Isso só acontece no build: o modo de desenvolvimento do Vite põe o CSS em elementos `<style>`, que a política bloquearia. Para ver o site com a política, use o `build` e o `preview`.
+
 ## Estrutura
 
 | Pasta ou arquivo | O que guarda |
@@ -105,6 +113,7 @@ A primeira baixa a malha e registra o sha256 no manifesto da ingestão. A segund
 | `index.html` | A página inicial, sem script nem estilo embutido |
 | `catalogo.html` | O catálogo do design system, com as fundações, as paletas e os gráficos nos dois temas |
 | `tokens/` | Os tokens no formato DTCG, em três camadas: `primitivos/`, `semanticos/` e `componentes/` |
+| `politica-de-seguranca.js` | A política de segurança de conteúdo e o plugin do Vite que a põe no HTML do build |
 | `src/main.js` | O ponto de entrada |
 | `src/textos/` | Os textos da interface, em pt-BR, e a função `t()` |
 | `src/estilos/` | O CSS: fontes, base e o `tokens.css` gerado, que nunca é editado à mão |
