@@ -145,6 +145,14 @@ arquivos:
     origem: mrt_carteira_por_uf
     grao: "UF, no último mês do SCR"
     filtro: "data_base igual à do decisao.json, para as duas fontes da visão 1 falarem do mesmo mês."
+    nota: >
+      É a visão 1 com todas as modalidades. O denominador e as razões são os
+      do ADR 0014, com os mesmos nomes de coluna do decisao.json, e a tela
+      trata os dois arquivos do mesmo jeito. Até a #69 o arquivo trazia os
+      dois denominadores que o ADR descartou, todas as matrizes e as sem MEI
+      (decidido em 2026-10-01). A validação confere, UF por UF, que as
+      empresas são as mesmas do decisao.json e que a carteira PJ é a soma
+      das modalidades dele.
     ultimo_mes: true
     ordem: [uf]
     visoes: [1]
@@ -152,11 +160,10 @@ arquivos:
       - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
       - {nome: uf, tipo: string, unidade: texto, nulo: false, definicao: "ontology/dimensoes.yml#dim_uf"}
       - {nome: carteira_pj, tipo: number, unidade: reais, nulo: false, definicao: "ontology/metricas.yml#carteira_ativa"}
-      - {nome: empresas_ativas, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#estoque_reconstruido"}
-      - {nome: empresas_ativas_sem_mei, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#mei"}
-      - {nome: carteira_pj_por_empresa_ativa, tipo: number, unidade: reais_por_empresa, nulo: false, definicao: "ADR 0009"}
-      - {nome: carteira_pj_por_empresa_ativa_sem_mei, tipo: number, unidade: reais_por_empresa, nulo: false, definicao: "ADR 0009"}
-      - {nome: taxa_inadimplencia_pj, tipo: number, unidade: fracao, nulo: true, definicao: "ontology/metricas.yml#indicador_inadimplencia"}
+      - {nome: empresas, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#estoque_reconstruido"}
+      - {nome: carteira_por_empresa, tipo: number, unidade: reais_por_empresa, nulo: false, definicao: "ADR 0014, decisão 1"}
+      - {nome: mediana_carteira_por_empresa, tipo: number, unidade: reais_por_empresa, nulo: false, definicao: "ADR 0014, decisão 1"}
+      - {nome: indice_de_espaco, tipo: number, unidade: indice, nulo: false, definicao: "ADR 0014, decisão 1"}
       - {nome: retrato_do_cnpj, tipo: string, unidade: mes, nulo: false, definicao: "ontology/fontes_externas.yml#cnpj_aberto"}
       - {nome: meses_ate_o_retrato, tipo: integer, unidade: meses, nulo: false, definicao: "ADR 0009"}
 
@@ -207,7 +214,11 @@ auxiliares:
       em português, definição, fonte normativa, grau de confiança e nota de
       escopo. Entra também um registro por modalidade que aparece nos dados,
       com a definição do BCB, porque as colunas de modalidade apontam para o
-      arquivo inteiro de modalidades (decidido em 2026-09-27, na #66). Junto
+      arquivo inteiro de modalidades (decidido em 2026-09-27, na #66). O
+      registro da modalidade traz também a explicação em palavras comuns, com
+      confiança e fonte próprias, que a tela mostra antes da definição
+      oficial, quase sempre uma rubrica contábil (decidido em 2026-10-01, na
+      #69). Junto
       vai o mapa de cada coluna para a sua definição, um conceito ou um ADR,
       que é o que deixa o site ir do número à definição (RF-G07). Gerado do
       YAML da ontologia, nunca digitado.

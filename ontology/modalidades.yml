@@ -22,6 +22,18 @@
 #   parafraseado  = redação própria, sentido diretamente amparado na fonte
 #   inferido      = conclusão a partir de contexto, não declarada na fonte
 #   lacuna        = não encontrado em nenhum documento consultado
+#
+# PT: Toda modalidade tem também uma explicação em palavras comuns, que a
+#     tela 1 do dashboard mostra antes da definição oficial (#69, decidido em
+#     2026-10-01). Doze das treze definições oficiais são só a rubrica
+#     contábil, que quem não é do ramo não lê. A explicação é redação nossa,
+#     tirada das definições das submodalidades, e tem confiança e fonte
+#     próprias: explicacao_confianca é parafraseado ou inferido, nunca
+#     verbatim, e a definição oficial continua intacta no campo definition.
+# EN: Every modality also has a plain-language explanation the dashboard
+#     shows before the official definition, since twelve of thirteen official
+#     definitions are just accounting codes. It is our own wording, drawn from
+#     the sub-modality definitions, with its own confidence and source.
 # =============================================================================
 
 esquema:
@@ -219,6 +231,12 @@ conceitos:
       de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 20"
+    explicacao: >
+      Quando a empresa gasta mais do que tem na conta corrente sem ter um
+      limite de crédito contratado, e o banco cobre a diferença. É um saldo
+      negativo na conta, sem um contrato de empréstimo por trás.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Cosif, função da conta 1.6.1.10.00.00-3; Decreto 6.306/2007, Regulamento do IOF, art. 3º, § 1º, incisos III e V, que separa o adiantamento a depositante, o saldo a descoberto em conta de depósito, do excesso de limite, o saldo a descoberto em operação de crédito. Consultados em 2026-10-01"
 
   - id: sub_0101
     notation: "0101"
@@ -247,6 +265,12 @@ conceitos:
       (1.6.1.20.01.10-4 a partir de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 20"
+    explicacao: >
+      Dinheiro emprestado sem ligação com a compra de um bem específico. Para
+      empresas, é principalmente capital de giro, conta garantida e cheque
+      especial.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, pp. 20 a 25, definições das submodalidades"
 
   - id: sub_0202
     notation: "0202"
@@ -536,6 +560,12 @@ conceitos:
       Renomeada de "Títulos descontados" pela Carta-Circular 3.773/2016, a
       partir de set/2016. O Anexo 3 registra a renomeação com os dois nomes
       na mesma célula.
+    explicacao: >
+      A empresa recebe hoje o dinheiro de vendas que só entraria no futuro,
+      como duplicatas, cheques ou faturas de cartão, e o banco fica com esses
+      recebíveis. É o desconto de duplicatas e a antecipação de recebíveis.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, pp. 25 e 26, definições das submodalidades"
 
   - id: sub_0301
     notation: "0301"
@@ -619,6 +649,13 @@ conceitos:
       jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 27"
+    explicacao: >
+      Crédito ligado à compra de um bem ou serviço, como veículos, máquinas e
+      equipamentos. Inclui também o financiamento das vendas e das compras a
+      prazo entre empresas, o vendor e o compror, e o de projetos pagos pelo
+      caixa que o próprio projeto gera.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, pp. 27 a 29, definições das submodalidades"
 
   - id: sub_0401
     notation: "0401"
@@ -777,6 +814,11 @@ conceitos:
       partir de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 29"
+    explicacao: >
+      Crédito para a empresa que vende ao exterior, antes ou depois do
+      embarque da mercadoria, como os adiantamentos sobre contratos de câmbio.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, pp. 29 e 30, definições das submodalidades"
 
   - id: sub_0501
     notation: "0501"
@@ -868,6 +910,11 @@ conceitos:
       4.9.2.07.00-8 (1.6.2.25.01.10-6 a partir de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 30"
+    explicacao: >
+      Crédito para a empresa comprar bens ou serviços no exterior, com
+      recursos de linhas de crédito externas.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, p. 30, definição da submodalidade 0601"
 
   - id: sub_0601
     notation: "0601"
@@ -897,6 +944,12 @@ conceitos:
       de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 30"
+    explicacao: >
+      Crédito que o banco dá à empresa que vende, para financiar a compra de
+      veículos, máquinas ou equipamentos pelos clientes dela. Quem aparece
+      como devedora é a empresa vendedora.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, pp. 30 e 31, definições das submodalidades"
 
   - id: sub_0701
     notation: "0701"
@@ -973,6 +1026,11 @@ conceitos:
       rótulo no dado ainda traz o nome antigo entre parênteses, com dois
       espaços antes do parêntese.
     aviso: "O rótulo no dado tem dois espaços seguidos. Normalizar espaços antes de comparar texto."
+    explicacao: >
+      Crédito para produtores rurais, na agricultura e na pecuária, para
+      custear a produção, investir, comercializar ou industrializar.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, p. 32, definições das submodalidades"
 
   - id: sub_0801
     notation: "0801"
@@ -1057,6 +1115,11 @@ conceitos:
       direcionamento da poupança valem desde 2026-01-01, e o modelo novo a
       partir de 2027.
     fonte_historyNote: "Resolução CMN 5.255, de 2025-10-10, art. 2º (art. 13 da Resolução 4.676) e art. 4º; nota do BCB de 2025-10-10"
+    explicacao: >
+      Crédito para comprar ou construir imóveis, residenciais ou não, como
+      salas comerciais e empreendimentos.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, pp. 32 e 33, definições das submodalidades"
 
   - id: sub_0901
     notation: "0901"
@@ -1129,6 +1192,12 @@ conceitos:
       de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 33"
+    explicacao: >
+      Crédito para comprar ações, outros valores mobiliários e ativos
+      virtuais, a chamada conta margem. No plano de contas anterior a 2025, a
+      modalidade também incluía o empréstimo de títulos e o de ouro.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Cosif, funções das contas 1.6.5.20.00.00-0, desde jan/2025, e 1.6.5.10.00-3, 1.6.5.20.00-0 e 1.6.5.40.00-4, no plano anterior. Consultados em 2026-10-01"
 
   - id: sub_1001
     notation: "1001"
@@ -1168,6 +1237,11 @@ conceitos:
       de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 33"
+    explicacao: >
+      Crédito para obras de infraestrutura e projetos de desenvolvimento,
+      inclusive os de prazo longo pagos pelo caixa que o próprio projeto gera.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, p. 33, definições das submodalidades"
 
   - id: sub_1101
     notation: "1101"
@@ -1209,6 +1283,12 @@ conceitos:
       partir de jan/25)
     confianca: verbatim
     fonte: "Instruções 3040, p. 34"
+    explicacao: >
+      O leasing: a empresa usa um bem, como veículo, máquina ou imóvel, e paga
+      parcelas por ele. No leasing financeiro, pode comprar o bem no fim do
+      contrato.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, p. 34, definições das submodalidades"
 
   - id: sub_1201
     notation: "1201"
@@ -1284,6 +1364,12 @@ conceitos:
       Não confundir o nome com "categoria residual". A maior parte da
       modalidade é produto bem definido. Ver ontology/metricas.yml,
       avisos_gerais.outros_creditos_balde_de_supressao.
+    explicacao: >
+      Valores a receber que funcionam como crédito sem ser empréstimo nem
+      financiamento, como compras no cartão de crédito ainda não pagas e avais
+      e fianças que o banco precisou pagar no lugar do cliente.
+    explicacao_confianca: parafraseado
+    explicacao_fonte: "Instruções 3040, pp. 35 e 36, definições das submodalidades"
 
   - id: sub_1301
     notation: "1301"

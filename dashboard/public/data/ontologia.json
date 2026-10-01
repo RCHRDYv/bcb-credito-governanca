@@ -95,16 +95,6 @@
       "nota_de_escopo": "O retrato guarda só a situação atual e a data da última mudança. Duas coisas se perdem: estados intermediários (uma empresa que passou de inapta para baixada depois de D conta como ativa em D, e talvez já estivesse inapta) e mudança de UF da matriz. O erro é medido contra retratos reais antigos e publicado no ADR 0009. É medição em dois pontos, e não garantia para outros meses ou UFs."
     },
     {
-      "ref": "ontology/fontes_externas.yml#mei",
-      "id": "mei",
-      "tipo": "conceito",
-      "rotulo": "Microempreendedor individual",
-      "definicao": "Empresa com opção pelo MEI na tabela do Simples do CNPJ, com data de entrada e, quando houver, data de saída.",
-      "fonte": "Leiaute dos dados abertos do CNPJ, tabela Simples: opção pelo MEI, data de opção e data de exclusão",
-      "confianca": "parafraseado",
-      "nota_de_escopo": "MEI tem CNPJ, e o projeto supõe que o crédito tomado por ele com o CNPJ entra como pessoa jurídica no SCR. A metodologia do SCR.data não trata do MEI, então essa parte é inferência. Incluir ou não o MEI no denominador muda o indicador de espaço. A escolha é da camada de decisão (issue #26), e o fato de empresas guarda as duas contagens."
-    },
-    {
       "ref": "ontology/metricas.yml#ativo_problematico",
       "id": "ativo_problematico",
       "tipo": "conceito",
@@ -173,7 +163,10 @@
       "fonte": "Instruções 3040, p. 20",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "01"
+      "codigo": "01",
+      "explicacao": "Quando a empresa gasta mais do que tem na conta corrente sem ter um limite de crédito contratado, e o banco cobre a diferença. É um saldo negativo na conta, sem um contrato de empréstimo por trás.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Cosif, função da conta 1.6.1.10.00.00-3; Decreto 6.306/2007, Regulamento do IOF, art. 3º, § 1º, incisos III e V, que separa o adiantamento a depositante, o saldo a descoberto em conta de depósito, do excesso de limite, o saldo a descoberto em operação de crédito. Consultados em 2026-10-01"
     },
     {
       "ref": "ontology/modalidades.yml#mod_02",
@@ -184,7 +177,10 @@
       "fonte": "Instruções 3040, p. 20",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "02"
+      "codigo": "02",
+      "explicacao": "Dinheiro emprestado sem ligação com a compra de um bem específico. Para empresas, é principalmente capital de giro, conta garantida e cheque especial.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, pp. 20 a 25, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_03",
@@ -195,7 +191,10 @@
       "fonte": "Instruções 3040, p. 25",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "03"
+      "codigo": "03",
+      "explicacao": "A empresa recebe hoje o dinheiro de vendas que só entraria no futuro, como duplicatas, cheques ou faturas de cartão, e o banco fica com esses recebíveis. É o desconto de duplicatas e a antecipação de recebíveis.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, pp. 25 e 26, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_04",
@@ -206,7 +205,10 @@
       "fonte": "Instruções 3040, p. 27",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "04"
+      "codigo": "04",
+      "explicacao": "Crédito ligado à compra de um bem ou serviço, como veículos, máquinas e equipamentos. Inclui também o financiamento das vendas e das compras a prazo entre empresas, o vendor e o compror, e o de projetos pagos pelo caixa que o próprio projeto gera.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, pp. 27 a 29, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_05",
@@ -217,7 +219,10 @@
       "fonte": "Instruções 3040, p. 29",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "05"
+      "codigo": "05",
+      "explicacao": "Crédito para a empresa que vende ao exterior, antes ou depois do embarque da mercadoria, como os adiantamentos sobre contratos de câmbio.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, pp. 29 e 30, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_06",
@@ -228,7 +233,10 @@
       "fonte": "Instruções 3040, p. 30",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "06"
+      "codigo": "06",
+      "explicacao": "Crédito para a empresa comprar bens ou serviços no exterior, com recursos de linhas de crédito externas.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, p. 30, definição da submodalidade 0601"
     },
     {
       "ref": "ontology/modalidades.yml#mod_07",
@@ -239,7 +247,10 @@
       "fonte": "Instruções 3040, p. 30",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "07"
+      "codigo": "07",
+      "explicacao": "Crédito que o banco dá à empresa que vende, para financiar a compra de veículos, máquinas ou equipamentos pelos clientes dela. Quem aparece como devedora é a empresa vendedora.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, pp. 30 e 31, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_08",
@@ -250,7 +261,10 @@
       "fonte": "Instruções 3040, p. 32",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "08"
+      "codigo": "08",
+      "explicacao": "Crédito para produtores rurais, na agricultura e na pecuária, para custear a produção, investir, comercializar ou industrializar.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, p. 32, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_09",
@@ -261,7 +275,10 @@
       "fonte": "Instruções 3040, p. 32",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "09"
+      "codigo": "09",
+      "explicacao": "Crédito para comprar ou construir imóveis, residenciais ou não, como salas comerciais e empreendimentos.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, pp. 32 e 33, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_10",
@@ -272,7 +289,10 @@
       "fonte": "Instruções 3040, p. 33",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "10"
+      "codigo": "10",
+      "explicacao": "Crédito para comprar ações, outros valores mobiliários e ativos virtuais, a chamada conta margem. No plano de contas anterior a 2025, a modalidade também incluía o empréstimo de títulos e o de ouro.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Cosif, funções das contas 1.6.5.20.00.00-0, desde jan/2025, e 1.6.5.10.00-3, 1.6.5.20.00-0 e 1.6.5.40.00-4, no plano anterior. Consultados em 2026-10-01"
     },
     {
       "ref": "ontology/modalidades.yml#mod_11",
@@ -283,7 +303,10 @@
       "fonte": "Instruções 3040, p. 33",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "11"
+      "codigo": "11",
+      "explicacao": "Crédito para obras de infraestrutura e projetos de desenvolvimento, inclusive os de prazo longo pagos pelo caixa que o próprio projeto gera.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, p. 33, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_12",
@@ -294,7 +317,10 @@
       "fonte": "Instruções 3040, p. 34",
       "confianca": "verbatim",
       "nota_de_escopo": null,
-      "codigo": "12"
+      "codigo": "12",
+      "explicacao": "O leasing: a empresa usa um bem, como veículo, máquina ou imóvel, e paga parcelas por ele. No leasing financeiro, pode comprar o bem no fim do contrato.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, p. 34, definições das submodalidades"
     },
     {
       "ref": "ontology/modalidades.yml#mod_13",
@@ -305,7 +331,10 @@
       "fonte": "Instruções 3040, p. 35 (a modalidade não tem definição própria, só as submodalidades)",
       "confianca": "lacuna",
       "nota_de_escopo": "Em jun/2026, a modalidade soma R$ 795,5 bi, 10,42% da carteira ativa. Desse total, 74,8% é compra no cartão de crédito sem juros (1304) e 21,2% são recebíveis adquiridos (1350). A submodalidade genérica, \"outros com característica de crédito\" (1399), é 1,8%.",
-      "codigo": "13"
+      "codigo": "13",
+      "explicacao": "Valores a receber que funcionam como crédito sem ser empréstimo nem financiamento, como compras no cartão de crédito ainda não pagas e avais e fianças que o banco precisou pagar no lugar do cliente.",
+      "explicacao_confianca": "parafraseado",
+      "explicacao_fonte": "Instruções 3040, pp. 35 e 36, definições das submodalidades"
     }
   ],
   "colunas": {
@@ -355,11 +384,10 @@
       "data_base": "ontology/dimensoes.yml#dim_data_base",
       "uf": "ontology/dimensoes.yml#dim_uf",
       "carteira_pj": "ontology/metricas.yml#carteira_ativa",
-      "empresas_ativas": "ontology/fontes_externas.yml#estoque_reconstruido",
-      "empresas_ativas_sem_mei": "ontology/fontes_externas.yml#mei",
-      "carteira_pj_por_empresa_ativa": "ADR 0009",
-      "carteira_pj_por_empresa_ativa_sem_mei": "ADR 0009",
-      "taxa_inadimplencia_pj": "ontology/metricas.yml#indicador_inadimplencia",
+      "empresas": "ontology/fontes_externas.yml#estoque_reconstruido",
+      "carteira_por_empresa": "ADR 0014, decisão 1",
+      "mediana_carteira_por_empresa": "ADR 0014, decisão 1",
+      "indice_de_espaco": "ADR 0014, decisão 1",
       "retrato_do_cnpj": "ontology/fontes_externas.yml#cnpj_aberto",
       "meses_ate_o_retrato": "ADR 0009"
     },

@@ -34,7 +34,7 @@
     {
       "arquivo": "carteira_por_uf.json",
       "linhas": 27,
-      "sha256": "a36916900575def8d84433263bd4b69c7e877a1e4899e2e0896c6bd39ffcab8a",
+      "sha256": "6780ffc5c20e5dd1aaa126c69d43bb3d66ba97c091ece6efe2886cf796bb8042",
       "visoes": [
         1
       ]
@@ -58,7 +58,7 @@
     {
       "arquivo": "ontologia.json",
       "linhas": 25,
-      "sha256": "bd61ff5a9e185f4d2282fe2974438d4a3c435de09c39eb8d949fb7a0a7516d51",
+      "sha256": "fcf34fbe7ec8ad1599be58d77af01741b9e5373c3971abdf1f62afbe7f48307b",
       "visoes": [
         1,
         2,
