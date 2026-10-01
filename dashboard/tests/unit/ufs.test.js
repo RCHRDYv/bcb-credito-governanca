@@ -1,5 +1,6 @@
 /**
- * PT: Testes da tabela das UFs e da grade do cartograma (#63, RF-103).
+ * PT: Testes da tabela das UFs, da grade do cartograma (#63, RF-103) e da
+ *     malha versionada (#67).
  *
  *     A grade foi revisada em 2026-09-27, depois que a primeira versão pôs
  *     estados em posições erradas. A regra: todo par de UFs vizinhas na
@@ -13,6 +14,8 @@
  *     within 60 degrees of the real direction between IBGE mesh centroids.
  */
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { UFS, ufPelaSigla, ufPeloCodigo } from "../../src/graficos/ufs.js";
 
@@ -98,5 +101,32 @@ describe("grade do cartograma", () => {
       }
     }
     expect(desvios).toEqual([]);
+  });
+});
+
+/**
+ * PT: A malha versionada pela #67 traz, por UF, o código do IBGE e a sigla,
+ *     tirada de dim_uf na ontologia. O site usa a tabela de `ufs.js` para ir
+ *     do código à sigla. Este teste cruza as duas fontes: se uma mudar sem a
+ *     outra, o mapa pintaria a UF errada.
+ * EN: The versioned mesh carries the IBGE code and the abbreviation from the
+ *     ontology; the site maps code to abbreviation through `ufs.js`. This
+ *     cross-checks both sources.
+ */
+describe("malha das UFs versionada (#67)", () => {
+  const caminho = fileURLToPath(new URL("../../public/geo/ufs.json", import.meta.url));
+  /** @type {{ features: { properties: { codarea: string, sigla: string } }[] }} */
+  const malha = JSON.parse(readFileSync(caminho, "utf-8"));
+
+  it("tem uma feição por UF da tabela / one feature per state", () => {
+    const codigos = malha.features.map((f) => f.properties.codarea).sort();
+    expect(codigos).toEqual(UFS.map((uf) => uf.codigo).sort());
+  });
+
+  it("dá a mesma sigla que a tabela para cada código / same abbreviation per code", () => {
+    const divergentes = malha.features
+      .filter((f) => ufPeloCodigo(f.properties.codarea).sigla !== f.properties.sigla)
+      .map((f) => f.properties.codarea);
+    expect(divergentes).toEqual([]);
   });
 });

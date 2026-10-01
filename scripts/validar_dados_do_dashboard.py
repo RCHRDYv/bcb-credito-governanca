@@ -14,7 +14,12 @@ PT: Valida os JSON do site do dashboard contra o contrato, sem precisar de
        pessoa ou empresa, e nenhum texto no formato de CPF ou CNPJ;
     4. o ontologia.json e o manifesto.json iguais ao que a exportação monta
        a partir dos arquivos e da ontologia. Isso cobre o sha256 e as linhas
-       de cada arquivo, os parâmetros da decisão e os conceitos citados.
+       de cada arquivo, os parâmetros da decisão e os conceitos citados;
+    5. a malha das UFs, em dashboard/public/geo/ufs.json (#67): as 27 UFs
+       com o par de código e sigla de dim_uf, a fonte e a licença, e cada
+       anel fechado, dentro do Brasil e com as casas decimais do IBGE. A
+       regra mora em scripts/gerar_malha_do_dashboard.py, junto de quem
+       grava o arquivo.
 
     Com --autoteste, roda o controle negativo: estraga cópias dos arquivos
     em memória, um estrago por vez, e confere que a validação reprova cada
@@ -24,8 +29,9 @@ PT: Valida os JSON do site do dashboard contra o contrato, sem precisar de
 EN: Validates the dashboard site's JSON files against the contract with no
     credential; runs in CI. Checks the file set, each data file's columns,
     types, nulls, allowed values, dates, grain order and uniqueness, the
-    data-base and month range, the absence of personal data, and that the
-    ontology and manifest equal what the export builds. With --autoteste it
+    data-base and month range, the absence of personal data, that the
+    ontology and manifest equal what the export builds, and the state mesh.
+    With --autoteste it
     runs the negative control: it breaks in-memory copies one way at a time
     and checks each one is rejected for the right reason.
 
@@ -43,6 +49,7 @@ import math
 import re
 import sys
 
+from ingestion.baixar_malha import ufs_da_ontologia
 from scripts.contrato_do_dashboard import (
     DATA,
     DESTINO,
@@ -57,6 +64,7 @@ from scripts.contrato_do_dashboard import (
     texto_de_dados,
     texto_de_registro,
 )
+from scripts.gerar_malha_do_dashboard import DESTINO_DA_MALHA, texto_da_malha, validar_malha
 
 # PT: Começos de nome de coluna que indicariam identificador de pessoa ou de
 #     empresa. "retrato_do_cnpj" não entra: é o mês do retrato da base
@@ -301,6 +309,24 @@ def ler_pasta() -> dict[str, str]:
     }
 
 
+def ler_malha() -> str | None:
+    """PT: o texto da malha das UFs, se existir / EN: the state mesh text, if any"""
+    return DESTINO_DA_MALHA.read_text(encoding="utf-8") if DESTINO_DA_MALHA.exists() else None
+
+
+def validar_arquivo_da_malha(texto: str | None) -> list[str]:
+    """
+    PT: A malha das UFs fica em public/geo, fora da pasta de dados, porque
+        não sai de um mart e não muda a cada mês (#67). Por isso é conferida
+        à parte, pela regra de scripts/gerar_malha_do_dashboard.py.
+    EN: The state mesh lives outside the data folder, since it comes from no
+        mart and does not change monthly, so it is checked separately.
+    """
+    if texto is None:
+        return ["arquivo do contrato faltando: geo/ufs.json"]
+    return validar_malha(texto, ufs_da_ontologia())
+
+
 # -----------------------------------------------------------------------------
 # PT: Controle negativo / EN: negative control
 # -----------------------------------------------------------------------------
@@ -396,6 +422,67 @@ def autoteste(textos: dict[str, str], contrato: dict) -> list[str]:
     return falhas
 
 
+def _primeiro_anel(malha: dict) -> list:
+    """PT: o primeiro anel da primeira UF / EN: the first state's first ring"""
+    geometria = malha["features"][0]["geometry"]
+    return geometria["coordinates"][0] if geometria["type"] == "Polygon" else geometria["coordinates"][0][0]
+
+
+def autoteste_da_malha(texto: str) -> list[str]:
+    """
+    PT: O controle negativo da malha: cada caso estraga uma cópia e diz o
+        trecho que a reprovação precisa trazer. A cópia é regravada pelo
+        mesmo gerador do arquivo, para o estrago ser a única diferença.
+    EN: The mesh negative control: each case breaks a copy, rewritten by the
+        same file writer, and names the fragment the rejection must carry.
+    """
+    if validar_arquivo_da_malha(texto):
+        return ["a malha versionada já falha na validação; o autoteste parte dela"]
+
+    def uf_faltando(malha):
+        malha["features"].pop(0)
+
+    def codigo_trocado(malha):
+        malha["features"][0]["properties"]["codarea"] = "99"
+
+    def sigla_trocada(malha):
+        malha["features"][0]["properties"]["sigla"] = "AC"
+
+    def casa_a_mais(malha):
+        anel = _primeiro_anel(malha)
+        anel[1] = [round(anel[1][0] + 0.00001, 5), anel[1][1]]
+
+    def anel_aberto(malha):
+        anel = _primeiro_anel(malha)
+        anel[-1] = [round(anel[-1][0] + 0.1, 4), anel[-1][1]]
+
+    def fora_do_brasil(malha):
+        _primeiro_anel(malha)[1] = [10.0, 45.0]
+
+    def sem_licenca(malha):
+        malha["licenca"] = ""
+
+    casos = [
+        ("UF faltando", uf_faltando, "UF faltando: ['RO']"),
+        ("código trocado", codigo_trocado, "código fora de dim_uf: '99'"),
+        ("sigla trocada", sigla_trocada, "sigla 'AC', esperado 'RO'"),
+        ("casa decimal a mais", casa_a_mais, "mais de 4 casas decimais"),
+        ("anel aberto", anel_aberto, "anel aberto"),
+        ("ponto fora do Brasil", fora_do_brasil, "fora do retângulo do Brasil"),
+        ("licença ausente", sem_licenca, "licenca ausente"),
+    ]
+    falhas = []
+    for descricao, estragar, trecho in casos:
+        malha = json.loads(texto)
+        estragar(malha)
+        problemas = validar_arquivo_da_malha(texto_da_malha(malha))
+        if not any(trecho in p for p in problemas):
+            falhas.append(f"malha, {descricao}: esperava {trecho!r}, veio {problemas or 'aprovação'}")
+        else:
+            print(f"  reprovado, como devia / rejected as expected: malha, {descricao}")
+    return falhas
+
+
 # -----------------------------------------------------------------------------
 # PT: Execução / EN: entry point
 # -----------------------------------------------------------------------------
@@ -408,15 +495,19 @@ def main() -> None:
 
     contrato = carregar_contrato()
     textos = ler_pasta()
+    malha = ler_malha()
     if argumentos.autoteste:
         problemas = autoteste(textos, contrato)
+        problemas += autoteste_da_malha(malha) if malha is not None else validar_arquivo_da_malha(None)
         sucesso = "Controle negativo em dia / negative control passes."
     else:
-        problemas = validar(textos, contrato)
+        problemas = validar(textos, contrato) + validar_arquivo_da_malha(malha)
         for spec in contrato["arquivos"]:
             if spec["arquivo"] in textos and not problemas:
                 colunas = json.loads(textos[spec["arquivo"]])["colunas"]
                 print(f"  {spec['arquivo']}: {len(colunas)} colunas, {len(next(iter(colunas.values())))} linhas")
+        if not problemas:
+            print(f"  geo/ufs.json: {len(json.loads(malha)['features'])} UFs")
         sucesso = "Dados do dashboard dentro do contrato / dashboard data within the contract."
 
     if problemas:

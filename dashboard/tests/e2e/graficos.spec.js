@@ -12,8 +12,9 @@
  *       esquemas de cor. O teste das páginas roda o axe logo depois de abrir,
  *       quando os gráficos ainda podem estar esperando a fonte.
  *
- *     O mapa depende da malha das UFs, que chega com a #67. Sem ela, o
- *     cartão do mapa mostra o estado de erro, e o teste aceita os dois casos.
+ *     O mapa depende da malha das UFs, versionada desde a #67. Ela é parte
+ *     do site, e o teste exige o mapa desenhado nos dois painéis, sem o
+ *     estado de erro da malha.
  *
  * EN: End-to-end chart tests: every chart area renders an SVG in both theme
  *     panels, the same chart differs between panels, and switching the page
@@ -52,15 +53,16 @@ test.describe("gráficos do catálogo", () => {
     await expect(page.locator('[data-teste="grafico-da-demonstracao"] svg')).toBeVisible();
   });
 
-  test("toda área de gráfico ganha um SVG, ou o mapa mostra o erro da malha", async ({ page }) => {
+  test("toda área de gráfico ganha um SVG, inclusive o mapa", async ({ page }) => {
     const areas = page.locator(".grafico");
     const comSvg = page.locator(".grafico:has(svg)");
-    const erros = page.locator(".grafico-erro");
     await expect(areas.first()).toBeVisible();
-    expect(await comSvg.count()).toBe(await areas.count());
-    // PT: dois painéis, com sete cartões cada, mais a demonstração
-    // EN: two panels of seven cards, plus the demo
-    expect((await areas.count()) + (await erros.count())).toBe(13);
+    // PT: dois painéis, com seis gráficos cada, mais a demonstração
+    // EN: two panels of six charts each, plus the demo
+    expect(await areas.count()).toBe(13);
+    await expect(page.locator(".grafico--mapa svg")).toHaveCount(2);
+    expect(await comSvg.count()).toBe(13);
+    await expect(page.locator(".grafico-erro")).toHaveCount(0);
   });
 
   test("o mesmo gráfico tem cores diferentes nos painéis claro e escuro", async ({ page }) => {
