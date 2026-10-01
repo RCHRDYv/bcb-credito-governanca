@@ -266,6 +266,12 @@ def _registro(referencia: str, lista: str, item: dict) -> dict:
         registro["data"] = item["data"]
     if lista == "conceitos" and item.get("tipo") == "modalidade":
         registro["codigo"] = str(item["notation"])
+        # PT: a explicação em palavras comuns, que a tela mostra antes da
+        #     definição oficial, com confiança e fonte próprias (#69)
+        # EN: the plain-language explanation, shown before the official one
+        registro["explicacao"] = _texto_limpo(item.get("explicacao"))
+        registro["explicacao_confianca"] = item.get("explicacao_confianca")
+        registro["explicacao_fonte"] = _texto_limpo(item.get("explicacao_fonte"))
     return registro
 
 

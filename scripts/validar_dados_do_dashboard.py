@@ -61,6 +61,7 @@ from scripts.contrato_do_dashboard import (
     codigos_de_modalidade,
     montar_manifesto,
     montar_ontologia,
+    parametros_da_decisao,
     texto_de_dados,
     texto_de_registro,
 )
@@ -264,6 +265,63 @@ def validar_auxiliares(textos: dict[str, str], conteudos: dict[str, dict], contr
 
 
 # -----------------------------------------------------------------------------
+# PT: As duas fontes da visão 1 / EN: the two sources of view 1
+# -----------------------------------------------------------------------------
+
+
+def _por_coluna(conteudo: dict, coluna: str) -> dict[str, list]:
+    """PT: os valores da coluna, agrupados por UF / EN: column values by state"""
+    grupos: dict[str, list] = {}
+    for uf, valor in zip(conteudo["colunas"]["uf"], conteudo["colunas"][coluna], strict=True):
+        grupos.setdefault(uf, []).append(valor)
+    return grupos
+
+
+def validar_visao_1(conteudos: dict[str, dict]) -> list[str]:
+    """
+    PT: A visão 1 lê o carteira_por_uf.json em "todas as modalidades" e o
+        decisao.json numa modalidade (#69). Os dois saem de marts diferentes,
+        e a tela só é coerente se eles concordarem, UF por UF:
+        - as empresas são as mesmas, o denominador do ADR 0014;
+        - a carteira PJ é a soma das modalidades, até o arredondamento de meio
+          real por linha;
+        - a mediana é a das UFs acima do corte de materialidade, e o índice
+          de espaço é a carteira por empresa dividida por ela.
+    EN: View 1 reads both files, which come from different marts; they must
+        agree per state on companies, PJ portfolio and the median and index.
+    """
+    nome = "carteira_por_uf.json"
+    uf = conteudos[nome]["colunas"]
+    decisao = conteudos["decisao.json"]
+    empresas_na_decisao = {u: set(v) for u, v in _por_coluna(decisao, "empresas").items()}
+    carteira_na_decisao = _por_coluna(decisao, "carteira_ativa")
+
+    problemas = []
+    for indice, sigla in enumerate(uf["uf"]):
+        if empresas_na_decisao.get(sigla) != {uf["empresas"][indice]}:
+            problemas.append(f"{nome}, {sigla}: empresas diferentes das do decisao.json")
+        parcelas = carteira_na_decisao.get(sigla, [])
+        if abs(uf["carteira_pj"][indice] - sum(parcelas)) > 0.5 * (len(parcelas) + 1):
+            problemas.append(f"{nome}, {sigla}: carteira PJ diferente da soma das modalidades do decisao.json")
+    if problemas:
+        return problemas
+
+    corte = parametros_da_decisao()["decisao_carteira_minima"]
+    acima = sorted(
+        cpe for cpe, carteira in zip(uf["carteira_por_empresa"], uf["carteira_pj"], strict=True) if carteira >= corte
+    )
+    meio = len(acima) // 2
+    mediana = acima[meio] if len(acima) % 2 else (acima[meio - 1] + acima[meio]) / 2
+    if any(abs(m - mediana) > 1 for m in uf["mediana_carteira_por_empresa"]):
+        return [f"{nome}: mediana diferente da mediana das UFs acima do corte ({mediana})"]
+    for indice, sigla in enumerate(uf["uf"]):
+        esperado = uf["carteira_por_empresa"][indice] / uf["mediana_carteira_por_empresa"][indice]
+        if abs(uf["indice_de_espaco"][indice] - esperado) > 1e-4:
+            return [f"{nome}, {sigla}: índice de espaço diferente da carteira por empresa sobre a mediana"]
+    return []
+
+
+# -----------------------------------------------------------------------------
 # PT: Validação completa / EN: full validation
 # -----------------------------------------------------------------------------
 
@@ -297,6 +355,9 @@ def validar(textos: dict[str, str], contrato: dict) -> list[str]:
     datas = {conteudos[spec["arquivo"]]["data_base"] for spec in contrato["arquivos"]}
     if len(datas) != 1:
         return [f"arquivos com datas-base de topo diferentes: {sorted(datas)}"]
+    problemas = validar_visao_1(conteudos)
+    if problemas:
+        return problemas
     return validar_auxiliares(textos, conteudos, contrato)
 
 
@@ -354,6 +415,14 @@ def _definir(coluna: str, indice: int, valor):
     return lambda conteudo: conteudo["colunas"][coluna].__setitem__(indice, valor)
 
 
+def _somar(coluna: str, indice: int, parcela):
+    """PT: estrago que desloca um valor / EN: breakage shifting one value"""
+    def estragar(conteudo):
+        conteudo["colunas"][coluna][indice] += parcela
+
+    return estragar
+
+
 def autoteste(textos: dict[str, str], contrato: dict) -> list[str]:
     """
     PT: Cada caso estraga uma coisa e diz o trecho que a reprovação precisa
@@ -399,6 +468,14 @@ def autoteste(textos: dict[str, str], contrato: dict) -> list[str]:
         ("grão repetido", decisao, lambda c: c["colunas"]["uf"].__setitem__(1, c["colunas"]["uf"][0]), "grão repetido"),
         ("dado pessoal", decisao, _definir("motivo_nao_avaliada", 0, "12.345.678/0001-90"), "formato de CPF ou CNPJ"),
         ("mês fora da data-base", "carteira_por_uf.json", _definir("data_base", 0, "2026-06-30"), "fora da data-base"),
+        ("empresas diferentes entre as fontes da visão 1", "carteira_por_uf.json",
+         _somar("empresas", 0, 1), "empresas diferentes das do decisao.json"),
+        ("carteira PJ fora da soma das modalidades", "carteira_por_uf.json",
+         _somar("carteira_pj", 0, 1000), "diferente da soma das modalidades"),
+        ("mediana que não é a das UFs", "carteira_por_uf.json",
+         _somar("mediana_carteira_por_empresa", 0, 100), "mediana diferente"),
+        ("índice de espaço fora da razão", "carteira_por_uf.json",
+         _somar("indice_de_espaco", 0, 0.01), "índice de espaço diferente"),
     ]
     falhas = []
     for descricao, arquivo, estragar, trecho in casos:

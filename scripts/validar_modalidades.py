@@ -4,7 +4,8 @@ PT: Valida ontology/modalidades.yml em duas camadas.
     1. Estrutura: ids únicos, hierarquia coerente (toda submodalidade aponta
        para uma modalidade existente, e o código começa pelo código dela),
        confiança com valor permitido, definição presente sempre que a
-       confiança não for "lacuna", e fonte em todo conceito.
+       confiança não for "lacuna", fonte em todo conceito, e a explicação
+       em palavras comuns em toda modalidade, com confiança e fonte (#69).
     2. Dado: todo par (modalidade, submodalidade) do bronze V2 casa com
        exatamente um conceito pelo rótulo exato, e todo conceito aparece no
        dado. É o teste que impede a ontologia de descrever um dado que não
@@ -33,6 +34,8 @@ import yaml
 ARQUIVO = Path(__file__).resolve().parents[1] / "ontology" / "modalidades.yml"
 CONFIANCAS = {"verbatim", "parafraseado", "inferido", "lacuna"}
 OBRIGATORIOS = ("id", "notation", "tipo", "prefLabel_pt", "rotulo_no_dado", "confianca", "fonte")
+EXPLICACAO = ("explicacao", "explicacao_confianca", "explicacao_fonte")
+CONFIANCAS_DA_EXPLICACAO = {"parafraseado", "inferido"}
 
 
 # -----------------------------------------------------------------------------
@@ -57,6 +60,19 @@ def checar_estrutura(conceitos: list[dict]) -> list[str]:
             erros.append(f"{c.get('id')}: confianca inválida '{c.get('confianca')}'")
         if c.get("confianca") != "lacuna" and not c.get("definition"):
             erros.append(f"{c.get('id')}: sem definição, mas confianca não é lacuna")
+
+        # PT: A explicação em palavras comuns, que a tela 1 mostra antes da
+        #     definição oficial (#69). É redação nossa, então a confiança só
+        #     pode ser parafraseado ou inferido, nunca verbatim.
+        # EN: The plain-language explanation the dashboard shows before the
+        #     official definition. It is our own wording, so its confidence is
+        #     paraphrased or inferred, never verbatim.
+        if c.get("tipo") == "modalidade":
+            faltando = [campo for campo in EXPLICACAO if not c.get(campo)]
+            if faltando:
+                erros.append(f"{c.get('id')}: faltam {faltando}")
+            elif c["explicacao_confianca"] not in CONFIANCAS_DA_EXPLICACAO:
+                erros.append(f"{c.get('id')}: explicacao_confianca inválida '{c['explicacao_confianca']}'")
 
         if c.get("tipo") == "submodalidade":
             pai = por_id.get(c.get("broader"))

@@ -353,9 +353,11 @@ models:
 
   - name: mrt_carteira_por_uf
     description: >
-      Tela 1 do dashboard. Carteira por UF e mês, com os denominadores de
-      empresas ativas (com e sem MEI) e de população, e as razões já
-      calculadas como razão de somas. Fora do experimento (ADR 0007).
+      Tela 1 do dashboard. Carteira por UF e mês, com o denominador de
+      empresas do ADR 0014 (natureza empresarial, sem MEI) e o de população,
+      e as razões já calculadas como razão de somas. A carteira por empresa
+      é comparada com a mediana das UFs acima do corte no mês. Fora do
+      experimento (ADR 0007).
     columns:
       - name: data_base
         data_tests: [not_null]
@@ -366,9 +368,18 @@ models:
       #     Apontado pela revisão do Copilot na PR #42.
       # EN: Denominators come from left joins; without these tests a missing
       #     one would become a null ratio on the dashboard with no error.
-      - name: empresas_ativas
+      - name: empresas
+        description: >
+          Matrizes ativas de natureza empresarial, sem MEI, o denominador do
+          ADR 0014, com o mesmo filtro do mrt_decisao.
         data_tests: [not_null]
-      - name: empresas_ativas_sem_mei
+      - name: carteira_por_empresa
+        data_tests: [not_null]
+      - name: mediana_carteira_por_empresa
+        description: "Mediana da carteira por empresa entre as UFs acima do corte, no mesmo mês."
+        data_tests: [not_null]
+      - name: indice_de_espaco
+        description: "Carteira por empresa dividida pela mediana das UFs. Abaixo de 1, o espaço é alto (ADR 0014)."
         data_tests: [not_null]
       - name: populacao
         data_tests: [not_null]

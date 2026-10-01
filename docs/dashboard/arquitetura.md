@@ -225,12 +225,12 @@ O manifesto não guarda data de geração. Rodar a exportação de novo com o me
 
 A exportação e a validação usam o mesmo módulo, [`scripts/contrato_do_dashboard.py`](../../scripts/contrato_do_dashboard.py), para ler o contrato, converter os valores e gravar os arquivos do mesmo jeito.
 - **A exportação,** [`scripts/exportar_dados_do_dashboard.py`](../../scripts/exportar_dados_do_dashboard.py), roda na máquina local, pelo OAuth do Databricks. Ela não tem regra própria por arquivo: as colunas, o filtro (`onde`, `ultimo_mes` e `meses`) e a ordem das linhas (`ordem`) vêm do contrato. Depois de gravar, confere cada arquivo contra o mart com uma consulta independente: a contagem de linhas precisa ser igual, e a soma das colunas de reais pode diferir só pelo arredondamento, de até meio real por linha.
-- **A validação,** [`scripts/validar_dados_do_dashboard.py`](../../scripts/validar_dados_do_dashboard.py), roda no CI, sem credencial. Ela confere colunas, tipos, nulos, valores permitidos, datas, a ordem do grão sem repetição, a data-base e a faixa de meses, a ausência de dado pessoal e que o `ontologia.json` e o `manifesto.json` são exatamente o que a exportação monta. O `--autoteste` estraga cópias dos arquivos de treze jeitos, e cada estrago precisa ser reprovado pelo motivo certo.
-- **O que o `ontologia.json` traz:** os conceitos citados nas colunas, as modalidades que aparecem nos dados e o mapa de cada coluna para a sua definição. Coluna definida por ADR, como o índice de espaço, aponta para o ADR, e a visão mostra esse ADR no lugar do conceito (RF-G07).
+- **A validação,** [`scripts/validar_dados_do_dashboard.py`](../../scripts/validar_dados_do_dashboard.py), roda no CI, sem credencial. Ela confere colunas, tipos, nulos, valores permitidos, datas, a ordem do grão sem repetição, a data-base e a faixa de meses, a ausência de dado pessoal e que o `ontologia.json` e o `manifesto.json` são exatamente o que a exportação monta. Desde a #69, confere também que as duas fontes da visão 1 concordam, UF por UF: o `carteira_por_uf.json` tem as mesmas empresas do `decisao.json`, a carteira PJ é a soma das modalidades dele, a mediana é a das UFs acima do corte e o índice de espaço é a carteira por empresa dividida por ela. O `--autoteste` estraga cópias dos arquivos de dezessete jeitos, e a malha de sete, e cada estrago precisa ser reprovado pelo motivo certo.
+- **O que o `ontologia.json` traz:** os conceitos citados nas colunas, as modalidades que aparecem nos dados e o mapa de cada coluna para a sua definição. Coluna definida por ADR, como o índice de espaço, aponta para o ADR, e a visão mostra esse ADR no lugar do conceito (RF-G07). Cada modalidade traz, desde a #69, uma explicação em palavras comuns, com confiança e fonte próprias, que a visão mostra antes da definição oficial do BCB. Doze das treze definições oficiais são só a rubrica contábil.
 - **Como os arquivos são gravados:** uma coluna por linha do arquivo, para o diff da PR mostrar qual coluna mudou. Reais vão em reais inteiros, e frações, diferenças, variações e índices, com seis casas.
 - **O carregador do site,** em `dashboard/src/dados/`, busca cada arquivo uma vez só, mesmo que duas visões peçam. A falha vira um erro com o motivo, rede ou formato, para o estado de erro da visão, e não fica guardada: tentar de novo busca outra vez.
 
-**Orçamento por visão.** O limite de 300 KB de dados do RNF-03 vale para cada visão, quando ela é a primeira a abrir. O `scripts/orcamento.js` soma os arquivos que o manifesto registra para cada visão, mais o próprio manifesto. Em jul/2026: 17,2 KB na visão 1, 226,3 KB na visão 2 e 18,6 KB na visão 4.
+**Orçamento por visão.** O limite de 300 KB de dados do RNF-03 vale para cada visão, quando ela é a primeira a abrir. O `scripts/orcamento.js` soma os arquivos que o manifesto registra para cada visão, mais o próprio manifesto. Em jul/2026, com as explicações das modalidades da #69: 17,9 KB na visão 1, 227,2 KB na visão 2 e 19,5 KB na visão 4.
 
 ### Malha das UFs
 
@@ -396,6 +396,9 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-10-01 | A publicação no Pages é o último job do workflow do CI, e não um workflow à parte. Sem proteção de branch na `main`, um workflow à parte publicaria em paralelo aos testes. Assim, só vai ao ar o `dist/` que passou em todos os passos, e o site é publicado a cada push na `main`, mesmo sem mudança em `dashboard/` | Este documento; `.github/workflows/ci.yml` |
 | 2026-10-01 | A política de segurança mora em `dashboard/politica-de-seguranca.js`, e o build a põe no `<meta>` de cada página, só no build | Este documento; [requisitos](requisitos.md), RNF-11 |
 | 2026-10-01 | O link do site entra no README da raiz com a Tela 1 (#69), e não na #68: até lá, o site tem só a página inicial e o catálogo | Este documento; #68 e #69 |
+| 2026-10-01 | A visão 1 tem "todas as modalidades", com o denominador do [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md). O `mrt_carteira_por_uf` troca os dois denominadores que o ADR descartou pelo dele, com os mesmos nomes de coluna do `decisao.json`, e compara cada UF com a mediana das UFs acima do corte no mês. Resolve o ponto em aberto do denominador | Este documento; contrato; ADR 0014 |
+| 2026-10-01 | Cada modalidade tem uma explicação em palavras comuns na ontologia, que a visão mostra antes da definição oficial. As explicações saem das definições das submodalidades nas Instruções 3040 e, quando elas não bastam, do Cosif e da norma que ele cita | Este documento; contrato; `ontology/modalidades.yml` |
+| 2026-10-01 | O CI confere que as duas fontes da visão 1 concordam, UF por UF, nas empresas, na carteira PJ, na mediana e no índice de espaço | Este documento |
 
 ## Pontos em aberto
 
@@ -404,7 +407,6 @@ O gitleaks roda no pre-commit e no CI.
 | O endereço exato do Space no `connect-src`, que só existe quando o Space for criado | #51 e #73 |
 | Como o erro de cota do ZeroGPU chega à função pública do Space, para virar um estado próprio | #73 |
 | Conferir, com o Space publicado, que a cota vale como a de visitante sem login | #73 |
-| O denominador da visão 1 sem filtro de modalidade. O `mrt_carteira_por_uf` conta empresas de todas as naturezas jurídicas. O `mrt_decisao` conta só as de natureza empresarial, sem MEI, como decidiu o [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md). A visão precisa de um denominador só | #69 |
 
 ## Fontes
 

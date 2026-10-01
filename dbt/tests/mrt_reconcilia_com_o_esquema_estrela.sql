@@ -68,7 +68,7 @@ carteira_por_uf as (
 
     select data_base,
            sum(carteira_total) as carteira_ativa,
-           sum(empresas_ativas) as empresas_ativas
+           sum(empresas) as empresas
     from {{ ref('mrt_carteira_por_uf') }}
     group by data_base
 
@@ -91,9 +91,14 @@ fato_v2_pj as (
 
 ),
 
+-- PT: só o denominador do ADR 0014, natureza empresarial sem MEI, que é o
+--     que o mart da tela 1 guarda desde a #69
+-- EN: ADR 0014's denominator only, which the screen 1 mart keeps since #69
 fato_empresas as (
-    select data_base, sum(empresas_ativas) as empresas_ativas
+    select data_base, sum(empresas_ativas) as empresas
     from {{ ref('fct_empresas_ativas') }}
+    where grupo_natureza_juridica = '{{ var("decisao_grupo_natureza_juridica") }}'
+      and not mei
     group by data_base
 
 ),
@@ -140,8 +145,8 @@ conferencias as (
     from fato_v2 f left join carteira_por_uf u on u.data_base = f.data_base
 
     union all
-    select e.data_base, 'mrt_carteira_por_uf: empresas ativas',
-           u.empresas_ativas, e.empresas_ativas
+    select e.data_base, 'mrt_carteira_por_uf: empresas, natureza empresarial sem MEI',
+           u.empresas, e.empresas
     from fato_empresas e left join carteira_por_uf u on u.data_base = e.data_base
 
     -- PT: o mart de decisão tem só o último mês, então a conferência parte
