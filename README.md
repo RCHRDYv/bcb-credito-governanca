@@ -156,6 +156,7 @@ uv run python -m ingestion.converter_cnpj     # CNPJ para Parquet só texto, em 
 uv run python -m ingestion.baixar_ibge        # população por UF, SIDRA 6579
 uv run python -m ingestion.baixar_sgs         # meta da Selic, série 432 do SGS
 uv run python -m ingestion.baixar_pix         # PIX por município, meses fechados
+uv run python -m ingestion.baixar_malha       # malha das UFs do IBGE, só para o site
 uv run python -m ingestion.enviar_volume      # schema, volume e envio ao Unity Catalog
 uv run python -m ingestion.criar_bronze       # tabelas bronze do SCR e das fontes externas
 uv run python -m ingestion.verificar_bronze   # prova que o bronze é o dado publicado

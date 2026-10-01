@@ -1,6 +1,6 @@
 # Site do dashboard
 
-Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico), os componentes de interface da #64, todos no catálogo, e os dados das visões, exportados dos marts na #66.
+Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico), os componentes de interface da #64, todos no catálogo, os dados das visões, exportados dos marts na #66, e a malha das UFs da #67, que o mapa usa.
 
 Para entender o projeto antes do código:
 - [arquitetura](../docs/dashboard/arquitetura.md): como o site, o dataset e o chat se ligam;
@@ -84,6 +84,20 @@ Quando só a ontologia muda, o `ontologia.json` e o `manifesto.json` se refazem 
 uv run python -m scripts.exportar_dados_do_dashboard --sem-databricks
 ```
 
+### Malha das UFs
+
+O `public/geo/ufs.json` é a malha territorial de 2022 do IBGE, na qualidade mínima, com a geometria sem alteração, a sigla de cada UF e a fonte e a licença no topo. Também é gerado, e nunca editado à mão, e por isso fica fora do Biome, como os dados. Só precisa ser refeito quando o IBGE publicar outra malha, e as duas etapas rodam na raiz do repositório, sem credencial:
+
+```bash
+uv run python -m ingestion.baixar_malha
+```
+
+```bash
+uv run python -m scripts.gerar_malha_do_dashboard
+```
+
+A primeira baixa a malha e registra o sha256 no manifesto da ingestão. A segunda grava o arquivo do site e confere que a geometria saiu igual à baixada. A validação dos dados, a mesma do CI, confere também a malha. O porquê de não simplificar está na [arquitetura](../docs/dashboard/arquitetura.md#malha-das-ufs).
+
 ## Estrutura
 
 | Pasta ou arquivo | O que guarda |
@@ -104,6 +118,7 @@ uv run python -m scripts.exportar_dados_do_dashboard --sem-databricks
 | `src/dom.js` | Monta HTML sem `innerHTML` |
 | `public/` | Arquivos servidos como estão, como o `tema-inicial.js`, que aplica o tema escolhido antes da pintura |
 | `public/data/` | Os JSON do contrato, exportados dos marts, com o `ontologia.json` e o `manifesto.json` |
+| `public/geo/` | A malha das UFs do IBGE, que o mapa por UF desenha |
 | `tests/unit/` | Testes unitários |
 | `tests/e2e/` | Testes de ponta a ponta |
 | `scripts/` | O gerador dos tokens, o orçamento de carga e o Lighthouse |
