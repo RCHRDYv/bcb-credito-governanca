@@ -9,4 +9,4 @@ O dashboard mostra onde uma financeira pode crescer em crédito para empresas e 
 | [Referências de design](referencias-de-design.md) | O que foi pesquisado, o que se aproveitou de cada referência e o que não serve | Quem avalia as escolhas de design | Entregue |
 | [Arquitetura](arquitetura.md) | Como site, dataset e chat se ligam, o que trafega entre eles e o que acontece quando um deles falha, com o [contrato dos dados](../../dashboard/contrato-dos-dados.yml) | Quem constrói e opera | Entregue |
 
-O contexto de produto (público, diferenciais e compromissos) fica em [`dashboard/PRODUCT.md`](../../dashboard/PRODUCT.md). As decisões ficam nos ADRs, do [0016](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md) ao [0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md).
+O contexto de produto (público, diferenciais e compromissos) fica em [`dashboard/PRODUCT.md`](../../dashboard/PRODUCT.md). As decisões ficam nos ADRs, do [0016](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md) ao [0022](../adr/0022-visoes-em-tela-unica-no-computador.md).

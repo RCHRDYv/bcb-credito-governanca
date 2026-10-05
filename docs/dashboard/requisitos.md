@@ -4,7 +4,7 @@ O que o dashboard precisa fazer, para quem, e como se confere que ele faz. Este 
 - o contexto de produto, em [`dashboard/PRODUCT.md`](../../dashboard/PRODUCT.md);
 - o [design system](design-system.md);
 - a [arquitetura](arquitetura.md), que diz como o site, o dataset e o chat se ligam;
-- as decisões dos ADRs [0016 a 0021](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md).
+- as decisões dos ADRs [0016 a 0022](../adr/0016-site-estatico-no-github-pages-e-chat-no-zerogpu.md).
 
 **Como ler:**
 - Cada requisito tem um identificador:
@@ -46,7 +46,7 @@ Os dois primeiros formam o público que o produto serve. O terceiro é quem abre
 | RF-G03 | Cada gráfico tem um cabeçalho com título descritivo e a data-base com a fonte, sem conclusão escrita. Quem quiser tirar uma conclusão pergunta ao chat, nas visões que o têm | Inspeção de cada gráfico contra o padrão do cabeçalho | Design system, cabeçalho do gráfico; decisão de 2026-09-26 |
 | RF-G04 | Os filtros ficam numa linha, acima do conteúdo, e filtrar nunca muda a cor de uma categoria | Teste de ponta a ponta aplica um filtro e compara as cores antes e depois | Design system, barra de filtros |
 | RF-G05 | Clicar num elemento abre o detalhe num painel ao lado, sem janela por cima do conteúdo | Teste de ponta a ponta | Design system, painel de detalhe |
-| RF-G06 | Toda visão com gráfico tem uma tabela com os mesmos números | Teste compara os totais do gráfico e da tabela | Design system; WCAG 2.2 |
+| RF-G06 | Toda visão com gráfico tem uma tabela com os mesmos números, como uma das formas de ver o cartão, com o download em CSV | Teste compara os totais do gráfico e da tabela | Design system; WCAG 2.2; [ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md), decisão 5 |
 | RF-G07 | Cada métrica exibida tem a definição da ontologia e a fonte normativa, acessíveis a partir do próprio número | Cada métrica da tela aponta para um conceito de `ontology/` | #17; `dashboard/PRODUCT.md` |
 | RF-G08 | O que o dado não permite afirmar aparece junto da recomendação e ao lado de cada número que pede ressalva | Inspeção da visão 4 e dos números com ressalva | [ADR 0005](../adr/0005-projeto-termina-em-recomendacao.md); especificação |
 | RF-G09 | A visão imprime e vira PDF sem vidro, com superfícies sólidas e sem perder informação | Prévia de impressão comparada com a tela | Design system; `dashboard/PRODUCT.md` |
@@ -115,6 +115,7 @@ Os dois primeiros formam o público que o produto serve. O terceiro é quem abre
 | RNF-12 | Atualização do dado | Mensal, pela exportação feita na máquina local, com a data-base visível em cada número | A data-base da tela bate com a do mart | Definido no ADR 0016 |
 | RNF-13 | Idioma | Português do Brasil, com os textos num arquivo de tradução para o inglês entrar depois | Nenhum texto fixo nos componentes | Definido no ADR 0017 |
 | RNF-14 | Movimento | Nenhuma animação quando o sistema pede movimento reduzido | Teste com a preferência ligada | Definido no design system |
+| RNF-15 | Tela única | No computador, a partir de uma janela de 1280×720 px, cada visão cabe sem rolagem da página, e o que passar da altura de um cartão rola dentro dele. Abaixo disso, a página rola, sem nada cortado nem sobreposto | Teste de ponta a ponta mede a altura da página em 1280×720, 1536×730, 1536×864, 1920×950 e 1920×1080, e a sobreposição dos blocos abaixo do piso | Definido no [ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md), #87 |
 
 ## Fora de escopo
 
@@ -169,6 +170,10 @@ As três visões da v0.1 publicadas, com os requisitos gerais e os de cada visã
 | 2026-10-01 | Na visão 1, o mapa é o padrão no computador e o cartograma de grade em tela estreita, com um controle para trocar. Se a malha não carregar, a grade assume | #69 |
 | 2026-10-01 | Cada modalidade aparece com uma explicação em palavras comuns antes da definição oficial do BCB | [Arquitetura](arquitetura.md); `ontology/modalidades.yml` |
 | 2026-10-01 | O endereço do site abre direto na visão 1, e a página "em construção" sai | #69 |
+| 2026-10-05 | No computador, a partir de uma janela de 1280×720 px, a visão cabe sem rolagem da página, usa a largura toda, e o que passar da altura de um cartão rola dentro dele | ADR 0022; #87 |
+| 2026-10-05 | Na visão 1, o território tem quatro formas no mesmo cartão: mapa, grade, matriz de UF por modalidade e tabela. A matriz e a tabela ocupam também a coluna da direita, e o CSV aparece só na tabela | ADR 0022; #69 |
+| 2026-10-05 | Na visão 1, o mapa fica num palco: um cartão sólido grande no centro, na altura toda, com os filtros e o que o mapa mostra à esquerda, e a oportunidade e o ranking ou o painel da UF à direita. A legenda é uma escala compacta em degradê, de menos espaço a mais espaço, no canto inferior direito do palco | ADR 0022, decisão 7; #69 |
+| 2026-10-05 | A paleta divergente sai, e toda intensidade usa a rampa roxa, inclusive a distância até uma referência, em cinco faixas com o roxo mais forte no lado que quer dizer mais. Na visão 1, o roxo mais forte marca onde há mais espaço | ADR 0021, revisão de 2026-10-05 |
 | 2026-09-27 | O `ontologia.json` traz um registro por modalidade presente nos dados, com a definição do BCB | [Arquitetura](arquitetura.md); contrato |
 | Em aberto | O nome do produto | `dashboard/PRODUCT.md` |
 | Em aberto | Quais visões terão o chat | #51 |

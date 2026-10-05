@@ -1,6 +1,6 @@
 # ADR 0021: As paletas de gráfico saem do Carbon, com a categórica ajustada e validação automatizada
 
-**Status:** Aceito. Revisto em 2026-09-27, na #64: os gráficos passam a ser desenhados num cartão sólido, e a exceção da decisão 5 deixou de existir.
+**Status:** Aceito. Revisto em 2026-09-27, na #64: os gráficos passam a ser desenhados num cartão sólido, e a exceção da decisão 5 deixou de existir. Revisto em 2026-10-05, na #69: a paleta divergente sai, e toda intensidade passa a usar a sequencial roxa (decisão 3).
 **Data:** 2026-09-27
 
 ## Contexto
@@ -45,7 +45,7 @@ A abertura da oficial fica igual: roxo, ciano, magenta e vermelho nas mesmas pos
 
 ### 2. A sequencial é a rampa roxa do Carbon, sem o branco
 
-É a paleta monocromática roxa do Carbon, em cinco degraus. O branco da rampa oficial fica de fora, porque some sobre o vidro.
+É a paleta monocromática roxa do Carbon, em cinco degraus. Desde 2026-10-05, é a única rampa do design system (decisão 3). O branco da rampa oficial fica de fora, porque some sobre o vidro.
 - **Claro:** roxo 40, 50, 60, 70 e 80, do valor baixo ao alto.
 - **Escuro:** roxo 70, 60, 50, 40 e 30. A ordem se inverte porque, no escuro, o valor baixo é o que se aproxima do fundo.
 
@@ -53,20 +53,18 @@ A abertura da oficial fica igual: roxo, ciano, magenta e vermelho nas mesmas pos
 - **Menor passo entre degraus vizinhos:** 10,2 sem daltonismo, 7,3 na protanopia e 8,6 na deuteranopia, nos dois temas. Na tritanopia, 9,1 no claro e 9,0 no escuro.
 - **Ponta junto ao fundo:** 2,27:1 no claro e 2,06:1 no escuro, acima do piso de 2:1.
 
-### 3. A divergente é a roxo e verde-azulado do Carbon, com o meio cinza
+### 3. Não há paleta divergente: toda intensidade usa a sequencial roxa
 
-É a segunda paleta divergente do Carbon, com três degraus de cada lado. O roxo fica acima da referência, e o verde-azulado abaixo. No desvio contra o país, roxo quer dizer que a inadimplência da UF subiu mais que a do país. O meio é cinza, e não o branco do Carbon, que some no vidro, como o [guia](../dashboard/design-system.md) já pedia.
-- **Claro:** verde-azulado 40, 60 e 80 abaixo; cinza 20 no meio; roxo 40, 60 e 80 acima.
-- **Escuro:** verde-azulado 70, 50 e 40 abaixo; cinza 80 no meio; roxo 70, 50 e 40 acima.
+Revisto em 2026-10-05, na revisão visual da Tela 1 (#69). Até essa data, a decisão era uma divergente roxo e verde-azulado, a segunda do Carbon, com três degraus de cada lado e o meio cinza: roxo acima da referência e verde-azulado abaixo. No claro, verde-azulado 40, 60 e 80, cinza 20, roxo 40, 60 e 80; no escuro, verde-azulado 70, 50 e 40, cinza 80, roxo 70, 50 e 40.
 
-**Medidas.** Menor distância entre os dois lados no mesmo degrau:
+Com dado real, na Tela 1, a divergente confundiu a leitura:
+- **Duas matizes para uma pergunta de intensidade.** O mapa da Tela 1 mostra a distância de cada UF até a mediana, e a pergunta é uma só: onde há mais espaço. Com duas matizes, quem lê precisa da legenda para saber qual lado é o que importa.
+- **No escuro, os dois braços não se liam igual.** O verde-azulado 70, perto do meio, tem croma 0,07 e quase se confunde com o cinza 80 do meio. O roxo 70, no mesmo degrau, tem croma 0,22 e parece mais forte que o roxo 40 da ponta, de croma 0,15. A paleta passava no validador, que mede a luminosidade em ordem, a simetria e o daltonismo.
 
-| | Claro | Escuro |
-|---|---|---|
-| Sem daltonismo | 18,3 | 22,5 |
-| Protanopia | 12,9 | 12,9 |
-| Deuteranopia | 9,6 | 9,6 |
-| Tritanopia | 7,0 | 9,2 |
+A decisão, tomada na mesma revisão: o design system tem uma rampa só para intensidade, a sequencial roxa da decisão 2, que também mostra a distância até uma referência, em faixas simétricas em torno dela.
+- **O roxo mais forte fica no lado que quer dizer mais** para a pergunta da visão. Na Tela 1, é abaixo da mediana, onde há mais espaço; no desvio da inadimplência contra o país, é acima, onde o risco sobe mais que no país.
+- **A legenda diz o sentido de cada faixa em palavras,** como "Mais espaço: mais de 30% abaixo da mediana", porque a cor diz quanto, e não para que lado da referência.
+- **Cinco faixas,** uma por degrau da rampa: o meio e duas de cada lado. O componente é `classesEmCincoFaixas`, em `dashboard/src/graficos/escalas.js`.
 
 ### 4. A validação é automatizada, com controle negativo
 
@@ -79,7 +77,8 @@ A validação mora no próprio projeto, em `dashboard/src/cor/`:
 |---|---|
 | Categórica | Contraste de 3:1 com o fundo (WCAG 2.2). Luminosidade OKLCH de 0,43 a 0,77 no claro e de 0,48 a 0,67 no escuro. Croma de pelo menos 0,10. Pior par com daltonismo com alvo 8 e piso 6: entre 6 e 8, só com rótulo direto. Pior par sem daltonismo de pelo menos 15 |
 | Sequencial | Luminosidade em ordem, passo de pelo menos 0,06 entre degraus, uma matiz só e a ponta junto ao fundo com pelo menos 2:1 |
-| Divergente | Cada braço vale como sequencial, os braços são simétricos, o meio é cinza, e os polos continuam distintos com e sem daltonismo |
+
+Até 2026-10-05, a divergente também tinha critérios próprios: cada braço valendo como sequencial, braços simétricos, meio cinza e polos distintos com e sem daltonismo. Eles saíram do validador com ela.
 
 A distância é medida em OKLab, multiplicada por 100. A tritanopia aparece nos números, mas não reprova: é rara, e o modelo de simulação é menos preciso para ela. Os limites e o modelo seguem o método de visualização de dados usado no projeto, e os números do validador do projeto batem com os do validador de referência desse método.
 
@@ -98,7 +97,7 @@ A exceção foi aceita em 2026-09-27, e a outra saída era trocar o primeiro deg
 | Menor contraste da categórica | 3,33:1 | 3,62:1 |
 | Outros | 3,32:1 | 3,60:1 |
 | Ponta da sequencial | 2,35:1 | 2,34:1 |
-| Divergente, perto do meio | 2,33:1 | 2,34:1 |
+| Divergente, perto do meio, até 2026-10-05 | 2,33:1 | 2,34:1 |
 
 O teste de paletas passou a medir contra esse cartão.
 
@@ -112,20 +111,26 @@ O teste de paletas passou a medir contra esse cartão.
 
 **Divergente em vermelho e ciano,** a primeira do Carbon. Passava no validador nos dois temas.
 
+**Manter a divergente roxo e verde-azulado,** a decisão até 2026-10-05. Passava no validador, mas confundiu a leitura na Tela 1, como descrito na decisão 3.
+
+**Divergente roxo e verde,** medida em 2026-10-05: a estrutura da PRGn do ColorBrewer com as rampas do Carbon, roxo 40, 60 e 80 e verde 40, 60 e 80 no claro, e roxo e verde 70, 60 e 50 no escuro. Passava no validador com mais folga que a roxo e verde-azulado: os polos ficavam a 19,1 na deuteranopia no claro e a 24,5 no escuro, contra 9,6. Saiu pelo mesmo motivo da anterior: duas matizes para uma pergunta de intensidade.
+
 ## Consequências
 
 **Positivas.**
-- As três paletas passam no validador, nos dois temas, com os números registrados aqui e no guia.
+- As duas paletas passam no validador, nos dois temas, com os números registrados aqui e no guia.
+- **Uma rampa só para intensidade.** A cor diz quanto, e nunca exige saber qual matiz é qual lado. O verde-azulado fica só com o quadrante Entrar.
 - Uma paleta nova ou alterada que fique abaixo do contraste, fora da faixa ou próxima demais com daltonismo reprova no CI.
 - As cores continuam sendo degraus oficiais do Carbon, e o único primitivo novo é a família laranja, também oficial.
 
 **Negativas, e são reais.**
 - **Cores que já têm outro significado.**
-  - O roxo 70, primeira cor categórica e degrau da sequencial, é a marca do quadrante Manter.
-  - A divergente usa as matizes de Manter e de Entrar.
+  - O roxo 70, primeira cor categórica e degrau da sequencial, é a marca do quadrante Manter. Na Tela 1, o roxo mais forte quer dizer mais espaço, e Manter é o quadrante de espaço baixo.
   - No escuro, o azul 50 da categórica é a cor de ação e de informação, e o vermelho 50 é a de erro.
 
   Continua valendo a regra do guia: as cores dos quadrantes não aparecem com outro significado na mesma tela. Numa visão com a matriz ou com etiquetas de quadrante, essas paletas não entram com outro significado.
+- **A direção não está na cor.** Numa distância até uma referência, a cor diz quanto, e a legenda diz para que lado. Quem olha o mapa sem a legenda vê intensidade, e não sinal.
+- **O roxo forte muda de sentido entre visões,** conforme o lado que quer dizer mais: na Tela 1, mais espaço; no desvio contra o país, risco que sobe mais. Por isso o título e a legenda de cada gráfico dizem o que está sendo medido.
 - **Até quatro séries em dispersão, mapa e pequenos múltiplos,** por causa do ciano 50 e do azul 50.
 - **Tritanopia no escuro.** O pior par vizinho da categórica fica em 3,1, entre o roxo 60 e o ciano 50. Para quem tem tritanopia, a identificação dessas duas séries depende da legenda e do rótulo.
 - **A exceção da decisão 5,** no escuro sem desfoque, superada na #64 pelo cartão sólido.
