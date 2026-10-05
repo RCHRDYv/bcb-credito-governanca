@@ -45,8 +45,6 @@ for (const tema of TEMAS) {
       const p = paletas(tema);
       expect(p.categorica).toHaveLength(DEGRAUS.categorica);
       expect(p.sequencial).toHaveLength(DEGRAUS.sequencial);
-      expect(p.divergente.negativo).toHaveLength(DEGRAUS.divergente);
-      expect(p.divergente.positivo).toHaveLength(DEGRAUS.divergente);
     });
   });
 }

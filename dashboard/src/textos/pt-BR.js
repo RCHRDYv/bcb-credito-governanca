@@ -6,8 +6,8 @@
  *     irmão deste, com as mesmas chaves, sem mexer em componente nenhum
  *     (ADR 0017, decisão 6; requisito RNF-13).
  *
- *     As chaves são planas e agrupadas pelo prefixo: `produto.`, `pagina.` e
- *     `inicio.`. "Crédito PJ" é o nome provisório do produto, até a decisão
+ *     As chaves são planas e agrupadas pelo prefixo, como `produto.`,
+ *     `pagina.`, `navegacao.` e `tela1.`. "Crédito PJ" é o nome provisório do produto, até a decisão
  *     registrada em `dashboard/PRODUCT.md`.
  *
  * EN: Every interface text, in Brazilian Portuguese. Components never hold
@@ -19,8 +19,6 @@ export const ptBR = Object.freeze({
   "produto.nome": "Crédito PJ",
   "pagina.titulo": "Crédito PJ: onde crescer em crédito para empresas",
   "pagina.pular-para-o-conteudo": "Pular para o conteúdo",
-  "inicio.titulo": "Onde crescer em crédito para empresas, e onde o risco está piorando",
-  "inicio.em-construcao": "As visões do dashboard estão em construção.",
 
   "catalogo.titulo-da-pagina": "Catálogo do design system · Crédito PJ",
   "catalogo.titulo": "Catálogo do design system",
@@ -98,6 +96,8 @@ export const ptBR = Object.freeze({
   "catalogo.chips": "Chips de filtro",
   "catalogo.exemplo-modalidades": "Modalidades",
   "catalogo.campos": "Campos: com ajuda, preenchido, com erro e desativado",
+  "catalogo.campo-de-selecao": "Campo de seleção",
+  "catalogo.definicao": "Definição do número",
   "catalogo.campo-estado": "Estado",
   "catalogo.exemplo-sp": "Ex.: SP",
   "catalogo.ajuda-estado": "A sigla da UF, com duas letras.",
@@ -123,6 +123,10 @@ export const ptBR = Object.freeze({
   "catalogo.dica-nota":
     "A primeira dica aparece aberta, para mostrar o visual. A segunda abre com o mouse ou com o foco do teclado, e fecha com o Esc.",
   "catalogo.avisos": "Avisos: informação, atenção e erro",
+  "catalogo.aviso-em-linha": "Aviso em linha, para a ressalva dentro de um cartão",
+  "catalogo.painel-de-detalhe": "Painel de detalhe",
+  "catalogo.painel-de-detalhe-nota":
+    "No computador, fica ao lado do conteúdo e rola por dentro; no celular, vira a folha que sobe de baixo. Aqui, fica no fluxo da página.",
   "catalogo.aviso-uf-da-sede": "A UF é a da sede da empresa, e não onde o crédito foi usado.",
   "catalogo.aviso-quebra": "A série cruza a mudança de critério do ativo problemático de jan/2025.",
   "catalogo.aviso-erro": "Os dados não carregaram. Tente de novo em alguns segundos.",
@@ -155,10 +159,9 @@ export const ptBR = Object.freeze({
 
   "catalogo.paletas-de-grafico": "Paletas de gráfico",
   "catalogo.paletas-de-grafico-explicacao":
-    "Cada paleta tem um papel. A categórica diz qual série é qual; a sequencial diz quanto; a divergente diz para que lado de uma referência. As faixas de baixo mostram como cada paleta aparece para quem tem daltonismo, pela simulação de Machado, Oliveira e Fernandes (2009).",
+    "Cada paleta tem um papel. A categórica diz qual série é qual; a sequencial, a única rampa, diz quanto, inclusive a distância até uma referência, em faixas. As faixas de baixo mostram como cada paleta aparece para quem tem daltonismo, pela simulação de Machado, Oliveira e Fernandes (2009).",
   "catalogo.paleta-categorica": "Categórica",
   "catalogo.paleta-sequencial": "Sequencial",
-  "catalogo.paleta-divergente": "Divergente",
   "catalogo.sem-daltonismo": "Sem daltonismo",
   "catalogo.protanopia": "Protanopia",
   "catalogo.deuteranopia": "Deuteranopia",
@@ -169,9 +172,10 @@ export const ptBR = Object.freeze({
     "Os componentes de gráfico, com dado real do projeto. Cada cartão traz só o título e a data-base com a fonte, sem conclusão escrita. Passe o mouse sobre um elemento para ver os números.",
   "catalogo.fonte-dos-exemplos": "SCR.data, do Banco Central",
   "catalogo.exemplo-mapa": "Carteira PJ por empresa ativa em Empréstimos, por UF",
-  "catalogo.exemplo-cartograma-divergente":
+  "catalogo.exemplo-cartograma-faixas":
     "Variação da inadimplência contra a do país em Empréstimos, por UF",
   "catalogo.exemplo-matriz": "Espaço contra risco, por UF e modalidade",
+  "catalogo.escala-do-desvio": "Variação contra a do país, em p.p.",
   "catalogo.exemplo-serie": "Taxa de inadimplência PJ no país",
   "catalogo.exemplo-ranking": "As dez UFs com mais carteira PJ por empresa ativa em Empréstimos",
   "catalogo.exemplo-destaque": "Carteira PJ onde a regra recomenda entrar",
@@ -192,9 +196,15 @@ export const ptBR = Object.freeze({
   "grafico.intervalo": "intervalo de {de} a {ate}",
   "grafico.erro-da-malha":
     "O mapa não carregou, porque a malha das UFs não está disponível. O cartograma e a tabela continuam com os mesmos números.",
-  "grafico.acima-do-pais": "Acima do país",
-  "grafico.abaixo-do-pais": "Abaixo do país",
-  "grafico.igual-ao-pais": "Igual ao país",
+  "grafico.acima-do-pais-forte": "Acima do país, mais de {b}",
+  "grafico.acima-do-pais": "Acima do país, de {a} a {b}",
+  "grafico.igual-ao-pais": "Igual ao país, até {a}",
+  "grafico.abaixo-do-pais": "Abaixo do país, de {a} a {b}",
+  "grafico.abaixo-do-pais-forte": "Abaixo do país, mais de {b}",
+  "grafico.abaixo-do-pais-curto": "Abaixo do país",
+  "grafico.acima-do-pais-curto": "Acima do país",
+  "grafico.matriz-de-calor-aria":
+    "Matriz de calor com a distância de cada UF até a mediana, em cada modalidade. Os números estão na tabela.",
 
   "matriz.eixo-espaco": "Carteira por empresa, em vezes a mediana das UFs",
   "matriz.eixo-espaco-curto": "Carteira por empresa",
@@ -229,4 +239,112 @@ export const ptBR = Object.freeze({
   "quadrante.observar": "Observar",
   "quadrante.nao-entrar": "Não entrar",
   "quadrante.manter": "Manter",
+
+  "navegacao.rotulo": "Visões do dashboard",
+  "navegacao.credito-por-uf": "Onde está o crédito",
+  "navegacao.erro-titulo": "Não foi possível abrir esta visão",
+  "navegacao.erro-rede": "Os dados não chegaram. Confira a conexão e tente de novo.",
+  "navegacao.erro-formato": "Os dados chegaram incompletos. Tente de novo em alguns instantes.",
+
+  "definicao.o-que-e": "O que é {rotulo}",
+  "definicao.oficial": "Definição oficial",
+  "definicao.sem-definicao-oficial": "O documento oficial não define este termo.",
+  "definicao.fonte-da-explicacao": "Explicação do projeto, a partir de: {fonte}",
+  "definicao.do-projeto": "A regra deste número foi fixada pelo projeto, no {adr}.",
+  "definicao.ler-o-adr": "Ler o registro da decisão",
+  "definicao.confianca-verbatim": "transcrita da fonte",
+  "definicao.confianca-parafraseado": "redação própria, amparada na fonte",
+  "definicao.confianca-inferido": "inferida do contexto",
+  "definicao.confianca-lacuna": "sem definição na fonte",
+
+  "detalhe.rotulo": "Detalhe",
+  "detalhe.fechar": "Fechar o detalhe",
+
+  "tela1.titulo": "Onde está o crédito PJ, e onde ele é escasso por empresa",
+  "tela1.filtro-modalidade": "Modalidade",
+  "tela1.todas-as-modalidades": "Todas as modalidades",
+  "tela1.todas-no-titulo": "todas as modalidades",
+  "tela1.desenho": "Desenho do território",
+  "tela1.mapa": "Mapa",
+  "tela1.grade": "Grade",
+  "tela1.matriz": "Matriz",
+  "tela1.tabela": "Tabela",
+  "tela1.fonte": "SCR.data, do Banco Central, e CNPJ, da Receita Federal",
+  "tela1.fonte-com-malha": "SCR.data, do Banco Central, e CNPJ, da Receita Federal; malha do IBGE",
+  "tela1.titulo-territorio": "Carteira PJ por empresa em {recorte}, por UF",
+  "tela1.mediana-das-ufs": "Mediana das UFs",
+  "tela1.sem-comparacao": "Sem comparação com a mediana",
+  "tela1.na-mediana": "na mediana",
+  "tela1.abaixo-da-mediana-em": "{valor} abaixo da mediana",
+  "tela1.acima-da-mediana-em": "{valor} acima da mediana",
+  "tela1.por-empresa": "{valor} por empresa",
+  "tela1.motivo-abaixo-do-corte": "Fora da comparação: carteira abaixo de {corte} nesta modalidade",
+  "tela1.motivo-poucas-ufs":
+    "Fora da comparação: poucas UFs passam do corte de {corte} nesta modalidade",
+  "tela1.motivo-sem-carteira": "Sem carteira nesta modalidade",
+  "tela1.aviso-sede":
+    "A UF é a da sede da empresa que tomou o crédito, e não a do lugar onde o dinheiro foi usado.",
+  "tela1.sem-malha":
+    "O mapa não carregou. A grade mostra os mesmos números, com cada UF do mesmo tamanho.",
+  "tela1.vazio-titulo": "Nenhuma UF entra na comparação nesta modalidade",
+  "tela1.vazio-texto":
+    "Para comparar com a mediana, a modalidade precisa de pelo menos {minimo} UFs com carteira acima de {corte}. Abaixo disso, a comparação não daria um número estável. A tabela mostra os valores de cada UF.",
+  "tela1.detalhe-dica":
+    "Escolha uma UF no mapa, na grade, na matriz, na tabela ou no ranking para ver os números dela.",
+  "tela1.carteira-pj": "Carteira PJ",
+  "tela1.empresas": "Empresas sem MEI",
+  "tela1.carteira-por-empresa": "Carteira por empresa",
+  "tela1.nota-retrato":
+    "O número de empresas é reconstruído do retrato de {mes} do CNPJ, a {meses} meses da data-base.",
+  "tela1.legenda-tabela": "Carteira PJ por empresa em {recorte}, por UF, em {data}",
+  "tela1.coluna-uf": "UF",
+  "tela1.coluna-posicao": "Em relação à mediana",
+  "tela1.coluna-participacao": "Participação no país",
+  "tela1.coluna-custo": "Crédito que faltaria",
+  "tela1.coluna-situacao": "Situação",
+  "tela1.indice-csv": "Índice de espaço",
+  "tela1.posicao": "Posição na carteira por empresa",
+  "tela1.titulo-ranking": "Crédito que faltaria para cada UF chegar à mediana, em {recorte}",
+  "tela1.rolagem-do-ranking": "Ranking do crédito que faltaria, com rolagem",
+  "tela1.titulo-matriz": "Distância de cada UF até a mediana, por modalidade",
+  "tela1.titulo-destaque": "Oportunidade em {recorte}",
+  "tela1.destaque-rotulo":
+    "de crédito PJ faltariam para as {abaixo} UFs abaixo da mediana chegarem a ela",
+  "tela1.resumo-carteira": "Carteira PJ",
+  "tela1.resumo-mediana": "Mediana da carteira por empresa",
+  "tela1.ressalva-demanda":
+    "Pouco crédito por empresa pode ser pouca demanda, e não espaço para crescer. A comparação não desconta o porte das empresas nem a renda de cada UF.",
+  "tela1.legenda-forte-abaixo": "Mais espaço: mais de {b} abaixo da mediana",
+  "tela1.legenda-abaixo": "Mais espaço: de {a} a {b} abaixo",
+  "tela1.legenda-meio": "Perto da mediana: até {a} de diferença",
+  "tela1.legenda-acima": "Menos espaço: de {a} a {b} acima",
+  "tela1.legenda-forte-acima": "Menos espaço: mais de {b} acima da mediana",
+  "tela1.escala-titulo": "Carteira por empresa em relação à mediana das UFs",
+  "tela1.escala-mais-espaco": "Mais espaço",
+  "tela1.escala-menos-espaco": "Menos espaço",
+  "tela1.posicao-entre": "{posicao}ª menor de {de}",
+  "tela1.participacao-no-pais": "{valor} da carteira PJ do país",
+  "tela1.carteira-na-modalidade": "Carteira PJ nesta modalidade",
+  "tela1.carteira-por-empresa-e-posicao": "Carteira por empresa",
+  "tela1.custo-da-uf": "Crédito que faltaria para chegar à mediana",
+  "tela1.modalidades-da-uf": "Modalidades nesta UF",
+  "tela1.fora-da-comparacao": "fora da comparação",
+  "tela1.baixar-csv": "Baixar em CSV",
+  "tela1.opcao-sem-comparacao": "{nome}, sem UF comparável",
+  "tela1.dica-celula": "{uf} em {modalidade}: {posicao}",
+  "tela1.dica-celula-fora": "{uf} em {modalidade}: fora da comparação",
+
+  "modalidade-curta.01": "Adiantamentos",
+  "modalidade-curta.02": "Empréstimos",
+  "modalidade-curta.03": "Direitos creditórios",
+  "modalidade-curta.04": "Financiamentos",
+  "modalidade-curta.05": "Exportação",
+  "modalidade-curta.06": "Importação",
+  "modalidade-curta.07": "Interveniência",
+  "modalidade-curta.08": "Rurais",
+  "modalidade-curta.09": "Imobiliários",
+  "modalidade-curta.10": "Títulos e valores",
+  "modalidade-curta.11": "Infraestrutura",
+  "modalidade-curta.12": "Arrendamento",
+  "modalidade-curta.13": "Outros créditos",
 });

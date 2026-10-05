@@ -53,6 +53,9 @@ const PASTA = "./data/";
  * @property {string | null} confianca
  * @property {string | null} nota_de_escopo
  * @property {string} [codigo] Código da modalidade / modality code
+ * @property {string | null} [explicacao] Explicação em palavras comuns, só nas modalidades (#69) / plain-language explanation
+ * @property {string | null} [explicacao_confianca] Confiança da explicação / its confidence
+ * @property {string | null} [explicacao_fonte] Fonte da explicação / its source
  * @property {string} [data] Data da quebra da série / series break date
  */
 

@@ -27,7 +27,9 @@ export function numero(valor, casas = 1) {
 }
 
 /**
- * PT: Reais na maior unidade que deixa o número curto: bi, mi ou mil.
+ * PT: Reais na maior unidade que deixa o número curto: tri, bi, mi ou mil.
+ *     O "tri" entrou com a Tela 1 (#69), em que a carteira PJ do país, de
+ *     cerca de R$ 2,9 tri, aparecia como "R$ 2.910,1 bi".
  * EN: Reais in the largest unit that keeps the number short.
  *
  * @param {number} valor Em reais / in reais
@@ -36,6 +38,7 @@ export function numero(valor, casas = 1) {
  */
 export function reais(valor, casas = 1) {
   const absoluto = Math.abs(valor);
+  if (absoluto >= 1e12) return `R$ ${numero(valor / 1e12, casas)} tri`;
   if (absoluto >= 1e9) return `R$ ${numero(valor / 1e9, casas)} bi`;
   if (absoluto >= 1e6) return `R$ ${numero(valor / 1e6, casas)} mi`;
   if (absoluto >= 1e3) return `R$ ${numero(valor / 1e3, casas)} mil`;

@@ -18,6 +18,7 @@ import { t } from "../textos/index.js";
 import { classeDoValor } from "./escalas.js";
 import { criarGrafico } from "./grafico.js";
 import { legendaDeClasses } from "./legenda.js";
+import { destaque, semComparacao } from "./selecao.js";
 import { hex } from "./tema.js";
 import { UFS, ufPelaSigla } from "./ufs.js";
 
@@ -49,31 +50,76 @@ function textoSobre(preenchimento) {
  * @property {Record<string, number | null>} valores Por sigla da UF / by state
  * @property {Classes} classes As mesmas do mapa / same as the map
  * @property {(v: number) => string} formatar Para a dica / for the tooltip
+ * @property {(sigla: string) => string | null} [dica] Texto da dica no lugar do valor / tooltip override
+ * @property {(sigla: string) => void} [aoSelecionar] Clique numa UF / state click
+ * @property {string | null} [selecionada] A UF destacada no começo / initially selected state
+ * @property {string} [rotuloSemValor] Item da legenda para as UFs sem valor, desenhadas com textura / legend item for value-less states
+ * @property {import("./legenda.js").FazerLegenda} [legenda] Quem monta a legenda; o padrão é a lista de classes / legend builder, class list by default
  */
 
+/** @typedef {import("./selecao.js").GraficoDeUf<DadosDoCartograma>} GraficoDoCartograma */
+
 /**
- * PT: Desenha o cartograma no elemento, com a legenda logo depois dele.
- * EN: Draws the cartogram.
+ * PT: Desenha o cartograma no elemento, com a legenda logo depois dele. A
+ *     UF escolhida ganha a borda na cor do texto, e um clique avisa
+ *     `aoSelecionar`, como no mapa (RF-102).
+ * EN: Draws the cartogram; selection and clicks work as on the map.
  *
  * @param {HTMLElement} el
- * @param {DadosDoCartograma} dados
- * @returns {Promise<Grafico>}
+ * @param {DadosDoCartograma} inicial
+ * @returns {Promise<GraficoDoCartograma>}
  */
-export function cartograma(el, { valores, classes, formatar }) {
+export async function cartograma(el, inicial) {
+  let dados = inicial;
+  let escolhida = inicial.selecionada ?? null;
   // PT: a altura acompanha a largura na proporção da grade, pelo CSS
   // EN: height follows width in the grid proportion, via CSS
   el.style.setProperty("--linhas", String(LINHAS));
   el.style.setProperty("--colunas", String(COLUNAS));
-  el.after(legendaDeClasses(classes("claro")));
-  return criarGrafico(el, (tema) => {
-    const pedacos = classes(tema);
-    const vazio = hex("color.border.subtle", tema);
+  let legenda = (dados.legenda ?? legendaDeClasses)(dados.classes("claro"), dados.rotuloSemValor);
+  el.after(legenda);
+
+  const grafico = await criarGrafico(el, (tema) => {
+    const pedacos = dados.classes(tema);
+    const semValor = semComparacao(tema);
+    /**
+     * PT: Uma célula da grade. A UF sem valor vai numa série própria, que a
+     *     escala de cor não toca: o mapa de calor do ECharts não desenha
+     *     célula sem número, e a UF sumiria da grade (revisão visual da #69).
+     * EN: One grid cell; value-less states go in their own series, untouched
+     *     by the color scale, since a heatmap skips cells with no number.
+     *
+     * @param {import("./ufs.js").Uf} uf
+     * @param {number | null} valor
+     */
+    const celula = (uf, valor) => {
+      const cor =
+        valor === null ? semValor.cor : (classeDoValor(pedacos, valor)?.color ?? semValor.cor);
+      return {
+        sigla: uf.sigla,
+        semValor: valor === null,
+        value: [uf.coluna, uf.linha, valor ?? 0],
+        label: { show: true, formatter: uf.sigla, color: textoSobre(cor), fontSize: 12 },
+        itemStyle: {
+          ...(valor === null ? { color: semValor.cor, decal: semValor.textura } : {}),
+          ...(uf.sigla === escolhida ? destaque(tema) : {}),
+        },
+      };
+    };
+    const valorDe = (/** @type {string} */ sigla) => {
+      const valor = dados.valores[sigla];
+      return Number.isFinite(valor) ? /** @type {number} */ (valor) : null;
+    };
     return {
       tooltip: {
         trigger: "item",
-        formatter: (/** @type {{ data: { sigla: string, value: number[] } }} */ p) => {
-          const valor = p.data.value[2];
-          return `${ufPelaSigla(p.data.sigla).nome}: ${Number.isFinite(valor) ? formatar(valor) : t("grafico.sem-dado")}`;
+        formatter: (
+          /** @type {{ data: { sigla: string, semValor: boolean, value: number[] } }} */ p,
+        ) => {
+          const texto =
+            dados.dica?.(p.data.sigla) ??
+            (p.data.semValor ? t("grafico.sem-dado") : dados.formatar(p.data.value[2]));
+          return `${ufPelaSigla(p.data.sigla).nome}: ${texto}`;
         },
       },
       grid: { left: 0, right: 0, top: 0, bottom: 0 },
@@ -84,29 +130,62 @@ export function cartograma(el, { valores, classes, formatar }) {
         inverse: true,
         show: false,
       },
-      visualMap: {
-        type: "piecewise",
-        pieces: pedacos,
-        outOfRange: { color: vazio },
-        show: false,
-      },
+      // PT: o mapa de calor do ECharts exige uma escala de cor por série; a
+      //     série das UFs sem valor tem a dela, de uma cor só
+      // EN: every heatmap series needs a visualMap; the value-less one has a
+      //     single-color one
+      visualMap: [
+        {
+          type: "piecewise",
+          pieces: pedacos,
+          seriesIndex: 0,
+          outOfRange: { color: semValor.cor },
+          show: false,
+        },
+        {
+          type: "piecewise",
+          pieces: [{ value: 0, color: semValor.cor }],
+          seriesIndex: 1,
+          show: false,
+        },
+      ],
       series: [
         {
           type: "heatmap",
-          data: UFS.map((uf) => {
-            const valor = valores[uf.sigla];
-            const cor = Number.isFinite(valor)
-              ? (classeDoValor(pedacos, /** @type {number} */ (valor))?.color ?? vazio)
-              : vazio;
-            return {
-              sigla: uf.sigla,
-              value: [uf.coluna, uf.linha, valor ?? Number.NaN],
-              label: { show: true, formatter: uf.sigla, color: textoSobre(cor), fontSize: 12 },
-            };
-          }),
-          emphasis: { itemStyle: { borderColor: hex("color.text.primary", tema), borderWidth: 2 } },
+          data: UFS.filter((uf) => valorDe(uf.sigla) !== null).map((uf) =>
+            celula(uf, valorDe(uf.sigla)),
+          ),
+          emphasis: { itemStyle: destaque(tema) },
+        },
+        {
+          type: "heatmap",
+          data: UFS.filter((uf) => valorDe(uf.sigla) === null).map((uf) => celula(uf, null)),
+          emphasis: { itemStyle: destaque(tema) },
         },
       ],
     };
   });
+
+  grafico.instancia.on("click", (p) => {
+    const dado = /** @type {{ sigla?: string } | null | undefined} */ (p.data);
+    if (dado?.sigla) dados.aoSelecionar?.(dado.sigla);
+  });
+
+  return {
+    ...grafico,
+    selecionar(sigla) {
+      escolhida = sigla;
+      grafico.atualizar();
+    },
+    mudar(novos) {
+      dados = { ...dados, ...novos };
+      const nova = (dados.legenda ?? legendaDeClasses)(
+        dados.classes("claro"),
+        dados.rotuloSemValor,
+      );
+      legenda.replaceWith(nova);
+      legenda = nova;
+      grafico.atualizar();
+    },
+  };
 }

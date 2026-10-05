@@ -381,6 +381,14 @@ models:
       - name: indice_de_espaco
         description: "Carteira por empresa dividida pela mediana das UFs. Abaixo de 1, o espaço é alto (ADR 0014)."
         data_tests: [not_null]
+      - name: custo_de_nao_entrar
+        description: >
+          Crédito que faltaria para a UF chegar à mediana: (mediana menos
+          carteira por empresa) vezes as empresas, só nas UFs abaixo da
+          mediana. A mesma conta do mrt_decisao (ADR 0014, decisão 5).
+      - name: participacao_na_carteira_pj
+        description: "A fatia da UF na carteira PJ do país, no mesmo mês."
+        data_tests: [not_null]
       - name: populacao
         data_tests: [not_null]
       - name: retrato_do_cnpj

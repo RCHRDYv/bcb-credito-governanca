@@ -57,11 +57,12 @@ test.describe("gráficos do catálogo", () => {
     const areas = page.locator(".grafico");
     const comSvg = page.locator(".grafico:has(svg)");
     await expect(areas.first()).toBeVisible();
-    // PT: dois painéis, com seis gráficos cada, mais a demonstração
-    // EN: two panels of six charts each, plus the demo
-    expect(await areas.count()).toBe(13);
+    // PT: dois painéis, com sete gráficos cada (a matriz de calor entrou na
+    //     #69), mais a demonstração
+    // EN: two panels of seven charts each, plus the demo
+    expect(await areas.count()).toBe(15);
     await expect(page.locator(".grafico--mapa svg")).toHaveCount(2);
-    expect(await comSvg.count()).toBe(13);
+    expect(await comSvg.count()).toBe(15);
     await expect(page.locator(".grafico-erro")).toHaveCount(0);
   });
 

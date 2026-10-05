@@ -24,17 +24,9 @@ import { cor, token } from "../tokens.js";
 /** @typedef {import("../tokens.js").Tema} Tema */
 
 /**
- * @typedef {object} Divergente
- * @property {string[]} negativo Do meio para a ponta / from the middle outwards
- * @property {string} neutro
- * @property {string[]} positivo Do meio para a ponta / from the middle outwards
- */
-
-/**
  * @typedef {object} Paletas
  * @property {string[]} categorica Na ordem fixa das séries / fixed series order
  * @property {string[]} sequencial Do valor baixo ao alto / low to high
- * @property {Divergente} divergente
  * @property {string} outros Cinza da série "Outros" / gray for "Outros"
  */
 
@@ -78,7 +70,7 @@ export function superficies(tema) {
  * PT: Quantos degraus cada paleta tem nos tokens.
  * EN: How many steps each palette has in the tokens.
  */
-export const DEGRAUS = Object.freeze({ categorica: 6, sequencial: 5, divergente: 3 });
+export const DEGRAUS = Object.freeze({ categorica: 6, sequencial: 5 });
 
 /**
  * PT: As paletas de gráfico de um tema, lidas dos tokens `color.chart.*`.
@@ -93,11 +85,6 @@ export function paletas(tema) {
   return {
     categorica: serie("color.chart.categorical", DEGRAUS.categorica),
     sequencial: serie("color.chart.sequential", DEGRAUS.sequencial),
-    divergente: {
-      negativo: serie("color.chart.diverging.negative", DEGRAUS.divergente),
-      neutro: hex("color.chart.diverging.neutral", tema),
-      positivo: serie("color.chart.diverging.positive", DEGRAUS.divergente),
-    },
     outros: hex("color.chart.other", tema),
   };
 }

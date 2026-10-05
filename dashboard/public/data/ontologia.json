@@ -388,6 +388,8 @@
       "carteira_por_empresa": "ADR 0014, decisão 1",
       "mediana_carteira_por_empresa": "ADR 0014, decisão 1",
       "indice_de_espaco": "ADR 0014, decisão 1",
+      "custo_de_nao_entrar": "ADR 0014, decisão 5",
+      "participacao_na_carteira_pj": "ontology/metricas.yml#carteira_ativa",
       "retrato_do_cnpj": "ontology/fontes_externas.yml#cnpj_aberto",
       "meses_ate_o_retrato": "ADR 0009"
     },

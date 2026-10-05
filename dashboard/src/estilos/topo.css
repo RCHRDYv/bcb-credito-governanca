@@ -1,7 +1,7 @@
 /*
  * PT: A barra de topo, comum a todas as páginas: o nome do produto e o
- *     controle de tema (#64). A navegação entre as visões (RF-G01) entra aqui
- *     quando as visões chegarem.
+ *     controle de tema (#64), com a navegação entre as visões (RF-G01) no
+ *     meio, desde a #69.
  * EN: The shared top bar: product name and theme control.
  */
 
@@ -29,13 +29,50 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-04);
-    max-inline-size: calc(var(--grid-breakpoint-max) - 2 * var(--grid-margin-max));
-    margin-inline: auto;
     padding: var(--space-03) var(--space-05);
   }
 
   .topo__nome {
     font: var(--type-heading-compact-01);
     letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  /* PT: a navegação ocupa o meio, e a visão atual fica marcada pela cor e
+     pelo peso, além do aria-current */
+  /* EN: navigation in the middle; the current view is marked by color and
+     weight, besides aria-current */
+  .navegacao {
+    flex: 1;
+  }
+
+  .navegacao__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-02);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .navegacao__link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--size-area-de-toque);
+    padding-inline: var(--space-04);
+    border-radius: var(--radius-capsula);
+    color: var(--color-text-secondary);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    text-decoration: none;
+  }
+
+  .navegacao__link:hover {
+    color: var(--color-text-primary);
+  }
+
+  .navegacao__link[aria-current="page"] {
+    color: var(--color-text-primary);
+    background: color-mix(in oklab, var(--color-interactive) 12%, transparent);
+    font-weight: 600;
   }
 }

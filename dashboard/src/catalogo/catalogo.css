@@ -14,6 +14,21 @@
     padding: 0 var(--space-05) var(--space-12);
   }
 
+  /* PT: no catálogo, o painel de detalhe fica no fluxo, e não vira a folha
+     que sobe de baixo em tela estreita */
+  /* EN: in the catalog the detail panel stays in flow */
+  .catalogo .detalhe {
+    position: static;
+    max-block-size: none;
+    translate: none;
+  }
+
+  .catalogo__rotulo-com-definicao {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-02);
+  }
+
   .catalogo__cabecalho {
     padding-block: var(--space-10) var(--space-07);
   }

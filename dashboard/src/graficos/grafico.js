@@ -153,6 +153,11 @@ export async function criarGrafico(el, montar) {
   sincronizadores.add(sincronizar);
 
   const tamanho = new ResizeObserver(() => {
+    // PT: um gráfico escondido, como o ranking quando o painel da UF toma o
+    //     lugar dele, ou numa aba recolhida, fica com tamanho zero; o mapa
+    //     do ECharts quebra ao se redimensionar assim, e não há o que desenhar
+    // EN: a hidden chart has zero size; skip the resize, which breaks maps
+    if (el.clientWidth === 0 || el.clientHeight === 0) return;
     const agora = el.clientWidth < LARGURA_ESTREITA;
     if (agora !== estreito) {
       estreito = agora;

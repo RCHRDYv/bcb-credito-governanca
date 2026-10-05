@@ -499,73 +499,7 @@
             }
           }
         },
-        "$description": "Magnitude, do valor baixo ao alto, na rampa roxa oficial do Carbon sem o branco. No claro vai do claro ao escuro; no escuro, do escuro ao claro, porque o valor baixo é o que se aproxima do fundo."
-      },
-      "diverging": {
-        "$description": "Desvio contra uma referência, como a variação da inadimplência contra a do país: a paleta divergente roxo e verde-azulado do Carbon, com o meio em cinza no lugar do branco, que some no vidro. Os degraus vão do meio para a ponta.",
-        "negative": {
-          "1": {
-            "$value": "{color.teal.40}",
-            "$extensions": {
-              "credito-pj": {
-                "escuro": "{color.teal.70}"
-              }
-            }
-          },
-          "2": {
-            "$value": "{color.teal.60}",
-            "$extensions": {
-              "credito-pj": {
-                "escuro": "{color.teal.50}"
-              }
-            }
-          },
-          "3": {
-            "$value": "{color.teal.80}",
-            "$extensions": {
-              "credito-pj": {
-                "escuro": "{color.teal.40}"
-              }
-            }
-          },
-          "$description": "Abaixo da referência, em verde-azulado"
-        },
-        "neutral": {
-          "$value": "{color.gray.20}",
-          "$description": "Igual à referência",
-          "$extensions": {
-            "credito-pj": {
-              "escuro": "{color.gray.80}"
-            }
-          }
-        },
-        "positive": {
-          "1": {
-            "$value": "{color.purple.40}",
-            "$extensions": {
-              "credito-pj": {
-                "escuro": "{color.purple.70}"
-              }
-            }
-          },
-          "2": {
-            "$value": "{color.purple.60}",
-            "$extensions": {
-              "credito-pj": {
-                "escuro": "{color.purple.50}"
-              }
-            }
-          },
-          "3": {
-            "$value": "{color.purple.80}",
-            "$extensions": {
-              "credito-pj": {
-                "escuro": "{color.purple.40}"
-              }
-            }
-          },
-          "$description": "Acima da referência, em roxo"
-        }
+        "$description": "Intensidade, do valor baixo ao alto, na rampa roxa oficial do Carbon sem o branco. É a única rampa do design system desde 2026-10-05 (ADR 0021): também mostra a distância até uma referência, em faixas, com o roxo mais forte no lado que quer dizer mais. No claro vai do claro ao escuro; no escuro, do escuro ao claro, porque o valor baixo é o que se aproxima do fundo."
       },
       "other": {
         "$value": "{color.gray.50}",

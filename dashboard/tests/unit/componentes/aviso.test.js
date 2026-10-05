@@ -21,6 +21,15 @@ describe("aviso()", () => {
     expect(aviso({ tipo: "informacao", texto: "x" }).hasAttribute("role")).toBe(false);
   });
 
+  it("vem em caixa por padrão, e em linha quando pedido / boxed by default, inline on request", () => {
+    expect(aviso({ tipo: "informacao", texto: "x" }).classList.contains("aviso--linha")).toBe(
+      false,
+    );
+    const linha = aviso({ tipo: "informacao", texto: "x", variante: "linha" });
+    expect(linha.classList.contains("aviso--linha")).toBe(true);
+    expect(linha.querySelector(".aviso__icone svg.icone")).not.toBeNull();
+  });
+
   it("anuncia o erro com urgência e os outros com calma / alert for errors, status otherwise", () => {
     expect(aviso({ tipo: "erro", texto: "x", anunciar: true }).getAttribute("role")).toBe("alert");
     expect(aviso({ tipo: "informacao", texto: "x", anunciar: true }).getAttribute("role")).toBe(

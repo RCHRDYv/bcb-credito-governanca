@@ -9,6 +9,7 @@ import { dataBase, mesCurto, numero, pontos, reais, taxa, vezes } from "../../sr
 
 describe("formatos do guia / the guide's formats", () => {
   it("reais em bi, mi e mil / reais", () => {
+    expect(reais(2_910_100_000_000)).toBe("R$ 2,9 tri");
     expect(reais(485_503_196_800)).toBe("R$ 485,5 bi");
     expect(reais(12_340_000)).toBe("R$ 12,3 mi");
     expect(reais(61_600)).toBe("R$ 61,6 mil");

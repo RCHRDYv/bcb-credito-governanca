@@ -41,6 +41,23 @@
     min-inline-size: 0;
   }
 
+  /* PT: tela única (ADR 0022): o cartão preenche a altura que a visão dá a
+     ele, o corpo fica com o que sobra do cabeçalho, e o que não couber rola
+     dentro do corpo. Abaixo do piso, o cartão volta à altura do conteúdo */
+  /* EN: single screen: the card fills the height the view gives it; the
+     body takes what the header leaves */
+  @media screen and (min-width: 1280px) and (min-height: 720px) {
+    .cartao-grafico--preenche {
+      grid-template-rows: auto minmax(0, 1fr);
+      block-size: 100%;
+      min-block-size: 0;
+    }
+
+    .cartao-grafico--preenche > .cartao-grafico__corpo {
+      min-block-size: 0;
+    }
+  }
+
   /* PT: a área do ECharts; os números alinham em coluna / EN: tabular figures */
   .grafico {
     inline-size: 100%;
@@ -56,6 +73,14 @@
 
   .grafico--serie {
     block-size: 300px;
+  }
+
+  /* PT: a matriz de calor: uma faixa de altura por linha, mais os rótulos
+     das colunas, que o JavaScript informa pela variável --linhas */
+  /* EN: heatmap: one band per row plus column labels */
+  .grafico--matriz-de-calor {
+    min-inline-size: 15rem;
+    block-size: calc(var(--linhas, 27) * var(--space-06) + 7rem);
   }
 
   .grafico--ranking {
@@ -149,6 +174,78 @@
     inline-size: var(--space-04);
     block-size: var(--space-04);
     border-radius: var(--space-01);
+  }
+
+  /* PT: a mesma textura listrada que o gráfico usa para quem fica sem cor de
+     classe, sobre a superfície do cartão (#69) */
+  /* EN: the chart's striped texture for value-less items */
+  .legenda__cor--sem-valor {
+    border: var(--border-fina) solid var(--color-border-strong);
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--color-border-strong) 0 1px,
+      var(--color-chart-surface) 1px 6px
+    );
+  }
+
+  /* PT: a legenda em escala, compacta: o que ela mede em cima, a barra em
+     degradê contínuo com as pontas em cápsula, como os controles do design
+     system, as divisas embaixo, cada uma com um traço, e o sentido de cada
+     ponta (revisões da Tela 1, em 2026-10-05) */
+  /* EN: compact scale legend: what it measures, a continuous gradient bar
+     with capsule ends, ticked boundaries below and each end's meaning */
+  .escala {
+    display: grid;
+    gap: var(--space-02);
+    inline-size: min(100%, 16rem);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .escala__titulo {
+    color: var(--color-text-primary);
+  }
+
+  .escala__barra {
+    block-size: var(--space-03);
+    border-radius: var(--radius-capsula);
+  }
+
+  .escala__marcas {
+    position: relative;
+    block-size: var(--space-05);
+    margin-block-start: var(--space-01);
+  }
+
+  .escala__marca {
+    position: absolute;
+    inset-inline-start: var(--posicao);
+    translate: -50% 0;
+    white-space: nowrap;
+  }
+
+  .escala__marca::before {
+    content: "";
+    position: absolute;
+    inset-block-start: calc(-1 * var(--space-02));
+    inset-inline-start: 50%;
+    inline-size: var(--border-fina);
+    block-size: var(--space-02);
+    background: var(--color-border-strong);
+  }
+
+  .escala__extremos {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-primary);
+  }
+
+  .escala__sem-valor {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-03);
   }
 
   /* PT: número de destaque / EN: highlight number */
