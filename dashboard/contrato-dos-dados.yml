@@ -229,7 +229,7 @@ arquivos:
       - {nome: projecao, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0023, decisão 4"}
       - {nome: limite_inferior, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0023, decisão 4"}
       - {nome: limite_superior, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0023, decisão 4"}
-      - {nome: modelo, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 2", valores: ["deriva", "holt_amortecido", "ingenuo", "ingenuo_sazonal"]}
+      - {nome: modelo, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 2; ADR 0024", valores: ["deriva", "holt_amortecido", "ingenuo", "ingenuo_sazonal", "lightgbm"]}
 
   - arquivo: backtest_da_projecao.json
     origem: mrt_carteira_mensal
@@ -244,13 +244,35 @@ arquivos:
     colunas:
       - {nome: tipo_de_recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1", valores: ["modalidade", "pais", "uf"]}
       - {nome: recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1"}
-      - {nome: modelo, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 2", valores: ["deriva", "holt_amortecido", "ingenuo", "ingenuo_sazonal"]}
+      - {nome: modelo, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 2; ADR 0024", valores: ["deriva", "holt_amortecido", "ingenuo", "ingenuo_sazonal", "lightgbm"]}
       - {nome: horizonte, tipo: integer, unidade: meses, nulo: false, definicao: "ADR 0023, decisão 3"}
       - {nome: escolhido, tipo: boolean, unidade: booleano, nulo: false, definicao: "ADR 0023, decisão 3"}
       - {nome: mase_na_escolha, tipo: number, unidade: indice, nulo: false, definicao: "ADR 0023, decisão 3"}
       - {nome: mase, tipo: number, unidade: indice, nulo: false, definicao: "ADR 0023, decisão 3"}
       - {nome: mape, tipo: number, unidade: media_de_fracoes, nulo: false, definicao: "ADR 0023, decisão 3"}
       - {nome: cobertura, tipo: number, unidade: fracao, nulo: false, definicao: "ADR 0023, decisão 4"}
+
+  - arquivo: testes_da_projecao.json
+    origem: mrt_carteira_mensal
+    gerado_por: scripts/analises/previsao_da_carteira.py
+    grao: "Recorte, origem da janela de avaliação e horizonte de 1 a 3 meses"
+    filtro: >
+      O que o modelo escolhido de cada recorte previa em cada teste da janela
+      de avaliação do backtest, com a faixa de 80%, contra o que aconteceu.
+      É o gráfico do erro da Tela 3 (ADR 0024, decisão 7).
+    ordem: [tipo_de_recorte, recorte, data_do_teste, horizonte]
+    visoes: [3]
+    colunas:
+      - {nome: tipo_de_recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1", valores: ["modalidade", "pais", "uf"]}
+      - {nome: recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1"}
+      - {nome: data_do_teste, tipo: string, unidade: data, nulo: false, definicao: "ADR 0024, decisão 7: o último mês que o modelo conhecia no teste"}
+      - {nome: horizonte, tipo: integer, unidade: meses, nulo: false, definicao: "ADR 0023, decisão 3"}
+      - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
+      - {nome: realizado, tipo: number, unidade: reais, nulo: false, definicao: "ontology/metricas.yml#carteira_ativa"}
+      - {nome: projecao, tipo: number, unidade: reais, nulo: false, definicao: "ADR 0024, decisão 7"}
+      - {nome: limite_inferior, tipo: number, unidade: reais, nulo: false, definicao: "ADR 0024, decisão 7"}
+      - {nome: limite_superior, tipo: number, unidade: reais, nulo: false, definicao: "ADR 0024, decisão 7"}
+      - {nome: modelo, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 2; ADR 0024", valores: ["deriva", "holt_amortecido", "ingenuo", "ingenuo_sazonal", "lightgbm"]}
 
 # -----------------------------------------------------------------------------
 # PT: Arquivos que não saem de um mart.

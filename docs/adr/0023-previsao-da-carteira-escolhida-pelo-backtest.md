@@ -93,7 +93,7 @@ O gabarito exige SQL portátil sobre o esquema estrela ([ADR 0015](0015-gabarito
 
 ## Resultado
 
-A primeira execução contra o mart, em 2026-10-06, com data-base 2026-07-31, está em [`docs/previsao.md`](../previsao.md), com o erro de cada recorte. Em resumo:
+A primeira execução contra o mart, em 2026-10-06, com data-base 2026-07-31, teve só os quatro candidatos deste ADR. No mesmo dia, o [ADR 0024](0024-lightgbm-global-como-candidato-da-previsao.md) acrescentou o LightGBM global, e o resultado vigente, com os cinco candidatos, está em [`docs/previsao.md`](../previsao.md). O resumo abaixo é o da primeira execução, guardado como registro:
 - **Escolhidos:** a deriva em 22 séries, o Holt amortecido em 10, o ingênuo em 8 e o ingênuo sazonal em 1.
 - **País:** a deriva projeta R$ 2,93 trilhões em ago/2026 e R$ 2,97 trilhões em out/2026. Na avaliação, o MAPE fica abaixo de 1%, a deriva ganha do ingênuo a 2 e 3 meses e perde a 1 mês, e o intervalo cobriu todos os casos.
 - **As 33 séries em que o escolhido não é o ingênuo:** ele ganha do ingênuo na avaliação em 15 a 1 mês, em 19 a 2 meses e em 20 a 3 meses.

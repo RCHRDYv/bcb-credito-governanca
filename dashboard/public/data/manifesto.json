@@ -59,15 +59,23 @@
     {
       "arquivo": "projecao_da_carteira.json",
       "linhas": 1394,
-      "sha256": "8e52a5366371a5d20591111c7ec826a6e80e27a2494e11faaa2f2ff8d7ba8052",
+      "sha256": "334f7873599c8f963d635c4ef657c5f6ff77afb7406aaf86bd2666a09ee5d274",
       "visoes": [
         3
       ]
     },
     {
       "arquivo": "backtest_da_projecao.json",
+      "linhas": 615,
+      "sha256": "44e5c8e32324abbb56108dc81a134edba288dfa74707c65107a7debfa83216f1",
+      "visoes": [
+        3
+      ]
+    },
+    {
+      "arquivo": "testes_da_projecao.json",
       "linhas": 492,
-      "sha256": "b6c9bc47cae1e62c79d936d1b04e14956fbdfefb4a52d70f1c40ccf526474c32",
+      "sha256": "bbc26a905d5d273f7f16cc960dc6db9906787ba7714fe0b93e45757064aa83d9",
       "visoes": [
         3
       ]
@@ -75,7 +83,7 @@
     {
       "arquivo": "ontologia.json",
       "linhas": 25,
-      "sha256": "a5f1e47a35aca1a3d547952faa69af8f4e95d14e648ad0bf4fb2db4339eeec2f",
+      "sha256": "610415b82ca55f5a11013920a15f4f628ef072bd0da5e2158989dec5d39f9768",
       "visoes": [
         1,
         2,

@@ -114,7 +114,7 @@ Onze artefatos, cada um com um público e uma origem versionada. A coluna de sit
 | Problema de negócio | Qualquer leitor | README | Entregue |
 | Glossário de negócio | Negócio | `ontology/modalidades.yml`, `ontology/dimensoes.yml`, `ontology/metricas.yml` | Entregue |
 | Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para seeds, staging, intermediate e marts |
-| ADR | Técnico sênior | `docs/adr/` | Entregue, vinte e três decisões |
+| ADR | Técnico sênior | `docs/adr/` | Entregue, vinte e quatro decisões |
 | Design system do dashboard | Ambos | [`docs/dashboard/design-system.md`](dashboard/design-system.md) e o protótipo em `dashboard/prototipo-design-system/` | Entregue |
 | Requisitos do dashboard | Ambos | [`docs/dashboard/requisitos.md`](dashboard/requisitos.md), com as [referências de design](dashboard/referencias-de-design.md) | Entregue |
 | Arquitetura do dashboard | Técnico | [`docs/dashboard/arquitetura.md`](dashboard/arquitetura.md), com o contrato dos arquivos do site em `dashboard/contrato-dos-dados.yml` | Entregue |
