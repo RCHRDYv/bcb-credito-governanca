@@ -18,6 +18,7 @@
 
 import { botao } from "../../componentes/botao.js";
 import { tabela } from "../../componentes/tabela.js";
+import { baixarCsv, montarCsv, numeroDoCsv, textoDoCsv } from "../../dados/csv.js";
 import { elemento } from "../../dom.js";
 import { numero, reais, taxa } from "../../formatos.js";
 import { t } from "../../textos/index.js";
@@ -35,30 +36,6 @@ import { posicao } from "./cor.js";
  * @property {(linha: LinhaDaVisao) => string} situacao O motivo de quem fica fora / reason
  * @property {string} arquivo O nome do CSV / CSV file name
  */
-
-/**
- * PT: Um número para o CSV, com vírgula decimal e sem separador de milhar.
- * EN: A CSV number, decimal comma, no thousands separator.
- *
- * @param {number | null} valor
- * @param {number} casas
- * @returns {string}
- */
-function numeroDoCsv(valor, casas) {
-  if (valor === null) return "";
-  return valor.toFixed(casas).replace(".", ",");
-}
-
-/**
- * PT: Um texto para o CSV, entre aspas quando precisa.
- * EN: A CSV text, quoted when needed.
- *
- * @param {string} texto
- * @returns {string}
- */
-function textoDoCsv(texto) {
-  return /[;"\n]/.test(texto) ? `"${texto.replaceAll('"', '""')}"` : texto;
-}
 
 /**
  * PT: O conteúdo do CSV, com os números crus: reais em reais inteiros e
@@ -87,26 +64,10 @@ export function csv(linhasDaVisao, todas, situacao) {
     ["tela1.coluna-custo", (l) => numeroDoCsv(l.custo, 0)],
     ["tela1.coluna-situacao", (l) => textoDoCsv(situacao(l))],
   ];
-  const cabecalho = colunas.map(([chave]) => textoDoCsv(t(chave))).join(";");
-  const corpo = linhasDaVisao.map((linha) => colunas.map(([, valor]) => valor(linha)).join(";"));
-  return `${[cabecalho, ...corpo].join("\r\n")}\r\n`;
-}
-
-/**
- * PT: Entrega o CSV ao navegador como arquivo para salvar.
- * EN: Hands the CSV to the browser as a file to save.
- *
- * @param {string} conteudo
- * @param {string} nome
- */
-function baixar(conteudo, nome) {
-  const arquivo = new Blob([`﻿${conteudo}`], { type: "text/csv;charset=utf-8" });
-  const endereco = URL.createObjectURL(arquivo);
-  const link = elemento("a", { atributos: { href: endereco, download: nome } });
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(endereco), 0);
+  return montarCsv(
+    colunas.map(([chave, valor]) => [t(chave), valor]),
+    linhasDaVisao,
+  );
 }
 
 /**
@@ -139,7 +100,7 @@ export function botaoDoCsv(opcoes) {
     variante: "secundario",
     icone: "download",
     aoClicar: () =>
-      baixar(csv(ordenar(opcoes.linhasDaVisao), opcoes.todas, opcoes.situacao), opcoes.arquivo),
+      baixarCsv(csv(ordenar(opcoes.linhasDaVisao), opcoes.todas, opcoes.situacao), opcoes.arquivo),
   });
 }
 

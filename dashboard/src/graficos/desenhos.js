@@ -10,3 +10,4 @@ export { cartograma } from "./cartograma.js";
 export { mapaPorUf, registrarMalha } from "./mapa-por-uf.js";
 export { matrizDeCalor } from "./matriz-de-calor.js";
 export { ranking } from "./ranking.js";
+export { serieDeLinhas } from "./serie-de-linhas.js";

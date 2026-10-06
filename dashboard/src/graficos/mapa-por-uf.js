@@ -16,6 +16,7 @@ import { t } from "../textos/index.js";
 import { echarts } from "./echarts.js";
 import { criarGrafico } from "./grafico.js";
 import { legendaDeClasses } from "./legenda.js";
+import { estiloDaMarca, MARCA } from "./marca.js";
 import { destaque, etiquetaDaEscolhida, semComparacao } from "./selecao.js";
 import { UFS, ufPelaSigla } from "./ufs.js";
 
@@ -39,6 +40,42 @@ export function registrarMalha(malha) {
 }
 
 /**
+ * PT: O rótulo de uma área: a sigla da UF escolhida, numa etiqueta, e o
+ *     marcador de alerta, no centro da área. As demais ficam sem rótulo.
+ * EN: An area's label: the chosen state's tag and the early-warning marker.
+ *
+ * @param {import("../tokens.js").Tema} tema
+ * @param {string} sigla
+ * @param {boolean} escolhida
+ * @param {boolean} marcada
+ * @returns {{ label?: Record<string, unknown> }}
+ */
+function rotuloDaUf(tema, sigla, escolhida, marcada) {
+  const rich = estiloDaMarca(tema);
+  if (escolhida) {
+    const etiqueta = etiquetaDaEscolhida(tema, sigla);
+    if (!marcada) return { label: etiqueta };
+    // PT: com o marcador, a sigla também vai em texto rico, com o estilo da
+    //     etiqueta; misturar texto comum e rico desalinhava os dois
+    // EN: with the marker, the abbreviation is rich text too, so both align
+    const estiloDaSigla = {
+      color: etiqueta.color,
+      fontSize: etiqueta.fontSize,
+      fontWeight: etiqueta.fontWeight,
+      padding: [0, 4, 0, 0],
+    };
+    return {
+      label: {
+        ...etiqueta,
+        formatter: `{sigla|${sigla}} ${MARCA}`,
+        rich: { ...rich, sigla: estiloDaSigla },
+      },
+    };
+  }
+  return marcada ? { label: { show: true, formatter: MARCA, rich } } : {};
+}
+
+/**
  * @typedef {object} DadosDoMapa
  * @property {Record<string, number | null>} valores Por sigla da UF / by state
  * @property {Classes} classes As classes de cor / color classes
@@ -48,6 +85,7 @@ export function registrarMalha(malha) {
  * @property {string | null} [selecionada] A UF destacada no começo / initially selected state
  * @property {string} [rotuloSemValor] Item da legenda para as UFs sem valor, desenhadas com textura / legend item for value-less states
  * @property {import("./legenda.js").FazerLegenda} [legenda] Quem monta a legenda; o padrão é a lista de classes / legend builder, class list by default
+ * @property {string[]} [marcadas] UFs com o marcador de alerta antecipado (#70) / states with the early-warning marker
  */
 
 /** @typedef {import("./selecao.js").GraficoDeUf<DadosDoMapa>} GraficoDoMapa */
@@ -103,6 +141,7 @@ export async function mapaPorUf(el, inicial) {
           data: UFS.map((uf) => {
             const valor = dados.valores[uf.sigla] ?? null;
             const escolhidaAqui = uf.sigla === escolhida;
+            const marcada = dados.marcadas?.includes(uf.sigla) ?? false;
             return {
               name: uf.sigla,
               value: valor,
@@ -110,7 +149,7 @@ export async function mapaPorUf(el, inicial) {
                 ...(valor === null ? { areaColor: vazio.cor, decal: vazio.textura } : {}),
                 ...(escolhidaAqui ? destaque(tema) : {}),
               },
-              ...(escolhidaAqui ? { label: etiquetaDaEscolhida(tema, uf.sigla) } : {}),
+              ...rotuloDaUf(tema, uf.sigla, escolhidaAqui, marcada),
             };
           }),
         },

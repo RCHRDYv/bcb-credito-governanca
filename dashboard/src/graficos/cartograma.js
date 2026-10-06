@@ -18,6 +18,7 @@ import { t } from "../textos/index.js";
 import { classeDoValor } from "./escalas.js";
 import { criarGrafico } from "./grafico.js";
 import { legendaDeClasses } from "./legenda.js";
+import { estiloDaMarca, MARCA } from "./marca.js";
 import { destaque, semComparacao } from "./selecao.js";
 import { hex } from "./tema.js";
 import { UFS, ufPelaSigla } from "./ufs.js";
@@ -55,6 +56,7 @@ function textoSobre(preenchimento) {
  * @property {string | null} [selecionada] A UF destacada no começo / initially selected state
  * @property {string} [rotuloSemValor] Item da legenda para as UFs sem valor, desenhadas com textura / legend item for value-less states
  * @property {import("./legenda.js").FazerLegenda} [legenda] Quem monta a legenda; o padrão é a lista de classes / legend builder, class list by default
+ * @property {string[]} [marcadas] UFs com o marcador de alerta antecipado, ao lado da sigla (#70) / states with the early-warning marker
  */
 
 /** @typedef {import("./selecao.js").GraficoDeUf<DadosDoCartograma>} GraficoDoCartograma */
@@ -99,7 +101,13 @@ export async function cartograma(el, inicial) {
         sigla: uf.sigla,
         semValor: valor === null,
         value: [uf.coluna, uf.linha, valor ?? 0],
-        label: { show: true, formatter: uf.sigla, color: textoSobre(cor), fontSize: 12 },
+        label: {
+          show: true,
+          formatter: dados.marcadas?.includes(uf.sigla) ? `${uf.sigla} ${MARCA}` : uf.sigla,
+          color: textoSobre(cor),
+          fontSize: 12,
+          rich: estiloDaMarca(tema),
+        },
         itemStyle: {
           ...(valor === null ? { color: semValor.cor, decal: semValor.textura } : {}),
           ...(uf.sigla === escolhida ? destaque(tema) : {}),

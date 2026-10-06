@@ -1,0 +1,437 @@
+/*
+ * PT: O modelo de página "Palco em tela única" (ADR 0022), das Telas 1 e 2.
+ *     A visão que usa o modelo leva a classe `visao--palco`. A partir de
+ *     1056 px, três colunas:
+ *     - à esquerda, os filtros em cima e, embaixo, o que o território
+ *       mostra: título, fonte, resumo e ressalvas;
+ *     - no centro, o palco do território, na altura toda;
+ *     - à direita, o número de destaque em cima e o ranking embaixo. Com uma
+ *       UF escolhida, o painel de detalhe toma o lugar do ranking, ou a
+ *       coluna inteira, com `visao--painel-inteiro` (Tela 2).
+ *     A partir de uma janela de 1280×720 px, a visão tem a altura da janela,
+ *     sem rolagem da página, e o palco é um cartão sólido grande, com o
+ *     campo de luz aparecendo em volta dele e atrás dos painéis (opção do
+ *     palco em cartão, revisão de 2026-10-05). Abaixo de 1056 px, as partes
+ *     empilham, e abaixo de 672 px o painel vira a folha que sobe de baixo.
+ *     Só tokens. Saiu do CSS da Tela 1 quando a Tela 2 chegou (#70).
+ *
+ * EN: The "single-screen stage" page model (ADR 0022) for Screens 1 and 2:
+ *     filters and the territory's title and summary on the left; the stage
+ *     in the centre at full height; the highlight number and the ranking on
+ *     the right, where the state panel replaces the ranking, or the whole
+ *     column with `visao--painel-inteiro`. Stacked below 1056 px.
+ */
+
+@layer componentes {
+  .visao {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns-sm), minmax(0, 1fr));
+    gap: var(--space-05) var(--grid-gutter-larga);
+    padding: var(--space-06) var(--space-05) var(--space-10);
+  }
+
+  .visao > * {
+    grid-column: 1 / -1;
+    min-inline-size: 0;
+  }
+
+  @media (min-width: 672px) {
+    .visao {
+      grid-template-columns: repeat(var(--grid-columns-md), minmax(0, 1fr));
+    }
+  }
+
+  /* PT: empilhado, o mapa vem logo depois dos filtros, e o painel do
+     território, com título, resumo e ressalvas, logo depois do mapa. Os lados
+     se desfazem para os itens entrarem na grade da visão; o palco não tem
+     nada que receba foco antes do painel, então a ordem do teclado segue a
+     da tela */
+  /* EN: stacked, the map comes right after the filters and the territory
+     panel right after the map */
+  @media (max-width: 1055px) {
+    .visao--palco .visao__lado {
+      display: contents;
+    }
+
+    .visao--palco .visao__lado > * {
+      grid-column: 1 / -1;
+      min-inline-size: 0;
+    }
+
+    .visao--palco .visao__filtros {
+      order: 1;
+    }
+
+    .visao--palco .visao__palco {
+      order: 2;
+    }
+
+    .visao--palco .visao__sobre-o-territorio {
+      order: 3;
+    }
+
+    .visao--palco .visao__lado--direito > * {
+      order: 4;
+    }
+  }
+
+  /* PT: três colunas: os painéis dos lados e o palco no centro, com o dobro
+     da largura de cada lado */
+  /* EN: three columns: side panels and the stage, twice as wide, between */
+  @media (min-width: 1056px) {
+    .visao--palco {
+      grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr) minmax(16rem, 1fr);
+      align-items: start;
+    }
+
+    .visao--palco .visao__lado--esquerdo {
+      grid-column: 1;
+    }
+
+    .visao--palco .visao__palco {
+      grid-column: 2;
+    }
+
+    .visao--palco .visao__lado--direito {
+      grid-column: 3;
+    }
+
+    /* PT: abaixo do piso, o painel fica embaixo do ranking e acompanha a
+       rolagem da página */
+    /* EN: below the floor, the panel sits under the ranking, sticky */
+    .visao--palco .detalhe {
+      position: sticky;
+      inset-block-start: var(--space-05);
+    }
+  }
+
+  /* PT: tela única (ADR 0022): a visão tem a altura que a página dá a ela;
+     o palco é um cartão sólido na altura toda, onde as cores dos gráficos
+     são validadas (ADR 0021), e o campo de luz aparece em volta dele.
+     À esquerda, os filtros ficam em cima e o painel do território embaixo;
+     à direita, a oportunidade em cima e o ranking ou o painel da UF no que
+     sobra */
+  /* EN: single screen: the stage is a full-height solid card, and the light
+     field shows around it */
+  @media screen and (min-width: 1280px) and (min-height: 720px) {
+    .visao {
+      block-size: 100%;
+      padding: var(--space-05);
+    }
+
+    .visao--palco {
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    .visao--palco .visao__lado,
+    .visao--palco .visao__palco {
+      align-self: stretch;
+      min-block-size: 0;
+    }
+
+    .visao--palco .visao__lado {
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .visao--palco .visao__sobre-o-territorio {
+      align-self: end;
+      max-block-size: 100%;
+      overflow-y: auto;
+    }
+
+    .visao--palco .visao__palco {
+      padding: var(--space-05);
+    }
+
+    .visao--palco .visao__ranking,
+    .visao--palco .detalhe {
+      grid-row: 2;
+      min-block-size: 0;
+    }
+
+    .visao--palco .visao__rolagem {
+      max-block-size: none;
+    }
+
+    .visao--palco .detalhe {
+      align-self: stretch;
+      position: static;
+      overflow-y: auto;
+    }
+
+    /* PT: a matriz e a tabela pedem largura: ocupam a coluna da direita, e
+       a oportunidade e o ranking saem de cena; com uma UF escolhida, a
+       coluna volta, só com o painel da UF */
+    /* EN: heatmap and table take the right column; it returns with the
+       state panel only when a state is chosen */
+    .visao--forma-larga .visao__lado--direito {
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    .visao--forma-larga .detalhe {
+      grid-row: 1;
+    }
+
+    .visao--forma-larga .visao__destaque,
+    .visao--forma-larga .visao__ranking {
+      display: none;
+    }
+
+    .visao--forma-larga:not(.visao--com-uf) .visao__palco {
+      grid-column: 2 / -1;
+    }
+
+    .visao--forma-larga:not(.visao--com-uf) .visao__lado--direito {
+      display: none;
+    }
+
+    /* PT: o ranking ou o painel da UF, um de cada vez */
+    /* EN: the ranking or the state panel, one at a time */
+    .visao--palco:not(.visao--com-uf) .detalhe,
+    .visao--com-uf .visao__ranking {
+      display: none;
+    }
+
+    /* PT: com `visao--painel-inteiro`, o painel da UF toma a coluna da
+       direita inteira, também o lugar do número de destaque, porque leva um
+       gráfico (revisão do mockup da Tela 2, em 2026-10-06) */
+    /* EN: with `visao--painel-inteiro`, the state panel takes the whole
+       right column, since it carries a chart */
+    .visao--painel-inteiro.visao--com-uf .visao__destaque {
+      display: none;
+    }
+
+    .visao--palco.visao--painel-inteiro .detalhe {
+      grid-row: 1 / -1;
+    }
+
+    /* PT: o desenho fica com o palco inteiro. No mapa e na grade, a escala
+       flutua no canto inferior direito, sobre o mar, onde o desenho do
+       Brasil não chega; na matriz, que ocupa o cartão todo, ela fica
+       embaixo, à direita */
+    /* EN: the drawing takes the whole stage; on the map and grid the scale
+       floats at the bottom-right corner, over the sea; on the heatmap it
+       sits below, right-aligned */
+    .visao__palco .visao__forma {
+      position: relative;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      block-size: 100%;
+      container-type: size;
+    }
+
+    .visao__palco .visao__forma--mapa .escala,
+    .visao__palco .visao__forma--grade .escala {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline-end: 0;
+      padding: var(--space-03);
+      border-radius: var(--radius-controle);
+      background: var(--color-chart-surface);
+    }
+
+    .visao__palco .visao__forma--matriz {
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .visao__palco .visao__forma--tabela {
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .visao__forma--mapa .grafico--mapa,
+    .visao__forma--matriz .grafico--matriz-de-calor {
+      block-size: 100%;
+      min-inline-size: 0;
+    }
+
+    .visao__forma--grade .cartograma {
+      display: grid;
+      place-items: center;
+      max-inline-size: none;
+      block-size: 100%;
+      min-block-size: 0;
+    }
+
+    /* PT: a grade cabe no palco pelo lado que limitar, largura ou altura,
+       com a proporção que o cartograma informa; as unidades do contêiner
+       dão o mesmo resultado em todos os motores */
+    /* EN: the grid fits the stage by whichever side limits it */
+    .visao__forma--grade .grafico--cartograma {
+      inline-size: min(100cqw, 100cqh * var(--colunas, 8) / var(--linhas, 8));
+      block-size: auto;
+    }
+
+    .visao__forma--tabela .visao__tabela {
+      max-block-size: none;
+      min-block-size: 0;
+    }
+  }
+
+  /* PT: os filtros: a modalidade e a forma do território */
+  /* EN: filters: modality and territory form */
+  .visao__filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-04) var(--space-05);
+  }
+
+  .visao__lado {
+    display: grid;
+    gap: var(--space-05);
+    align-content: start;
+    min-inline-size: 0;
+  }
+
+  .visao__destaque,
+  .visao__sobre-o-territorio {
+    display: grid;
+    gap: var(--space-04);
+    align-content: start;
+  }
+
+  /* PT: o painel do território: título, resumo e ressalvas */
+  /* EN: the territory panel: title, summary and caveats */
+  .visao__sobre-o-territorio .cartao-grafico__corpo {
+    display: grid;
+    gap: var(--space-04);
+    justify-items: start;
+  }
+
+  /* PT: o palco do território, um cartão sólido, como os dos gráficos */
+  /* EN: the territory stage, a solid card like the chart cards */
+  .visao__palco {
+    min-inline-size: 0;
+    padding: var(--space-05) var(--space-06) var(--space-06);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-cartao);
+    background: var(--color-chart-surface);
+    box-shadow: var(--elevation-1), var(--elevation-brilho);
+  }
+
+  .visao__forma {
+    display: grid;
+    gap: var(--space-04);
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  /* PT: o download em CSV, só na forma de tabela, em cima, à direita; e a
+     escala, embaixo, à direita */
+  /* EN: the CSV download (table only) top right; the scale bottom right */
+  .visao__acoes {
+    justify-self: end;
+  }
+
+  .visao__forma .escala {
+    margin-inline-start: auto;
+  }
+
+  /* PT: o número de destaque e a ressalva numa linha */
+  /* EN: highlight number and the inline caveat */
+  .visao__oportunidade {
+    display: grid;
+    gap: var(--space-04);
+  }
+
+  /* PT: o resumo do recorte, junto do título do território */
+  /* EN: the cut's summary, with the territory title */
+  .visao__resumo {
+    display: grid;
+    justify-self: stretch;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-03) var(--space-05);
+    margin: 0;
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+  }
+
+  .visao__resumo dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-02);
+    color: var(--color-text-secondary);
+  }
+
+  .visao__resumo dd {
+    margin: 0;
+    text-align: end;
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .visao__vazio:empty {
+    display: none;
+  }
+
+  /* PT: o ranking rola dentro do cartão; empilhado, até uma altura máxima */
+  /* EN: the ranking scrolls inside its card, capped when stacked */
+  .visao__rolagem {
+    max-block-size: 28rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  /* PT: a tabela como forma do território: rola por dentro, com o
+     cabeçalho preso em cima, e sem a caixa de vidro */
+  /* EN: the table as a territory form: scrolls inside, sticky header */
+  .visao__tabela {
+    max-block-size: 32rem;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .visao__tabela .tabela {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  /* PT: a legenda da tabela repete o título do território; fica só para
+     leitores de tela */
+  /* EN: the caption repeats the territory title; screen readers only */
+  .visao__tabela .tabela__legenda {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .visao__tabela thead th {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    background: var(--color-chart-surface);
+  }
+
+  /* PT: o nome da UF na tabela é um botão, que escolhe a UF pelo teclado */
+  /* EN: the state name in the table is a button, keyboard-selectable */
+  .visao__uf {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-link-default);
+    font: inherit;
+    text-align: start;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  .visao__uf:hover {
+    color: var(--color-link-hover);
+  }
+
+  .visao__uf[aria-pressed="true"] {
+    color: var(--color-text-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+}

@@ -12,6 +12,7 @@
  */
 
 import { criarGrafico } from "./grafico.js";
+import { estiloDaMarca, MARCA } from "./marca.js";
 import { destaque } from "./selecao.js";
 import { hex, paletas } from "./tema.js";
 
@@ -22,6 +23,7 @@ import { hex, paletas } from "./tema.js";
  * @property {string} rotulo O nome no eixo / axis label
  * @property {number} valor
  * @property {string} [chave] Identifica o item para a seleção, como a sigla da UF / selection key
+ * @property {boolean} [marcada] Leva o marcador de alerta antecipado depois do valor (#70) / early-warning marker after the value
  */
 
 /**
@@ -92,6 +94,7 @@ export async function ranking(el, inicial) {
           data: itens.map((item) => ({
             value: item.valor,
             chave: item.chave,
+            marcada: item.marcada ?? false,
             ...(item.chave !== undefined && item.chave === escolhida
               ? { itemStyle: { color: cor, borderRadius: [0, 4, 4, 0], ...destaque(tema) } }
               : {}),
@@ -104,7 +107,9 @@ export async function ranking(el, inicial) {
             show: true,
             position: "right",
             color: secundario,
-            formatter: (/** @type {{ value: number }} */ p) => formatar(p.value),
+            formatter: (/** @type {{ value: number, data: { marcada: boolean } }} */ p) =>
+              p.data.marcada ? `${formatar(p.value)}  ${MARCA}` : formatar(p.value),
+            rich: estiloDaMarca(tema),
           },
           ...(referencia
             ? {

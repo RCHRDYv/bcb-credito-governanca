@@ -75,6 +75,23 @@
     block-size: 300px;
   }
 
+  .grafico--linhas {
+    block-size: 240px;
+  }
+
+  /* PT: o marcador de alerta antecipado fora do ECharts, na legenda: o mesmo
+     anel com fundo das cores da etiqueta de alerta (#70) */
+  /* EN: the early-warning marker outside ECharts, in legends */
+  .marcador-de-alerta {
+    display: inline-block;
+    flex: none;
+    inline-size: var(--space-04);
+    block-size: var(--space-04);
+    border: var(--border-width-2) solid var(--color-alerta-antecipado-texto);
+    border-radius: var(--radius-capsula);
+    background: var(--color-alerta-antecipado-fundo);
+  }
+
   /* PT: a matriz de calor: uma faixa de altura por linha, mais os rótulos
      das colunas, que o JavaScript informa pela variável --linhas */
   /* EN: heatmap: one band per row plus column labels */
@@ -242,7 +259,8 @@
     color: var(--color-text-primary);
   }
 
-  .escala__sem-valor {
+  .escala__sem-valor,
+  .escala__marca-de-alerta {
     display: inline-flex;
     align-items: center;
     gap: var(--space-03);

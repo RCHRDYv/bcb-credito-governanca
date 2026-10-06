@@ -177,6 +177,9 @@ export const ptBR = Object.freeze({
   "catalogo.exemplo-matriz": "Espaço contra risco, por UF e modalidade",
   "catalogo.escala-do-desvio": "Variação contra a do país, em p.p.",
   "catalogo.exemplo-serie": "Taxa de inadimplência PJ no país",
+  "catalogo.exemplo-linhas": "Inadimplência e ativo problemático no Maranhão, em Empréstimos",
+  "catalogo.nota-das-linhas":
+    "Série com duas medidas, um marco e uma janela, como no painel da UF da Tela 2. Lida do arquivo mensal exportado.",
   "catalogo.exemplo-ranking": "As dez UFs com mais carteira PJ por empresa ativa em Empréstimos",
   "catalogo.exemplo-destaque": "Carteira PJ onde a regra recomenda entrar",
   "catalogo.exemplo-destaque-rotulo":
@@ -242,6 +245,7 @@ export const ptBR = Object.freeze({
 
   "navegacao.rotulo": "Visões do dashboard",
   "navegacao.credito-por-uf": "Onde está o crédito",
+  "navegacao.risco-por-uf": "Onde o risco piora",
   "navegacao.erro-titulo": "Não foi possível abrir esta visão",
   "navegacao.erro-rede": "Os dados não chegaram. Confira a conexão e tente de novo.",
   "navegacao.erro-formato": "Os dados chegaram incompletos. Tente de novo em alguns instantes.",
@@ -333,6 +337,80 @@ export const ptBR = Object.freeze({
   "tela1.opcao-sem-comparacao": "{nome}, sem UF comparável",
   "tela1.dica-celula": "{uf} em {modalidade}: {posicao}",
   "tela1.dica-celula-fora": "{uf} em {modalidade}: fora da comparação",
+
+  "tela2.titulo": "Onde o risco de crédito PJ está piorando mais que no país",
+  "tela2.fonte": "SCR.data, do Banco Central",
+  "tela2.fonte-com-malha": "SCR.data, do Banco Central; malha do IBGE",
+  "tela2.janela": "{de} a {ate}",
+  "tela2.titulo-territorio":
+    "Variação da inadimplência em {meses} meses, contra a do país, em {modalidade}",
+  "tela2.titulo-matriz": "Variação da inadimplência contra a do país, por UF e modalidade",
+  "tela2.resumo-taxa-pais": "Taxa do país",
+  "tela2.resumo-variacao-pais": "Variação do país em {meses} meses",
+  "tela2.resumo-piorando": "UFs piorando mais que o país",
+  "tela2.resumo-alertas": "UFs com alerta antecipado",
+  "tela2.de": "{n} de {total}",
+  "tela2.dois-numeros": "Dois números de atraso",
+  "tela2.inadimplida": "Carteira inadimplida",
+  "tela2.inadimplida-texto":
+    "o crédito com alguma parcela vencida há mais de 90 dias. É o número que pinta o mapa.",
+  "tela2.ativo-problematico": "Ativo problemático",
+  "tela2.ativo-problematico-texto":
+    "o crédito que a própria instituição classifica como problemático. Pode mostrar a piora antes de ela virar atraso: quando ele se afasta da inadimplida mais que no país, a UF ganha o alerta antecipado.",
+  "tela2.quebra-na-janela":
+    "A janela de {de} a {ate} cruza a mudança de critério do ativo problemático, em {quebra}. O alerta antecipado compara duas definições.",
+  "tela2.quebra-na-serie":
+    "Em {quebra}, o ativo problemático mudou de critério, e a linha tracejada não compara os dois lados dessa data.",
+  "tela2.quebra-marco": "muda o critério",
+  "tela2.janela-rotulo": "{meses} meses",
+  "tela2.titulo-destaque": "Custo do risco em {modalidade}",
+  "tela2.destaque-rotulo":
+    "é a ordem de grandeza do aumento da carteira inadimplida nas {n} UFs onde a taxa subiu mais que no país",
+  "tela2.destaque-rotulo-uma":
+    "é a ordem de grandeza do aumento da carteira inadimplida na UF onde a taxa subiu mais que no país",
+  "tela2.ressalva-perda": "Não é perda: o dado não tem recuperação nem taxa de juros.",
+  "tela2.vazio-piora-titulo": "Nenhuma UF piorou mais que o país nesta modalidade",
+  "tela2.vazio-piora-texto":
+    "Em {meses} meses, a inadimplência de cada UF comparada subiu menos que a do país, ou caiu. A tabela mostra os números de cada UF.",
+  "tela2.vazio-titulo": "Nenhuma UF entra na comparação nesta modalidade",
+  "tela2.vazio-texto":
+    "Para comparar com o país, a modalidade precisa de pelo menos {minimo} UFs com carteira acima de {corte}. Abaixo disso, a comparação não daria um número estável. A tabela mostra os valores de cada UF.",
+  "tela2.titulo-ranking": "Quanto a taxa subiu a mais que no país, em {modalidade}",
+  "tela2.rolagem-do-ranking": "Ranking da piora contra o país, com rolagem",
+  "tela2.nota-ranking": "As UFs que não pioraram mais que o país estão na tabela.",
+  "tela2.escala-titulo": "Variação contra a do país, em p.p.",
+  "tela2.escala-melhor": "Melhor que o país",
+  "tela2.escala-pior": "Pior que o país",
+  "tela2.legenda-forte-abaixo": "Melhor que o país, por mais de {b}",
+  "tela2.legenda-abaixo": "Melhor que o país, por {a} a {b}",
+  "tela2.legenda-meio": "Perto do país: até {a} de diferença",
+  "tela2.legenda-acima": "Pior que o país, por {a} a {b}",
+  "tela2.legenda-forte-acima": "Pior que o país, por mais de {b}",
+  "tela2.sem-comparacao": "Fora da comparação com o país",
+  "tela2.contra-o-pais": "{valor} contra o país",
+  "tela2.dica-celula": "{uf} em {modalidade}: {valor} contra o país",
+  "tela2.legenda-tabela": "Inadimplência em {modalidade}, por UF, de {de} a {ate}",
+  "tela2.coluna-taxa": "Taxa de inadimplência",
+  "tela2.coluna-taxa-anterior": "Taxa {meses} meses antes",
+  "tela2.coluna-variacao": "Variação em {meses} meses",
+  "tela2.coluna-variacao-pais": "Variação do país",
+  "tela2.coluna-contra-o-pais": "Contra o país",
+  "tela2.coluna-alerta": "Alerta antecipado",
+  "tela2.coluna-quadrante": "Quadrante",
+  "tela2.coluna-custo": "Custo do risco",
+  "tela2.sim": "Sim",
+  "tela2.nao": "Não",
+  "tela2.detalhe-dica":
+    "Escolha uma UF no mapa, na grade, na matriz, na tabela ou no ranking para ver os números e a série dela.",
+  "tela2.taxa-da-uf": "Taxa de inadimplência",
+  "tela2.variacao-da-uf": "Variação em {meses} meses",
+  "tela2.variacao-do-pais": "No país, na mesma modalidade",
+  "tela2.custo-do-risco": "Custo do risco",
+  "tela2.alerta-texto":
+    "A distância até o ativo problemático abriu {valor} a mais que no país, em {meses} meses.",
+  "tela2.titulo-serie": "Inadimplência e ativo problemático, em % da carteira",
+  "tela2.serie-carregando": "Carregando a série mensal",
+  "tela2.serie-erro": "A série mensal não carregou. Os números acima continuam valendo.",
 
   "modalidade-curta.01": "Adiantamentos",
   "modalidade-curta.02": "Empréstimos",

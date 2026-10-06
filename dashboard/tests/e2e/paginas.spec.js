@@ -27,6 +27,7 @@ const LARGURAS = [360, 672, 1056, 1312, 1920];
 
 const PAGINAS = [
   { onde: "na página inicial", caminho: "./" },
+  { onde: "na Tela 2", caminho: "./#/risco-por-uf" },
   { onde: "no catálogo", caminho: "./catalogo.html" },
 ];
 
