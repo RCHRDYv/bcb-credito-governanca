@@ -88,4 +88,5 @@ A execução contra o mart, em 2026-10-06, com data-base 2026-07-31, está em [`
 - **Brasil:** o LightGBM venceu a escolha por pouco, com MASE médio de 1,15 contra 1,17 da deriva. Na avaliação, errou 0,4%, 0,5% e 1,1% a 1, 2 e 3 meses, contra 0,9%, 0,7% e 0,9% da deriva. A faixa cobriu os 12 casos.
 - **Nas 41 séries, na avaliação:** o LightGBM teve MASE médio menor que a deriva em 21 e menor que o ingênuo em 24.
 - **Importância das variáveis no treino final:** as variações recentes somam 53%, o tamanho 13%, o mês do ano 10%, a modalidade 10%, a UF 8% e a Selic 6%.
+- **O salto de setembro é uma quebra lida como padrão.** A projeção do Brasil sobe 2,8% em setembro por causa da variável do mês do ano. O degrau de set/2025 foi quase todo a divergência entre V1 e V2 (4,3% na V2 contra 1,2% na V1). Nenhum teste da avaliação foi um setembro. O tratamento é decisão do Yuri.
 - **A Q27 foi atingida:** o Brasil passou a usar o LightGBM, e a referência da Q27 é a deriva. A decisão é do Yuri.

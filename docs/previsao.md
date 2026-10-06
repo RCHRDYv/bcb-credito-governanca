@@ -7,7 +7,7 @@
 
 ## Resumo
 
-- **No Brasil, o modelo escolhido é o LightGBM,** um modelo de aprendizado de máquina treinado com as 351 séries de UF por modalidade ao mesmo tempo. Ele projeta R$ 2,92 trilhões em agosto, R$ 3,00 trilhões em setembro e R$ 3,00 trilhões em outubro de 2026.
+- **No Brasil, o modelo escolhido é o LightGBM,** um modelo de aprendizado de máquina treinado com as 351 séries de UF por modalidade ao mesmo tempo. Ele projeta R$ 2,92 trilhões em agosto e R$ 3,00 trilhões em setembro e outubro de 2026. O salto de setembro vem de uma quebra da série que o modelo leu como padrão do mês, e ainda depende de decisão (ver a projeção do país).
 - **Nos meses de teste, o LightGBM errou menos que a tendência e que a regra simples a 1 e 2 meses no Brasil:** 0,4% e 0,5% de erro médio, contra 0,9% e 0,7% da tendência e 0,7% e 1,1% de repetir o último mês. A 3 meses, a tendência errou menos: 0,9% contra 1,1%.
 - **A escolha no Brasil foi apertada.** Na janela de escolha, o LightGBM teve MASE médio de 1,15 e a tendência de 1,17. A diferença apareceu depois, na janela de avaliação, que nenhum dos dois usou para escolher.
 - **Nas 41 séries, o LightGBM foi escolhido em 15.** A tendência ficou com 12, o Holt amortecido com 7, repetir o último mês com 6 e repetir o mês do ano anterior com 1. Na avaliação, o LightGBM errou menos que a tendência em 21 séries e menos que a regra simples em 24.
@@ -46,9 +46,13 @@ A janela de avaliação tem quatro testes por horizonte. Diferenças pequenas fi
 | set/2026 | | R$ 3,003 tri | R$ 2,920 a 3,087 tri |
 | out/2026 | | R$ 3,000 tri | R$ 2,955 a 3,045 tri |
 
-**O salto de setembro tem história.** Nos dois anos do histórico, a carteira PJ subiu em setembro mais que a média dos meses: 1,7% em 2024 e 4,3% em 2025, contra 0,7% ao mês em média. O mês do ano é uma das variáveis do LightGBM, e a tendência não enxerga isso. Com dois setembros, é um padrão para acompanhar, e não uma regra.
+**O salto de setembro vem de uma quebra, e não do crédito.** A projeção sobe 2,8% de agosto para setembro e fica parada em outubro. Duas conferências explicam isso:
+- **O modelo:** com o mês do ano trocado por agosto, a projeção de setembro cai de R$ 3,003 tri para R$ 2,954 tri, e a de outubro de R$ 3,000 tri para R$ 2,951 tri. O salto vem dessa variável.
+- **O dado:** em setembro de 2024, a carteira PJ subiu 1,7% na V2 e 1,7% na V1. Em setembro de 2025, subiu 4,3% na V2 e só 1,2% na V1. Uns 3 pontos do salto de 2025 são a divergência entre as versões, a quebra de set/2025 já registrada em `ontology/dimensoes.yml` (#19). Na V2, o salto de 2025 se concentra em Financiamentos (R$ 54 bi) e Empréstimos (R$ 44 bi).
 
-**A faixa de outubro é mais estreita que a de setembro.** A faixa de cada mês sai dos erros do próprio modelo nos 16 testes. Nesses testes, o LightGBM errou menos a 3 meses que a 2 meses, e a faixa acompanha isso. Com 16 erros por horizonte, a largura é aproximada.
+O LightGBM aprendeu como padrão de setembro um degrau que aconteceu uma vez. Nenhum mês de teste da avaliação foi um setembro, então o erro publicado não mede esse efeito. A decisão sobre como tratar isso é do Yuri.
+
+**A faixa de outubro é mais estreita que a de setembro,** e o limite de baixo de outubro (R$ 2,955 tri) fica acima do limite de cima de agosto (R$ 2,952 tri). A faixa de cada mês sai dos erros do modelo nos 16 testes, e nesses testes ele errou menos a 3 meses que a 2. Com o salto de setembro, isso produz uma faixa que diz mais do que o dado sustenta.
 
 ## O confronto, série a série
 
@@ -131,7 +135,7 @@ Nenhuma dessas mudanças coincide com a publicação mais grossa (jul/2025) ou c
 ## Limitações
 
 - **Quatro testes por horizonte.** O erro publicado é uma estimativa ruidosa.
-- **31 meses.** O padrão de setembro aparece em dois anos só, e a sazonalidade completa só pode ser testada acima de 36 meses (ADR 0023, decisão 2).
+- **31 meses.** Cada mês do ano aparece duas ou três vezes, e um degrau único, como o de set/2025, pode ser lido como padrão do mês. A sazonalidade completa só pode ser testada acima de 36 meses (ADR 0023, decisão 2).
 - **A escolha do Brasil foi por pouco** na janela de escolha. Com um mês a mais de dado, ela pode mudar.
 - **O LightGBM entrou depois de o resultado dos outros ser visto.** A regra de escolha e as janelas não mudaram, e o registro fica no ADR 0024.
 - **As mudanças de nível das cinco séries acima** não estão explicadas (#95).
