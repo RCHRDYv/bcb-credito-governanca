@@ -88,7 +88,41 @@ async function auditar(endereco, porta, perfil) {
   for (const medida of MEDIDAS) {
     console.log(`  ${medida}: ${audits[medida]?.displayValue ?? "sem valor"}`);
   }
+  if (falhas.length > 0) diagnostico(audits);
   return falhas;
+}
+
+/**
+ * PT: Quando a meta falha, o que ocupou a thread principal: o tempo por tipo
+ *     de trabalho, os scripts que mais custaram e as tarefas longas, para o
+ *     log do CI dizer onde mexer (#89).
+ * EN: On a miss, what kept the main thread busy: work by kind, the costliest
+ *     scripts and the long tasks.
+ *
+ * @param {Record<string, { details?: unknown }>} audits
+ */
+function diagnostico(audits) {
+  /**
+   * @param {string} id
+   * @returns {Record<string, unknown>[]}
+   */
+  const itens = (id) =>
+    /** @type {{ items?: Record<string, unknown>[] } | undefined} */ (audits[id]?.details)?.items ??
+    [];
+  const ms = (/** @type {unknown} */ v) => `${Math.round(Number(v))} ms`;
+  const arquivo = (/** @type {unknown} */ url) => String(url).split("/").pop() || String(url);
+  console.log("  thread principal, por tipo:");
+  for (const item of itens("mainthread-work-breakdown").slice(0, 6)) {
+    console.log(`    ${item.groupLabel}: ${ms(item.duration)}`);
+  }
+  console.log("  scripts que mais custaram:");
+  for (const item of itens("bootup-time").slice(0, 5)) {
+    console.log(`    ${arquivo(item.url)}: ${ms(item.total)} (execução ${ms(item.scripting)})`);
+  }
+  console.log("  tarefas longas:");
+  for (const item of itens("long-tasks").slice(0, 8)) {
+    console.log(`    ${arquivo(item.url)}: ${ms(item.duration)}, aos ${ms(item.startTime)}`);
+  }
 }
 
 /**
