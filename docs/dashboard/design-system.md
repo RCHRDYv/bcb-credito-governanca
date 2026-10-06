@@ -453,6 +453,8 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
 - **O que é:** o realizado é uma linha sólida. A projeção é uma linha tracejada, com o intervalo hachurado em volta, e a legenda mostra as duas formas.
 - **Cor e espessura** (decidido em 2026-09-27): a primeira cor categórica, a mesma do ranking, com linha de 3 px.
 - **Quando usar:** para evolução mensal e para a projeção de três meses (RF-301).
+- **Origem** (#72): a projeção pode partir de um mês no meio da série, marcado por uma linha vertical. O realizado continua depois dela, e a linha tracejada mostra o que a projeção dizia naqueles meses.
+- **Na Tela 3:** no palco, a carteira da série escolhida com a projeção e a linha do último dado; no cartão do erro, um teste por vez, contra o que aconteceu. Na dica, o intervalo se chama "faixa provável". Em gráfico estreito, o eixo tem menos marcas.
 - **Quando não usar:** com mais de uma unidade no mesmo gráfico. Dois eixos verticais nunca: medidas diferentes vão em gráficos separados.
 - **Acessibilidade:** realizado e projeção se distinguem pela forma, sólida ou tracejada, e não pela cor. O intervalo aparece na dica de cada mês projetado.
 - **No catálogo,** a projeção é ilustrativa: repete o último mês, com um intervalo de dois desvios das variações mensais. A projeção do modelo chega com a #27.

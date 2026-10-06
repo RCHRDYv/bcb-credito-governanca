@@ -137,6 +137,34 @@ for (const janela of ABAIXO_DO_PISO) {
   });
 }
 
+// PT: a Tela 3 (#72) tem gráfico e tabela, e uma série que alonga o cartão
+//     do erro com a ressalva da mudança de patamar (AC)
+// EN: Screen 3 has chart and table forms, and AC lengthens the error card
+for (const janela of ACIMA_DO_PISO) {
+  test.describe(`a Tela 3 numa janela de ${janela.width}×${janela.height}`, () => {
+    test.use({ viewport: janela });
+
+    for (const forma of ["grafico", "tabela"]) {
+      for (const serie of ["pais:BR", "uf:AC"]) {
+        test(`cabe sem rolagem da página, com ${forma}, em ${serie}`, async ({ page }) => {
+          await page.goto("./#/projecao");
+          await expect(page.locator(".visao__forma svg").first()).toBeVisible();
+          await page.locator(".visao__filtros select").selectOption(serie);
+          await page.locator(`.visao__filtros [data-valor="${forma}"]`).click();
+          await expect(
+            page.locator(forma === "tabela" ? ".visao__tabela" : ".visao__forma svg").first(),
+          ).toBeVisible();
+          expect(await sobraVertical(page)).toBeLessThanOrEqual(0);
+          const altura = await page
+            .locator(".visao__forma")
+            .evaluate((el) => el.getBoundingClientRect().height);
+          expect(altura).toBeGreaterThanOrEqual(ALTURA_UTIL);
+        });
+      }
+    }
+  });
+}
+
 test("abaixo do piso, a página volta a rolar", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 600 });
   await abrir(page);

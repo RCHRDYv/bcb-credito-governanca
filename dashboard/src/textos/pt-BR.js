@@ -246,6 +246,7 @@ export const ptBR = Object.freeze({
   "navegacao.rotulo": "Visões do dashboard",
   "navegacao.credito-por-uf": "Onde está o crédito",
   "navegacao.risco-por-uf": "Onde o risco piora",
+  "navegacao.projecao": "Para onde a carteira aponta",
   "navegacao.erro-titulo": "Não foi possível abrir esta visão",
   "navegacao.erro-rede": "Os dados não chegaram. Confira a conexão e tente de novo.",
   "navegacao.erro-formato": "Os dados chegaram incompletos. Tente de novo em alguns instantes.",
@@ -411,6 +412,93 @@ export const ptBR = Object.freeze({
   "tela2.titulo-serie": "Inadimplência e ativo problemático, em % da carteira",
   "tela2.serie-carregando": "Carregando a série mensal",
   "tela2.serie-erro": "A série mensal não carregou. Os números acima continuam valendo.",
+
+  "tela3.titulo": "Para onde a carteira de crédito PJ aponta nos próximos três meses",
+  "tela3.fonte": "SCR.data, do Banco Central",
+  "tela3.filtro-serie": "Série",
+  "tela3.grupo-pais": "País",
+  "tela3.grupo-modalidades": "Modalidades",
+  "tela3.grupo-ufs": "UFs",
+  "tela3.brasil": "Brasil, toda a carteira PJ",
+  "tela3.periodo": "Período",
+  "tela3.periodo-12-meses": "Últimos 12 meses",
+  "tela3.periodo-desde-2024": "Desde jan/2024",
+  "tela3.forma": "Ver como",
+  "tela3.grafico": "Gráfico",
+  "tela3.titulo-serie": "Carteira ativa PJ: {serie}, com a projeção de 3 meses",
+  "tela3.janela-12-meses": "Últimos 12 meses e projeção até {ate}",
+  "tela3.janela-desde-2024": "Desde jan/2024 e projeção até {ate}",
+  "tela3.ultimo-dado": "Último dado, {mes}",
+  "tela3.ultimo-dado-marco": "último dado",
+  "tela3.rolagem-da-serie": "A série escolhida e a projeção mês a mês, com rolagem",
+  "tela3.metodo": "Método escolhido",
+  "tela3.mes-a-mes": "Projeção mês a mês",
+  "tela3.coluna-mes": "Mês",
+  "tela3.coluna-realizado": "Realizado",
+  "tela3.coluna-projecao": "Projeção",
+  "tela3.coluna-faixa": "Faixa provável",
+  "tela3.coluna-inferior": "Faixa provável, de",
+  "tela3.coluna-superior": "Faixa provável, até",
+  "tela3.faixa": "{de} a {ate}",
+  "tela3.faixa-na-dica": "faixa provável de {de} a {ate}",
+  "tela3.faixa-explicacao":
+    "Em 8 de cada 10 meses, o valor real deve cair dentro da faixa provável.",
+  "tela3.como-titulo": "Como a projeção é feita",
+  "tela3.como-texto":
+    "Dez métodos passaram por 16 testes com meses que já aconteceram. A tendência média é a referência, e outro método só fica com a série se errar menos nesses testes, com uma diferença grande demais para ser acaso.",
+  "tela3.modelo.deriva": "Tendência média",
+  "tela3.modelo.ingenuo": "Repetir o último mês",
+  "tela3.modelo.ingenuo_sazonal": "Repetir o mesmo mês do ano anterior",
+  "tela3.modelo.theta": "Tendência suavizada",
+  "tela3.modelo.holt_amortecido": "Tendência que perde força",
+  "tela3.modelo.arima": "Padrão dos meses anteriores",
+  "tela3.modelo.sarimax": "Padrão dos meses anteriores, com a Selic",
+  "tela3.modelo.prophet": "Tendência com ciclo anual",
+  "tela3.modelo.combinacao": "Média de três modelos",
+  "tela3.modelo.lightgbm": "Aprendizado de máquina",
+  "tela3.como.ingenuo_sazonal":
+    "Nesta série, repetir o mesmo mês do ano anterior errou menos que a tendência média: a projeção de cada mês é o valor do mesmo mês um ano antes.",
+  "tela3.como.holt_amortecido":
+    "Nesta série, ficou a tendência que perde força: a projeção segue a direção recente da série, cada vez mais devagar.",
+  "tela3.como.arima":
+    "Nesta série, ficou o padrão dos meses anteriores: a projeção vem de como cada mês da série dependeu dos meses que vieram antes dele.",
+  "tela3.como.sarimax":
+    "Nesta série, ficou o padrão dos meses anteriores com a Selic: o mesmo método, que também leva em conta a Selic de três meses antes.",
+  "tela3.como.prophet":
+    "Nesta série, ficou a tendência com ciclo anual: a projeção soma uma tendência que pode mudar de inclinação e o efeito de cada mês do ano.",
+  "tela3.como.lightgbm":
+    "Nesta série, ficou o aprendizado de máquina: um modelo treinado com todas as UFs e modalidades ao mesmo tempo, com as variações recentes, o mês do ano e a Selic.",
+  "tela3.como.deriva":
+    "Nesta série, ficou a tendência média: a projeção soma ao último mês a variação média mensal da série desde jan/2024.",
+  "tela3.como.combinacao":
+    "Nesta série, ficou a média de três modelos: a tendência média, uma tendência que perde força com o tempo e um modelo de aprendizado de máquina treinado com todas as UFs e modalidades.",
+  "tela3.como.theta":
+    "Nesta série, ficou a tendência suavizada: a tendência de longo prazo da série, somada a uma média que pesa mais os meses recentes.",
+  "tela3.como.ingenuo":
+    "Nesta série, repetir o último mês errou menos que a tendência média: a projeção é o valor do último mês, com a faixa provável em volta.",
+  "tela3.realizado": "Realizado",
+  "tela3.projecao": "Projeção",
+  "tela3.legenda-tabela": "Carteira ativa PJ, {serie}, mês a mês, com a projeção",
+  "tela3.titulo-teste": "O que a projeção teria dito em {mes}",
+  "tela3.subtitulo-teste": "Um dos 4 testes recentes, contra o que aconteceu depois",
+  "tela3.data-do-teste": "Data do teste",
+  "tela3.aconteceu": "O que aconteceu",
+  "tela3.dizia": "O que a projeção dizia",
+  "tela3.marco-do-teste": "teste",
+  "tela3.erro-frase":
+    "Nos 4 testes recentes, a projeção errou em média {erro}, contra {repetir} de repetir o último mês.",
+  "tela3.erro-frase-repetir": "Nos 4 testes recentes, repetir o último mês errou em média {erro}.",
+  "tela3.acertos": "A faixa provável acertou {n} de {total} casos.",
+  "tela3.titulo-qualidade": "Como saber se a projeção é boa",
+  "tela3.qualidade-texto":
+    "Antes de aparecer aqui, a projeção foi testada em meses que já aconteceram, como se o resultado ainda não fosse conhecido. O teste compara a projeção com o jeito mais simples de prever, repetir o último mês. Quando ela erra menos que isso, vale a pena olhar para ela.",
+  "tela3.aviso-poucos-testes":
+    "Poucos testes: a tela mostra 4 dos 16, e uma diferença pequena pode ser acaso.",
+  "tela3.aviso-mudanca-de-nivel":
+    "Nesta série, a carteira mudou de patamar dentro dos testes, e o erro mede essa mudança, e não o método.",
+  "tela3.aviso-meta": "A projeção é estatística, e não meta nem expectativa do Banco Central.",
+  "tela3.aviso-soma":
+    "As projeções não somam entre si: o Brasil não é a soma das UFs nem das modalidades.",
 
   "modalidade-curta.01": "Adiantamentos",
   "modalidade-curta.02": "Empréstimos",
