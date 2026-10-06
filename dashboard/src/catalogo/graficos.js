@@ -17,6 +17,7 @@
  */
 
 import { simular, TIPOS } from "../cor/daltonismo.js";
+import { carregar } from "../dados/carregar.js";
 import { elemento } from "../dom.js";
 import { dataBase, numero, reais, taxa } from "../formatos.js";
 import { areaDoGrafico, cartaoDeGrafico, erroDoGrafico } from "../graficos/cartao.js";
@@ -30,11 +31,13 @@ import { matriz } from "../graficos/matriz.js";
 import { matrizDeCalor } from "../graficos/matriz-de-calor.js";
 import { numeroDeDestaque } from "../graficos/numero-de-destaque.js";
 import { ranking } from "../graficos/ranking.js";
+import { serieDeLinhas } from "../graficos/serie-de-linhas.js";
 import { serieTemporal } from "../graficos/serie-temporal.js";
 import { paletas } from "../graficos/tema.js";
 import { ufPelaSigla } from "../graficos/ufs.js";
 import { t } from "../textos/index.js";
 import { classesDeEspaco, distancia, legendaDeEspaco } from "../visoes/credito-por-uf/cor.js";
+import { serieDaUf } from "../visoes/risco-por-uf/dados.js";
 import exemplos from "./exemplos.json" with { type: "json" };
 import { comEstilo, ladoALado, secao } from "./secoes.js";
 
@@ -163,12 +166,19 @@ const legendaDoDesvio = (
     extremos: [t("grafico.abaixo-do-pais-curto"), t("grafico.acima-do-pais-curto")],
     titulo: t("catalogo.escala-do-desvio"),
     rotuloSemValor,
+    rotuloDaMarca: t("alerta-antecipado.nome"),
   });
 
 // PT: a matriz de calor do catálogo: as células do exemplo, com as
 //     modalidades nas linhas e as UFs nas colunas, nas classes da Tela 1
 // EN: the catalog heatmap: example cells, modalities by states
 const celulasDoExemplo = exemplos.matriz.celulas;
+// PT: as UFs com alerta antecipado na modalidade do exemplo, para o marcador
+//     da grade em faixas (#70)
+// EN: states with early warning in the example's modality, for the marker
+const marcadasDoExemplo = celulasDoExemplo
+  .filter((c) => c.codigo_modalidade === porUf.codigo_modalidade && c.alerta_antecipado)
+  .map((c) => c.uf);
 const modalidadesDoExemplo = [
   ...new Map(celulasDoExemplo.map((c) => [c.codigo_modalidade, c.modalidade])),
 ].map(([chave]) => ({
@@ -237,6 +247,7 @@ function pecas(malhaCarregada) {
   const matrizEl = elemento("div");
   const serieEl = areaDoGrafico("grafico--serie");
   const rankingEl = areaDoGrafico("grafico--ranking");
+  const linhasEl = areaDoGrafico("grafico--linhas");
 
   const taxaDoPais = exemplos.taxa_do_pais;
   const dezMaiores = porUf.uf
@@ -288,6 +299,7 @@ function pecas(malhaCarregada) {
           valores: desvioEmPontos,
           classes: classesDoDesvio,
           legenda: legendaDoDesvio,
+          marcadas: marcadasDoExemplo,
           formatar: pontosPercentuais,
         }),
     },
@@ -339,6 +351,41 @@ function pecas(malhaCarregada) {
           formatar: (v) => taxa(v),
           projecao: projecaoIlustrativa(taxaDoPais.meses, taxaDoPais.taxa),
         }),
+    },
+    {
+      elemento: elemento("div", {}, [
+        cartaoDeGrafico(
+          {
+            titulo: t("catalogo.exemplo-linhas"),
+            dataBase: `${dataBase(taxaDoPais.meses[0])} a ${origem.dataBase}`,
+            fonte: t("tela2.fonte"),
+            nivel: origem.nivel,
+          },
+          [linhasEl],
+        ),
+        elemento("p", { classe: "catalogo__nota", texto: t("catalogo.nota-das-linhas") }),
+      ]),
+      // PT: a série vem do arquivo mensal exportado, o mesmo da Tela 2, porque
+      //     os exemplos do catálogo não trazem o ativo problemático
+      // EN: the series comes from the exported monthly file, as on Screen 2
+      desenhar: async () => {
+        const serie = serieDaUf(await carregar("carteira_mensal_pj.json"), "MA", "02");
+        return serieDeLinhas(linhasEl, {
+          meses: serie.meses,
+          linhas: [
+            { nome: t("tela2.inadimplida"), valores: serie.inadimplencia },
+            { nome: t("tela2.ativo-problematico"), valores: serie.ativoProblematico },
+          ],
+          formatar: (v) => taxa(v, 1),
+          formatarEixo: (v) => taxa(v, 0),
+          marco: { mes: "2025-01-31", rotulo: t("tela2.quebra-marco") },
+          janela: {
+            de: serie.meses[serie.meses.length - 7],
+            ate: /** @type {string} */ (serie.meses.at(-1)),
+            rotulo: t("tela2.janela-rotulo", { meses: "6" }),
+          },
+        });
+      },
     },
     {
       elemento: cartaoDeGrafico({ titulo: t("catalogo.exemplo-ranking"), ...origem }, [rankingEl]),

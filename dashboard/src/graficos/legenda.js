@@ -59,6 +59,7 @@ export function legendaDeClasses(classes, rotuloSemValor) {
  * @property {[string, string]} extremos O que cada ponta quer dizer / what each end means
  * @property {string} titulo O que a escala mede / what the scale measures
  * @property {string} [rotuloSemValor] Item de quem fica sem cor de classe / value-less item
+ * @property {string} [rotuloDaMarca] Item do marcador de alerta antecipado, quando o desenho o usa (#70) / early-warning marker item
  */
 
 /**
@@ -79,7 +80,14 @@ export function legendaDeClasses(classes, rotuloSemValor) {
  * @param {OpcoesDaEscala} opcoes
  * @returns {HTMLElement}
  */
-export function legendaEmEscala({ classes, marcas, extremos, titulo, rotuloSemValor }) {
+export function legendaEmEscala({
+  classes,
+  marcas,
+  extremos,
+  titulo,
+  rotuloSemValor,
+  rotuloDaMarca,
+}) {
   const paradas = classes.map(
     (classe, i) => `var(${classe.variavel}) ${((i + 0.5) / classes.length) * 100}%`,
   );
@@ -112,6 +120,14 @@ export function legendaEmEscala({ classes, marcas, extremos, titulo, rotuloSemVa
               atributos: oculto,
             }),
             rotuloSemValor,
+          ]),
+        ]
+      : []),
+    ...(rotuloDaMarca
+      ? [
+          elemento("p", { classe: "escala__marca-de-alerta" }, [
+            elemento("span", { classe: "marcador-de-alerta", atributos: oculto }),
+            rotuloDaMarca,
           ]),
         ]
       : []),

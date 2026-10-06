@@ -66,9 +66,9 @@ Os dois primeiros formam o público que o produto serve. O terceiro é quem abre
 
 | ID | Requisito | Como verificar | Origem |
 |---|---|---|---|
-| RF-201 | Mostra a variação da taxa de inadimplência em seis meses por UF e modalidade, contra a da mesma modalidade no país. Toda taxa é razão de somas | Os valores batem com o mart de origem | Q07; ADR 0014, decisão 3; [ADR 0007](../adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md) |
-| RF-202 | Distingue carteira inadimplida de ativo problemático e marca o alerta antecipado | Inspeção; os alertas batem com o mart | ADR 0014, decisão 6 |
-| RF-203 | Mostra a ressalva da mudança de critério do ativo problemático de jan/2025 sempre que a janela a cruza | Teste com uma janela que cruza jan/2025 | Especificação; `docs/cadeia-normativa.md` |
+| RF-201 | Mostra a variação da taxa de inadimplência em seis meses por UF e modalidade, contra a da mesma modalidade no país. Toda taxa é razão de somas | Os valores batem com o mart de origem, e o teste unitário confere a contagem, o custo do risco e o quadrante contra o arquivo exportado | Q07; ADR 0014, decisão 3; [ADR 0007](../adr/0007-gold-estrela-para-perguntas-apresentacao-para-dashboard.md); #70 |
+| RF-202 | Distingue carteira inadimplida de ativo problemático e marca o alerta antecipado | Inspeção; os alertas batem com o mart, e o teste de ponta a ponta confere que as etiquetas da tabela são as que o resumo conta | ADR 0014, decisão 6; #70 |
+| RF-203 | Mostra a ressalva da mudança de critério do ativo problemático de jan/2025 sempre que a janela a cruza | Teste de ponta a ponta com uma janela que cruza jan/2025, e a série mensal marca a mudança | Especificação; `docs/cadeia-normativa.md`; #70 |
 
 ### Visão 3: para onde a carteira aponta (v0.2)
 
@@ -174,6 +174,12 @@ As três visões da v0.1 publicadas, com os requisitos gerais e os de cada visã
 | 2026-10-05 | Na visão 1, o território tem quatro formas no mesmo cartão: mapa, grade, matriz de UF por modalidade e tabela. A matriz e a tabela ocupam também a coluna da direita, e o CSV aparece só na tabela | ADR 0022; #69 |
 | 2026-10-05 | Na visão 1, o mapa fica num palco: um cartão sólido grande no centro, na altura toda, com os filtros e o que o mapa mostra à esquerda, e a oportunidade e o ranking ou o painel da UF à direita. A legenda é uma escala compacta em degradê, de menos espaço a mais espaço, no canto inferior direito do palco | ADR 0022, decisão 7; #69 |
 | 2026-10-05 | A paleta divergente sai, e toda intensidade usa a rampa roxa, inclusive a distância até uma referência, em cinco faixas com o roxo mais forte no lado que quer dizer mais. Na visão 1, o roxo mais forte marca onde há mais espaço | ADR 0021, revisão de 2026-10-05 |
+| 2026-10-06 | A visão 2 usa a disposição da visão 1, no palco em tela única, e abre em Empréstimos. Não tem "todas as modalidades", porque a taxa de inadimplência não se soma entre modalidades e o site não calcula razão | ADR 0022; ADR 0007; #70 |
+| 2026-10-06 | Na visão 2, a cor é quanto a taxa da UF subiu a mais que a do país, em pontos percentuais, na rampa roxa, com as divisas em ±0,1 e ±0,5 p.p. O roxo mais forte marca a piora maior. Quem decide se a UF piorou é o quadrante do mart | ADR 0021; ADR 0014, decisão 3; #70 |
+| 2026-10-06 | O alerta antecipado vira, dentro dos gráficos, um marcador redondo nas cores da etiqueta de alerta; no painel e na tabela, vai a etiqueta | [Design system](design-system.md); ADR 0014, decisão 6; #70 |
+| 2026-10-06 | O custo do risco da visão 2 é a soma do das UFs que pioraram mais que o país, com a ressalva de que não é perda. O ranking mostra só essas UFs, e as outras ficam na tabela | ADR 0014, decisão 5; #70 |
+| 2026-10-06 | Com uma UF escolhida, o painel da visão 2 toma a coluna da direita inteira, com a série mensal da carteira inadimplida e do ativo problemático, a mudança de critério de jan/2025 marcada e a ressalva escrita | [Design system](design-system.md); RF-203; #70 |
+| 2026-10-06 | O texto que separa carteira inadimplida de ativo problemático segue a definição da ontologia, com a definição oficial a um clique. O ativo problemático não é descrito como "a inadimplida mais" outras operações, porque desde jan/2025 é o que a instituição marca com a característica especial 19 | `docs/cadeia-normativa.md`, seção 1; #70 |
 | 2026-09-27 | O `ontologia.json` traz um registro por modalidade presente nos dados, com a definição do BCB | [Arquitetura](arquitetura.md); contrato |
 | Em aberto | O nome do produto | `dashboard/PRODUCT.md` |
 | Em aberto | Quais visões terão o chat | #51 |

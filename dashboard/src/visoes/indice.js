@@ -39,6 +39,12 @@ export const VISOES = Object.freeze([
     modulo: () => import("./credito-por-uf/index.js"),
     dados: () => import("./credito-por-uf/carga.js").then((m) => m.carregarDados()),
   },
+  {
+    id: "risco-por-uf",
+    nome: t("navegacao.risco-por-uf"),
+    modulo: () => import("./risco-por-uf/index.js"),
+    dados: () => import("./risco-por-uf/carga.js").then((m) => m.carregarDados()),
+  },
 ]);
 
 /**

@@ -1,0 +1,97 @@
+/*
+ * PT: O que é só da Tela 2 (#70): os dois números de atraso no painel do
+ *     território, as etiquetas e a série no painel da UF, e a nota do
+ *     ranking. A disposição vem do modelo comum, em `../palco.css`.
+ * EN: Screen 2 only: the two arrears measures, the state panel's tags and
+ *     series, and the ranking note. The layout comes from `../palco.css`.
+ */
+
+@layer componentes {
+  /* PT: os dois números de atraso, numa caixa discreta, com a definição
+     oficial de cada um a um clique (RF-202) */
+  /* EN: the two arrears measures in a quiet box */
+  .risco__dois-numeros {
+    display: grid;
+    gap: var(--space-03);
+    justify-self: stretch;
+    padding: var(--space-04);
+    border-radius: var(--radius-controle);
+    border: var(--border-fina) solid var(--color-border-subtle);
+    background: var(--color-background-page);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .risco__dois-numeros p {
+    margin: 0;
+  }
+
+  .risco__dois-numeros-titulo {
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    color: var(--color-text-primary);
+  }
+
+  .risco__medida {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-02);
+    vertical-align: middle;
+    color: var(--color-text-primary);
+  }
+
+  /* PT: no painel da UF: as etiquetas, a frase do alerta e a série */
+  /* EN: in the state panel: tags, the warning sentence and the series */
+  .risco {
+    display: grid;
+    gap: var(--space-04);
+    margin-block-start: var(--space-05);
+  }
+
+  .risco__etiquetas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-03);
+    margin: 0;
+  }
+
+  .risco__alerta {
+    margin: 0;
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .risco__serie {
+    display: grid;
+    gap: var(--space-03);
+  }
+
+  .risco__serie-titulo {
+    margin: 0;
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .risco__serie-estado {
+    margin: 0;
+    color: var(--color-text-helper);
+  }
+
+  /* PT: a nota do ranking: o marcador de alerta e onde estão as outras UFs */
+  /* EN: the ranking note: the warning marker and where the other states are */
+  .risco__nota {
+    display: flex;
+    align-items: center;
+    gap: var(--space-03);
+    margin: var(--space-03) 0 0;
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-helper);
+  }
+
+  .risco__nota[hidden] {
+    display: none;
+  }
+}

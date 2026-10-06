@@ -61,6 +61,7 @@ import {
 } from "./dados.js";
 import { perfilDaUf } from "./perfil.js";
 import { botaoDoCsv, tabelaDaTela } from "./tabela.js";
+import "../palco.css";
 import "./credito-por-uf.css";
 
 /** @typedef {import("./dados.js").LinhaDaVisao} LinhaDaVisao */
@@ -619,7 +620,7 @@ export function render(el, dados) {
   // PT: cada lado é uma coluna com a própria altura, para a esquerda não
   //     esperar pela direita
   // EN: each side is a column with its own height
-  const raiz = elemento("div", { classe: "visao visao--credito-por-uf" }, [
+  const raiz = elemento("div", { classe: "visao visao--palco visao--credito-por-uf" }, [
     elemento("h1", { classe: "visualmente-oculto", texto: t("tela1.titulo") }),
     elemento("div", { classe: "visao__lado visao__lado--esquerdo" }, [barra, territorio]),
     palco,

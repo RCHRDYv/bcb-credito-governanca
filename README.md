@@ -10,7 +10,7 @@ Este projeto responde a duas perguntas sobre os mesmos dados públicos de crédi
 
 > **Status:** v0.1 em construção. Este aviso será substituído por resultados conforme cada versão for publicada.
 >
-> **O dashboard** está em https://rchrdyv.github.io/bcb-credito-governanca/, com a primeira visão: onde está o crédito PJ, e onde ele é escasso por empresa.
+> **O dashboard** está em https://rchrdyv.github.io/bcb-credito-governanca/, com as duas primeiras visões: onde está o crédito PJ, e onde ele é escasso por empresa, e onde o risco está piorando.
 
 ---
 
