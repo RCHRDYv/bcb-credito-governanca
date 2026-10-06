@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import {
   classeDoValor,
-  classesDivergentes,
+  classesEmCincoFaixas,
   classesSequenciais,
   quantis,
 } from "../../src/graficos/escalas.js";
@@ -44,28 +44,47 @@ describe("classesSequenciais()", () => {
   });
 });
 
-describe("classesDivergentes()", () => {
-  const classes = classesDivergentes([0.1, 0.5, 1], formatar, {
-    acima: "acima",
+describe("classesEmCincoFaixas()", () => {
+  const rotulos = {
+    forteAbaixo: "forte abaixo",
     abaixo: "abaixo",
-    igual: "igual",
-  })("escuro");
+    meio: "meio",
+    acima: "acima",
+    forteAcima: "forte acima",
+  };
+  const seq = paletas("escuro").sequencial;
 
-  it("tem o meio neutro entre −0,1 e 0,1 / neutral middle", () => {
-    expect(classeDoValor(classes, 0)?.color).toBe(paletas("escuro").divergente.neutro);
-    expect(classeDoValor(classes, 0.1)?.color).toBe(paletas("escuro").divergente.neutro);
-    expect(classeDoValor(classes, -0.1)?.color).toBe(paletas("escuro").divergente.neutro);
+  it("usa só a rampa roxa, com o meio no degrau do meio / purple ramp only", () => {
+    const classes = classesEmCincoFaixas([0.1, 0.3], rotulos)("escuro");
+    expect(classes.map((c) => c.color).sort()).toEqual([...seq].sort());
+    for (const valor of [0, 0.1, -0.1]) {
+      expect(classeDoValor(classes, valor)?.color).toBe(seq[2]);
+    }
   });
 
-  it("é simétrica em torno de zero / symmetric around zero", () => {
-    const { negativo, positivo } = paletas("escuro").divergente;
-    for (const [valor, i] of /** @type {[number, number][]} */ ([
-      [0.3, 0],
-      [0.7, 1],
-      [2, 2],
-    ])) {
-      expect(classeDoValor(classes, valor)?.color).toBe(positivo[i]);
-      expect(classeDoValor(classes, -valor)?.color).toBe(negativo[i]);
+  it("põe o roxo mais forte acima, por padrão / strongest above by default", () => {
+    const classes = classesEmCincoFaixas([0.1, 0.3], rotulos)("escuro");
+    expect(classeDoValor(classes, 0.5)?.color).toBe(seq[4]);
+    expect(classeDoValor(classes, 0.2)?.color).toBe(seq[3]);
+    expect(classeDoValor(classes, -0.2)?.color).toBe(seq[1]);
+    expect(classeDoValor(classes, -0.5)?.color).toBe(seq[0]);
+    expect(classes[0].label).toBe("forte acima");
+  });
+
+  it("põe o roxo mais forte abaixo, quando pedido / strongest below on request", () => {
+    const classes = classesEmCincoFaixas([0.1, 0.3], rotulos, { maisForteAbaixo: true })("escuro");
+    expect(classeDoValor(classes, -0.5)?.color).toBe(seq[4]);
+    expect(classeDoValor(classes, 0.5)?.color).toBe(seq[0]);
+    expect(classes[0]).toMatchObject({
+      label: "forte abaixo",
+      variavel: "--color-chart-sequential-5",
+    });
+  });
+
+  it("põe cada valor em exatamente uma faixa / each value in one band", () => {
+    const classes = classesEmCincoFaixas([0.1, 0.3], rotulos)("claro");
+    for (const valor of [-1, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 1]) {
+      expect(classes.filter((c) => classeDoValor([c], valor)).length, `valor ${valor}`).toBe(1);
     }
   });
 });

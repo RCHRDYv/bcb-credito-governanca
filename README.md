@@ -9,6 +9,8 @@ Este projeto responde a duas perguntas sobre os mesmos dados públicos de crédi
 *Two questions over the same public Brazilian Central Bank credit data: where a lender should grow and where risk is deteriorating, and how much a curated ontology improves an LLM's accuracy on the questions that decision depends on, compared with retrieving the very documents it was distilled from.*
 
 > **Status:** v0.1 em construção. Este aviso será substituído por resultados conforme cada versão for publicada.
+>
+> **O dashboard** está em https://rchrdyv.github.io/bcb-credito-governanca/, com a primeira visão: onde está o crédito PJ, e onde ele é escasso por empresa.
 
 ---
 
@@ -260,6 +262,7 @@ uv run python -m scripts.analises.qa_gabarito
 | [ADR 0019](docs/adr/0019-chat-consulta-so-o-esquema-estrela.md) | O chat do dashboard consulta só o esquema estrela, e não é o experimento |
 | [ADR 0020](docs/adr/0020-design-system-carbon-com-camada-liquid-glass.md) | O design system oficial é o Carbon com uma camada Liquid Glass |
 | [ADR 0021](docs/adr/0021-paletas-de-grafico-do-carbon-validadas.md) | As paletas de gráfico saem do Carbon, com a categórica ajustada e validação automatizada |
+| [ADR 0022](docs/adr/0022-visoes-em-tela-unica-no-computador.md) | As visões cabem numa tela no computador, sem rolagem da página |
 | [Requisitos do dashboard](docs/dashboard/requisitos.md) | O que o dashboard precisa fazer, para quem e como se confere, com as [referências de design](docs/dashboard/referencias-de-design.md) pesquisadas |
 | [Design system do dashboard](docs/dashboard/design-system.md) | Cores, tipos, espaços, vidro, movimento, componentes, padrões e modelos de página, com o [protótipo navegável](dashboard/prototipo-design-system/index.html) |
 | [Arquitetura do dashboard](docs/dashboard/arquitetura.md) | Como site, dataset e chat se ligam, o que acontece quando um deles falha, e o [contrato dos arquivos](dashboard/contrato-dos-dados.yml) que o site lê |

@@ -21,16 +21,19 @@ import { elemento } from "../dom.js";
 import { dataBase, numero, reais, taxa } from "../formatos.js";
 import { areaDoGrafico, cartaoDeGrafico, erroDoGrafico } from "../graficos/cartao.js";
 import { cartograma } from "../graficos/cartograma.js";
-import { classesDivergentes, classesSequenciais } from "../graficos/escalas.js";
+import { classesEmCincoFaixas, classesSequenciais } from "../graficos/escalas.js";
 import { temaDoElemento } from "../graficos/grafico.js";
+import { legendaEmEscala } from "../graficos/legenda.js";
 import { carregarMalha, mapaPorUf } from "../graficos/mapa-por-uf.js";
 import { matriz } from "../graficos/matriz.js";
+import { matrizDeCalor } from "../graficos/matriz-de-calor.js";
 import { numeroDeDestaque } from "../graficos/numero-de-destaque.js";
 import { ranking } from "../graficos/ranking.js";
 import { serieTemporal } from "../graficos/serie-temporal.js";
 import { paletas } from "../graficos/tema.js";
 import { ufPelaSigla } from "../graficos/ufs.js";
 import { t } from "../textos/index.js";
+import { classesDeEspaco, distancia, legendaDeEspaco } from "../visoes/credito-por-uf/cor.js";
 import exemplos from "./exemplos.json" with { type: "json" };
 import { comEstilo, ladoALado, secao } from "./secoes.js";
 
@@ -108,15 +111,10 @@ export function secaoPaletasDeGrafico() {
     "catalogo.paletas-de-grafico-explicacao",
     [
       ladoALado((tema) => {
-        const { categorica, sequencial, divergente, outros } = paletas(tema);
+        const { categorica, sequencial, outros } = paletas(tema);
         return [
           paleta("catalogo.paleta-categorica", [...categorica, outros]),
           paleta("catalogo.paleta-sequencial", sequencial),
-          paleta("catalogo.paleta-divergente", [
-            ...[...divergente.negativo].reverse(),
-            divergente.neutro,
-            ...divergente.positivo,
-          ]),
         ];
       }),
     ],
@@ -142,11 +140,44 @@ const desvioEmPontos = Object.fromEntries(
   porUf.uf.map((sigla, i) => [sigla, porUf.desvio_do_risco[i] * 100]),
 );
 const classesDaCarteira = classesSequenciais(Object.values(carteiraPorEmpresa), (v) => reais(v));
-const classesDoDesvio = classesDivergentes([0.1, 0.5, 1], (v) => `${numero(v, 1)} p.p.`, {
-  acima: t("grafico.acima-do-pais"),
-  abaixo: t("grafico.abaixo-do-pais"),
-  igual: t("grafico.igual-ao-pais"),
+// PT: o desvio contra o país em cinco faixas da rampa roxa, a mais forte
+//     onde o risco sobe mais que no país (ADR 0021, revisão de 2026-10-05)
+// EN: deviation from the country in five purple bands, strongest above
+const classesDoDesvio = classesEmCincoFaixas([0.1, 0.5], {
+  forteAcima: t("grafico.acima-do-pais-forte", { b: "0,5 p.p." }),
+  acima: t("grafico.acima-do-pais", { a: "0,1", b: "0,5 p.p." }),
+  meio: t("grafico.igual-ao-pais", { a: "0,1 p.p." }),
+  abaixo: t("grafico.abaixo-do-pais", { a: "0,1", b: "0,5 p.p." }),
+  forteAbaixo: t("grafico.abaixo-do-pais-forte", { b: "0,5 p.p." }),
 });
+// PT: a mesma escala da Tela 1, nas faixas do desvio contra o país
+// EN: the Screen 1 scale, on the deviation bands
+const legendaDoDesvio = (
+  /** @type {import("../graficos/escalas.js").Classe[]} */ classes,
+  /** @type {string | undefined} */ rotuloSemValor,
+) =>
+  legendaEmEscala({
+    classes: [...classes].reverse(),
+    marcas: ["−0,5", "−0,1", "+0,1", "+0,5"],
+    extremos: [t("grafico.abaixo-do-pais-curto"), t("grafico.acima-do-pais-curto")],
+    titulo: t("catalogo.escala-do-desvio"),
+    rotuloSemValor,
+  });
+
+// PT: a matriz de calor do catálogo: as células do exemplo, com as
+//     modalidades nas linhas e as UFs nas colunas, nas classes da Tela 1
+// EN: the catalog heatmap: example cells, modalities by states
+const celulasDoExemplo = exemplos.matriz.celulas;
+const modalidadesDoExemplo = [
+  ...new Map(celulasDoExemplo.map((c) => [c.codigo_modalidade, c.modalidade])),
+].map(([chave]) => ({
+  chave,
+  rotulo: t(/** @type {import("../textos/index.js").ChaveDeTexto} */ (`modalidade-curta.${chave}`)),
+}));
+const ufsDoExemplo = [...new Set(celulasDoExemplo.map((c) => c.uf))]
+  .sort()
+  .map((uf) => ({ chave: uf, rotulo: uf }));
+
 const pontosPercentuais = (/** @type {number} */ v) =>
   `${v > 0 ? "+" : v < 0 ? "−" : ""}${numero(Math.abs(v), 2)} p.p.`;
 
@@ -200,7 +231,8 @@ function pecas(malhaCarregada) {
   const mapaCartao = cartaoDeGrafico({ titulo: t("catalogo.exemplo-mapa"), ...origem }, [mapaEl]);
 
   const cartogramaEl = areaDoGrafico("grafico--cartograma");
-  const divergenteEl = areaDoGrafico("grafico--cartograma");
+  const faixasEl = areaDoGrafico("grafico--cartograma");
+  const calorEl = areaDoGrafico("grafico--matriz-de-calor");
   const matrizEl = elemento("div");
   const serieEl = areaDoGrafico("grafico--serie");
   const rankingEl = areaDoGrafico("grafico--ranking");
@@ -242,19 +274,36 @@ function pecas(malhaCarregada) {
       elemento: elemento("div", { classe: "cartograma" }, [
         cartaoDeGrafico(
           {
-            titulo: t("catalogo.exemplo-cartograma-divergente"),
+            titulo: t("catalogo.exemplo-cartograma-faixas"),
             dataBase: `jan/2026 a ${origem.dataBase}`,
             fonte: origem.fonte,
             nivel: origem.nivel,
           },
-          [divergenteEl],
+          [faixasEl],
         ),
       ]),
       desenhar: () =>
-        cartograma(divergenteEl, {
+        cartograma(faixasEl, {
           valores: desvioEmPontos,
           classes: classesDoDesvio,
+          legenda: legendaDoDesvio,
           formatar: pontosPercentuais,
+        }),
+    },
+    {
+      elemento: cartaoDeGrafico({ titulo: t("tela1.titulo-matriz"), ...origem }, [calorEl]),
+      desenhar: () =>
+        matrizDeCalor(calorEl, {
+          linhas: modalidadesDoExemplo,
+          colunas: ufsDoExemplo,
+          celulas: celulasDoExemplo.map((c) => ({
+            linha: c.codigo_modalidade,
+            coluna: c.uf,
+            valor: distancia(c.indice_de_espaco),
+            dica: `${c.uf} · ${c.modalidade}`,
+          })),
+          classes: classesDeEspaco(),
+          legenda: legendaDeEspaco,
         }),
     },
     {

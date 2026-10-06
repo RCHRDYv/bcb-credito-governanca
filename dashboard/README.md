@@ -1,6 +1,6 @@
 # Site do dashboard
 
-Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico), os componentes de interface da #64, todos no catálogo, os dados das visões, exportados dos marts na #66, a malha das UFs da #67, que o mapa usa, e a publicação no Pages da #68, com a política de segurança de conteúdo.
+Site estático do dashboard de crédito PJ, publicado no GitHub Pages. É JavaScript sem framework, com Vite ([ADR 0017](../docs/adr/0017-interface-em-javascript-sem-framework.md)). Por enquanto tem o esqueleto da #65, com lint, tipos, testes e medidas de desempenho funcionando antes da primeira visão, os tokens do design system da #62, com os dois temas e o catálogo das fundações, os gráficos da #63 (o tema do ECharts, as paletas validadas e os componentes de gráfico), os componentes de interface da #64, todos no catálogo, os dados das visões, exportados dos marts na #66, a malha das UFs da #67, que o mapa usa, a publicação no Pages da #68, com a política de segurança de conteúdo, e a primeira visão, a Tela 1 da #69: onde está o crédito PJ, e onde ele é escasso por empresa, em tela única no computador ([ADR 0022](../docs/adr/0022-visoes-em-tela-unica-no-computador.md)).
 
 Para entender o projeto antes do código:
 - [arquitetura](../docs/dashboard/arquitetura.md): como o site, o dataset e o chat se ligam;
@@ -110,11 +110,14 @@ A política de segurança de conteúdo mora em [`politica-de-seguranca.js`](poli
 
 | Pasta ou arquivo | O que guarda |
 |---|---|
-| `index.html` | A página inicial, sem script nem estilo embutido |
+| `index.html` | A página do site, que abre na Tela 1, sem script nem estilo embutido |
 | `catalogo.html` | O catálogo do design system, com as fundações, as paletas e os gráficos nos dois temas |
 | `tokens/` | Os tokens no formato DTCG, em três camadas: `primitivos/`, `semanticos/` e `componentes/` |
 | `politica-de-seguranca.js` | A política de segurança de conteúdo e o plugin do Vite que a põe no HTML do build |
 | `src/main.js` | O ponto de entrada |
+| `src/navegacao.js` | As rotas por hash, a navegação na barra de topo e a montagem da visão do endereço |
+| `src/visoes/` | Uma pasta por visão, com `carregarDados()` e `render(el, dados)`, e o índice das visões |
+| `src/estado/` | O estado dos filtros de uma visão, num `EventTarget` |
 | `src/textos/` | Os textos da interface, em pt-BR, e a função `t()` |
 | `src/estilos/` | O CSS: fontes, base e o `tokens.css` gerado, que nunca é editado à mão |
 | `src/catalogo/` | As seções do catálogo, e o `exemplos.json` com os dados reais dos gráficos, gerado por `scripts/gerar_exemplos_do_catalogo.py`, na raiz do repositório |

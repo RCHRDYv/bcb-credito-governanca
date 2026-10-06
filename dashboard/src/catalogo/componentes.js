@@ -15,6 +15,7 @@ import { alertaAntecipado } from "../componentes/alerta-antecipado.js";
 import { aviso } from "../componentes/aviso.js";
 import { botao } from "../componentes/botao.js";
 import { campo } from "../componentes/campo.js";
+import { campoDeSelecao } from "../componentes/campo-de-selecao.js";
 import {
   abstencaoDoChat,
   conversa,
@@ -24,12 +25,15 @@ import {
 } from "../componentes/chat.js";
 import { grupoDeChips } from "../componentes/chips.js";
 import { controleSegmentado } from "../componentes/controle-segmentado.js";
+import { definicao } from "../componentes/definicao.js";
 import { comDica, corpoDaDica } from "../componentes/dica.js";
 import { carregando, chatAcordando, erro, vazio } from "../componentes/estados.js";
 import { etiquetaDeQuadrante, quadranteDoMart } from "../componentes/etiqueta-de-quadrante.js";
+import { painelDeDetalhe } from "../componentes/painel-de-detalhe.js";
 import { tabela } from "../componentes/tabela.js";
 import { elemento } from "../dom.js";
 import { dataBase, pontos, reais, vezes } from "../formatos.js";
+import { ufPelaSigla } from "../graficos/ufs.js";
 import { t } from "../textos/index.js";
 import exemplos from "./exemplos.json" with { type: "json" };
 import { ladoALado, secao } from "./secoes.js";
@@ -108,6 +112,29 @@ export function secaoControles() {
           opcoes: modalidades.map((serie) => ({ valor: serie.codigo, texto: serie.nome })),
           selecionados: [modalidades[0].codigo],
         }),
+      ]),
+      bloco("catalogo.campo-de-selecao", [
+        campoDeSelecao({
+          rotulo: t("catalogo.campo-modalidade"),
+          opcoes: exemplos.carteira_por_modalidade.series
+            .filter((serie) => serie.codigo !== "outros")
+            .map((serie) => ({ valor: serie.codigo, texto: serie.nome })),
+          valor: modalidades[0].codigo,
+        }),
+      ]),
+      bloco("catalogo.definicao", [
+        elemento("span", { classe: "catalogo__rotulo-com-definicao" }, [
+          t("tela1.custo-da-uf"),
+          definicao({
+            rotulo: t("tela1.custo-da-uf"),
+            definicao: {
+              tipo: "adr",
+              rotulo: "ADR 0014, decisão 5",
+              endereco:
+                "https://github.com/RCHRDYv/bcb-credito-governanca/blob/main/docs/adr/0014-matriz-de-decisao-espaco-contra-risco.md",
+            },
+          }),
+        ]),
       ]),
       bloco("catalogo.campos", [
         campo({
@@ -237,8 +264,38 @@ export function secaoDadosEAvisos() {
         aviso({ tipo: "atencao", texto: t("catalogo.aviso-quebra") }),
         aviso({ tipo: "erro", texto: t("catalogo.aviso-erro") }),
       ]),
+      bloco("catalogo.aviso-em-linha", [
+        aviso({ tipo: "informacao", texto: t("catalogo.aviso-uf-da-sede"), variante: "linha" }),
+      ]),
+      bloco("catalogo.painel-de-detalhe", [painelDeExemplo()], "catalogo.painel-de-detalhe-nota"),
     ]),
   ]);
+}
+
+/**
+ * PT: O painel de detalhe com a UF de menor carteira por empresa do
+ *     exemplo, com os números reais do mart.
+ * EN: The detail panel with the example's lowest per-company state.
+ *
+ * @returns {HTMLElement}
+ */
+function painelDeExemplo() {
+  const {
+    uf,
+    carteira_por_empresa: carteira,
+    mediana_carteira_por_empresa: mediana,
+  } = exemplos.por_uf;
+  const menor = carteira.indexOf(Math.min(...carteira));
+  const painel = painelDeDetalhe({ dica: t("tela1.detalhe-dica") });
+  painel.mostrar({
+    titulo: ufPelaSigla(uf[menor]).nome,
+    subtitulo: `${exemplos.por_uf.modalidade} · ${dataBase(exemplos.data_base)}`,
+    itens: [
+      { chave: t("tela1.carteira-por-empresa"), valor: reais(carteira[menor]) },
+      { chave: t("tela1.mediana-das-ufs"), valor: reais(mediana) },
+    ],
+  });
+  return painel.elemento;
 }
 
 // -----------------------------------------------------------------------------

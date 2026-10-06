@@ -5,11 +5,12 @@ Como o site, o dataset e o chat se ligam, o que trafega entre eles e o que acont
 - como a interface é feita: [ADR 0017](../adr/0017-interface-em-javascript-sem-framework.md);
 - o que o chat consulta: [ADR 0019](../adr/0019-chat-consulta-so-o-esquema-estrela.md);
 - como a interface se parece: [ADR 0020](../adr/0020-design-system-carbon-com-camada-liquid-glass.md);
-- as paletas de gráfico: [ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md).
+- as paletas de gráfico: [ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md);
+- as visões em tela única no computador: [ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md).
 
 O que o dashboard precisa fazer está nos [requisitos](requisitos.md), e as colunas de cada arquivo que o site lê estão no [contrato dos dados](../../dashboard/contrato-dos-dados.yml).
 
-**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens, os gráficos, os componentes, os arquivos de dados do site, a malha das UFs e a publicação no Pages, com a política de segurança.
+**Como ler os diagramas.** Eles seguem o [ADR 0008](../adr/0008-diagramas-como-codigo-em-mermaid.md): são Mermaid, usam só `flowchart`, e o que ainda não existe aparece tracejado, com a issue que o constrói. Cada peça traz no rótulo o ADR que a justifica. Boa parte ainda está tracejada. Existem a camada gold, a ontologia, o protótipo do design system, o contrato dos dados, o esqueleto do site, os tokens, os gráficos, os componentes, os arquivos de dados do site, a malha das UFs, a publicação no Pages, com a política de segurança, a navegação, o estado dos filtros e a primeira visão.
 
 ## As peças
 
@@ -68,7 +69,7 @@ O site é um conjunto de módulos JavaScript sem framework ([ADR 0017](../adr/00
 flowchart TB
     subgraph navegador["No navegador do visitante: o site, ADR 0017"]
         visoes["Navegação e visões<br/>render(el, dados) · #69 a #72"]
-        filtros["Estado dos filtros<br/>EventTarget · #65"]
+        filtros["Estado dos filtros<br/>EventTarget · #69"]
         carga["Carregador de dados<br/>#66"]
         graficos["Gráficos em ECharts<br/>ADRs 0017 e 0021 · #63"]
         componentes["Componentes<br/>ADR 0020 · #64"]
@@ -105,7 +106,7 @@ flowchart TB
     duck -- "carregado na partida" --> parquet
 
     classDef planejado stroke-dasharray: 5 5
-    class visoes,filtros,cliente,publica,modelo,contexto,travas,duck,parquet planejado
+    class cliente,publica,modelo,contexto,travas,duck,parquet planejado
 ```
 
 ## Fluxo do dado
@@ -256,7 +257,9 @@ dashboard/                        raiz do site, no Vite (#65)
 ├── index.html                    (#65)
 ├── catalogo.html                 catálogo do design system (#62 e #64)
 ├── src/
-│   ├── visoes/                   uma pasta por visão, com render(el, dados) (#69 a #72)
+│   ├── visoes/                   uma pasta por visão, com render(el, dados), e o índice delas (#69 a #72)
+│   ├── estado/                   estado dos filtros, num EventTarget (#69)
+│   ├── navegacao.js              rotas por hash e montagem da visão do endereço (#69)
 │   ├── catalogo/                 as seções do catálogo (#62 e #64)
 │   ├── cor/                      contraste pela WCAG (#62)
 │   ├── componentes/              componentes do design system, com os ícones do Tabler (#64)
@@ -366,7 +369,7 @@ O gitleaks roda no pre-commit e no CI.
 | O Pages | Nada abre | É a única peça sem alternativa. O dashboard não tem outro servidor |
 | Um JSON não carrega | A visão que o usa mostra o estado de erro, e as outras seguem | Cada visão carrega só os arquivos que usa (RF-G11) |
 | Um JSON sai do contrato | Nada: o arquivo não chega ao site | O CI reprova a PR (#66) |
-| A malha das UFs | O mapa mostra o estado de erro, e o ranking e a tabela seguem. O cartograma de grade não depende da malha, e pode tomar o lugar do mapa, o que se decide na #69 | RF-103 |
+| A malha das UFs | O mapa sai das formas do território, e a grade toma o lugar dele, com o aviso de que a malha não carregou. O ranking, a matriz e a tabela seguem | RF-103 |
 | O Space está dormindo | O chat acordando, e as visões seguem | ADR 0016, decisão 4 |
 | A cota do visitante acabou | O aviso de cota esgotada, com a hora em que volta | ADR 0016, decisão 2 |
 | O dataset está fora | O Space não carrega o dado na partida, e o chat mostra erro. As visões seguem | As visões não dependem do chat (RNF-07) |
@@ -395,6 +398,9 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-10-01 | O período da malha fica escrito na URL, e o download segue o padrão da ingestão, com o sha256 no manifesto | Este documento; `ingestion/fontes.py` |
 | 2026-10-01 | A publicação no Pages é o último job do workflow do CI, e não um workflow à parte. Sem proteção de branch na `main`, um workflow à parte publicaria em paralelo aos testes. Assim, só vai ao ar o `dist/` que passou em todos os passos, e o site é publicado a cada push na `main`, mesmo sem mudança em `dashboard/` | Este documento; `.github/workflows/ci.yml` |
 | 2026-10-01 | A política de segurança mora em `dashboard/politica-de-seguranca.js`, e o build a põe no `<meta>` de cada página, só no build | Este documento; [requisitos](requisitos.md), RNF-11 |
+| 2026-10-05 | No computador, a partir de uma janela de 1280×720 px, a visão cabe sem rolagem da página, usa a largura toda, e o que passar da altura de um cartão rola dentro dele | ADR 0022; #87 |
+| 2026-10-05 | As visões são rotas por hash (`#/credito-por-uf`), porque o Pages não tem rota de fallback. A navegação desmonta a visão anterior antes de montar a do endereço, e mostra o carregando e o erro com o motivo | Este documento; #69 |
+| 2026-10-05 | A paleta divergente sai, e toda intensidade usa a rampa roxa, inclusive a distância até uma referência, em cinco faixas com o roxo mais forte no lado que quer dizer mais. Na visão 1, o roxo mais forte marca onde há mais espaço | ADR 0021, revisão de 2026-10-05 |
 | 2026-10-01 | O link do site entra no README da raiz com a Tela 1 (#69), e não na #68: até lá, o site tem só a página inicial e o catálogo | Este documento; #68 e #69 |
 | 2026-10-01 | A visão 1 tem "todas as modalidades", com o denominador do [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md). O `mrt_carteira_por_uf` troca os dois denominadores que o ADR descartou pelo dele, com os mesmos nomes de coluna do `decisao.json`, e compara cada UF com a mediana das UFs acima do corte no mês. Resolve o ponto em aberto do denominador | Este documento; contrato; ADR 0014 |
 | 2026-10-01 | Cada modalidade tem uma explicação em palavras comuns na ontologia, que a visão mostra antes da definição oficial. As explicações saem das definições das submodalidades nas Instruções 3040 e, quando elas não bastam, do Cosif e da norma que ele cita | Este documento; contrato; `ontology/modalidades.yml` |

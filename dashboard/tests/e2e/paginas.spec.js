@@ -39,8 +39,10 @@ test("a página inicial está em português e com o título do arquivo de tradu�
 }) => {
   await page.goto("./");
   await expect(page.locator("html")).toHaveAttribute("lang", "pt-BR");
-  await expect(page).toHaveTitle(ptBR["pagina.titulo"]);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(ptBR["inicio.titulo"]);
+  // PT: o endereço abre na Tela 1, e o título é o da visão aberta (#69)
+  // EN: the address opens on Screen 1, titled after the open view
+  await expect(page).toHaveTitle(`${ptBR["navegacao.credito-por-uf"]} · ${ptBR["produto.nome"]}`);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(ptBR["tela1.titulo"]);
 });
 
 for (const esquema of /** @type {const} */ (["light", "dark"])) {

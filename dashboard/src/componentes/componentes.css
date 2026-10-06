@@ -47,7 +47,9 @@
     .aviso,
     .chat-resposta,
     .chat-entrada,
-    .estado
+    .estado,
+    .detalhe,
+    .definicao__caixa
   ) {
     backdrop-filter: blur(var(--material-vidro-regular-desfoque))
       saturate(var(--material-vidro-regular-saturacao));
@@ -353,6 +355,228 @@
     color: var(--color-support-error);
   }
 
+  /* ---------------------------------------------------------------- campo de seleção */
+
+  /* PT: o select nativo com o visual do campo de texto; a seta é a do sistema,
+     porque uma imagem de fundo esbarraria no img-src da política de segurança */
+  /* EN: the native select styled like the text field, keeping the system arrow */
+  .campo--selecao {
+    inline-size: min(100%, calc(5 * var(--space-10)));
+  }
+
+  .campo__cabecalho {
+    display: flex;
+    align-items: center;
+    gap: var(--space-02);
+  }
+
+  /* PT: o select nativo cresce até a opção mais longa; aqui ele acompanha a
+     largura do campo, e o texto longo da opção escolhida é cortado com
+     reticências, enquanto a lista do sistema mostra o nome inteiro */
+  /* EN: the native select grows to its longest option; here it follows the
+     field width and ellipsizes, while the system list shows full names */
+  .campo--selecao {
+    min-inline-size: 0;
+  }
+
+  .campo__entrada--selecao {
+    inline-size: 100%;
+    min-inline-size: 0;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  /* ---------------------------------------------------------------- definição */
+
+  /* PT: o botão de informação, junto do rótulo do número (RF-G07) */
+  /* EN: the info button next to a number's label */
+  .definicao {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+
+  .definicao__botao {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--space-06);
+    block-size: var(--space-06);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-capsula);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .definicao__botao:hover {
+    color: var(--color-text-primary);
+    background: color-mix(in oklab, var(--color-interactive) 8%, transparent);
+  }
+
+  /* PT: o popover abre junto do botão, e não no meio da tela, pela posição
+     que o JavaScript calcula */
+  /* EN: the popover opens next to its button, at the position JS computes */
+  .definicao__caixa {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    inline-size: min(26rem, calc(100vw - 2 * var(--space-04)));
+    padding: var(--space-05);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-controle);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-2);
+    color: var(--color-text-primary);
+  }
+
+  .definicao__caixa > * + * {
+    margin-block-start: var(--space-03);
+  }
+
+  .definicao__titulo {
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .definicao__texto,
+  .definicao__oficial {
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+  }
+
+  .definicao__rotulo {
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .definicao__fonte {
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-helper);
+  }
+
+  .definicao__link {
+    display: inline-block;
+    color: var(--color-link-default);
+  }
+
+  /* ---------------------------------------------------------------- painel de detalhe */
+
+  /* PT: ao lado do conteúdo no computador, em vidro regular (RF-G05) */
+  /* EN: beside the content on desktop, in regular glass */
+  .detalhe {
+    position: relative;
+    padding: var(--space-05);
+    border: var(--border-fina) solid var(--material-vidro-borda);
+    border-radius: var(--radius-cartao);
+    background: var(--material-vidro-regular-preenchimento);
+    box-shadow: var(--elevation-1);
+  }
+
+  .detalhe__fechar {
+    position: absolute;
+    inset-block-start: var(--space-03);
+    inset-inline-end: var(--space-03);
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--space-07);
+    block-size: var(--space-07);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-capsula);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .detalhe__fechar:hover {
+    color: var(--color-text-primary);
+    background: color-mix(in oklab, var(--color-interactive) 8%, transparent);
+  }
+
+  .detalhe__fechar[hidden] {
+    display: none;
+  }
+
+  .detalhe__titulo {
+    padding-inline-end: var(--space-08);
+    font: var(--type-heading-03);
+    letter-spacing: var(--type-heading-03-letter-spacing);
+  }
+
+  .detalhe__subtitulo,
+  .detalhe__dica {
+    color: var(--color-text-secondary);
+  }
+
+  .detalhe__subtitulo {
+    margin-block-start: var(--space-02);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+  }
+
+  /* PT: chave e valor, com o número à direita e com unidade */
+  /* EN: key and value, numbers right-aligned with units */
+  .detalhe__lista {
+    display: grid;
+    grid-template-columns: minmax(7rem, 1fr) minmax(0, auto);
+    gap: var(--space-03) var(--space-05);
+    align-items: center;
+    margin: var(--space-05) 0 0;
+  }
+
+  /* PT: os botões de definição numa coluna só, no fim da chave, para não
+     ficarem soltos quando o rótulo quebra linha */
+  /* EN: definition buttons in one column at the key's end */
+  .detalhe__chave {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-02);
+    color: var(--color-text-secondary);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+  }
+
+  .detalhe__valor {
+    margin: 0;
+    text-align: end;
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .detalhe__nota {
+    margin-block-start: var(--space-05);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-helper);
+  }
+
+  /* PT: no celular, a folha sobe de baixo quando uma UF é escolhida, como no
+     modelo de página do celular */
+  /* EN: on phones, a bottom sheet that slides up when a state is chosen */
+  @media (max-width: 671px) {
+    .detalhe {
+      position: fixed;
+      inset-inline: 0;
+      inset-block-end: 0;
+      z-index: 20;
+      max-block-size: 70vh;
+      overflow-y: auto;
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+      box-shadow: var(--elevation-2);
+      translate: 0 calc(100% + var(--space-05));
+      transition: translate var(--motion-duracao-media) var(--motion-curva-produtiva);
+    }
+
+    .detalhe--aberto {
+      translate: 0 0;
+    }
+  }
+
   /* ---------------------------------------------------------------- etiquetas */
 
   .etiqueta {
@@ -529,6 +753,32 @@
 
   .aviso__texto {
     margin: 0;
+  }
+
+  /* PT: em linha: a ressalva dentro de um cartão, sem a caixa de vidro, com
+     o ícone menor, no texto de apoio (ADR 0022, decisão 6) */
+  /* EN: inline: a caveat inside a card, no glass box, smaller icon */
+  .aviso--linha {
+    gap: var(--space-03);
+    max-inline-size: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: var(--color-text-secondary);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+  }
+
+  .aviso--linha .aviso__icone {
+    inline-size: var(--space-05);
+    block-size: var(--space-05);
+  }
+
+  .aviso--linha .aviso__icone .icone {
+    inline-size: var(--space-04);
+    block-size: var(--space-04);
   }
 
   .aviso--informacao {
@@ -790,7 +1040,9 @@
         .dica,
         .chat-resposta,
         .chat-entrada,
-        .estado
+        .estado,
+        .detalhe,
+        .definicao__caixa
       ) {
       background: var(--color-background-layer);
     }

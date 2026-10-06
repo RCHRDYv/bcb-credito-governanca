@@ -20,11 +20,7 @@
 
 import { describe, expect, it } from "vitest";
 import { razaoDeContraste } from "../../src/cor/contraste.js";
-import {
-  validarCategorica,
-  validarDivergente,
-  validarSequencial,
-} from "../../src/cor/validacao.js";
+import { validarCategorica, validarSequencial } from "../../src/cor/validacao.js";
 import { paletas, superficies } from "../../src/graficos/tema.js";
 
 /** @typedef {import("../../src/tokens.js").Tema} Tema */
@@ -86,11 +82,6 @@ for (const tema of TEMAS) {
       const resultado = validarSequencial(p.sequencial, { tema, superficie: grafico });
       expect(reprovados(resultado)).toEqual([]);
     });
-
-    it("a divergente é válida sobre o cartão do gráfico", () => {
-      const resultado = validarDivergente(p.divergente, { tema, superficie: grafico });
-      expect(reprovados(resultado)).toEqual([]);
-    });
   });
 }
 
@@ -120,13 +111,5 @@ describe("controles negativos: o validador reprova paleta ruim", () => {
       superficie: grafico,
     });
     expect(resultado.criterios.find((c) => c.id === "monotonica")?.estado).toBe("reprova");
-  });
-
-  it("reprova uma divergente com o meio colorido", () => {
-    const resultado = validarDivergente(
-      { negativo: ["#08bdba"], neutro: "#ffd6e8", positivo: ["#be95ff"] },
-      { tema: "claro", superficie: grafico },
-    );
-    expect(resultado.criterios.find((c) => c.id === "neutro")?.estado).toBe("reprova");
   });
 });

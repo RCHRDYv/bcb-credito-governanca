@@ -155,6 +155,25 @@
     translate: 0 0;
   }
 
+  /* PT: a tela única (ADR 0022): a partir de uma janela de 1280×720 px, a
+     página tem a altura da janela, e a visão ocupa o que sobra abaixo do
+     topo, sem rolagem da página. Abaixo disso, e na impressão, a página
+     rola como antes */
+  /* EN: single screen (ADR 0022): from a 1280×720 window up, the page is
+     viewport-tall and the view fills what is left under the top bar */
+  @media screen and (min-width: 1280px) and (min-height: 720px) {
+    .pagina {
+      display: flex;
+      flex-direction: column;
+      block-size: 100dvh;
+    }
+
+    .pagina > .principal {
+      flex: 1 1 auto;
+      min-block-size: 0;
+    }
+  }
+
   /* PT: com movimento reduzido, nenhuma animação nem transição */
   /* EN: with reduced motion, no animation or transition */
   @media (prefers-reduced-motion: reduce) {

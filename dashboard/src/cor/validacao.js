@@ -6,17 +6,16 @@
  *     - **categórica,** para identidade (qual série): cores de matizes
  *       diferentes, que precisam ser distintas entre si também para quem
  *       tem daltonismo;
- *     - **sequencial,** para magnitude (quanto): uma matiz só, do claro ao
- *       escuro, com passos visíveis;
- *     - **divergente,** para desvio contra uma referência (para que lado):
- *       dois braços sequenciais de matizes opostas e um meio neutro.
+ *     - **sequencial,** para intensidade (quanto): uma matiz só, do claro
+ *       ao escuro, com passos visíveis. É a única rampa do design system:
+ *       a divergente saiu na revisão da Tela 1, em 2026-10-05 (ADR 0021).
  *
  *     Os limites seguem o método de visualização de dados usado no projeto,
  *     e o contraste segue a WCAG 2.2: 3:1 para elemento gráfico.
  *
- * EN: Chart palette validation. Categorical, sequential and diverging
- *     palettes each have their own measured criteria; contrast follows
- *     WCAG 2.2 (3:1 for graphical objects).
+ * EN: Chart palette validation. Categorical and sequential palettes each
+ *     have their own measured criteria; contrast follows WCAG 2.2 (3:1 for
+ *     graphical objects). The diverging palette was retired in 2026-10.
  */
 
 import { razaoDeContraste } from "./contraste.js";
@@ -70,8 +69,6 @@ export const LIMITES = Object.freeze({
   passoMinimo: 0.06,
   pontaClara: 2,
   matizUnica: 40,
-  simetria: 0.06,
-  neutroCromaMaximo: 0.02,
 });
 
 /** @type {TipoDeDaltonismo[]} */
@@ -272,77 +269,6 @@ export function validarSequencial(cores, { superficie }) {
       nome: "Uma matiz só",
       estado: espalhamento <= LIMITES.matizUnica ? "passa" : "reprova",
       detalhe: `variação de matiz de ${numero(espalhamento, 0)} graus`,
-    },
-  ];
-  return { aprovada: criterios.every(({ estado }) => estado !== "reprova"), criterios };
-}
-
-/**
- * @typedef {object} Divergente
- * @property {string[]} negativo Do meio para a ponta / from the middle outwards
- * @property {string} neutro O meio: sem desvio / the middle
- * @property {string[]} positivo Do meio para a ponta / from the middle outwards
- */
-
-/**
- * PT: Valida uma paleta divergente: cada braço é uma rampa válida, os dois
- *     braços têm o mesmo número de degraus e a mesma luminosidade em cada
- *     degrau, o meio é cinza, e os polos continuam distintos com daltonismo.
- * EN: Validates a diverging palette.
- *
- * @param {Divergente} paleta
- * @param {Opcoes} opcoes
- * @returns {Resultado}
- */
-export function validarDivergente({ negativo, neutro, positivo }, opcoes) {
-  const bracos = [
-    ["negativo", validarSequencial(negativo, opcoes)],
-    ["positivo", validarSequencial(positivo, opcoes)],
-  ];
-  const assimetria = Math.max(
-    ...negativo.map((cor, i) => Math.abs(oklch(cor).L - oklch(positivo[i] ?? cor).L)),
-  );
-  const croma = oklch(neutro).C;
-  const polos = negativo.map(
-    (cor, i) => /** @type {[string, string]} */ ([cor, positivo[i] ?? cor]),
-  );
-  const daltonismo = criterioDaltonismo(polos);
-  const normal = parMaisProximo(polos, [undefined]);
-
-  /** @type {Criterio[]} */
-  const criterios = [
-    ...bracos.map(([nome, resultado]) => {
-      const falhas = /** @type {Resultado} */ (resultado).criterios.filter(
-        ({ estado }) => estado === "reprova",
-      );
-      return /** @type {Criterio} */ ({
-        id: `braco-${nome}`,
-        nome: `Braço ${nome} como rampa`,
-        estado: falhas.length ? "reprova" : "passa",
-        detalhe: falhas.length
-          ? falhas.map(({ nome: n, detalhe }) => `${n}: ${detalhe}`).join("; ")
-          : "luminosidade em ordem, passos visíveis e uma matiz só",
-      });
-    }),
-    {
-      id: "simetria",
-      nome: "Braços simétricos",
-      estado:
-        negativo.length === positivo.length && assimetria <= LIMITES.simetria ? "passa" : "reprova",
-      detalhe: `${negativo.length} e ${positivo.length} degraus; maior diferença de luminosidade ${numero(assimetria, 3)}`,
-    },
-    {
-      id: "neutro",
-      nome: "Meio neutro",
-      estado: croma <= LIMITES.neutroCromaMaximo ? "passa" : "reprova",
-      detalhe: `${neutro}, croma ${numero(croma, 3)}`,
-    },
-    { ...daltonismo, id: "polos-daltonismo", nome: "Polos com daltonismo" },
-    {
-      id: "polos-visao-normal",
-      nome: "Polos sem daltonismo",
-      estado: normal.valor >= LIMITES.visaoNormal ? "passa" : "reprova",
-      detalhe: `pior degrau ${normal.a} e ${normal.b}: ${numero(normal.valor)}`,
     },
   ];
   return { aprovada: criterios.every(({ estado }) => estado !== "reprova"), criterios };

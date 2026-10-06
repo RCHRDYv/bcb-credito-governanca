@@ -23,6 +23,13 @@
 --     passam do corte (a menor, RR, tinha R$ 3,7 bi em jul/2026), mas o
 --     corte fica escrito, para a regra ser uma só.
 --
+--     Para a tela mostrar o tamanho de cada mercado e o da oportunidade, e
+--     não só a razão (revisão da Tela 1, na #69, em 2026-10-01), o mart traz
+--     também a participação da UF na carteira PJ do país e o crédito que
+--     faltaria para a UF chegar à mediana. Essa segunda conta é a mesma do
+--     custo de não entrar do mrt_decisao (ADR 0014, decisão 5), só nas UFs
+--     abaixo da mediana.
+--
 -- EN: Presentation mart for dashboard screen 1: where credit is today, and
 --     where it is scarce per company or per inhabitant. Grain: month and
 --     state. Kept out of the experiment because the ratios come computed.
@@ -114,6 +121,20 @@ select
     pe.carteira_por_empresa,
     m.mediana_carteira_por_empresa,
     pe.carteira_por_empresa / m.mediana_carteira_por_empresa as indice_de_espaco,
+
+    -- PT: o crédito que faltaria para chegar à mediana, como o custo de não
+    --     entrar do mrt_decisao (ADR 0014, decisão 5)
+    -- EN: credit missing to reach the median, as mrt_decisao's cost of not
+    --     entering
+    case
+        when pe.carteira_por_empresa < m.mediana_carteira_por_empresa
+            then (m.mediana_carteira_por_empresa - pe.carteira_por_empresa) * e.empresas
+    end as custo_de_nao_entrar,
+
+    -- PT: a fatia da UF na carteira PJ do país, no mesmo mês
+    -- EN: the state's share of the country's PJ portfolio, same month
+    cast(c.carteira_pj as double) / sum(c.carteira_pj) over (partition by c.data_base)
+        as participacao_na_carteira_pj,
     c.carteira_total / p.populacao as carteira_por_habitante,
     c.carteira_pf / p.populacao as carteira_pf_por_habitante,
     c.carteira_inadimplida_pj / c.carteira_pj as taxa_inadimplencia_pj

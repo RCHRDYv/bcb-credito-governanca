@@ -30,6 +30,7 @@ import equal from "@tabler/icons/outline/equal.svg?raw";
 import eye from "@tabler/icons/outline/eye.svg?raw";
 import infoCircle from "@tabler/icons/outline/info-circle.svg?raw";
 import refresh from "@tabler/icons/outline/refresh.svg?raw";
+import x from "@tabler/icons/outline/x.svg?raw";
 
 /**
  * PT: Os ícones disponíveis, pelo nome do Tabler.
@@ -51,6 +52,7 @@ const SVGS = Object.freeze({
   eye,
   "info-circle": infoCircle,
   refresh,
+  x,
 });
 
 /** @typedef {keyof typeof SVGS} NomeDoIcone */

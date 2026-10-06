@@ -286,7 +286,11 @@ def validar_visao_1(conteudos: dict[str, dict]) -> list[str]:
         - a carteira PJ é a soma das modalidades, até o arredondamento de meio
           real por linha;
         - a mediana é a das UFs acima do corte de materialidade, e o índice
-          de espaço é a carteira por empresa dividida por ela.
+          de espaço é a carteira por empresa dividida por ela;
+        - o custo de não entrar existe só nas UFs abaixo da mediana, e é a
+          distância até ela vezes as empresas, até o arredondamento da
+          carteira por empresa e da mediana, de um real cada;
+        - a participação de cada UF é a carteira PJ dela sobre a do país.
     EN: View 1 reads both files, which come from different marts; they must
         agree per state on companies, PJ portfolio and the median and index.
     """
@@ -318,6 +322,20 @@ def validar_visao_1(conteudos: dict[str, dict]) -> list[str]:
         esperado = uf["carteira_por_empresa"][indice] / uf["mediana_carteira_por_empresa"][indice]
         if abs(uf["indice_de_espaco"][indice] - esperado) > 1e-4:
             return [f"{nome}, {sigla}: índice de espaço diferente da carteira por empresa sobre a mediana"]
+
+    total = sum(uf["carteira_pj"])
+    for indice, sigla in enumerate(uf["uf"]):
+        por_empresa = uf["carteira_por_empresa"][indice]
+        mediana_da_uf = uf["mediana_carteira_por_empresa"][indice]
+        empresas = uf["empresas"][indice]
+        custo = uf["custo_de_nao_entrar"][indice]
+        if custo is None:
+            if por_empresa < mediana_da_uf - 1:
+                return [f"{nome}, {sigla}: custo de não entrar faltando numa UF abaixo da mediana"]
+        elif por_empresa > mediana_da_uf + 1 or abs(custo - (mediana_da_uf - por_empresa) * empresas) > empresas + 1:
+            return [f"{nome}, {sigla}: custo de não entrar fora da conta do ADR 0014"]
+        if abs(uf["participacao_na_carteira_pj"][indice] - uf["carteira_pj"][indice] / total) > 1e-5:
+            return [f"{nome}, {sigla}: participação diferente da carteira PJ sobre a do país"]
     return []
 
 
@@ -415,6 +433,16 @@ def _definir(coluna: str, indice: int, valor):
     return lambda conteudo: conteudo["colunas"][coluna].__setitem__(indice, valor)
 
 
+def _deslocar_o_primeiro_preenchido(coluna: str, parcela):
+    """PT: estrago no primeiro valor não nulo / EN: breakage on the first non-null value"""
+    def estragar(conteudo):
+        valores = conteudo["colunas"][coluna]
+        indice = next(i for i, v in enumerate(valores) if v is not None)
+        valores[indice] += parcela
+
+    return estragar
+
+
 def _somar(coluna: str, indice: int, parcela):
     """PT: estrago que desloca um valor / EN: breakage shifting one value"""
     def estragar(conteudo):
@@ -476,6 +504,10 @@ def autoteste(textos: dict[str, str], contrato: dict) -> list[str]:
          _somar("mediana_carteira_por_empresa", 0, 100), "mediana diferente"),
         ("índice de espaço fora da razão", "carteira_por_uf.json",
          _somar("indice_de_espaco", 0, 0.01), "índice de espaço diferente"),
+        ("custo de não entrar fora da conta", "carteira_por_uf.json",
+         _deslocar_o_primeiro_preenchido("custo_de_nao_entrar", 1e9), "custo de não entrar fora da conta"),
+        ("participação que não fecha", "carteira_por_uf.json",
+         _somar("participacao_na_carteira_pj", 0, 0.01), "participação diferente"),
     ]
     falhas = []
     for descricao, arquivo, estragar, trecho in casos:

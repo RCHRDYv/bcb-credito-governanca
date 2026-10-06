@@ -127,7 +127,7 @@ O **alerta antecipado** usa fundo amarelo 90 (#302400) e texto amarelo 20 (#fddc
 
 ### Paletas de gráfico · Carbon
 
-As três paletas saem das rampas oficiais do Carbon e foram escolhidas na revisão visual de 2026-09-27 ([ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md)). Os tokens são `color.chart.categorical.1` a `6`, `color.chart.sequential.1` a `5`, `color.chart.diverging.*` e `color.chart.other`, e o [catálogo](../../dashboard/catalogo.html) mostra cada paleta nos dois temas, com a simulação de daltonismo.
+As duas paletas saem das rampas oficiais do Carbon e foram escolhidas na revisão visual de 2026-09-27 ([ADR 0021](../adr/0021-paletas-de-grafico-do-carbon-validadas.md)). Uma terceira, a divergente roxo e verde-azulado, saiu na revisão da Tela 1, em 2026-10-05: toda intensidade usa a sequencial roxa. Os tokens são `color.chart.categorical.1` a `6`, `color.chart.sequential.1` a `5` e `color.chart.other`, e o [catálogo](../../dashboard/catalogo.html) mostra cada paleta nos dois temas, com a simulação de daltonismo.
 
 **Categórica,** para identidade, como modalidades. É a oficial do Carbon com a menor troca que passa nos dois temas: o verde-azulado, sem croma, vira laranja 50, o vermelho 90, quase preto, sai, e o azul 50 entra.
 
@@ -146,7 +146,7 @@ As três paletas saem das rampas oficiais do Carbon e foram escolhidas na revis�
 - **Até quatro séries com cor em dispersão, mapa e pequenos múltiplos,** em que qualquer par de cores pode se encostar. O ciano 50 e o azul 50 ficam próximos demais quando se encostam.
 - **Uma série só usa a primeira cor,** como o ranking e a série temporal. Pintar cada barra de uma cor gastaria a cor para repetir o que o comprimento já mostra.
 
-**Sequencial,** para magnitude, como carteira por empresa. É a rampa roxa do Carbon, em cinco degraus, sem o branco, que some no vidro.
+**Sequencial,** para intensidade, como carteira por empresa. É a rampa roxa do Carbon, em cinco degraus, sem o branco, que some no vidro, e a única rampa do design system.
 
 | Degrau | 1, valor baixo | 2 | 3 | 4 | 5, valor alto |
 |---|---|---|---|---|---|
@@ -155,12 +155,10 @@ As três paletas saem das rampas oficiais do Carbon e foram escolhidas na revis�
 
 No escuro a ordem se inverte, porque o valor baixo é o que se aproxima do fundo.
 
-**Divergente,** para desvio contra uma referência, como a variação da inadimplência contra a do país. É a roxo e verde-azulado do Carbon, com três degraus de cada lado e o meio em cinza, no lugar do branco do Carbon. Roxo fica acima da referência, e verde-azulado abaixo.
-
-| | Abaixo, na ponta | Abaixo | Abaixo, perto | Meio | Acima, perto | Acima | Acima, na ponta |
-|---|---|---|---|---|---|---|---|
-| Claro | verde-azulado 80 | verde-azulado 60 | verde-azulado 40 | cinza 20 | roxo 40 | roxo 60 | roxo 80 |
-| Escuro | verde-azulado 40 | verde-azulado 50 | verde-azulado 70 | cinza 80 | roxo 70 | roxo 50 | roxo 40 |
+**Distância até uma referência, na mesma rampa.** Quando o número é a distância até uma referência, como a mediana das UFs ou a taxa do país, ele é dividido em cinco faixas simétricas em torno dela, uma por degrau da rampa: o meio e duas de cada lado (`classesEmCincoFaixas`, decidido em 2026-10-05).
+- **O roxo mais forte fica no lado que quer dizer mais** para a pergunta da visão. Na Tela 1, abaixo da mediana, onde há mais espaço; no desvio da inadimplência contra o país, acima, onde o risco sobe mais.
+- **A legenda diz o sentido de cada faixa em palavras,** como "Mais espaço: mais de 30% abaixo da mediana". A cor diz quanto, e não para que lado.
+- **Não usar duas matizes para uma intensidade.** Uma divergente de duas cores pede a legenda para saber qual lado é qual, e foi o que confundiu a leitura da Tela 1 (ADR 0021, decisão 3).
 
 **Validação e simulação de daltonismo.** O contraste é medido contra o cartão sólido onde os gráficos são desenhados, o token `color.chart.surface` (#ffffff no claro e #161616 no escuro, desde a #64), e a distância entre cores em OKLab, multiplicada por 100, com a simulação de Machado, Oliveira e Fernandes (2009). Para a categórica, o alvo é 8 com daltonismo e 15 sem; para as rampas, o que importa é cada degrau continuar distinto do vizinho.
 
@@ -170,12 +168,10 @@ No escuro a ordem se inverte, porque o valor baixo é o que se aproxima do fundo
 | Categórica, pior par vizinho | Escuro | 3,62:1 | 15,8 | 13,2 | 8,4 | 3,1 |
 | Sequencial, menor passo | Claro | 2,35:1 na ponta | 10,2 | 7,3 | 8,6 | 9,1 |
 | Sequencial, menor passo | Escuro | 2,34:1 na ponta | 10,2 | 7,3 | 8,6 | 9,0 |
-| Divergente, polos no mesmo degrau | Claro | 2,33:1 perto do meio | 18,3 | 12,9 | 9,6 | 7,0 |
-| Divergente, polos no mesmo degrau | Escuro | 2,34:1 perto do meio | 22,5 | 12,9 | 9,6 | 9,2 |
 
 A tritanopia aparece nos números, mas não reprova, porque é rara e o modelo é menos preciso para ela. No escuro, o roxo 60 e o ciano 50 ficam a 3,1 para quem tem tritanopia, e a legenda e o rótulo identificam essas duas séries. A exceção de 1,96:1 da ponta das rampas no escuro, aceita no ADR 0021, deixou de existir na #64, com o cartão sólido.
 
-**Cores que já têm outro significado.** O roxo 70 é também a marca de Manter, e a divergente usa as matizes de Manter e de Entrar. Por isso vale a regra da etiqueta de quadrante: numa tela com a matriz ou com etiquetas de quadrante, essas paletas não entram com outro significado.
+**Cores que já têm outro significado.** O roxo 70 é também a marca de Manter, o quadrante de espaço baixo, e na Tela 1 o roxo mais forte quer dizer mais espaço. Por isso vale a regra da etiqueta de quadrante: numa tela com a matriz ou com etiquetas de quadrante, essas paletas não entram com outro significado.
 
 ### Tipografia · Carbon
 
@@ -208,6 +204,7 @@ As fontes são servidas pelo próprio site, dos pacotes oficiais `@ibm/plex-sans
 - De 2 a 16 px dentro de componentes.
 - De 24 a 48 px entre blocos.
 - De 64 px para cima, entre seções.
+- Na tela única (ADR 0022), 16 px entre os blocos e em volta da visão, para a altura sobrar para o conteúdo.
 - Sempre mais espaço acima de um título do que abaixo dele.
 
 ### Grid · Carbon
@@ -223,6 +220,8 @@ O grid 2x do Carbon:
 | max, tela grande | 1584 px | 16 | 24 px |
 
 Calhas: **larga, 32 px** (o padrão), **estreita, 16 px** (painéis e conteúdo mais junto) e **condensada, 1 px** (tabelas e listas densas).
+
+As visões usam a largura toda da janela, sem o limite do ponto de quebra max, porque na tela única a largura é o que sobra para os gráficos ([ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md), decisão 4).
 
 ### Raio · Liquid Glass
 
@@ -357,11 +356,22 @@ A matriz de espaço contra risco usa esta etiqueta nos cantos.
   - Fecha com o Esc, sem mover o foco.
 
 **Avisos.** Vidro levemente tingido pela cor do estado, com o ícone num círculo.
+- **Em linha** (decidido em 2026-10-05): o ícone menor e o texto em `label-01`, sem a caixa de vidro, para a ressalva dentro de um cartão. Existe para a tela única, em que a ressalva não pode ocupar um bloco, mas também não pode sumir atrás de um ícone ([ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md), decisão 6).
 - **Informação e erro:** a cor do estado vai no ícone.
 - **Atenção:** o círculo é o amarelo de atenção, e o glifo fica escuro nos dois temas, como faz o Carbon.
 - **Texto:** diz o problema e a saída, e nunca só "algo deu errado".
 - **Quando não usar:** mais de dois avisos empilhados, nem aviso para o que cabe num rótulo.
 - **Acessibilidade:** um aviso que aparece depois que a página abriu é anunciado a leitores de tela: o de erro com urgência, os outros com calma.
+
+**Campo de seleção.** Um `<select>` nativo com o visual do campo de texto, para escolher uma entre muitas opções, como as 13 modalidades (#69).
+- **Quando usar:** a partir de seis opções exclusivas, onde o controle segmentado não cabe.
+- **Quando não usar:** com até cinco opções, que é papel do controle segmentado.
+- **Acessibilidade:** o rótulo fica ligado ao campo, e a lista é a do navegador, que funciona pelo teclado e pelo leitor de tela sem nada a mais. Em tela estreita, o texto escolhido termina em reticências em vez de alargar a página.
+
+**Definição do número** (RF-G07, #69). Um botão de informação junto do rótulo do número, que abre um popover nativo com o que a ontologia diz: a explicação em palavras comuns, a definição da fonte, a fonte e a confiança. Quando a regra é do próprio projeto, o popover aponta o ADR.
+- **Quando usar:** ao lado de toda métrica que a tela mostra, no resumo e no painel de detalhe.
+- **Quando não usar:** em rótulos que não são números da ontologia.
+- **Acessibilidade:** o botão tem nome ("O que é Carteira PJ?"), o popover fecha com o Esc e com um clique fora, e o foco volta ao botão.
 
 **Chat.**
 - **Pergunta:** numa bolha azul 60.
@@ -388,7 +398,13 @@ A matriz de espaço contra risco usa esta etiqueta nos cantos.
 - **Sem piscar:** o `public/tema-inicial.js`, um script pequeno e síncrono no `<head>`, servido pelo próprio site, aplica a escolha guardada antes da pintura.
 - **Na impressão:** sai sempre claro, qualquer que seja a escolha.
 
-**Barra de topo.** Em vidro claro, com o nome do produto e o controle de tema. A navegação entre as visões entra nela quando as visões chegarem.
+**Barra de topo.** Em vidro claro, com o nome do produto, a navegação entre as visões e o controle de tema. A visão aberta fica marcada pela cor, pelo peso e pelo `aria-current` (RF-G01, desde a #69).
+
+**Painel de detalhe** (RF-G05, #69). Em vidro regular, com o título do elemento escolhido, o recorte, a lista de chave e valor, um complemento opcional, como as modalidades de uma UF, e a nota de ressalva.
+- **Sem elemento escolhido:** diz como escolher um.
+- **No computador:** fica ao lado do conteúdo, sem janela por cima, e rola por dentro quando o conteúdo passa da altura. Na Tela 1, toma o lugar do ranking enquanto uma UF está escolhida, e fechar traz o ranking de volta.
+- **No celular:** vira a folha que sobe de baixo, e o botão de fechar a recolhe.
+- **Acessibilidade:** a troca de conteúdo é anunciada com calma, e o botão de fechar tem nome.
 
 ## Componentes de gráfico · nossos, sobre o ECharts
 
@@ -407,9 +423,10 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
 - **Quando usar:** em todo gráfico e número de destaque.
 - **Quando não usar:** com frase de conclusão no cabeçalho, que o padrão proíbe.
 - **Acessibilidade:** o título dá nome à região do cartão, e a data-base e a fonte são texto.
+- **Cartão que preenche** (`cartao-grafico--preenche`): na tela única, o cartão ocupa a altura que a visão dá a ele, e o corpo fica com o que sobra do cabeçalho, rolando por dentro se passar. É o caso do ranking da Tela 1.
 
-**Mapa por UF.** Pinta cada UF pela classe do valor, com a malha do IBGE, e a legenda de classes fica em HTML, abaixo do mapa.
-- **O que é:** um mapa coroplético, com cinco classes em quintis na sequencial, ou três de cada lado mais o meio na divergente.
+**Mapa por UF.** Pinta cada UF pela classe do valor, com a malha do IBGE, e a legenda fica em HTML, logo depois do mapa. A legenda é trocável: a lista de classes, por padrão, ou a legenda em escala.
+- **O que é:** um mapa coroplético na rampa roxa, com cinco classes em quintis, ou em cinco faixas em torno de uma referência.
 - **Quando usar:** quando a pergunta é onde, no território, um número é alto ou baixo.
 - **Quando não usar:** quando os estados pequenos precisam ser lidos, porque o DF e Sergipe quase somem. Nesse caso, o cartograma. Também não serve para mostrar valor exato: o mapa mostra a classe, e o número fica na dica e na tabela.
 - **Acessibilidade:** a legenda é texto, e as fronteiras na cor do fundo separam vizinhas de cores próximas. Sem a malha, o cartão mostra o estado de erro e diz que o cartograma e a tabela continuam funcionando.
@@ -449,6 +466,21 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
 - **Quando não usar:** para vários números lado a lado, que é papel da tabela ou do painel de detalhe.
 - **Acessibilidade:** é lido como texto. Em tela estreita, desce para o `heading-05`, sem quebrar a unidade.
 
+**Matriz de calor** (#69). Uma linha por item e uma coluna por categoria, com cada célula pintada pela classe do valor, nas mesmas classes do mapa, para os dois se lerem igual.
+- **O que é na Tela 1:** a distância até a mediana em cada UF e modalidade. No computador fica deitada, com as modalidades nas linhas e as UFs nas colunas; no celular, de pé.
+- **Células:** a que fica fora da comparação leva a textura listrada; a que não existe fica vazia. A célula escolhida ganha o destaque, e o rótulo da linha e o da coluna dela ficam em negrito.
+- **Rótulos das colunas:** siglas ficam retas enquanto cada coluna tiver pelo menos 20 px; abaixo disso, e com nomes longos, giram.
+- **Quando usar:** para ver de uma vez em quais itens e em quais categorias um número está alto ou baixo.
+- **Quando não usar:** para comparar o tamanho de uma oportunidade, porque a célula mostra a classe, e não quanto; isso é papel do ranking.
+- **Acessibilidade:** cada célula tem a dica com a UF, a modalidade e a posição, e os números estão na tabela.
+
+**Legenda em escala** (revisão da Tela 1, em 2026-10-05). Uma barra compacta em degradê contínuo, com as pontas em cápsula, o que ela mede em cima, as divisas das classes marcadas embaixo e o sentido de cada ponta.
+- **O degradê passa pela cor de cada classe no meio da faixa dela,** e as marcas mostram onde uma classe termina e a outra começa, porque o mapa pinta por classe.
+- **Na Tela 1:** vai de "Menos espaço", à esquerda, a "Mais espaço", à direita, com as divisas em +30%, +10%, −10% e −30% da mediana. Fica no canto inferior direito do palco, sobre o mar, no mapa e na grade; embaixo, à direita, na matriz.
+- **Quando usar:** para faixas ordenadas em torno de uma referência, em que o leitor precisa ver a direção.
+- **Quando não usar:** para categorias sem ordem, que é papel da lista de classes.
+- **Acessibilidade:** a barra e as marcas ficam fora da leitura, e cada classe vem por extenso numa lista para leitores de tela. A amostra listrada de quem fica sem comparação vem logo abaixo.
+
 ## Padrões de uso · Liquid Glass
 
 **Cabeçalho do gráfico, sem bloco de título na visão e sem conclusão escrita.** Decidido em 2026-09-26: as visões não têm bloco de título-conclusão no topo, e os gráficos não trazem conclusão escrita, para controlar o escopo. A visão abre nos filtros e na visualização, e cada gráfico traz um cabeçalho com duas partes:
@@ -459,17 +491,17 @@ Quem quiser tirar uma conclusão pergunta ao chat, nas visões que o têm.
 
 Não usar: rótulo genérico como "Gráfico 1", nem frase de conclusão no gráfico, digitada à mão ou gerada do dado.
 
-**Barra de filtros.** Numa linha só, acima do conteúdo. Controle segmentado para opções exclusivas, chips para filtros que se combinam. Filtrar nunca repinta as cores.
+**Barra de filtros.** Numa linha só, acima do conteúdo. Campo de seleção para muitas opções, controle segmentado para opções exclusivas, chips para filtros que se combinam. Filtrar nunca repinta as cores. A forma de ver uma visualização, como "Mapa | Grade | Matriz | Tabela", também fica na barra, junto dos filtros.
 
-**Painel de detalhe.** Lista de chave e valor, com números à direita e com unidade. Abre ao lado do conteúdo, sem janela por cima.
+**Painel de detalhe.** Lista de chave e valor, com números à direita e com unidade. Abre ao lado do conteúdo, sem janela por cima, e rola por dentro.
 
 **Fronteira do dado.** O que o dado não permite afirmar fica junto da recomendação, nunca no rodapé nem escondido em nota ([ADR 0005](../adr/0005-projeto-termina-em-recomendacao.md)).
 
-**Alternativa em tabela.** Toda visão com gráfico tem uma tabela com os mesmos números, para quem não lê cor ou prefere números.
+**Alternativa em tabela.** Toda visão com gráfico tem uma tabela com os mesmos números, para quem não lê cor ou prefere números. Desde a #69, ela é uma das formas de ver o cartão, e não um bloco embaixo da página, com o download em CSV junto dela ([ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md), decisão 5).
 
 ## Modelos de página · grid do Carbon, modelos nossos
 
-Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada visão escolhe o modelo que serve à pergunta dela, e visões diferentes podem usar grids diferentes. O protótipo desenha os seis.
+Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada visão escolhe o modelo que serve à pergunta dela, e visões diferentes podem usar grids diferentes. O protótipo desenha os sete.
 
 | Modelo | Colunas, no grid de 16 | Chat | Quando usar |
 |---|---|---|---|
@@ -478,12 +510,15 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 | Com trilho do chat | Conteúdo 12, chat 4 | Sim | Visões em que perguntar aos dados ajuda a explorar |
 | Visual em tela cheia com painéis de vidro | Visual 16, painéis flutuantes de 4 | Opcional, num botão | Visuais espaciais, como um mapa, em que o contexto importa mais que a moldura |
 | Tabela ou lista densa | Tabela 16, calha condensada | Não | Ranking e consulta de muitas linhas |
+| Palco em tela única | Painéis dos lados, 1 fração cada; palco no centro, 2 frações | Não | Um visual espacial domina a visão, sem rolagem da página, como o mapa da Tela 1 ([ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md)) |
 | Celular | 4 colunas, tudo empilhado | Com ou sem | O detalhe abre numa folha que sobe de baixo; o chat vira um botão |
 
 **Regras dos modelos:**
 - **O chat é opcional por visão.** Quando existe, fica num trilho de 4 colunas à direita no desktop, ou num botão flutuante nos modelos de tela cheia e no celular. Nunca cobre o conteúdo no desktop.
 - **Nenhuma visão tem bloco de título no topo.** A visão abre nos filtros e na visualização, e o cabeçalho de cada gráfico tem só o título e a data-base com a fonte.
 - **Toda visão tem a alternativa em tabela.**
+- **Tela única** ([ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md)): a partir de uma janela de 1280×720 px, toda visão cabe sem rolagem da página, e o que passa da altura de um cartão rola dentro dele. Abaixo disso, a página rola, sem nada cortado.
+- **No palco em tela única,** o visual fica num cartão sólido grande, na altura toda, com o campo de luz aparecendo em volta. À esquerda ficam os filtros e o que o visual mostra (título, fonte, resumo e ressalvas); à direita, os números e o detalhe. Formas que pedem largura, como uma matriz ou uma tabela, ocupam também a coluna da direita. Empilhado, o visual vem logo depois dos filtros.
 
 ## Conteúdo
 
@@ -525,7 +560,7 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 
 | Pendência | Onde se resolve |
 |---|---|
-| Conferir o vidro no Firefox a olho. O WebKit, motor do Safari, foi conferido na #64, e o Firefox roda os testes de ponta a ponta e o axe no CI, mas não abre na máquina de desenvolvimento | Na primeira visão, #69 |
+| Conferir o vidro no Firefox a olho. O WebKit, motor do Safari, foi conferido na #64, e o Firefox roda os testes de ponta a ponta e o axe no CI, mas não abre na máquina de desenvolvimento | No site publicado, depois da #69 |
 | Nome e identidade visual do produto | Em aberto |
 
 ## Fontes
