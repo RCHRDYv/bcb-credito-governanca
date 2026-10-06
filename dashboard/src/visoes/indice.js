@@ -45,6 +45,12 @@ export const VISOES = Object.freeze([
     modulo: () => import("./risco-por-uf/index.js"),
     dados: () => import("./risco-por-uf/carga.js").then((m) => m.carregarDados()),
   },
+  {
+    id: "projecao",
+    nome: t("navegacao.projecao"),
+    modulo: () => import("./projecao/index.js"),
+    dados: () => import("./projecao/carga.js").then((m) => m.carregarDados()),
+  },
 ]);
 
 /**

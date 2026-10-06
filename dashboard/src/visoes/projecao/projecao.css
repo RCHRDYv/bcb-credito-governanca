@@ -1,0 +1,141 @@
+/*
+ * PT: O que é só da Tela 3 (#72): a projeção mês a mês e o "como é feita"
+ *     no cartão da esquerda, o gráfico da série no palco, e o teste e a
+ *     qualidade à direita. A disposição vem do modelo comum, em
+ *     `../palco.css`.
+ * EN: Screen 3 only: the left card's month-by-month table and method note,
+ *     the stage chart, and the test and quality cards on the right. The
+ *     layout comes from `../palco.css`.
+ */
+
+@layer componentes {
+  .grafico--projecao {
+    block-size: 360px;
+  }
+
+  .grafico--teste {
+    block-size: 200px;
+  }
+
+  /* PT: o nome do método pode quebrar a linha, sem empurrar o cartão */
+  /* EN: the method name may wrap instead of widening the card */
+  .visao--projecao .visao__resumo {
+    grid-template-columns: minmax(0, 1fr) minmax(0, max-content);
+  }
+
+  .projecao__bloco,
+  .projecao__como {
+    display: grid;
+    gap: var(--space-03);
+    justify-self: stretch;
+  }
+
+  .projecao__subtitulo {
+    margin: 0;
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  /* PT: a projeção mês a mês: uma tabela pequena, sem a caixa de vidro */
+  /* EN: the month-by-month projection, a small plain table */
+  .projecao__mes-a-mes {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .projecao__mes-a-mes th,
+  .projecao__mes-a-mes td {
+    padding: var(--space-02) 0 var(--space-02) var(--space-01);
+    text-align: end;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  /* PT: as quatro datas do teste cabem na coluna, sem rolar */
+  /* EN: the four test dates fit the column without scrolling */
+  .projecao__teste .segmentado {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  .projecao__teste .segmentado__opcao {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    padding-inline: var(--space-02);
+  }
+
+  .projecao__mes-a-mes th:first-child {
+    padding-inline-start: 0;
+    text-align: start;
+  }
+
+  .projecao__mes-a-mes thead th {
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .projecao__mes-a-mes tbody td:nth-child(2) {
+    font-weight: 600;
+  }
+
+  .projecao__nota,
+  .projecao__frase {
+    margin: 0;
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+  }
+
+  .projecao__nota {
+    color: var(--color-text-secondary);
+  }
+
+  /* PT: o "como é feita", numa caixa discreta, como os dois números da Tela 2 */
+  /* EN: the method note in a quiet box, like Screen 2's two measures */
+  .projecao__como {
+    padding: var(--space-04);
+    border-radius: var(--radius-controle);
+    border: var(--border-fina) solid var(--color-border-subtle);
+    background: var(--color-background-page);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .projecao__como p {
+    margin: 0;
+  }
+
+  .projecao__teste .cartao-grafico__corpo,
+  .projecao__qualidade .cartao-grafico__corpo,
+  .projecao__avisos {
+    display: grid;
+    gap: var(--space-03);
+  }
+
+  .projecao__qualidade p {
+    margin: 0;
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  /* PT: tela única: o gráfico ocupa o palco, e à direita o teste fica em
+     cima, na altura que pede, e a qualidade rola no que sobra */
+  /* EN: single screen: the chart fills the stage; on the right the test
+     card takes its height and the quality card scrolls in the rest */
+  @media screen and (min-width: 1280px) and (min-height: 720px) {
+    .visao--projecao .visao__forma--grafico .grafico--projecao {
+      block-size: 100%;
+    }
+
+    .visao--projecao .projecao__qualidade {
+      grid-row: 2;
+      min-block-size: 0;
+      overflow-y: auto;
+    }
+  }
+}

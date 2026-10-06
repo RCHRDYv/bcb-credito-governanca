@@ -22,6 +22,7 @@ import { elemento } from "../dom.js";
  * @typedef {object} OpcaoDaSelecao
  * @property {string} valor
  * @property {string} texto
+ * @property {string} [grupo] O rótulo do grupo; opções seguidas do mesmo grupo entram num `<optgroup>` / group label
  */
 
 /**
@@ -36,6 +37,30 @@ import { elemento } from "../dom.js";
 let contador = 0;
 
 /**
+ * PT: As opções, com as seguidas do mesmo grupo dentro de um `<optgroup>`.
+ * EN: The options, consecutive same-group ones inside an `<optgroup>`.
+ *
+ * @param {OpcaoDaSelecao[]} opcoes
+ * @returns {HTMLElement[]}
+ */
+function agrupar(opcoes) {
+  /** @type {HTMLElement[]} */
+  const filhos = [];
+  for (const opcao of opcoes) {
+    const el = elemento("option", { texto: opcao.texto, atributos: { value: opcao.valor } });
+    const anterior = filhos.at(-1);
+    if (!opcao.grupo) {
+      filhos.push(el);
+    } else if (anterior?.tagName === "OPTGROUP" && anterior.getAttribute("label") === opcao.grupo) {
+      anterior.append(el);
+    } else {
+      filhos.push(elemento("optgroup", { atributos: { label: opcao.grupo } }, [el]));
+    }
+  }
+  return filhos;
+}
+
+/**
  * PT: Monta o campo de seleção.
  * EN: Builds the select field.
  *
@@ -48,9 +73,7 @@ export function campoDeSelecao({ rotulo, opcoes, valor, aoMudar, apoio }) {
   const selecao = elemento(
     "select",
     { classe: "campo__entrada campo__entrada--selecao", atributos: { id } },
-    opcoes.map((opcao) =>
-      elemento("option", { texto: opcao.texto, atributos: { value: opcao.valor } }),
-    ),
+    agrupar(opcoes),
   );
   selecao.value = valor;
   selecao.addEventListener("change", () => aoMudar?.(selecao.value));

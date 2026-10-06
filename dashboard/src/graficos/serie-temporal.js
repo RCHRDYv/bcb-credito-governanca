@@ -8,15 +8,22 @@
  *     linha de 3 px (decidido em 2026-09-27, na revisão visual da #63). A
  *     projeção começa no último mês realizado, para a linha não ter um salto.
  *
+ *     A projeção também pode partir de um mês no meio da série, a origem.
+ *     É o gráfico do teste da Tela 3 (#72): o realizado continua depois da
+ *     origem, e a linha tracejada mostra o que a projeção dizia naqueles
+ *     meses, para comparar as duas. A origem pode ganhar uma linha vertical.
+ *
  * EN: Time series with a projection in IBCS notation: actuals as a solid
  *     line, the projection dashed with a hatched interval, told apart by
- *     form; both in the first categorical color, 3 px wide.
+ *     form; both in the first categorical color, 3 px wide. The projection
+ *     may start mid-series (an origin), so actuals and the old projection
+ *     overlap, as in Screen 3's backtest chart.
  */
 
 import { mesCurto } from "../formatos.js";
 import { t } from "../textos/index.js";
 import { criarGrafico } from "./grafico.js";
-import { paletas } from "./tema.js";
+import { hex, paletas } from "./tema.js";
 
 /** @typedef {import("./grafico.js").Grafico} Grafico */
 
@@ -30,6 +37,9 @@ const LARGURA_DA_LINHA = 3;
  * @property {number[]} inferior Limite inferior do intervalo / lower bound
  * @property {number[]} superior Limite superior do intervalo / upper bound
  * @property {string} rotulo O que a projeção é, como "Projeção ilustrativa" / label
+ * @property {string} [origem] `aaaa-mm-dd`: o mês realizado de onde a projeção parte; o padrão é o último / start month, default the last actual
+ * @property {string} [rotuloDaOrigem] O rótulo da linha vertical na origem; sem ele, não há linha / label of the vertical line at the origin
+ * @property {(de: string, ate: string) => string} [intervalo] Como a dica escreve o intervalo / how the tooltip writes the interval
  */
 
 /**
@@ -63,10 +73,34 @@ function comAlpha(cor, alpha) {
  * @returns {Promise<Grafico>}
  */
 export function serieTemporal(el, { nome, meses, valores, formatar, projecao }) {
-  const ultimo = valores.length - 1;
-  const futuros = projecao?.meses.length ?? 0;
-  const vazio = Array.from({ length: ultimo }, () => null);
-  const categorias = [...meses, ...(projecao?.meses ?? [])].map(mesCurto);
+  const futuros = (projecao?.meses ?? []).filter((mes) => !meses.includes(mes));
+  const todos = [...meses, ...futuros];
+  const categorias = todos.map(mesCurto);
+  const origem = projecao?.origem ? meses.indexOf(projecao.origem) : valores.length - 1;
+  if (origem < 0) throw new Error(`Origem fora da série: ${projecao?.origem}`);
+
+  /**
+   * PT: Uma coluna da projeção na posição de cada mês, nula fora dela, com
+   *     o valor da origem, para a linha sair do realizado.
+   * EN: A projection column placed by month, null elsewhere, with the
+   *     origin's value so the line leaves from the actuals.
+   *
+   * @param {number[]} coluna
+   * @param {number} naOrigem
+   * @returns {(number | null)[]}
+   */
+  const naPosicao = (coluna, naOrigem) => {
+    /** @type {(number | null)[]} */
+    const linha = todos.map(() => null);
+    linha[origem] = naOrigem;
+    for (const [k, mes] of (projecao?.meses ?? []).entries()) {
+      linha[todos.indexOf(mes)] = coluna[k];
+    }
+    return linha;
+  };
+  const intervalo =
+    projecao?.intervalo ??
+    ((/** @type {string} */ de, /** @type {string} */ ate) => t("grafico.intervalo", { de, ate }));
 
   return criarGrafico(el, (tema, { estreito }) => {
     const [cor] = paletas(tema).categorica;
@@ -75,21 +109,33 @@ export function serieTemporal(el, { nome, meses, valores, formatar, projecao }) 
       {
         type: "line",
         name: nome,
-        data: [...valores, ...Array.from({ length: futuros }, () => null)],
+        data: [...valores, ...futuros.map(() => null)],
         itemStyle: { color: cor },
         lineStyle: { color: cor, width: LARGURA_DA_LINHA },
         symbol: "none",
       },
     ];
     if (projecao) {
+      const forte = hex("color.text.primary", tema);
       series.push(
         {
           type: "line",
           name: projecao.rotulo,
-          data: [...vazio, valores[ultimo], ...projecao.valor],
+          data: naPosicao(projecao.valor, valores[origem]),
           itemStyle: { color: cor },
           lineStyle: { color: cor, width: LARGURA_DA_LINHA, type: [6, 4] },
           symbol: "none",
+          ...(projecao.rotuloDaOrigem
+            ? {
+                markLine: {
+                  silent: true,
+                  symbol: "none",
+                  lineStyle: { color: forte, type: [3, 3], width: 1 },
+                  label: { position: "end", formatter: projecao.rotuloDaOrigem, color: forte },
+                  data: [{ xAxis: categorias[origem] }],
+                },
+              }
+            : {}),
         },
         // PT: o intervalo é a diferença entre o limite superior e o inferior,
         //     empilhada sobre o inferior, que fica invisível
@@ -98,7 +144,7 @@ export function serieTemporal(el, { nome, meses, valores, formatar, projecao }) 
           type: "line",
           name: "inferior",
           stack: "intervalo",
-          data: [...vazio, valores[ultimo], ...projecao.inferior],
+          data: naPosicao(projecao.inferior, valores[origem]),
           lineStyle: { opacity: 0 },
           symbol: "none",
           silent: true,
@@ -108,7 +154,10 @@ export function serieTemporal(el, { nome, meses, valores, formatar, projecao }) 
           type: "line",
           name: "intervalo",
           stack: "intervalo",
-          data: [...vazio, 0, ...projecao.superior.map((s, i) => s - projecao.inferior[i])],
+          data: naPosicao(
+            projecao.superior.map((s, i) => s - projecao.inferior[i]),
+            0,
+          ),
           lineStyle: { opacity: 0 },
           symbol: "none",
           silent: true,
@@ -154,12 +203,17 @@ export function serieTemporal(el, { nome, meses, valores, formatar, projecao }) 
         trigger: "axis",
         formatter: (/** @type {{ dataIndex: number, name: string }[]} */ pontos) => {
           const i = pontos[0]?.dataIndex ?? 0;
-          if (!projecao || i <= ultimo) return `${categorias[i]}: ${formatar(valores[i])}`;
-          const k = i - ultimo - 1;
-          return `${categorias[i]}: ${formatar(projecao.valor[k])}<br>${t("grafico.intervalo", {
-            de: formatar(projecao.inferior[k]),
-            ate: formatar(projecao.superior[k]),
-          })}`;
+          const k = projecao ? projecao.meses.indexOf(todos[i]) : -1;
+          const realizado = i < valores.length ? formatar(valores[i]) : null;
+          if (!projecao || k < 0) return `${categorias[i]}: ${realizado}`;
+          const faixa = intervalo(formatar(projecao.inferior[k]), formatar(projecao.superior[k]));
+          if (realizado === null) {
+            return `${categorias[i]}: ${formatar(projecao.valor[k])}<br>${faixa}`;
+          }
+          // PT: no gráfico do teste, o mês tem o realizado e a projeção
+          // EN: in the backtest chart, the month has both
+          const projetado = formatar(projecao.valor[k]);
+          return `${categorias[i]}<br>${nome}: ${realizado}<br>${projecao.rotulo}: ${projetado}<br>${faixa}`;
         },
       },
       xAxis: {
@@ -170,7 +224,14 @@ export function serieTemporal(el, { nome, meses, valores, formatar, projecao }) 
         // EN: first and last labels align inwards
         axisLabel: { hideOverlap: true, alignMinLabel: "left", alignMaxLabel: "right" },
       },
-      yAxis: { type: "value", scale: true, axisLabel: { formatter: formatar } },
+      // PT: em gráfico estreito, menos marcas no eixo, para os valores não se amontoarem
+      // EN: fewer axis ticks on narrow charts
+      yAxis: {
+        type: "value",
+        scale: true,
+        splitNumber: estreito ? 3 : 5,
+        axisLabel: { formatter: formatar },
+      },
       series,
     };
   });
