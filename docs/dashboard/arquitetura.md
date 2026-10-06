@@ -236,7 +236,7 @@ A exportação e a validação usam o mesmo módulo, [`scripts/contrato_do_dashb
 ### Como uma visão carrega
 
 Desde a #89, uma visão chega em três tempos, para o texto aparecer antes dos gráficos:
-1. **O código e os dados juntos.** Cada visão tem um módulo leve só com a carga dos arquivos, como o `credito-por-uf/carga.js`, e a navegação busca esse módulo e o código da visão ao mesmo tempo. A malha das UFs é buscada junto, mas só é registrada no ECharts quando o mapa é desenhado.
+1. **O código e os dados juntos.** Cada visão tem um módulo leve só com a carga dos arquivos, como o `credito-por-uf/carga.js`, e a navegação busca esse módulo e o código da visão ao mesmo tempo. A malha das UFs é buscada junto, mas só é registrada no ECharts quando o mapa é desenhado. A série mensal da visão 2, o maior arquivo do site, fica de fora: ela é buscada só quando uma UF é escolhida, porque só o painel da UF a usa (#70).
 2. **O texto.** Com os dados, a visão monta os cartões, os números e as ressalvas, sem o ECharts.
 3. **Os gráficos.** O ECharts, que é a maior parte do código do site, começa a baixar só depois de o texto da visão chegar à tela, por `graficos/sob-demanda.js`. Sem o aviso de pintura do navegador, como no Safari, espera dois quadros, e um tempo limite de 1 s cobre a aba escondida. Um gráfico fora da tela, como o ranking da visão 1 no celular, se desenha só quando o cartão dele aparece.
 
@@ -410,6 +410,7 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-10-05 | No computador, a partir de uma janela de 1280×720 px, a visão cabe sem rolagem da página, usa a largura toda, e o que passar da altura de um cartão rola dentro dele | ADR 0022; #87 |
 | 2026-10-05 | As visões são rotas por hash (`#/credito-por-uf`), porque o Pages não tem rota de fallback. A navegação desmonta a visão anterior antes de montar a do endereço, e mostra o carregando e o erro com o motivo | Este documento; #69 |
 | 2026-10-06 | A visão carrega o código e os dados juntos, monta o texto sem o ECharts e busca o ECharts só depois de o texto chegar à tela. O gráfico fora da tela se desenha quando aparece | Este documento; #89 |
+| 2026-10-06 | A visão 2 (`#/risco-por-uf`) busca a série mensal só quando uma UF é escolhida. O orçamento da visão continua contando o arquivo inteiro, como se ele viesse na abertura. As visões 1 e 2 dividem o modelo de página em `visoes/palco.css` e o CSV em `dados/csv.js` | Este documento; #70 |
 | 2026-10-05 | A paleta divergente sai, e toda intensidade usa a rampa roxa, inclusive a distância até uma referência, em cinco faixas com o roxo mais forte no lado que quer dizer mais. Na visão 1, o roxo mais forte marca onde há mais espaço | ADR 0021, revisão de 2026-10-05 |
 | 2026-10-01 | O link do site entra no README da raiz com a Tela 1 (#69), e não na #68: até lá, o site tem só a página inicial e o catálogo | Este documento; #68 e #69 |
 | 2026-10-01 | A visão 1 tem "todas as modalidades", com o denominador do [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md). O `mrt_carteira_por_uf` troca os dois denominadores que o ADR descartou pelo dele, com os mesmos nomes de coluna do `decisao.json`, e compara cada UF com a mediana das UFs acima do corte no mês. Resolve o ponto em aberto do denominador | Este documento; contrato; ADR 0014 |

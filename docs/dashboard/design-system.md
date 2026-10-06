@@ -337,6 +337,7 @@ A matriz de espaço contra risco usa esta etiqueta nos cantos.
 **Etiqueta de alerta antecipado.** Cápsula em amarelo 10, com texto amarelo 80 e o ícone de sino.
 - **Quando usar:** na célula em que a distância entre ativo problemático e carteira inadimplida abriu mais que a do país.
 - **Quando não usar:** o amarelo de atenção para qualquer outra coisa na mesma tela.
+- **Dentro de um gráfico,** onde a etiqueta não cabe, o alerta vira o marcador de alerta antecipado, nas mesmas cores (veja os componentes de gráfico).
 
 **Tabela.** Vidro regular, com raio de cartão.
 - **O que é:**
@@ -461,6 +462,21 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
 - **Quando não usar:** com dezenas de itens, que é papel da tabela, nem com cor diferente por barra.
 - **Acessibilidade:** o valor fica escrito na ponta de cada barra, e o nome de cada item é texto no eixo.
 
+**Série com duas medidas** (#70). Duas linhas no tempo, na mesma unidade, para o leitor ver as duas andarem juntas ou se afastarem, com um marco e uma janela opcionais.
+- **O que é:** a medida principal é uma linha sólida, na primeira cor categórica, e a de comparação é tracejada, no cinza do texto secundário. As duas têm legenda e o último valor escrito na ponta, na cor da linha.
+- **Marco:** uma linha vertical num mês, com um rótulo curto, como a mudança de critério do ativo problemático em jan/2025.
+- **Janela:** uma faixa clara entre dois meses, como os 6 meses que a decisão compara.
+- **Na Tela 2:** no painel da UF, a taxa de inadimplência e a de ativo problemático, mês a mês.
+- **Quando usar:** para duas medidas da mesma unidade cuja distância importa.
+- **Quando não usar:** com unidades diferentes, que vão em gráficos separados, nunca em dois eixos; nem com mais de duas linhas.
+- **Acessibilidade:** as duas linhas se distinguem pela forma, sólida ou tracejada, além da cor, e a dica de cada mês traz os dois valores.
+
+**Marcador de alerta antecipado** (#70). Um anel pequeno, com o fundo e a borda nas cores da etiqueta de alerta antecipado, desenhado em texto rico do ECharts, sem imagem.
+- **Onde vai:** no centro da UF, no mapa; ao lado da sigla, na grade; depois do valor, no ranking. A legenda em escala ganha o item "Alerta antecipado" quando o desenho usa o marcador.
+- **Quando usar:** para marcar o alerta antecipado dentro de um gráfico, onde a etiqueta, com sino e texto, não cabe. Fora dos gráficos, como no painel e na tabela, vai a etiqueta.
+- **Quando não usar:** para qualquer outra marca: ele nunca muda a cor da área nem o quadrante (ADR 0014, decisão 6).
+- **Acessibilidade:** a dica da UF diz "alerta antecipado", e a tabela traz a etiqueta com o texto.
+
 **Número de destaque.** Um número só, em `heading-07`, com o rótulo do que ele mede, numa frase que uma pessoa diria. É HTML, e não gráfico.
 - **Quando usar:** quando a resposta é um número, como a carteira onde a regra recomenda entrar.
 - **Quando não usar:** para vários números lado a lado, que é papel da tabela ou do painel de detalhe.
@@ -477,6 +493,7 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
 **Legenda em escala** (revisão da Tela 1, em 2026-10-05). Uma barra compacta em degradê contínuo, com as pontas em cápsula, o que ela mede em cima, as divisas das classes marcadas embaixo e o sentido de cada ponta.
 - **O degradê passa pela cor de cada classe no meio da faixa dela,** e as marcas mostram onde uma classe termina e a outra começa, porque o mapa pinta por classe.
 - **Na Tela 1:** vai de "Menos espaço", à esquerda, a "Mais espaço", à direita, com as divisas em +30%, +10%, −10% e −30% da mediana. Fica no canto inferior direito do palco, sobre o mar, no mapa e na grade; embaixo, à direita, na matriz.
+- **Na Tela 2:** vai de "Melhor que o país", à esquerda, a "Pior que o país", à direita, com as divisas em −0,5, −0,1, +0,1 e +0,5 ponto percentual, no mesmo lugar da Tela 1.
 - **Quando usar:** para faixas ordenadas em torno de uma referência, em que o leitor precisa ver a direção.
 - **Quando não usar:** para categorias sem ordem, que é papel da lista de classes.
 - **Acessibilidade:** a barra e as marcas ficam fora da leitura, e cada classe vem por extenso numa lista para leitores de tela. A amostra listrada de quem fica sem comparação vem logo abaixo.
@@ -518,7 +535,8 @@ Esqueletos genéricos, sem dado e sem ligação com uma visão específica. Cada
 - **Nenhuma visão tem bloco de título no topo.** A visão abre nos filtros e na visualização, e o cabeçalho de cada gráfico tem só o título e a data-base com a fonte.
 - **Toda visão tem a alternativa em tabela.**
 - **Tela única** ([ADR 0022](../adr/0022-visoes-em-tela-unica-no-computador.md)): a partir de uma janela de 1280×720 px, toda visão cabe sem rolagem da página, e o que passa da altura de um cartão rola dentro dele. Abaixo disso, a página rola, sem nada cortado.
-- **No palco em tela única,** o visual fica num cartão sólido grande, na altura toda, com o campo de luz aparecendo em volta. À esquerda ficam os filtros e o que o visual mostra (título, fonte, resumo e ressalvas); à direita, os números e o detalhe. Formas que pedem largura, como uma matriz ou uma tabela, ocupam também a coluna da direita. Empilhado, o visual vem logo depois dos filtros.
+- **No palco em tela única,** o visual fica num cartão sólido grande, na altura toda, com o campo de luz aparecendo em volta. À esquerda ficam os filtros e o que o visual mostra (título, fonte, resumo e ressalvas); à direita, os números e o detalhe. Formas que pedem largura, como uma matriz ou uma tabela, ocupam também a coluna da direita. Empilhado, o visual vem logo depois dos filtros. O modelo mora em `dashboard/src/visoes/palco.css`, e a visão que o usa leva a classe `visao--palco`.
+- **Painel inteiro** (`visao--painel-inteiro`, Tela 2): quando o painel da UF leva um gráfico, como a série mensal, ele toma a coluna da direita inteira, também o lugar do número de destaque. Sem essa classe, como na Tela 1, o painel toma só o lugar do ranking.
 
 ## Conteúdo
 
