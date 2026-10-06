@@ -196,6 +196,12 @@ def exportar_do_databricks(contrato: dict) -> tuple[str, dict[str, str]]:
     textos: dict[str, str] = {}
     conferencias: list[tuple] = []
     for spec in contrato["arquivos"]:
+        if spec.get("gerado_por"):
+            # PT: os arquivos da previsão (#27) saem do script dela; aqui só
+            #     entram no manifesto, lidos do disco
+            # EN: forecast files come from their own script; only read here
+            textos[spec["arquivo"]] = (DESTINO / spec["arquivo"]).read_text(encoding="utf-8")
+            continue
         onde = clausula_onde(w, wid, spec, data_base)
         texto = exportar_arquivo(w, wid, spec, data_base, onde)
         gravar(DESTINO / spec["arquivo"], texto)

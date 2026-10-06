@@ -137,7 +137,7 @@ perguntas:
       31 meses e 15 decisões do Copom são pouca série para estimar defasagem
       com confiança; a resposta precisa dizer isso. O ativo problemático muda
       de critério em jan/2025, dentro da janela.
-  Q27: {modelos: [fct_carteira, dim_tempo], depende_de: ["#27"]}
+  Q27: {modelos: [fct_carteira]}
 
   # ---------------------------------------------------------------------------
   # PT: Automação do trabalho repetitivo
@@ -188,8 +188,8 @@ telas:
     modelos: [mrt_carteira_mensal]
   tela_3:
     titulo: "Para onde a carteira aponta nos próximos três meses, com intervalo"
-    depende_de: ["#27"]
-    limite: "Movida para a v0.2 em 2026-09-24. O histórico já está em mrt_carteira_mensal."
+    modelos: [mrt_carteira_mensal]
+    limite: "Movida para a v0.2 em 2026-09-24. A projeção sai do mrt_carteira_mensal pelo script da #27 (ADR 0023), e não de um mart."
   tela_4:
     titulo: "A recomendação, com o custo de errar e o que o dado não permite afirmar"
     modelos: [mrt_decisao, mrt_limites_do_dado, mrt_reconciliacao_versoes, mrt_erro_da_reconstrucao]

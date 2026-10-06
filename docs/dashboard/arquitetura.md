@@ -216,7 +216,7 @@ A exportação da #66 lê o contrato para saber o que exportar, e o CI reprova o
 | `geo/ufs.json` | API de malhas do IBGE (#67) | UF | 1 |
 
 **Três regras do contrato:**
-- **Só entra coluna que alguma visão usa.** Por isso o `mrt_reconciliacao_versoes` ficou fora: nenhuma visão da v0.1 o usa. O arquivo da visão 3 entra com a #27, na v0.2.
+- **Só entra coluna que alguma visão usa.** Por isso o `mrt_reconciliacao_versoes` ficou fora: nenhuma visão da v0.1 o usa. Os dois arquivos da visão 3, `projecao_da_carteira.json` e `backtest_da_projecao.json`, entraram com a #27, na v0.2, e não saem de um mart: o script `scripts/analises/previsao_da_carteira.py` lê o `mrt_carteira_mensal`, escolhe o modelo de cada recorte pelo backtest e grava os dois no formato do contrato, que os marca com a chave `gerado_por` ([ADR 0023](../adr/0023-previsao-da-carteira-escolhida-pelo-backtest.md)). A exportação só os lê do disco, para o manifesto, e o validador confere que o realizado do país é a soma das UFs, a das modalidades e a do `carteira_mensal_pj.json`.
 - **Os números vão sem formatação.** Fração de 0 a 1 e reais em reais. A formatação brasileira é feita só no site (RF-G10).
 - **O JSON é por coluna, e não por linha.** O nome da coluna não se repete a cada linha, e o `dataset` do ECharts lê essa forma direto.
 
@@ -410,6 +410,7 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-10-05 | No computador, a partir de uma janela de 1280×720 px, a visão cabe sem rolagem da página, usa a largura toda, e o que passar da altura de um cartão rola dentro dele | ADR 0022; #87 |
 | 2026-10-05 | As visões são rotas por hash (`#/credito-por-uf`), porque o Pages não tem rota de fallback. A navegação desmonta a visão anterior antes de montar a do endereço, e mostra o carregando e o erro com o motivo | Este documento; #69 |
 | 2026-10-06 | A visão carrega o código e os dados juntos, monta o texto sem o ECharts e busca o ECharts só depois de o texto chegar à tela. O gráfico fora da tela se desenha quando aparece | Este documento; #89 |
+| 2026-10-06 | Os arquivos da visão 3 são gravados pelo script da previsão, e não pela exportação, com a chave `gerado_por` no contrato. A unidade `media_de_fracoes` entra para o erro percentual médio, que não é razão de somas | Este documento; ADR 0023; #27 |
 | 2026-10-06 | A legenda do mapa e da grade entra na página junto com a área do gráfico, antes de o ECharts chegar, para o desenho não empurrar a página no celular. O Lighthouse do celular roda três vezes, e vale a mediana | Este documento; #92 |
 | 2026-10-06 | A visão 2 (`#/risco-por-uf`) busca a série mensal só quando uma UF é escolhida. O orçamento da visão continua contando o arquivo inteiro, como se ele viesse na abertura. As visões 1 e 2 dividem o modelo de página em `visoes/palco.css` e o CSV em `dados/csv.js` | Este documento; #70 |
 | 2026-10-05 | A paleta divergente sai, e toda intensidade usa a rampa roxa, inclusive a distância até uma referência, em cinco faixas com o roxo mais forte no lado que quer dizer mais. Na visão 1, o roxo mais forte marca onde há mais espaço | ADR 0021, revisão de 2026-10-05 |

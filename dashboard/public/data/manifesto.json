@@ -10,6 +10,7 @@
   "visoes_do_manifesto": [
     1,
     2,
+    3,
     4
   ],
   "arquivos": [
@@ -56,12 +57,29 @@
       ]
     },
     {
+      "arquivo": "projecao_da_carteira.json",
+      "linhas": 1394,
+      "sha256": "8e52a5366371a5d20591111c7ec826a6e80e27a2494e11faaa2f2ff8d7ba8052",
+      "visoes": [
+        3
+      ]
+    },
+    {
+      "arquivo": "backtest_da_projecao.json",
+      "linhas": 492,
+      "sha256": "b6c9bc47cae1e62c79d936d1b04e14956fbdfefb4a52d70f1c40ccf526474c32",
+      "visoes": [
+        3
+      ]
+    },
+    {
       "arquivo": "ontologia.json",
       "linhas": 25,
-      "sha256": "54a9c6b51e39782362e08048a409df6526755b00c66019c2bda53b183c86be5e",
+      "sha256": "a5f1e47a35aca1a3d547952faa69af8f4e95d14e648ad0bf4fb2db4339eeec2f",
       "visoes": [
         1,
         2,
+        3,
         4
       ]
     }

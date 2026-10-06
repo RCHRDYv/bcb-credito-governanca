@@ -339,6 +339,111 @@ def validar_visao_1(conteudos: dict[str, dict]) -> list[str]:
     return []
 
 
+PROJECAO = "projecao_da_carteira.json"
+BACKTEST = "backtest_da_projecao.json"
+MENSAL = "carteira_mensal_pj.json"
+
+
+def _meses_seguintes(ultimo: str, quantos: int) -> list[str]:
+    """PT: os fins de mês seguintes / EN: the following month ends"""
+    from scripts.analises.previsao_da_carteira import meses_seguintes
+
+    return meses_seguintes(ultimo, quantos)
+
+
+def validar_visao_3(conteudos: dict[str, dict]) -> list[str]:
+    """
+    PT: A visão 3 lê a projeção e o backtest que o script da previsão grava
+        (#27, ADR 0023). A tela só é coerente se:
+        - cada recorte tiver os meses realizados até a data-base e os três
+          seguintes projetados, com o intervalo em volta da projeção;
+        - o realizado do país for a soma das UFs e a das modalidades, e
+          também a soma do carteira_mensal_pj.json, que sai do mesmo mart
+          pela exportação, até o arredondamento de meio real por parcela;
+        - cada recorte tiver um só modelo escolhido no backtest, o mesmo que
+          a projeção usa.
+    EN: View 3: per cut, actual months up to the data-base plus three
+        projected ones inside their interval; the country's actuals equal the
+        states', the modalities' and the monthly export's sums; one chosen
+        model per cut, the same the projection uses.
+    """
+    projecao = conteudos[PROJECAO]
+    colunas = projecao["colunas"]
+    data_base = projecao["data_base"]
+    futuros = _meses_seguintes(data_base, 3)
+    problemas: list[str] = []
+
+    por_recorte: dict[tuple[str, str], list[int]] = {}
+    for i, chave in enumerate(zip(colunas["tipo_de_recorte"], colunas["recorte"], strict=True)):
+        por_recorte.setdefault(chave, []).append(i)
+    realizado: dict[tuple[str, str], dict[str, int]] = {}
+    for (tipo, recorte), indices in por_recorte.items():
+        nome = f"{PROJECAO}, {tipo} {recorte}"
+        meses = [colunas["data_base"][i] for i in indices]
+        projetados = [i for i in indices if colunas["projecao"][i] is not None]
+        if [colunas["data_base"][i] for i in projetados] != futuros or meses[-3:] != futuros:
+            problemas.append(f"{nome}: meses projetados diferentes de {futuros}")
+            continue
+        for i in indices:
+            eh_projecao = i in projetados
+            campos = ("projecao", "limite_inferior", "limite_superior")
+            if eh_projecao == (colunas["realizado"][i] is not None) or any(
+                (colunas[c][i] is None) == eh_projecao for c in campos
+            ):
+                problemas.append(f"{nome}, {colunas['data_base'][i]}: realizado e projeção misturados")
+                break
+            if eh_projecao and not (
+                colunas["limite_inferior"][i] <= colunas["projecao"][i] <= colunas["limite_superior"][i]
+            ):
+                problemas.append(f"{nome}, {colunas['data_base'][i]}: intervalo fora de ordem")
+                break
+        if len({colunas["modelo"][i] for i in indices}) != 1:
+            problemas.append(f"{nome}: mais de um modelo")
+        realizado[(tipo, recorte)] = {
+            colunas["data_base"][i]: colunas["realizado"][i] for i in indices if i not in projetados
+        }
+    if problemas:
+        return problemas
+
+    pais = realizado.get(("pais", "BR"), {})
+    mensal = conteudos[MENSAL]["colunas"]
+    soma_mensal: dict[str, int] = {}
+    parcelas: dict[str, int] = {}
+    for mes, carteira in zip(mensal["data_base"], mensal["carteira_ativa"], strict=True):
+        soma_mensal[mes] = soma_mensal.get(mes, 0) + carteira
+        parcelas[mes] = parcelas.get(mes, 0) + 1
+    if sorted(pais) != sorted(soma_mensal):
+        problemas.append(f"{PROJECAO}: os meses realizados do país não são os do {MENSAL}")
+    for mes, valor in pais.items():
+        if mes in soma_mensal and abs(valor - soma_mensal[mes]) > parcelas[mes] / 2 + 1:
+            problemas.append(f"{PROJECAO}, país em {mes}: {valor} diferente do {MENSAL}, {soma_mensal[mes]}")
+            break
+    for tipo, nome in (("uf", "UFs"), ("modalidade", "modalidades")):
+        partes = [serie for (t, _), serie in realizado.items() if t == tipo]
+        for mes, valor in pais.items():
+            soma = sum(serie.get(mes, 0) for serie in partes)
+            if abs(valor - soma) > len(partes) / 2 + 1:
+                problemas.append(f"{PROJECAO}, {mes}: país diferente da soma das {nome}")
+                break
+
+    backtest = conteudos[BACKTEST]["colunas"]
+    escolhidos: dict[tuple[str, str], set[str]] = {}
+    for tipo, recorte, modelo, escolhido in zip(
+        backtest["tipo_de_recorte"], backtest["recorte"], backtest["modelo"], backtest["escolhido"], strict=True
+    ):
+        if escolhido:
+            escolhidos.setdefault((tipo, recorte), set()).add(modelo)
+    for chave, indices in por_recorte.items():
+        modelo = colunas["modelo"][indices[0]]
+        if escolhidos.get(chave) != {modelo}:
+            problemas.append(
+                f"{BACKTEST}, {chave[0]} {chave[1]}: escolhido {sorted(escolhidos.get(chave, set()))}, "
+                f"e a projeção usa {modelo}"
+            )
+            break
+    return problemas
+
+
 # -----------------------------------------------------------------------------
 # PT: Validação completa / EN: full validation
 # -----------------------------------------------------------------------------
@@ -373,7 +478,7 @@ def validar(textos: dict[str, str], contrato: dict) -> list[str]:
     datas = {conteudos[spec["arquivo"]]["data_base"] for spec in contrato["arquivos"]}
     if len(datas) != 1:
         return [f"arquivos com datas-base de topo diferentes: {sorted(datas)}"]
-    problemas = validar_visao_1(conteudos)
+    problemas = validar_visao_1(conteudos) + validar_visao_3(conteudos)
     if problemas:
         return problemas
     return validar_auxiliares(textos, conteudos, contrato)
@@ -485,7 +590,35 @@ def autoteste(textos: dict[str, str], contrato: dict) -> list[str]:
     def com_arquivo_a_mais(base):
         return {**base, "extra.json": "{}"}
 
+    def _na_linha(arquivo_alvo: str, coluna: str, tipo: str, ordem: int, parcela):
+        """PT: estrago numa linha de um tipo de recorte / EN: breakage in one cut type's row"""
+
+        def estragar(conteudo):
+            colunas = conteudo["colunas"]
+            linhas_do_tipo = [
+                i for i, t in enumerate(colunas["tipo_de_recorte"]) if t == tipo and colunas[coluna][i] is not None
+            ]
+            i = linhas_do_tipo[ordem]
+            colunas[coluna][i] = parcela(colunas[coluna][i])
+
+        return estragar
+
+    casos_da_visao_3 = [
+        ("intervalo fora de ordem", PROJECAO,
+         _na_linha(PROJECAO, "limite_inferior", "pais", 0, lambda v: v * 10), "intervalo fora de ordem"),
+        ("mês projetado fora da sequência", PROJECAO,
+         _na_linha(PROJECAO, "data_base", "pais", -1, lambda v: "2099-12-31"), "meses projetados diferentes"),
+        ("país diferente do arquivo mensal", PROJECAO,
+         _na_linha(PROJECAO, "realizado", "pais", 0, lambda v: v + 10**9), f"diferente do {MENSAL}"),
+        ("UF fora da soma do país", PROJECAO,
+         _na_linha(PROJECAO, "realizado", "uf", 0, lambda v: v + 10**9), "país diferente da soma das UFs"),
+        ("modelo escolhido diferente do da projeção", BACKTEST,
+         lambda c: c["colunas"]["escolhido"].__setitem__(
+             c["colunas"]["escolhido"].index(False), True), "escolhido"),
+    ]
+
     casos = [
+        *casos_da_visao_3,
         ("coluna a mais", decisao, lambda c: c["colunas"].__setitem__("observacao", ["x"] * linhas), "a mais: ['observacao']"),
         ("coluna faltando", decisao, lambda c: c["colunas"].pop("modalidade"), "faltando: ['modalidade']"),
         ("tipo errado", decisao, _definir("carteira_ativa", 0, "1000"), "tipo errado"),

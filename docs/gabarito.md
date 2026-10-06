@@ -2,7 +2,7 @@
 
 **Mês de referência:** jul/2026. Gerado por `scripts/gerar_gabarito.py` a partir de [`evaluation/gabarito.yml`](../evaluation/gabarito.yml) e dos SQL em [`evaluation/gabarito/`](../evaluation/gabarito/). Nenhum número deste documento é digitado à mão: para atualizar, rode o script de novo.
 
-São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer execução ([`questions_v3.yml`](../evaluation/questions_v3.yml)). 38 têm resposta nesta versão, com 47 leituras e 52 consultas, e 3 dependem de fonte ou modelo que ainda não está no projeto.
+São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer execução ([`questions_v3.yml`](../evaluation/questions_v3.yml)). 39 têm resposta nesta versão, com 48 leituras e 53 consultas, e 2 dependem de fonte ou modelo que ainda não está no projeto.
 
 ## Como ler
 
@@ -1020,7 +1020,19 @@ São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer e
 
 **Tipo de acerto:** `valor`
 
-**Pendente:** depende de #27. A projeção entra na v0.2, com backtest e erro publicado.
+**Fonte da definição:** `metricas.carteira_ativa`, `docs/adr/0023-previsao-da-carteira-escolhida-pelo-backtest.md`
+
+**Como se responde:** Projeção da carteira ativa PJ do país para os três meses seguintes ao último mês do dado, pela deriva, com o intervalo de 80%. É o modelo que o backtest da #27 escolheu para o país, e o número é o da Tela 3.
+
+[`Q27.sql`](../evaluation/gabarito/Q27.sql)
+
+| Mês | Horizonte em meses | Carteira projetada | Carteira no limite inferior | Carteira no limite superior |
+|---|---|---|---|---|
+| ago/2026 | 1 | R$ 2.928,9 bi | R$ 2.875,7 bi | R$ 2.982,2 bi |
+| set/2026 | 2 | R$ 2.947,8 bi | R$ 2.871,3 bi | R$ 3.024,4 bi |
+| out/2026 | 3 | R$ 2.966,7 bi | R$ 2.871,5 bi | R$ 3.062,0 bi |
+
+**Observação:** Decidido pelo Yuri em 2026-10-06, na revisão da #27: a referência é a carteira PJ, a da Tela 3, e uma resposta com a carteira total (PF e PJ) não vale. A deriva cabe em SQL portátil, e os outros candidatos do ADR 0023 não precisam: a referência é o modelo que o backtest escolheu para o país. A tolerância numérica é a da regra de comparação da #47.
 
 ## Automação do trabalho repetitivo
 

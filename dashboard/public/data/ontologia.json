@@ -414,6 +414,27 @@
       "empresas_ativas_real": "ontology/fontes_externas.yml#empresa_ativa",
       "empresas_ativas_reconstruida": "ontology/fontes_externas.yml#estoque_reconstruido",
       "erro_relativo": "ADR 0009"
+    },
+    "projecao_da_carteira.json": {
+      "tipo_de_recorte": "ADR 0023, decisão 1",
+      "recorte": "ADR 0023, decisão 1",
+      "data_base": "ontology/dimensoes.yml#dim_data_base",
+      "realizado": "ontology/metricas.yml#carteira_ativa",
+      "projecao": "ADR 0023, decisão 4",
+      "limite_inferior": "ADR 0023, decisão 4",
+      "limite_superior": "ADR 0023, decisão 4",
+      "modelo": "ADR 0023, decisão 2"
+    },
+    "backtest_da_projecao.json": {
+      "tipo_de_recorte": "ADR 0023, decisão 1",
+      "recorte": "ADR 0023, decisão 1",
+      "modelo": "ADR 0023, decisão 2",
+      "horizonte": "ADR 0023, decisão 3",
+      "escolhido": "ADR 0023, decisão 3",
+      "mase_na_escolha": "ADR 0023, decisão 3",
+      "mase": "ADR 0023, decisão 3",
+      "mape": "ADR 0023, decisão 3",
+      "cobertura": "ADR 0023, decisão 4"
     }
   }
 }

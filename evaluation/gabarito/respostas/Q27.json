@@ -1,0 +1,41 @@
+{
+  "consulta": "Q27.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "horizonte_em_meses",
+    "carteira_projetada",
+    "carteira_no_limite_inferior",
+    "carteira_no_limite_superior"
+  ],
+  "tipos": [
+    "DATE",
+    "INT",
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "2026-08-31",
+      "1",
+      "2.928943474e+12",
+      "2.875650532e+12",
+      "2.982236416e+12"
+    ],
+    [
+      "2026-09-30",
+      "2",
+      "2.947832717e+12",
+      "2.871259158e+12",
+      "3.024406276e+12"
+    ],
+    [
+      "2026-10-31",
+      "3",
+      "2.966721961e+12",
+      "2.871484799e+12",
+      "3.061959122e+12"
+    ]
+  ]
+}

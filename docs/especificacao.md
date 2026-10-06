@@ -114,7 +114,7 @@ Onze artefatos, cada um com um público e uma origem versionada. A coluna de sit
 | Problema de negócio | Qualquer leitor | README | Entregue |
 | Glossário de negócio | Negócio | `ontology/modalidades.yml`, `ontology/dimensoes.yml`, `ontology/metricas.yml` | Entregue |
 | Dicionário de dados | Técnico | Arquivos `_*.yml` do dbt | Entregue para seeds, staging, intermediate e marts |
-| ADR | Técnico sênior | `docs/adr/` | Entregue, vinte decisões |
+| ADR | Técnico sênior | `docs/adr/` | Entregue, vinte e três decisões |
 | Design system do dashboard | Ambos | [`docs/dashboard/design-system.md`](dashboard/design-system.md) e o protótipo em `dashboard/prototipo-design-system/` | Entregue |
 | Requisitos do dashboard | Ambos | [`docs/dashboard/requisitos.md`](dashboard/requisitos.md), com as [referências de design](dashboard/referencias-de-design.md) | Entregue |
 | Arquitetura do dashboard | Técnico | [`docs/dashboard/arquitetura.md`](dashboard/arquitetura.md), com o contrato dos arquivos do site em `dashboard/contrato-dos-dados.yml` | Entregue |
@@ -167,11 +167,11 @@ O pré-registro não muda. A camada de decisão consome os marts e o gabarito, e
 
 1. **Indicador de espaço,** por UF e modalidade: carteira PJ por empresa ativa, comparada à mediana nacional. Exige fonte externa para o número de empresas ativas por UF, declarada junto.
 2. **Indicador de risco,** por UF e modalidade: nível e tendência de inadimplência em seis meses, mais a distância entre ativo problemático e carteira inadimplida, que antecipa deterioração que o atraso ainda não mostra.
-3. **Projeção** da carteira por recorte, com intervalo, usando modelo simples de série temporal com sazonalidade.
+3. **Projeção** da carteira por recorte, com intervalo, usando modelo simples de série temporal. Desde 2026-10-06, o modelo de cada recorte é escolhido pelo backtest, e o erro é medido numa janela separada ([ADR 0023](adr/0023-previsao-da-carteira-escolhida-pelo-backtest.md)). Com 31 meses de histórico, a sazonalidade entra pelo ingênuo sazonal.
 4. **Agrupamento de UFs** por perfil, combinando nível de crédito por empresa, tendência de risco e composição da carteira. Serve para tratar estados parecidos com a mesma estratégia.
 5. **A recomendação,** numa matriz espaço contra risco, com quatro quadrantes: entrar, observar, manter e não entrar. Cada recomendação vem com o custo de errar e com a fronteira do dado.
 
-**Entregue na v0.1 em 2026-09-24** (itens 1, 2 e 5). A regra, com o denominador, o corte de materialidade e os limiares contra o país, está no [ADR 0014](adr/0014-matriz-de-decisao-espaco-contra-risco.md), e a recomendação em [`recomendacao.md`](recomendacao.md), gerada do `mrt_decisao` sem nenhum número digitado à mão. A projeção (item 3) e o agrupamento de UFs (item 4) ficam para a v0.2, com a #27.
+**Entregue na v0.1 em 2026-09-24** (itens 1, 2 e 5). A regra, com o denominador, o corte de materialidade e os limiares contra o país, está no [ADR 0014](adr/0014-matriz-de-decisao-espaco-contra-risco.md), e a recomendação em [`recomendacao.md`](recomendacao.md), gerada do `mrt_decisao` sem nenhum número digitado à mão. A projeção (item 3) fica para a v0.2, com a #27, e o agrupamento de UFs (item 4), com a #94, que saiu da #27 em 2026-10-06.
 
 ### A fronteira do dado, declarada junto da recomendação
 
