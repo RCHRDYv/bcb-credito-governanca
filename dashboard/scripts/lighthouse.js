@@ -7,11 +7,11 @@
  *     2. abre o Google Chrome instalado, que é o navegador que o Lighthouse
  *        foi feito para medir e que o runner do CI já traz. Sem Chrome
  *        instalado, usa o Chromium do Playwright;
- *     3. roda o Lighthouse duas vezes: com a configuração padrão, que simula
- *        um celular, e com a de computador;
+ *     3. roda o Lighthouse com a configuração padrão, que simula um celular,
+ *        três vezes, e com a de computador, uma vez;
  *     4. imprime as notas e as medidas do RNF-01 (LCP, CLS e tempo de
- *        bloqueio, que no laboratório faz o papel do INP) e falha abaixo de
- *        qualquer meta.
+ *        bloqueio, que no laboratório faz o papel do INP) de cada rodada e
+ *        falha quando a mediana fica abaixo de qualquer meta.
  *
  *     O Lighthouse é usado direto, sem o `@lhci/cli`, porque o `@lhci/cli`
  *     está parado desde jun/2025, com uma versão antiga do Lighthouse dentro.
@@ -53,8 +53,37 @@ const METAS = {
 const MEDIDAS = ["largest-contentful-paint", "cumulative-layout-shift", "total-blocking-time"];
 
 /**
- * PT: Roda o Lighthouse num perfil e devolve as falhas contra as metas.
- * EN: Runs Lighthouse on one profile and returns the misses against targets.
+ * PT: Quantas vezes cada perfil roda. O celular roda três vezes, e a meta
+ *     compara a mediana de cada nota, como a documentação do Lighthouse
+ *     recomenda contra a variação da máquina: uma rodada só reprovava o CI
+ *     sem nada errado no site (#92, decidido pelo Yuri em 2026-10-06). O
+ *     computador, que não varia, roda uma vez.
+ * EN: Runs per profile; mobile runs three times and the targets apply to the
+ *     median of each score, as Lighthouse recommends against host variance.
+ *
+ * @type {Record<"celular" | "computador", number>}
+ */
+const RODADAS = { celular: 3, computador: 1 };
+
+/**
+ * PT: A mediana de uma lista de números.
+ * EN: The median of a list of numbers.
+ *
+ * @param {number[]} valores
+ * @returns {number}
+ */
+function mediana(valores) {
+  const ordenados = [...valores].sort((a, b) => a - b);
+  const meio = Math.floor(ordenados.length / 2);
+  return ordenados.length % 2 ? ordenados[meio] : (ordenados[meio - 1] + ordenados[meio]) / 2;
+}
+
+/**
+ * PT: Roda o Lighthouse num perfil, as vezes de `RODADAS`, imprime cada
+ *     rodada e devolve as falhas da mediana contra as metas. Quando a meta
+ *     falha, o diagnóstico é o da rodada com a nota de desempenho mediana.
+ * EN: Runs Lighthouse on one profile `RODADAS` times, prints each run and
+ *     returns the median's misses; diagnostics come from the median run.
  *
  * @param {string} endereco
  * @param {number} porta Porta de depuração do Chromium / Chromium debugging port
@@ -64,35 +93,49 @@ const MEDIDAS = ["largest-contentful-paint", "cumulative-layout-shift", "total-b
 async function auditar(endereco, porta, perfil) {
   const metas = METAS[perfil];
   const configuracao = perfil === "computador" ? configuracaoDeComputador : undefined;
-  const resultado = await lighthouse(
-    endereco,
-    { port: porta, logLevel: "error", onlyCategories: Object.keys(metas) },
-    configuracao,
-  );
-  if (!resultado) {
-    return [`${perfil}: o Lighthouse não devolveu resultado`];
+  console.log(`
+${perfil}`);
+  /** @type {import("lighthouse").Result[]} */
+  const rodadas = [];
+  for (let i = 1; i <= RODADAS[perfil]; i += 1) {
+    const resultado = await lighthouse(
+      endereco,
+      { port: porta, logLevel: "error", onlyCategories: Object.keys(metas) },
+      configuracao,
+    );
+    if (!resultado) return [`${perfil}: o Lighthouse não devolveu resultado`];
+    const { categories, audits, environment } = resultado.lhr;
+    const notas = Object.keys(metas)
+      .map((c) => `${c} ${Math.round((categories[c]?.score ?? 0) * 100)}`)
+      .join(", ");
+    const medidas = MEDIDAS.map((m) => `${m} ${audits[m]?.displayValue ?? "sem valor"}`).join(", ");
+    // PT: a nota de CPU que o Lighthouse mede da máquina; a simulação do
+    //     celular multiplica o tempo observado, então máquina lenta pesa (#89)
+    // EN: Lighthouse's own CPU benchmark of the host
+    console.log(`  rodada ${i}: ${notas}`);
+    console.log(`    ${medidas}, benchmarkIndex ${environment.benchmarkIndex}`);
+    rodadas.push(resultado.lhr);
   }
 
-  const { categories, audits } = resultado.lhr;
   const falhas = [];
-  console.log(`\n${perfil}`);
-  // PT: a nota de CPU que o Lighthouse mede da máquina; a simulação do
-  //     celular multiplica o tempo observado, então máquina lenta pesa (#89)
-  // EN: Lighthouse's own CPU benchmark of the host
-  console.log(`  benchmarkIndex da máquina: ${resultado.lhr.environment.benchmarkIndex}`);
+  const titulo = rodadas.length > 1 ? `  mediana de ${rodadas.length} rodadas:` : "  nota:";
+  console.log(titulo);
   for (const [categoria, meta] of Object.entries(metas)) {
-    const nota = categories[categoria]?.score ?? 0;
+    const nota = mediana(rodadas.map((lhr) => lhr.categories[categoria]?.score ?? 0));
     const ok = nota >= meta;
     const aviso = ok ? "" : " ABAIXO";
-    console.log(`  ${categoria}: ${Math.round(nota * 100)} (meta ${meta * 100})${aviso}`);
+    console.log(`    ${categoria}: ${Math.round(nota * 100)} (meta ${meta * 100})${aviso}`);
     if (!ok) {
       falhas.push(`${perfil}: ${categoria} ${Math.round(nota * 100)} abaixo de ${meta * 100}`);
     }
   }
-  for (const medida of MEDIDAS) {
-    console.log(`  ${medida}: ${audits[medida]?.displayValue ?? "sem valor"}`);
+  if (falhas.length > 0) {
+    const desempenho = (/** @type {import("lighthouse").Result} */ lhr) =>
+      lhr.categories.performance?.score ?? 0;
+    const alvo = mediana(rodadas.map(desempenho));
+    const doMeio = rodadas.find((lhr) => desempenho(lhr) === alvo) ?? rodadas[0];
+    diagnostico(/** @type {Record<string, { details?: unknown }>} */ (doMeio.audits));
   }
-  if (falhas.length > 0) diagnostico(audits);
   return falhas;
 }
 

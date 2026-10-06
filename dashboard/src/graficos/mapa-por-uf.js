@@ -85,6 +85,7 @@ function rotuloDaUf(tema, sigla, escolhida, marcada) {
  * @property {string | null} [selecionada] A UF destacada no começo / initially selected state
  * @property {string} [rotuloSemValor] Item da legenda para as UFs sem valor, desenhadas com textura / legend item for value-less states
  * @property {import("./legenda.js").FazerLegenda} [legenda] Quem monta a legenda; o padrão é a lista de classes / legend builder, class list by default
+ * @property {HTMLElement} [legendaPronta] A legenda já montada e posta na página por quem chama, para ela ocupar o lugar antes de o ECharts chegar (#92) / legend already in the page
  * @property {string[]} [marcadas] UFs com o marcador de alerta antecipado (#70) / states with the early-warning marker
  */
 
@@ -108,8 +109,10 @@ function rotuloDaUf(tema, sigla, escolhida, marcada) {
 export async function mapaPorUf(el, inicial) {
   let dados = inicial;
   let escolhida = inicial.selecionada ?? null;
-  let legenda = (dados.legenda ?? legendaDeClasses)(dados.classes("claro"), dados.rotuloSemValor);
-  el.after(legenda);
+  let legenda =
+    dados.legendaPronta ??
+    (dados.legenda ?? legendaDeClasses)(dados.classes("claro"), dados.rotuloSemValor);
+  if (!legenda.isConnected) el.after(legenda);
 
   const grafico = await criarGrafico(el, (tema) => {
     const vazio = semComparacao(tema);

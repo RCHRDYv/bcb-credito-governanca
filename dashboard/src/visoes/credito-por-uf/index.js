@@ -358,8 +358,15 @@ export function render(el, dados) {
     formaEl.replaceChildren(
       tipo === "mapa" ? area : elemento("div", { classe: "cartograma" }, [area]),
     );
+    // PT: a legenda entra junto com a área, antes de o ECharts chegar, para
+    //     o desenho não empurrar a página quando aparece (#92)
+    // EN: the legend goes in with the area, before ECharts, so nothing shifts
+    const cor = corDoTerritorio();
+    const legendaPronta = legendaDeEspaco(cor.classes("claro"), cor.rotuloSemValor);
+    area.after(legendaPronta);
     const opcoes = {
-      ...corDoTerritorio(),
+      ...cor,
+      legendaPronta,
       dica: dicaDaUf,
       aoSelecionar: (/** @type {string} */ sigla) => filtros.definir({ uf: sigla }),
       selecionada: filtros.valores.uf,
