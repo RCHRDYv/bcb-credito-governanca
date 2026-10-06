@@ -1,118 +1,166 @@
-# Previsão da carteira PJ: o resultado do backtest
+# Previsão da carteira PJ: cartão do modelo
 
-**Data:** 2026-10-06
-**Decisões que motivaram:** [ADR 0023](adr/0023-previsao-da-carteira-escolhida-pelo-backtest.md), pela #27, e [ADR 0024](adr/0024-lightgbm-global-como-candidato-da-previsao.md), pela #98 (Q27 da especificação).
-**Script:** `scripts/analises/previsao_da_carteira.py`, sobre o `mrt_carteira_mensal` e o `fct_selic` no Databricks, carteira ativa PJ de jan/2024 a jul/2026.
-**Arquivos:** `dashboard/public/data/projecao_da_carteira.json`, `backtest_da_projecao.json` e `testes_da_projecao.json`, data-base 2026-07-31.
+**Data:** 2026-10-06 · **Data-base:** 2026-07-31
+**Decisões:** [ADR 0023](adr/0023-previsao-da-carteira-escolhida-pelo-backtest.md) (#27) e [ADR 0024](adr/0024-lightgbm-global-como-candidato-da-previsao.md) (#98).
+**Código:** `scripts/analises/previsao_da_carteira.py`, sobre o `mrt_carteira_mensal` e o `fct_selic` no Databricks.
+**Arquivos:** `dashboard/public/data/projecao_da_carteira.json`, `backtest_da_projecao.json` e `testes_da_projecao.json`.
+
+## Uso
+
+- **Para que serve:** projetar a carteira ativa PJ três meses à frente, por país, modalidade e UF, com uma faixa provável de 80%, para a Tela 3 do dashboard e a Q27 do experimento. A projeção de cada UF e modalidade alimenta a camada de decisão (#55), e o monitoramento mês a mês ajuda a detectar mudança de patamar numa série (#95).
+- **Para que não serve:** não é meta nem expectativa do Banco Central, não prevê choque, mudança de norma ou de publicação, e não diz por que a carteira cresce. As projeções das séries não somam entre si: o Brasil não é a soma das UFs.
 
 ## Resumo
 
-- **No Brasil, o modelo escolhido é o LightGBM,** um modelo de aprendizado de máquina treinado com as 351 séries de UF por modalidade ao mesmo tempo. Ele projeta R$ 2,92 trilhões em agosto e R$ 3,00 trilhões em setembro e outubro de 2026. O salto de setembro vem de uma quebra da série que o modelo leu como padrão do mês, e ainda depende de decisão (ver a projeção do país).
-- **Nos meses de teste, o LightGBM errou menos que a tendência e que a regra simples a 1 e 2 meses no Brasil:** 0,4% e 0,5% de erro médio, contra 0,9% e 0,7% da tendência e 0,7% e 1,1% de repetir o último mês. A 3 meses, a tendência errou menos: 0,9% contra 1,1%.
-- **A escolha no Brasil foi apertada.** Na janela de escolha, o LightGBM teve MASE médio de 1,15 e a tendência de 1,17. A diferença apareceu depois, na janela de avaliação, que nenhum dos dois usou para escolher.
-- **Nas 41 séries, o LightGBM foi escolhido em 15.** A tendência ficou com 12, o Holt amortecido com 7, repetir o último mês com 6 e repetir o mês do ano anterior com 1. Na avaliação, o LightGBM errou menos que a tendência em 21 séries e menos que a regra simples em 24.
-- **A faixa provável de 80% cobriu 74% dos casos da avaliação,** um pouco abaixo do nominal.
-- **Cinco séries mudaram de nível dentro da janela de avaliação:** as modalidades 07, 10 e 11 e as UFs AC e TO. Nelas, o erro mede a mudança, e não o modelo.
+- **No Brasil, o campeão é a tendência,** com a quebra de set/2025 descontada. Ela projeta R$ 2,926 tri em agosto e R$ 2,957 tri em outubro de 2026.
+- **Nove desafiantes disputaram cada série,** entre eles o LightGBM global, o Prophet, o ARIMA, o SARIMAX, o Theta e a combinação. Um desafiante só tira a tendência se errar menos com significância, no teste de Diebold-Mariano com a correção de Holm.
+- **No Brasil, nenhum desafiante passou.** O mais perto foi a combinação, que errou menos nos testes (MASE de 0,89 contra 1,06), com p = 0,031. Com nove desafiantes, o primeiro precisaria de p ≤ 0,011.
+- **Nas 41 séries, a tendência ficou em 30.** A combinação venceu em 6, o Theta em 3 e repetir o último mês em 2. O LightGBM, o Prophet, o ARIMA e o SARIMAX não venceram nenhuma sozinhos.
+- **A faixa provável dos campeões cobriu 81% dos casos recentes,** perto dos 80% nominais.
+- **O erro honesto do procedimento,** com a escolha refeita em cada teste recente só com os testes anteriores, tem mediana de 1,92% nas 41 séries.
 
-## Como a previsão é feita
+## Dados
 
-Cinco métodos disputam cada série num teste com meses que já aconteceram, como se o resultado ainda não fosse conhecido:
-- **repetir o último mês** (o ingênuo), a régua de todos os outros;
-- **a tendência** (a deriva), que prolonga a inclinação média da série;
-- **repetir o mesmo mês do ano anterior** (o ingênuo sazonal);
-- **a suavização exponencial com tendência amortecida** (Holt), que segue a tendência e a deixa perder força;
-- **o LightGBM global,** que aprende com as 351 séries de UF por modalidade ao mesmo tempo, a partir das variações recentes de cada uma, do mês do ano, do tamanho, da UF, da modalidade e da Selic (ADR 0024).
+- **Série:** carteira ativa PJ do SCR.data V2, mensal, de jan/2024 a jul/2026, 31 meses. O Brasil, as 13 modalidades e as 27 UFs, somadas das 351 células de UF por modalidade.
+- **Selic:** a meta do Copom no fim de cada mês ([ADR 0010](adr/0010-selic-e-a-meta-do-copom-vigente-no-fim-do-mes.md)), usada pelo LightGBM e pelo SARIMAX.
+- **Quebra de set/2025:** a divergência entre V1 e V2 (`ontology/dimensoes.yml`). A carteira PJ subiu 4,3% na V2 e 1,2% na V1 naquele mês. Os modelos de uma série descontam o degrau, medido em cada teste só com os meses conhecidos; o LightGBM não treina com exemplo que cruza a quebra (ADR 0024, decisão 7).
 
-Os testes andam mês a mês. Cada um usa só os meses até ele e prevê os três seguintes. Os 12 primeiros testes escolhem o método de cada série, e os 4 últimos, de fevereiro a julho de 2026, medem o erro que é publicado. Assim, o erro mostrado nunca é o do vencedor da própria disputa.
+## Método
 
-**Registro de ordem:** o LightGBM entrou depois de os resultados dos quatro primeiros candidatos terem sido vistos, por decisão do Yuri. A regra de escolha e as janelas não mudaram (ADR 0024).
+**Os testes.** São 16 testes com meses que já aconteceram. Em cada um, os modelos só conhecem a carteira até um mês e preveem os três seguintes. Os 4 últimos, com previsões de fevereiro a julho de 2026, são os testes recentes que a tela mostra.
 
-## Como ler as medidas
+**Os candidatos,** do mais simples ao menos simples:
+1. **repetir o último mês** (o ingênuo);
+2. **a tendência** (a deriva): o último mês mais o crescimento médio mensal da série;
+3. **repetir o mês do ano anterior** (o ingênuo sazonal);
+4. **Theta:** o vencedor da competição M3;
+5. **Holt amortecido:** a suavização exponencial com tendência que perde força;
+6. **ARIMA:** a ordem de menor AICc numa grade pequena;
+7. **SARIMAX:** o ARIMA com a Selic de três meses antes;
+8. **Prophet;**
+9. **a combinação:** a média da tendência, do Holt e do LightGBM;
+10. **o LightGBM global:** um modelo de aprendizado de máquina treinado com as 351 células ao mesmo tempo, com as variações recentes, o mês do ano, o tamanho, a UF, a modalidade e a Selic.
 
-- **MASE:** o erro médio dividido pelo passo típico da série no treino, que é o erro de um mês de repetir o último mês. Abaixo de 1, o erro ficou menor que esse passo. Ganhar da regra simples se lê comparando o MASE dos dois no mesmo horizonte.
-- **Erro médio do escolhido (MAPE):** o erro em percentual da carteira, para ler em reais.
-- **Faixa acertou:** a fração dos meses da avaliação em que o valor real caiu dentro da faixa provável de 80%.
-
-A janela de avaliação tem quatro testes por horizonte. Diferenças pequenas ficam dentro do ruído de quatro casos.
+**A escolha: campeão e desafiante.**
+- **O campeão:** a tendência.
+- **A comparação:** em cada série, cada desafiante é comparado com ela em todos os 16 testes, pelo teste de Diebold-Mariano. A variância é corrigida pela sobreposição dos horizontes e pela amostra pequena.
+- **A correção de Holm:** com nove desafiantes, o teste corrige as comparações múltiplas.
+- **Quem assume:** só um desafiante que passe, e, entre os que passam, o de menor erro. Assim a série não troca de modelo por ruído a cada mês.
 
 ## A projeção do país
 
-| Mês | Realizado | Projeção | Faixa provável de 80% |
-|---|---|---|---|
-| mai/2026 | R$ 2,901 tri | | |
-| jun/2026 | R$ 2,952 tri | | |
-| jul/2026 | R$ 2,910 tri | | |
-| ago/2026 | | R$ 2,920 tri | R$ 2,888 a 2,952 tri |
-| set/2026 | | R$ 3,003 tri | R$ 2,920 a 3,087 tri |
-| out/2026 | | R$ 3,000 tri | R$ 2,955 a 3,045 tri |
+| Mês | Projeção | Faixa provável de 80% |
+|---|---|---|
+| ago/2026 | R$ 2,926 tri | R$ 2,878 a 2,973 tri |
+| set/2026 | R$ 2,941 tri | R$ 2,873 a 3,010 tri |
+| out/2026 | R$ 2,957 tri | R$ 2,872 a 3,042 tri |
 
-**O salto de setembro vem de uma quebra, e não do crédito.** A projeção sobe 2,8% de agosto para setembro e fica parada em outubro. Duas conferências explicam isso:
-- **O modelo:** com o mês do ano trocado por agosto, a projeção de setembro cai de R$ 3,003 tri para R$ 2,954 tri, e a de outubro de R$ 3,000 tri para R$ 2,951 tri. O salto vem dessa variável.
-- **O dado:** em setembro de 2024, a carteira PJ subiu 1,7% na V2 e 1,7% na V1. Em setembro de 2025, subiu 4,3% na V2 e só 1,2% na V1. Uns 3 pontos do salto de 2025 são a divergência entre as versões, a quebra de set/2025 já registrada em `ontology/dimensoes.yml` (#19). Na V2, o salto de 2025 se concentra em Financiamentos (R$ 54 bi) e Empréstimos (R$ 44 bi).
+## O Brasil, candidato a candidato
 
-O LightGBM aprendeu como padrão de setembro um degrau que aconteceu uma vez. Nenhum mês de teste da avaliação foi um setembro, então o erro publicado não mede esse efeito. A decisão sobre como tratar isso é do Yuri.
+| Modelo | MASE nos 16 testes | p contra a tendência | Erro médio recente | Faixa acertou | Interval score |
+|---|---|---|---|---|---|
+| repetir o último mês | 1,58 | 0,999 | 1,03% | 100% | 0,049 |
+| tendência | 1,06 | campeão | 0,65% | 100% | 0,047 |
+| repetir o mês do ano anterior | 6,39 | 1,000 | 5,55% | 100% | 0,184 |
+| Theta | 1,16 | 0,861 | 0,65% | 100% | 0,038 |
+| Holt amortecido | 0,96 | 0,308 | 0,48% | 83% | 0,025 |
+| ARIMA | 1,18 | 0,704 | 1,02% | 75% | 0,037 |
+| SARIMAX | 1,43 | 0,877 | 1,90% | 17% | 0,098 |
+| Prophet | 1,22 | 0,696 | 1,15% | 25% | 0,093 |
+| combinação | 0,89 | 0,031 | 0,53% | 100% | 0,043 |
+| LightGBM | 1,09 | 0,540 | 0,61% | 100% | 0,059 |
 
-**A faixa de outubro é mais estreita que a de setembro,** e o limite de baixo de outubro (R$ 2,955 tri) fica acima do limite de cima de agosto (R$ 2,952 tri). A faixa de cada mês sai dos erros do modelo nos 16 testes, e nesses testes ele errou menos a 3 meses que a 2. Com o salto de setembro, isso produz uma faixa que diz mais do que o dado sustenta.
+- **O MASE** é o erro dividido pelo passo típico da série no treino. Abaixo de 1, o modelo erra menos que repetir o último mês de um passo.
+- **O p** é o do teste de Diebold-Mariano de que o desafiante erra menos que a tendência, antes da correção de Holm.
+- **O interval score** julga a faixa pela largura e pela falta de cobertura juntas. Menor é melhor.
 
-## O confronto, série a série
+**Leitura:**
+- Nos testes recentes, o Holt, a combinação e o LightGBM erraram menos que a tendência. Mas são 4 testes, e nos 16 testes a diferença não passou no teste.
+- O Prophet e o SARIMAX têm faixas estreitas demais: acertaram 25% e 17% dos casos recentes, contra 80% nominais.
 
-MASE na janela de avaliação, na ordem 1 mês / 2 meses / 3 meses, do LightGBM, da tendência e de repetir o último mês. O erro médio e a faixa são os do método escolhido.
+## Onde um desafiante assumiu
+
+- **03 Direitos creditórios descontados:** Theta, com p = 0,001.
+- **05 Financiamentos à exportação:** Theta, com p = 0,002.
+- **06 Financiamentos à importação:** Theta, com p = 0,010.
+- **13 Outros créditos:** combinação, com p = 0,001.
+- **AL:** combinação, com p = 0,000.
+- **BA:** combinação, com p = 0,003.
+- **DF:** repetir o último mês, com p = 0,000.
+- **MG:** combinação, com p = 0,001.
+- **PI:** combinação, com p = 0,005.
+- **RJ:** repetir o último mês, com p = 0,000.
+- **SC:** combinação, com p = 0,005.
+
+## As métricas
+
+- **Erro do backtest, nos testes recentes:** mediana de 1,55% nas 41 séries. Esses testes também entram na escolha, e por isso o número sai otimista.
+- **Erro honesto do procedimento:**
+  - **mediana:** 1,92%;
+  - **média:** 4,57%, puxada pela modalidade 10, uma carteira de R$ 0,1 bi que mudou de patamar;
+  - **como sai:** em cada teste recente, a escolha é refeita só com os testes que já tinham terminado. É o número a esperar do procedimento inteiro.
+- **Faixa provável:** os campeões cobriram 81% dos casos recentes.
+- **Importância das variáveis no LightGBM,** no treino final: {'variacao_1': '19%', 'variacao_3': '13%', 'variacao_media': '12%', 'variacao_2': '11%', 'modalidade': '10%', 'tamanho': '10%', 'uf': '9%', 'mes_previsto': '9%', 'selic': '4%', 'variacao_da_selic': '3%'}. A Selic pesa pouco e funciona mais como marca do tempo do que como causa.
+
+## O erro por série
+
+Nota é o MASE nos 16 testes. O melhor desafiante é o de menor nota, com o p dele contra a tendência, antes da correção de Holm. O erro recente é o do campeão nos 4 testes recentes, e o erro honesto, o do procedimento.
 
 ### País
 
-| Recorte | Escolhido | LightGBM | Tendência | Ingênuo | Erro médio do escolhido | Faixa acertou |
-|---|---|---|---|---|---|---|
-| Brasil | LightGBM | 0,33 / 0,38 / 0,90 | 0,70 / 0,58 / 0,76 | 0,59 / 0,95 / 1,02 | 0,4% / 0,5% / 1,1% | 100% |
+| Recorte | Campeão | Nota da tendência | Melhor desafiante | Nota dele | p | Erro recente | Erro honesto |
+|---|---|---|---|---|---|---|---|
+| Brasil | tendência | 1,06 | combinação | 0,89 | 0,031 | 0,65% | 0,62% |
 
 ### Modalidades
 
-| Recorte | Escolhido | LightGBM | Tendência | Ingênuo | Erro médio do escolhido | Faixa acertou |
-|---|---|---|---|---|---|---|
-| 01 Adiantamentos a depositantes | Holt amortecido | 0,37 / 0,52 / 0,92 | 0,55 / 0,84 / 1,17 | 0,44 / 0,62 / 0,83 | 2,0% / 2,6% / 4,2% | 100% |
-| 02 Empréstimos | tendência | 0,82 / 1,25 / 1,53 | 0,89 / 0,80 / 1,43 | 0,60 / 1,00 / 1,05 | 1,1% / 1,0% / 1,8% | 75% |
-| 03 Direitos creditórios descontados | Holt amortecido | 0,56 / 0,60 / 0,54 | 1,00 / 0,83 / 0,51 | 0,95 / 0,88 / 0,26 | 3,9% / 2,6% / 3,5% | 67% |
-| 04 Financiamentos | LightGBM | 0,43 / 0,74 / 0,92 | 0,39 / 0,56 / 0,54 | 0,39 / 1,03 / 1,54 | 0,5% / 0,9% / 1,1% | 100% |
-| 05 Financiamentos à exportação | ingênuo | 1,25 / 1,26 / 1,23 | 1,15 / 1,47 / 2,26 | 1,12 / 1,31 / 1,46 | 1,7% / 2,0% / 2,2% | 83% |
-| 06 Financiamentos à importação | ingênuo | 0,85 / 0,99 / 3,06 | 0,91 / 1,38 / 3,32 | 0,87 / 0,82 / 2,43 | 2,6% / 2,5% / 8,1% | 83% |
-| 07 Financiamentos com interveniência | Holt amortecido | 4,94 / 11,62 / 16,38 | 4,72 / 9,24 / 13,30 | 5,05 / 9,90 / 14,29 | 11,8% / 21,6% / 32,6% | 33% |
-| 08 Financiamentos rurais | tendência | 0,80 / 1,32 / 1,10 | 0,69 / 1,24 / 1,44 | 1,39 / 2,64 / 3,30 | 1,0% / 1,9% / 2,1% | 100% |
-| 09 Financiamentos imobiliários | tendência | 0,41 / 0,80 / 1,28 | 0,37 / 0,61 / 1,20 | 0,80 / 1,86 / 2,12 | 0,5% / 0,9% / 1,7% | 92% |
-| 10 Financiamentos de títulos e valores mobiliários | LightGBM | 0,02 / 0,04 / 0,06 | 0,16 / 0,33 / 0,51 | 0,02 / 0,04 / 0,06 | 4,9% / 9,4% / 14,3% | 100% |
-| 11 Financiamentos de infraestrutura e desenvolvimento | Holt amortecido | 1,98 / 4,29 / 5,82 | 2,28 / 4,18 / 5,85 | 1,69 / 2,69 / 3,45 | 1,7% / 2,6% / 3,3% | 0% |
-| 12 Operações de arrendamento | tendência | 0,80 / 1,05 / 2,19 | 0,59 / 0,51 / 1,65 | 0,90 / 1,38 / 2,08 | 0,5% / 0,5% / 1,5% | 92% |
-| 13 Outros créditos | ingênuo sazonal | 0,36 / 0,46 / 0,57 | 0,87 / 1,16 / 0,39 | 0,86 / 1,18 / 0,56 | 2,5% / 4,9% / 7,6% | 75% |
+| Recorte | Campeão | Nota da tendência | Melhor desafiante | Nota dele | p | Erro recente | Erro honesto |
+|---|---|---|---|---|---|---|---|
+| 01 Adiantamentos a depositantes | tendência | 1,13 | Holt amortecido | 0,93 | 0,150 | 6,50% | 6,50% |
+| 02 Empréstimos | tendência | 1,52 | ARIMA | 1,59 | 0,709 | 1,19% | 1,19% |
+| 03 Direitos creditórios descontados | Theta | 0,65 | Theta | 0,53 | 0,001 | 2,87% | 3,35% |
+| 04 Financiamentos | tendência | 1,50 | combinação | 1,35 | 0,159 | 0,62% | 0,62% |
+| 05 Financiamentos à exportação | Theta | 1,85 | repetir o último mês | 1,24 | 0,066 | 2,16% | 2,23% |
+| 06 Financiamentos à importação | Theta | 1,66 | repetir o último mês | 1,05 | 0,026 | 5,15% | 6,06% |
+| 07 Financiamentos com interveniência | tendência | 4,42 | ARIMA | 4,13 | 0,271 | 21,37% | 21,37% |
+| 08 Financiamentos rurais | tendência | 2,61 | ARIMA | 2,72 | 0,842 | 1,77% | 3,80% |
+| 09 Financiamentos imobiliários | tendência | 1,10 | SARIMAX | 1,03 | 0,292 | 1,05% | 1,05% |
+| 10 Financiamentos de títulos e valores mobiliários | tendência | 0,32 | LightGBM | 0,11 | 0,014 | 80,54% | 80,54% |
+| 11 Financiamentos de infraestrutura e desenvolvimento | tendência | 1,86 | Theta | 1,44 | 0,056 | 2,55% | 2,55% |
+| 12 Operações de arrendamento | tendência | 0,77 | combinação | 0,69 | 0,191 | 0,81% | 0,79% |
+| 13 Outros créditos | combinação | 0,94 | combinação | 0,67 | 0,001 | 3,87% | 3,87% |
 
 ### UFs
 
-| Recorte | Escolhido | LightGBM | Tendência | Ingênuo | Erro médio do escolhido | Faixa acertou |
-|---|---|---|---|---|---|---|
-| AC | tendência | 3,09 / 3,96 / 4,15 | 2,90 / 3,74 / 3,97 | 2,80 / 3,29 / 3,28 | 2,4% / 3,2% / 3,4% | 42% |
-| AL | LightGBM | 1,87 / 2,37 / 1,25 | 1,68 / 2,21 / 1,78 | 1,50 / 2,29 / 2,59 | 3,3% / 4,2% / 2,2% | 50% |
-| AM | LightGBM | 0,90 / 1,39 / 1,96 | 0,82 / 1,45 / 1,26 | 0,45 / 0,83 / 1,06 | 1,8% / 2,8% / 3,8% | 58% |
-| AP | tendência | 1,61 / 2,01 / 2,61 | 1,39 / 2,11 / 2,70 | 1,26 / 2,06 / 2,97 | 3,6% / 5,5% / 7,0% | 75% |
-| BA | Holt amortecido | 0,44 / 0,64 / 0,82 | 0,28 / 0,59 / 0,67 | 0,55 / 1,44 / 1,99 | 0,3% / 0,7% / 0,7% | 83% |
-| CE | LightGBM | 0,93 / 1,77 / 1,65 | 0,81 / 1,63 / 1,88 | 1,00 / 2,23 / 3,37 | 1,3% / 2,4% / 2,1% | 75% |
-| DF | ingênuo | 0,40 / 0,92 / 0,54 | 0,38 / 0,80 / 1,50 | 0,23 / 0,58 / 0,91 | 0,4% / 1,1% / 1,8% | 100% |
-| ES | LightGBM | 0,64 / 0,79 / 1,22 | 0,65 / 1,12 / 1,65 | 0,56 / 0,67 / 0,46 | 1,1% / 1,4% / 2,2% | 83% |
-| GO | tendência | 0,65 / 1,73 / 2,41 | 1,09 / 1,86 / 1,83 | 0,73 / 1,78 / 1,64 | 1,0% / 1,7% / 1,7% | 67% |
-| MA | tendência | 0,60 / 1,32 / 2,86 | 0,30 / 1,01 / 2,20 | 0,56 / 0,95 / 1,39 | 0,2% / 0,8% / 1,7% | 75% |
-| MG | Holt amortecido | 0,75 / 0,62 / 0,67 | 1,16 / 0,89 / 0,55 | 1,14 / 1,11 / 1,06 | 1,1% / 1,0% / 1,0% | 50% |
-| MS | ingênuo | 1,00 / 1,73 / 1,02 | 1,27 / 1,69 / 0,98 | 1,19 / 1,90 / 1,89 | 1,3% / 2,0% / 2,0% | 67% |
-| MT | ingênuo | 0,92 / 1,06 / 0,75 | 0,67 / 0,76 / 0,71 | 0,64 / 0,88 / 1,09 | 1,0% / 1,4% / 1,7% | 83% |
-| PA | tendência | 0,78 / 0,74 / 0,57 | 0,85 / 0,98 / 0,64 | 0,92 / 2,09 / 2,78 | 0,9% / 1,0% / 0,7% | 92% |
-| PB | LightGBM | 0,50 / 0,62 / 1,89 | 0,21 / 0,46 / 2,07 | 0,75 / 1,44 / 2,44 | 0,6% / 0,7% / 2,2% | 92% |
-| PE | LightGBM | 1,75 / 2,36 / 1,72 | 1,47 / 2,12 / 1,52 | 1,41 / 1,99 / 1,67 | 2,2% / 3,0% / 2,2% | 50% |
-| PI | tendência | 0,80 / 1,65 / 3,04 | 0,96 / 1,90 / 2,52 | 0,33 / 0,43 / 0,58 | 1,6% / 3,2% / 4,2% | 92% |
-| PR | LightGBM | 1,04 / 1,57 / 1,51 | 0,68 / 1,20 / 1,44 | 1,12 / 2,21 / 2,51 | 1,0% / 1,4% / 1,4% | 67% |
-| RJ | ingênuo | 0,55 / 0,74 / 0,99 | 0,91 / 1,20 / 1,34 | 0,94 / 1,07 / 1,04 | 1,2% / 1,4% / 1,4% | 92% |
-| RN | LightGBM | 0,78 / 1,26 / 1,83 | 1,21 / 1,41 / 1,84 | 0,85 / 0,78 / 0,89 | 0,8% / 1,2% / 1,8% | 83% |
-| RO | LightGBM | 0,92 / 1,82 / 3,59 | 0,85 / 1,62 / 3,22 | 0,56 / 0,58 / 1,15 | 0,9% / 1,8% / 3,5% | 58% |
-| RR | LightGBM | 0,78 / 0,50 / 1,29 | 0,42 / 0,81 / 1,44 | 0,21 / 0,44 / 0,74 | 1,2% / 0,8% / 1,9% | 75% |
-| RS | Holt amortecido | 0,54 / 0,32 / 1,05 | 0,61 / 0,83 / 0,83 | 0,60 / 1,01 / 1,62 | 1,8% / 1,6% / 1,4% | 33% |
-| SC | LightGBM | 0,81 / 0,68 / 0,78 | 0,71 / 0,56 / 0,33 | 0,55 / 1,49 / 2,07 | 0,7% / 0,6% / 0,7% | 92% |
-| SE | tendência | 0,94 / 2,27 / 3,48 | 1,20 / 2,35 / 3,69 | 2,04 / 4,17 / 5,12 | 1,2% / 2,2% / 3,6% | 50% |
-| SP | tendência | 0,33 / 0,52 / 0,99 | 0,78 / 0,64 / 0,69 | 0,55 / 0,76 / 0,64 | 1,5% / 1,2% / 1,3% | 100% |
-| TO | LightGBM | 2,58 / 3,41 / 5,07 | 2,53 / 3,59 / 4,83 | 2,53 / 4,02 / 6,14 | 2,9% / 3,7% / 5,9% | 33% |
+| Recorte | Campeão | Nota da tendência | Melhor desafiante | Nota dele | p | Erro recente | Erro honesto |
+|---|---|---|---|---|---|---|---|
+| AC | tendência | 1,40 | Theta | 1,30 | 0,317 | 3,00% | 3,00% |
+| AL | combinação | 2,40 | LightGBM | 2,20 | 0,027 | 2,93% | 3,27% |
+| AM | tendência | 1,04 | Holt amortecido | 0,90 | 0,205 | 2,29% | 2,77% |
+| AP | tendência | 1,22 | Theta | 1,14 | 0,239 | 5,35% | 5,35% |
+| BA | combinação | 1,03 | Holt amortecido | 0,80 | 0,091 | 0,74% | 0,73% |
+| CE | tendência | 1,71 | LightGBM | 1,65 | 0,351 | 1,92% | 1,92% |
+| DF | repetir o último mês | 3,09 | repetir o último mês | 2,78 | 0,000 | 1,11% | 1,11% |
+| ES | tendência | 0,89 | combinação | 0,72 | 0,256 | 2,04% | 2,04% |
+| GO | tendência | 1,13 | combinação | 1,03 | 0,153 | 1,46% | 1,46% |
+| MA | tendência | 0,93 | Holt amortecido | 0,90 | 0,434 | 0,87% | 0,87% |
+| MG | combinação | 1,11 | combinação | 0,83 | 0,001 | 0,93% | 1,19% |
+| MS | tendência | 1,34 | Theta | 1,07 | 0,107 | 1,45% | 1,45% |
+| MT | tendência | 0,89 | repetir o último mês | 0,81 | 0,278 | 1,11% | 1,22% |
+| PA | tendência | 0,66 | ARIMA | 0,67 | 0,967 | 0,86% | 0,86% |
+| PB | tendência | 1,30 | Theta | 1,29 | 0,490 | 1,09% | 1,09% |
+| PE | tendência | 1,54 | combinação | 1,45 | 0,161 | 2,16% | 2,16% |
+| PI | combinação | 1,89 | Theta | 1,54 | 0,105 | 1,98% | 2,94% |
+| PR | tendência | 1,00 | Theta | 0,89 | 0,284 | 1,01% | 1,01% |
+| RJ | repetir o último mês | 1,11 | repetir o último mês | 0,87 | 0,000 | 1,36% | 1,36% |
+| RN | tendência | 1,36 | SARIMAX | 0,98 | 0,028 | 1,55% | 1,45% |
+| RO | tendência | 1,32 | repetir o último mês | 0,95 | 0,260 | 1,85% | 2,02% |
+| RR | tendência | 2,62 | Theta | 2,51 | 0,287 | 1,30% | 4,07% |
+| RS | tendência | 0,99 | Theta | 0,82 | 0,213 | 0,94% | 1,31% |
+| SC | combinação | 0,73 | combinação | 0,60 | 0,005 | 0,41% | 0,49% |
+| SE | tendência | 1,84 | ARIMA | 1,90 | 0,842 | 2,33% | 2,33% |
+| SP | tendência | 1,67 | combinação | 1,55 | 0,233 | 1,16% | 1,16% |
+| TO | tendência | 1,78 | LightGBM | 1,75 | 0,424 | 4,17% | 4,17% |
 
 ## As séries em que o erro mede uma mudança, e não o modelo
 
@@ -125,20 +173,17 @@ A janela de avaliação prevê os meses de fevereiro a julho de 2026. Em cinco s
 
 Nenhuma dessas mudanças coincide com a publicação mais grossa (jul/2025) ou com a divergência entre V1 e V2 (set/2025).
 
-## O que o resultado diz
-
-- **O aprendizado de máquina acrescentou informação no Brasil a 1 e 2 meses,** onde a tendência perdia para a regra simples. A 3 meses, a tendência continua melhor.
-- **O LightGBM não é melhor em toda parte.** Ele foi escolhido em 15 séries e, nelas, errou menos que a regra simples em 8 na avaliação. Em séries pequenas ou que mudaram de nível, nenhum método se sustenta.
-- **A Selic pesou pouco.** Pela importância das variáveis no treino final, as variações recentes da carteira somam 53%, o tamanho da célula 13%, o mês do ano 10%, a modalidade 10%, a UF 8% e a Selic 6%. Com 31 meses de uma série nacional, a Selic funciona mais como marca do tempo do que como causa, e a tela não a apresenta como motivo da projeção.
-- **As projeções das séries não somam entre si.** O Brasil usa o LightGBM, e cada UF e modalidade usa o próprio método escolhido.
-
 ## Limitações
 
-- **Quatro testes por horizonte.** O erro publicado é uma estimativa ruidosa.
-- **31 meses.** Cada mês do ano aparece duas ou três vezes, e um degrau único, como o de set/2025, pode ser lido como padrão do mês. A sazonalidade completa só pode ser testada acima de 36 meses (ADR 0023, decisão 2).
-- **A escolha do Brasil foi por pouco** na janela de escolha. Com um mês a mais de dado, ela pode mudar.
-- **O LightGBM entrou depois de o resultado dos outros ser visto.** A regra de escolha e as janelas não mudaram, e o registro fica no ADR 0024.
-- **As mudanças de nível das cinco séries acima** não estão explicadas (#95).
+- **31 meses.** Cada mês do ano aparece duas ou três vezes, e a sazonalidade completa só pode ser testada acima de 36 meses.
+- **Testes sobrepostos.** Os erros a 2 e 3 meses de testes vizinhos dividem meses, e a amostra efetiva é menor que 16. O teste de Diebold-Mariano corrige a variância por isso.
+- **Mudanças depois de ver o resultado.** O LightGBM, o ajuste da quebra, a faixa que não encolhe, a regra de campeão e desafiante e os cinco desafiantes clássicos vieram depois da primeira execução, como prática de MLOps, todos registrados no ADR 0024 com data e motivo. O erro honesto e, a partir de agora, o monitoramento mês a mês são o árbitro.
+- **Sem reconciliação.** O Brasil não é a soma das UFs nem das modalidades. A reconciliação hierárquica fica para a v0.3 (#99).
+- **As mudanças de nível de cinco séries** não estão explicadas (#95).
+
+## Monitoramento
+
+A cada mês novo de dado, a previsão roda de novo: os testes ganham um mês, a escolha é refeita, e o erro da projeção do mês anterior contra o realizado vira o árbitro fora da amostra. A rotina vai para um job no Databricks, com o histórico no MLflow e numa tabela Delta, numa issue própria ligada à #22.
 
 ## Como reproduzir
 
@@ -148,9 +193,9 @@ Na máquina local, com o perfil OAuth do Databricks:
 uv run python -m scripts.analises.previsao_da_carteira
 ```
 
-A execução é determinística: o LightGBM usa semente, uma thread e modo determinístico, e duas execuções seguidas gravam arquivos idênticos.
+A execução é determinística: os modelos usam semente fixa, e duas execuções seguidas gravam arquivos idênticos. Leva cerca de 13 minutos, a maior parte no Prophet e no ARIMA.
 
-A Q27 do gabarito tem a deriva do país em SQL (`evaluation/gabarito/Q27.sql`, ADR 0023, decisão 6). Com o LightGBM escolhido no Brasil, o número da Q27 e o da Tela 3 deixam de ser o mesmo (ADR 0024, Consequências).
+A Q27 do gabarito tem a tendência do país em SQL, sobre a série publicada (`evaluation/gabarito/Q27.sql`). A tela desconta o degrau de set/2025, e os dois números diferem em cerca de R$ 10 bi em outubro.
 
 O autoteste do método roda sem Databricks e está no CI:
 

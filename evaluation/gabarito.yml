@@ -444,16 +444,18 @@ perguntas:
       - id: deriva_pj
         descricao: >
           Projeção da carteira ativa PJ do país para os três meses seguintes
-          ao último mês do dado, pela deriva, com o intervalo de 80%. É o
-          modelo que o backtest da #27 escolheu para o país, e o número é o
-          da Tela 3.
+          ao último mês do dado, pela deriva, com o intervalo de 80%. A
+          deriva é o campeão da previsão (ADR 0024, decisão 9), calculada
+          aqui sobre a série publicada, sem o ajuste da quebra de set/2025.
         consultas: [Q27.sql]
     observacao: >
       Decidido pelo Yuri em 2026-10-06, na revisão da #27: a referência é a
       carteira PJ, a da Tela 3, e uma resposta com a carteira total (PF e PJ)
-      não vale. A deriva cabe em SQL portátil, e os outros candidatos do ADR
-      0023 não precisam: a referência é o modelo que o backtest escolheu para
-      o país. A tolerância numérica é a da regra de comparação da #47.
+      não vale. A deriva cabe em SQL portátil e é a referência da Q27
+      qualquer que seja o campeão do país na tela, também decidido pelo Yuri
+      em 2026-10-06 (ADR 0024, Consequências). A tela desconta o degrau de
+      set/2025 e pode diferir em alguns bilhões. A tolerância numérica é a
+      da regra de comparação da #47.
 
   # ---------------------------------------------------------------------------
   # PT: Automação do trabalho repetitivo

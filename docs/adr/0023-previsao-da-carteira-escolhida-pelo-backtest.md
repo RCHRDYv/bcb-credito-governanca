@@ -70,10 +70,10 @@ A exportação só lê esses dois arquivos do disco, para o manifesto. O CI vali
 
 ### 6. A resposta de referência da Q27 é a deriva da carteira PJ do país, em SQL
 
-O gabarito exige SQL portátil sobre o esquema estrela ([ADR 0015](0015-gabarito-com-leituras-aceitas-em-sql-portatil.md)), e a projeção deste ADR fica num arquivo do dashboard, fora dele. A deriva cabe em SQL, e é o modelo que o backtest escolheu para o país. Por isso a referência da Q27 é a deriva da carteira ativa PJ, em `evaluation/gabarito/Q27.sql`, com a mesma conta do script e o mesmo resultado da Tela 3.
+O gabarito exige SQL portátil sobre o esquema estrela ([ADR 0015](0015-gabarito-com-leituras-aceitas-em-sql-portatil.md)), e a projeção deste ADR fica num arquivo do dashboard, fora dele. A deriva cabe em SQL, e foi o modelo que o backtest escolheu para o país. Por isso a referência da Q27 é a deriva da carteira ativa PJ, em `evaluation/gabarito/Q27.sql`, com a mesma conta do script. Em 2026-10-06, o Yuri decidiu que a Q27 continua com a deriva qualquer que seja o campeão da tela ([ADR 0024](0024-lightgbm-global-como-candidato-da-previsao.md)).
 - **Recorte:** só a carteira PJ. A Q27 não diz PF ou PJ, e uma resposta com a carteira total não vale.
 - **Tolerância:** a da regra de comparação com o gabarito, que a #47 registra.
-- **Se o backtest escolher outro modelo para o país** numa atualização, a referência da Q27 muda com uma errata datada no gabarito.
+- **Se outro modelo virar o campeão do país** numa atualização, a Q27 continua com a deriva, por decisão do Yuri de 2026-10-06 (ADR 0024).
 
 ## Alternativas descartadas
 

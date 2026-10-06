@@ -365,7 +365,7 @@ def validar_visao_3(conteudos: dict[str, dict]) -> list[str]:
           a projeção usa;
         - cada recorte tiver os quatro testes da janela de avaliação, de um a
           três meses, com o realizado da projeção, a faixa em volta da
-          previsão e o mesmo modelo (ADR 0024, decisão 7).
+          previsão e o mesmo modelo (ADR 0024, decisão 6).
     EN: View 3: per cut, actual months up to the data-base plus three
         projected ones inside their interval; the country's actuals equal the
         states', the modalities' and the monthly export's sums; one chosen

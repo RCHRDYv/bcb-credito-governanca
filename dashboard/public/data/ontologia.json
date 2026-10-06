@@ -431,21 +431,23 @@
       "modelo": "ADR 0023, decisão 2; ADR 0024",
       "horizonte": "ADR 0023, decisão 3",
       "escolhido": "ADR 0023, decisão 3",
-      "mase_na_escolha": "ADR 0023, decisão 3",
+      "mase_na_escolha": "ADR 0024, decisão 9: o MASE em todas as origens, que decidem o campeão",
+      "p_valor": "ADR 0024, decisão 9: Diebold-Mariano do desafiante contra a deriva; nulo na deriva",
       "mase": "ADR 0023, decisão 3",
       "mape": "ADR 0023, decisão 3",
-      "cobertura": "ADR 0023, decisão 4"
+      "cobertura": "ADR 0023, decisão 4",
+      "escore_da_faixa": "ADR 0024: interval score de Winkler da faixa de 80% nos testes recentes, dividido pelo realizado"
     },
     "testes_da_projecao.json": {
       "tipo_de_recorte": "ADR 0023, decisão 1",
       "recorte": "ADR 0023, decisão 1",
-      "data_do_teste": "ADR 0024, decisão 7: o último mês que o modelo conhecia no teste",
+      "data_do_teste": "ADR 0024, decisão 6: o último mês que o modelo conhecia no teste",
       "horizonte": "ADR 0023, decisão 3",
       "data_base": "ontology/dimensoes.yml#dim_data_base",
       "realizado": "ontology/metricas.yml#carteira_ativa",
-      "projecao": "ADR 0024, decisão 7",
-      "limite_inferior": "ADR 0024, decisão 7",
-      "limite_superior": "ADR 0024, decisão 7",
+      "projecao": "ADR 0024, decisão 6",
+      "limite_inferior": "ADR 0024, decisão 6",
+      "limite_superior": "ADR 0024, decisão 6",
       "modelo": "ADR 0023, decisão 2; ADR 0024"
     }
   }
