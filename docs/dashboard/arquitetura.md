@@ -233,6 +233,15 @@ A exportação e a validação usam o mesmo módulo, [`scripts/contrato_do_dashb
 
 **Orçamento por visão.** O limite de 300 KB de dados do RNF-03 vale para cada visão, quando ela é a primeira a abrir. O `scripts/orcamento.js` soma os arquivos que o manifesto registra para cada visão, mais o próprio manifesto. Em jul/2026, com as explicações das modalidades da #69: 17,9 KB na visão 1, 227,2 KB na visão 2 e 19,5 KB na visão 4.
 
+### Como uma visão carrega
+
+Desde a #89, uma visão chega em três tempos, para o texto aparecer antes dos gráficos:
+1. **O código e os dados juntos.** Cada visão tem um módulo leve só com a carga dos arquivos, como o `credito-por-uf/carga.js`, e a navegação busca esse módulo e o código da visão ao mesmo tempo. A malha das UFs é buscada junto, mas só é registrada no ECharts quando o mapa é desenhado.
+2. **O texto.** Com os dados, a visão monta os cartões, os números e as ressalvas, sem o ECharts.
+3. **Os gráficos.** O ECharts, que é a maior parte do código do site, começa a baixar só depois de o texto da visão chegar à tela, por `graficos/sob-demanda.js`. Sem o aviso de pintura do navegador, como no Safari, espera dois quadros, e um tempo limite de 1 s cobre a aba escondida. Um gráfico fora da tela, como o ranking da visão 1 no celular, se desenha só quando o cartão dele aparece.
+
+**Por quê.** Com o ECharts importado direto, nenhum número aparecia antes de ele chegar e rodar, e os dados só começavam a baixar depois disso. No celular, o Lighthouse do CI da `main` caiu para 78 e depois 62, abaixo da meta de 80 do RNF-02, e a publicação travou. Na máquina local, com a CPU 16 vezes mais lenta para imitar o runner do CI, a nota foi de 68 para 89, o LCP de 3,9 s para 2,3 s e o tempo de bloqueio de 790 ms para 380 ms.
+
 ### Malha das UFs
 
 A malha do mapa por UF segue o padrão da ingestão, em duas etapas, as duas na máquina local e sem credencial:
@@ -263,7 +272,7 @@ dashboard/                        raiz do site, no Vite (#65)
 │   ├── catalogo/                 as seções do catálogo (#62 e #64)
 │   ├── cor/                      contraste pela WCAG (#62)
 │   ├── componentes/              componentes do design system, com os ícones do Tabler (#64)
-│   ├── graficos/                 tema do ECharts e componentes de gráfico (#63)
+│   ├── graficos/                 tema do ECharts e componentes de gráfico (#63), carregados sob demanda (#89)
 │   ├── formatos.js               números e datas no padrão brasileiro (#63)
 │   ├── chat/                     cliente do Space e montagem da resposta (#51)
 │   ├── dados/                    carregador dos arquivos do contrato (#66)
@@ -400,6 +409,7 @@ O gitleaks roda no pre-commit e no CI.
 | 2026-10-01 | A política de segurança mora em `dashboard/politica-de-seguranca.js`, e o build a põe no `<meta>` de cada página, só no build | Este documento; [requisitos](requisitos.md), RNF-11 |
 | 2026-10-05 | No computador, a partir de uma janela de 1280×720 px, a visão cabe sem rolagem da página, usa a largura toda, e o que passar da altura de um cartão rola dentro dele | ADR 0022; #87 |
 | 2026-10-05 | As visões são rotas por hash (`#/credito-por-uf`), porque o Pages não tem rota de fallback. A navegação desmonta a visão anterior antes de montar a do endereço, e mostra o carregando e o erro com o motivo | Este documento; #69 |
+| 2026-10-06 | A visão carrega o código e os dados juntos, monta o texto sem o ECharts e busca o ECharts só depois de o texto chegar à tela. O gráfico fora da tela se desenha quando aparece | Este documento; #89 |
 | 2026-10-05 | A paleta divergente sai, e toda intensidade usa a rampa roxa, inclusive a distância até uma referência, em cinco faixas com o roxo mais forte no lado que quer dizer mais. Na visão 1, o roxo mais forte marca onde há mais espaço | ADR 0021, revisão de 2026-10-05 |
 | 2026-10-01 | O link do site entra no README da raiz com a Tela 1 (#69), e não na #68: até lá, o site tem só a página inicial e o catálogo | Este documento; #68 e #69 |
 | 2026-10-01 | A visão 1 tem "todas as modalidades", com o denominador do [ADR 0014](../adr/0014-matriz-de-decisao-espaco-contra-risco.md). O `mrt_carteira_por_uf` troca os dois denominadores que o ADR descartou pelo dele, com os mesmos nomes de coluna do `decisao.json`, e compara cada UF com a mediana das UFs acima do corte no mês. Resolve o ponto em aberto do denominador | Este documento; contrato; ADR 0014 |

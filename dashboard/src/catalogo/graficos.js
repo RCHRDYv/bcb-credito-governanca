@@ -24,7 +24,8 @@ import { cartograma } from "../graficos/cartograma.js";
 import { classesEmCincoFaixas, classesSequenciais } from "../graficos/escalas.js";
 import { temaDoElemento } from "../graficos/grafico.js";
 import { legendaEmEscala } from "../graficos/legenda.js";
-import { carregarMalha, mapaPorUf } from "../graficos/mapa-por-uf.js";
+import { carregarMalha } from "../graficos/malha.js";
+import { mapaPorUf, registrarMalha } from "../graficos/mapa-por-uf.js";
 import { matriz } from "../graficos/matriz.js";
 import { matrizDeCalor } from "../graficos/matriz-de-calor.js";
 import { numeroDeDestaque } from "../graficos/numero-de-destaque.js";
@@ -374,7 +375,10 @@ function pecas(malhaCarregada) {
  */
 export function secaoGraficos() {
   const malhaCarregada = carregarMalha(ENDERECO_DA_MALHA).then(
-    () => true,
+    (malha) => {
+      registrarMalha(malha);
+      return true;
+    },
     () => false,
   );
 

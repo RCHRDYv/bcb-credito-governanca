@@ -17,36 +17,24 @@ import { echarts } from "./echarts.js";
 import { criarGrafico } from "./grafico.js";
 import { legendaDeClasses } from "./legenda.js";
 import { destaque, etiquetaDaEscolhida, semComparacao } from "./selecao.js";
-import { UFS, ufPelaSigla, ufPeloCodigo } from "./ufs.js";
+import { UFS, ufPelaSigla } from "./ufs.js";
 
 /** @typedef {import("./escalas.js").Classes} Classes */
 /** @typedef {import("./grafico.js").Grafico} Grafico */
+/** @typedef {import("./malha.js").Malha} Malha */
 
 const NOME_DO_MAPA = "ufs";
 
 /**
- * @typedef {object} Malha
- * @property {"FeatureCollection"} type
- * @property {{ properties: Record<string, string> }[]} features
- */
-
-/**
- * PT: Carrega a malha e a registra no ECharts, com a sigla da UF como nome
- *     de cada área. A malha do IBGE identifica a UF pelo código (`codarea`).
- * EN: Loads the mesh and registers it, naming each area by abbreviation.
+ * PT: Registra no ECharts a malha buscada por `carregarMalha()`, de
+ *     `malha.js`. Registrar de novo não refaz o trabalho.
+ * EN: Registers the mesh fetched by `carregarMalha()`; idempotent.
  *
- * @param {string} endereco
- * @returns {Promise<void>}
+ * @param {Malha} malha
+ * @returns {void}
  */
-export async function carregarMalha(endereco) {
-  const resposta = await fetch(endereco);
-  if (!resposta.ok) {
-    throw new Error(`A malha das UFs não carregou: ${resposta.status}`);
-  }
-  const malha = /** @type {Malha} */ (await resposta.json());
-  for (const feicao of malha.features) {
-    feicao.properties.name = ufPeloCodigo(feicao.properties.codarea).sigla;
-  }
+export function registrarMalha(malha) {
+  if (echarts.getMap(NOME_DO_MAPA)) return;
   echarts.registerMap(NOME_DO_MAPA, /** @type {never} */ (malha));
 }
 
@@ -66,7 +54,7 @@ export async function carregarMalha(endereco) {
 
 /**
  * PT: Desenha o mapa no elemento, com a legenda logo depois dele. A malha
- *     precisa ter sido carregada antes, por `carregarMalha()`.
+ *     precisa ter sido registrada antes, por `registrarMalha()`.
  *
  *     A UF escolhida ganha a borda na cor do texto, e um clique numa UF
  *     avisa `aoSelecionar` (RF-102). Trocar a UF escolhida ou o dado atualiza

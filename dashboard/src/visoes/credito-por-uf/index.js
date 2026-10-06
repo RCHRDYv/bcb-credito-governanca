@@ -40,17 +40,13 @@ import { controleSegmentado } from "../../componentes/controle-segmentado.js";
 import { definicao } from "../../componentes/definicao.js";
 import { vazio } from "../../componentes/estados.js";
 import { painelDeDetalhe } from "../../componentes/painel-de-detalhe.js";
-import { carregar, carregarManifesto, carregarOntologia } from "../../dados/carregar.js";
 import { definicaoDaColuna, definicaoDaModalidade } from "../../dados/definicoes.js";
 import { elemento } from "../../dom.js";
 import { Filtros } from "../../estado/filtros.js";
 import { dataBase, numero, reais } from "../../formatos.js";
 import { areaDoGrafico, cartaoDeGrafico } from "../../graficos/cartao.js";
-import { cartograma } from "../../graficos/cartograma.js";
-import { carregarMalha, mapaPorUf } from "../../graficos/mapa-por-uf.js";
-import { matrizDeCalor } from "../../graficos/matriz-de-calor.js";
 import { numeroDeDestaque } from "../../graficos/numero-de-destaque.js";
-import { ranking } from "../../graficos/ranking.js";
+import { graficos } from "../../graficos/sob-demanda.js";
 import { ufPelaSigla } from "../../graficos/ufs.js";
 import { t } from "../../textos/index.js";
 import { classesDeEspaco, distancia, legendaDeEspaco, posicao } from "./cor.js";
@@ -68,19 +64,9 @@ import { botaoDoCsv, tabelaDaTela } from "./tabela.js";
 import "./credito-por-uf.css";
 
 /** @typedef {import("./dados.js").LinhaDaVisao} LinhaDaVisao */
-/** @typedef {import("./dados.js").DadosDaVisao} DadosDaVisao */
-/** @typedef {import("../../dados/carregar.js").Ontologia} Ontologia */
+/** @typedef {import("./carga.js").DadosDaTela} DadosDaTela */
 /** @typedef {import("../../textos/index.js").ChaveDeTexto} ChaveDeTexto */
 /** @typedef {import("../../componentes/painel-de-detalhe.js").ItemDoDetalhe} ItemDoDetalhe */
-
-/**
- * @typedef {DadosDaVisao & {
- *   ontologia: Ontologia,
- *   malha: boolean,
- *   corte: number,
- *   minimoDeUfs: number,
- * }} DadosDaTela
- */
 
 /** @typedef {"mapa" | "grade" | "matriz" | "tabela"} Forma */
 
@@ -99,8 +85,6 @@ import "./credito-por-uf.css";
  * @property {(chaves: string[]) => void} atualizar
  * @property {() => void} destruir
  */
-
-const ENDERECO_DA_MALHA = "./geo/ufs.json";
 
 /**
  * PT: Abaixo desta largura, a grade é o padrão, porque no mapa o DF, Sergipe
@@ -128,32 +112,6 @@ const MOTIVO = {
   "poucas-ufs": "tela1.motivo-poucas-ufs",
   "sem-carteira": "tela1.motivo-sem-carteira",
 };
-
-/**
- * PT: Carrega os arquivos da tela. A malha não derruba a tela: sem ela, a
- *     grade toma o lugar do mapa.
- * EN: Loads the screen's files; without the mesh the grid replaces the map.
- *
- * @returns {Promise<DadosDaTela>}
- */
-export async function carregarDados() {
-  const [porUf, decisao, ontologia, manifesto, malha] = await Promise.all([
-    carregar("carteira_por_uf.json"),
-    carregar("decisao.json"),
-    carregarOntologia(),
-    carregarManifesto(),
-    carregarMalha(ENDERECO_DA_MALHA).then(
-      () => true,
-      () => false,
-    ),
-  ]);
-  // PT: os parâmetros do ADR 0014, lidos do que a exportação registra, para
-  //     o texto nunca ficar velho
-  // EN: ADR 0014 parameters, from the exported manifest
-  const corte = manifesto.parametros_da_decisao.decisao_carteira_minima;
-  const minimoDeUfs = manifesto.parametros_da_decisao.decisao_minimo_de_ufs;
-  return { porUf, decisao, ontologia, malha, corte, minimoDeUfs };
-}
 
 /**
  * PT: Uma área de rolagem com nome, que recebe foco para quem usa o teclado.
@@ -406,8 +364,14 @@ export function render(el, dados) {
       selecionada: filtros.valores.uf,
       legenda: legendaDeEspaco,
     };
-    const grafico =
-      tipo === "mapa" ? await mapaPorUf(area, opcoes) : await cartograma(area, opcoes);
+    const { cartograma, mapaPorUf, registrarMalha } = await graficos();
+    let grafico;
+    if (tipo === "mapa" && dados.malha) {
+      registrarMalha(dados.malha);
+      grafico = await mapaPorUf(area, opcoes);
+    } else {
+      grafico = await cartograma(area, opcoes);
+    }
     return {
       atualizar: (chaves) => {
         if (chaves.includes("modalidade")) grafico.mudar(corDoTerritorio());
@@ -459,6 +423,7 @@ export function render(el, dados) {
       const modalidade = todas() ? null : filtros.valores.modalidade;
       return deitada ? { linha: modalidade, coluna: uf } : { linha: uf, coluna: modalidade };
     };
+    const { matrizDeCalor } = await graficos();
     const grafico = await matrizDeCalor(area, {
       linhas: deitada ? modalidadesDaMatriz : ufsDaMatriz,
       colunas: deitada ? ufsDaMatriz : modalidadesDaMatriz,
@@ -672,13 +637,38 @@ export function render(el, dados) {
   mostrarVazio();
   mostrarDetalhe();
   void desenharTerritorio();
-  void ranking(areaRanking, {
-    itens: oportunidade(linhasAtuais()),
-    formatar: (v) => reais(v),
-    aoSelecionar: (sigla) => filtros.definir({ uf: sigla }),
-  }).then((grafico) => {
+
+  // PT: o ranking se desenha quando o cartão aparece. No celular ele fica bem
+  //     abaixo do mapa, e desenhá-lo na abertura pesava na carga (#89)
+  // EN: the ranking draws when its card shows up; on phones it sits far below
+  let desmontada = false;
+  let rankingPedido = false;
+  const desenharRanking = async () => {
+    if (rankingPedido) return;
+    rankingPedido = true;
+    const { ranking } = await graficos();
+    const grafico = await ranking(areaRanking, {
+      itens: oportunidade(linhasAtuais()),
+      formatar: (v) => reais(v),
+      aoSelecionar: (sigla) => filtros.definir({ uf: sigla }),
+    });
+    if (desmontada) {
+      grafico.destruir();
+      return;
+    }
     graficoRanking = grafico;
-  });
+    if (filtros.valores.uf) grafico.selecionar(filtros.valores.uf);
+  };
+  const vigiaDoRanking =
+    "IntersectionObserver" in window
+      ? new IntersectionObserver((entradas) => {
+          if (!entradas.some((entrada) => entrada.isIntersecting)) return;
+          vigiaDoRanking?.disconnect();
+          void desenharRanking();
+        })
+      : null;
+  if (vigiaDoRanking) vigiaDoRanking.observe(cartaoRanking);
+  else void desenharRanking();
 
   const pararDeOuvir = filtros.aoMudar((evento) => {
     const { chaves } = evento.detail;
@@ -701,6 +691,8 @@ export function render(el, dados) {
   });
 
   return () => {
+    desmontada = true;
+    vigiaDoRanking?.disconnect();
     pararDeOuvir();
     estreita.removeEventListener("change", aoCruzarALargura);
     geracao += 1;

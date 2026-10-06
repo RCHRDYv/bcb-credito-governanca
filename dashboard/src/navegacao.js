@@ -89,8 +89,9 @@ export function iniciarNavegacao({ principal, nav }) {
     desmontar = null;
     principal.replaceChildren(carregando());
     try {
-      const modulo = await visao.modulo();
-      const dados = await modulo.carregarDados();
+      // PT: o código da visão e os dados dela chegam ao mesmo tempo (#89)
+      // EN: the view's code and its data load in parallel
+      const [modulo, dados] = await Promise.all([visao.modulo(), visao.dados()]);
       if (meu !== pedido) return;
       desmontar = modulo.render(principal, dados);
     } catch (falha) {

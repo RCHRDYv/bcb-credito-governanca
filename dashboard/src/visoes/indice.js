@@ -5,6 +5,8 @@
  *     de reserva: um endereço como `/credito-por-uf` daria 404, e
  *     `#/credito-por-uf` sempre abre o mesmo `index.html`. Cada visão é
  *     carregada só quando é aberta, então o código de uma não pesa na outra.
+ *     Os dados de cada visão vêm de um módulo leve, separado do código que
+ *     desenha a visão, para a navegação buscar os dois ao mesmo tempo (#89).
  *
  *     Uma visão entra aqui quando fica pronta. A primeira da lista é a que o
  *     endereço do site abre (decidido em 2026-10-01).
@@ -18,7 +20,6 @@ import { t } from "../textos/index.js";
 
 /**
  * @typedef {object} ModuloDeVisao
- * @property {() => Promise<unknown>} carregarDados Busca os arquivos da visão / loads the view's files
  * @property {(el: HTMLElement, dados: any) => () => void} render Monta a visão e devolve como desmontá-la / builds and returns teardown
  */
 
@@ -27,6 +28,7 @@ import { t } from "../textos/index.js";
  * @property {string} id
  * @property {string} nome Como aparece na navegação / navigation label
  * @property {() => Promise<ModuloDeVisao>} modulo
+ * @property {() => Promise<unknown>} dados Busca os arquivos da visão / loads the view's files
  */
 
 /** @type {readonly Visao[]} */
@@ -35,6 +37,7 @@ export const VISOES = Object.freeze([
     id: "credito-por-uf",
     nome: t("navegacao.credito-por-uf"),
     modulo: () => import("./credito-por-uf/index.js"),
+    dados: () => import("./credito-por-uf/carga.js").then((m) => m.carregarDados()),
   },
 ]);
 
