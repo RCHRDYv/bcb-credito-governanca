@@ -70,10 +70,10 @@ A exportação só lê esses dois arquivos do disco, para o manifesto. O CI vali
 
 ### 6. A resposta de referência da Q27 é a deriva da carteira PJ do país, em SQL
 
-O gabarito exige SQL portátil sobre o esquema estrela ([ADR 0015](0015-gabarito-com-leituras-aceitas-em-sql-portatil.md)), e a projeção deste ADR fica num arquivo do dashboard, fora dele. A deriva cabe em SQL, e é o modelo que o backtest escolheu para o país. Por isso a referência da Q27 é a deriva da carteira ativa PJ, em `evaluation/gabarito/Q27.sql`, com a mesma conta do script e o mesmo resultado da Tela 3.
+O gabarito exige SQL portátil sobre o esquema estrela ([ADR 0015](0015-gabarito-com-leituras-aceitas-em-sql-portatil.md)), e a projeção deste ADR fica num arquivo do dashboard, fora dele. A deriva cabe em SQL, e foi o modelo que o backtest escolheu para o país. Por isso a referência da Q27 é a deriva da carteira ativa PJ, em `evaluation/gabarito/Q27.sql`, com a mesma conta do script. Em 2026-10-06, o Yuri decidiu que a Q27 continua com a deriva qualquer que seja o campeão da tela ([ADR 0024](0024-lightgbm-global-como-candidato-da-previsao.md)).
 - **Recorte:** só a carteira PJ. A Q27 não diz PF ou PJ, e uma resposta com a carteira total não vale.
 - **Tolerância:** a da regra de comparação com o gabarito, que a #47 registra.
-- **Se o backtest escolher outro modelo para o país** numa atualização, a referência da Q27 muda com uma errata datada no gabarito.
+- **Se outro modelo virar o campeão do país** numa atualização, a Q27 continua com a deriva, por decisão do Yuri de 2026-10-06 (ADR 0024).
 
 ## Alternativas descartadas
 
@@ -93,7 +93,7 @@ O gabarito exige SQL portátil sobre o esquema estrela ([ADR 0015](0015-gabarito
 
 ## Resultado
 
-A primeira execução contra o mart, em 2026-10-06, com data-base 2026-07-31, está em [`docs/previsao.md`](../previsao.md), com o erro de cada recorte. Em resumo:
+A primeira execução contra o mart, em 2026-10-06, com data-base 2026-07-31, teve só os quatro candidatos deste ADR. No mesmo dia, o [ADR 0024](0024-lightgbm-global-como-candidato-da-previsao.md) acrescentou o LightGBM global, e o resultado vigente, com os cinco candidatos, está em [`docs/previsao.md`](../previsao.md). O resumo abaixo é o da primeira execução, guardado como registro:
 - **Escolhidos:** a deriva em 22 séries, o Holt amortecido em 10, o ingênuo em 8 e o ingênuo sazonal em 1.
 - **País:** a deriva projeta R$ 2,93 trilhões em ago/2026 e R$ 2,97 trilhões em out/2026. Na avaliação, o MAPE fica abaixo de 1%, a deriva ganha do ingênuo a 2 e 3 meses e perde a 1 mês, e o intervalo cobriu todos os casos.
 - **As 33 séries em que o escolhido não é o ingênuo:** ele ganha do ingênuo na avaliação em 15 a 1 mês, em 19 a 2 meses e em 20 a 3 meses.

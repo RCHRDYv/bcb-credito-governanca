@@ -1022,7 +1022,7 @@ São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer e
 
 **Fonte da definição:** `metricas.carteira_ativa`, `docs/adr/0023-previsao-da-carteira-escolhida-pelo-backtest.md`
 
-**Como se responde:** Projeção da carteira ativa PJ do país para os três meses seguintes ao último mês do dado, pela deriva, com o intervalo de 80%. É o modelo que o backtest da #27 escolheu para o país, e o número é o da Tela 3.
+**Como se responde:** Projeção da carteira ativa PJ do país para os três meses seguintes ao último mês do dado, pela deriva, com o intervalo de 80%. A deriva é o campeão da previsão (ADR 0024, decisão 9), calculada aqui sobre a série publicada, sem o ajuste da quebra de set/2025.
 
 [`Q27.sql`](../evaluation/gabarito/Q27.sql)
 
@@ -1032,7 +1032,7 @@ São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer e
 | set/2026 | 2 | R$ 2.947,8 bi | R$ 2.871,3 bi | R$ 3.024,4 bi |
 | out/2026 | 3 | R$ 2.966,7 bi | R$ 2.871,5 bi | R$ 3.062,0 bi |
 
-**Observação:** Decidido pelo Yuri em 2026-10-06, na revisão da #27: a referência é a carteira PJ, a da Tela 3, e uma resposta com a carteira total (PF e PJ) não vale. A deriva cabe em SQL portátil, e os outros candidatos do ADR 0023 não precisam: a referência é o modelo que o backtest escolheu para o país. A tolerância numérica é a da regra de comparação da #47.
+**Observação:** Decidido pelo Yuri em 2026-10-06, na revisão da #27: a referência é a carteira PJ, a da Tela 3, e uma resposta com a carteira total (PF e PJ) não vale. A deriva cabe em SQL portátil e é a referência da Q27 qualquer que seja o campeão do país na tela, também decidido pelo Yuri em 2026-10-06 (ADR 0024, Consequências). A tela desconta o degrau de set/2025 e pode diferir em alguns bilhões. A tolerância numérica é a da regra de comparação da #47.
 
 ## Automação do trabalho repetitivo
 

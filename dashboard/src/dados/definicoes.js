@@ -28,6 +28,7 @@ export const ADRS = Object.freeze({
   "0009": "0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md",
   "0014": "0014-matriz-de-decisao-espaco-contra-risco.md",
   "0023": "0023-previsao-da-carteira-escolhida-pelo-backtest.md",
+  "0024": "0024-lightgbm-global-como-candidato-da-previsao.md",
 });
 
 const ENDERECO_DOS_ADRS = "https://github.com/RCHRDYv/bcb-credito-governanca/blob/main/docs/adr/";

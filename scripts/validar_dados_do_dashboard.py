@@ -341,6 +341,7 @@ def validar_visao_1(conteudos: dict[str, dict]) -> list[str]:
 
 PROJECAO = "projecao_da_carteira.json"
 BACKTEST = "backtest_da_projecao.json"
+TESTES = "testes_da_projecao.json"
 MENSAL = "carteira_mensal_pj.json"
 
 
@@ -361,7 +362,10 @@ def validar_visao_3(conteudos: dict[str, dict]) -> list[str]:
           também a soma do carteira_mensal_pj.json, que sai do mesmo mart
           pela exportação, até o arredondamento de meio real por parcela;
         - cada recorte tiver um só modelo escolhido no backtest, o mesmo que
-          a projeção usa.
+          a projeção usa;
+        - cada recorte tiver os quatro testes da janela de avaliação, de um a
+          três meses, com o realizado da projeção, a faixa em volta da
+          previsão e o mesmo modelo (ADR 0024, decisão 6).
     EN: View 3: per cut, actual months up to the data-base plus three
         projected ones inside their interval; the country's actuals equal the
         states', the modalities' and the monthly export's sums; one chosen
@@ -440,6 +444,37 @@ def validar_visao_3(conteudos: dict[str, dict]) -> list[str]:
                 f"{BACKTEST}, {chave[0]} {chave[1]}: escolhido {sorted(escolhidos.get(chave, set()))}, "
                 f"e a projeção usa {modelo}"
             )
+            break
+    if problemas:
+        return problemas
+
+    testes = conteudos[TESTES]["colunas"]
+    por_teste: dict[tuple[str, str], list[int]] = {}
+    for i, chave in enumerate(zip(testes["tipo_de_recorte"], testes["recorte"], strict=True)):
+        por_teste.setdefault(chave, []).append(i)
+    if set(por_teste) != set(por_recorte):
+        return [f"{TESTES}: os recortes não são os da projeção"]
+    for chave, indices in por_teste.items():
+        nome = f"{TESTES}, {chave[0]} {chave[1]}"
+        datas = {testes["data_do_teste"][i] for i in indices}
+        if len(datas) != 4 or len(indices) != 12:
+            problemas.append(f"{nome}: esperava 4 testes de 3 meses")
+            break
+        modelo = colunas["modelo"][por_recorte[chave][0]]
+        for i in indices:
+            mes = testes["data_base"][i]
+            if mes != _meses_seguintes(testes["data_do_teste"][i], testes["horizonte"][i])[-1]:
+                problemas.append(f"{nome}, {mes}: mês fora do horizonte do teste")
+            elif testes["realizado"][i] != realizado[chave].get(mes):
+                problemas.append(f"{nome}, {mes}: realizado diferente da projeção")
+            elif not testes["limite_inferior"][i] <= testes["projecao"][i] <= testes["limite_superior"][i]:
+                problemas.append(f"{nome}, {mes}: faixa fora de ordem")
+            elif testes["modelo"][i] != modelo:
+                problemas.append(f"{nome}: modelo diferente da projeção")
+            else:
+                continue
+            break
+        if problemas:
             break
     return problemas
 
@@ -612,6 +647,12 @@ def autoteste(textos: dict[str, str], contrato: dict) -> list[str]:
          _na_linha(PROJECAO, "realizado", "pais", 0, lambda v: v + 10**9), f"diferente do {MENSAL}"),
         ("UF fora da soma do país", PROJECAO,
          _na_linha(PROJECAO, "realizado", "uf", 0, lambda v: v + 10**9), "país diferente da soma das UFs"),
+        ("teste com realizado diferente da projeção", TESTES,
+         _na_linha(TESTES, "realizado", "pais", 0, lambda v: v + 10**9), "realizado diferente da projeção"),
+        ("teste com faixa fora de ordem", TESTES,
+         _na_linha(TESTES, "limite_superior", "pais", 0, lambda v: 0), "faixa fora de ordem"),
+        ("teste com outro modelo", TESTES,
+         _na_linha(TESTES, "modelo", "pais", 0, lambda v: "ingenuo" if v != "ingenuo" else "deriva"), "modelo diferente da projeção"),
         ("modelo escolhido diferente do da projeção", BACKTEST,
          lambda c: c["colunas"]["escolhido"].__setitem__(
              c["colunas"]["escolhido"].index(False), True), "escolhido"),

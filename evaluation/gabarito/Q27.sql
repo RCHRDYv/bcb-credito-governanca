@@ -1,7 +1,8 @@
 -- PT: Q27. Projeção da carteira ativa PJ do país para os três meses seguintes
 --     ao último mês do dado, pela deriva, com o intervalo de 80%. A deriva é
---     o modelo que o backtest da #27 escolheu para o país (ADR 0023), e a
---     conta é a mesma de scripts/analises/previsao_da_carteira.py: a
+--     o campeão da previsão e a referência da Q27 (ADR 0024), e a conta é a
+--     mesma de prever("deriva") em scripts/analises/previsao_da_carteira.py,
+--     sobre a série publicada, sem o ajuste da quebra de set/2025: a
 --     inclinação vai do primeiro ao último mês, o desvio vem dos resíduos das
 --     variações mensais com um grau a menos, e o desvio de h meses à frente é
 --     o desvio vezes a raiz de h * (1 + h / (n - 1)). O z do intervalo de 80%
