@@ -50,7 +50,7 @@ PARAMETROS_DA_DECISAO = (
 # PT: Precisão por unidade (ver `formato.precisao` no contrato).
 # EN: Precision by unit.
 UNIDADES_EM_REAIS = {"reais", "reais_por_empresa"}
-UNIDADES_FRACIONARIAS = {"fracao", "diferenca_de_fracao", "variacao_relativa", "indice"}
+UNIDADES_FRACIONARIAS = {"fracao", "diferenca_de_fracao", "variacao_relativa", "indice", "media_de_fracoes"}
 UNIDADES_INTEIRAS = {"empresas", "contagem", "meses"}
 UM_REAL = Decimal(1)
 SEIS_CASAS = Decimal("0.000001")

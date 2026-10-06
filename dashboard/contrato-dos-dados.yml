@@ -54,6 +54,7 @@ unidades:
   diferenca_de_fracao: "Diferença entre duas frações. O site mostra como +0,15 p.p."
   variacao_relativa: "Razão menos um. O site mostra como +4,2%."
   indice: "Razão sem unidade, em que 1 é a referência. O site mostra com duas casas."
+  media_de_fracoes: "Média de frações de cada caso, e não razão de somas, como o erro percentual médio do backtest. O site mostra como 1,2%."
   empresas: "Contagem de empresas."
   contagem: "Contagem de outra coisa, dita na definição da coluna."
   meses: "Número inteiro de meses."
@@ -74,9 +75,12 @@ unidades:
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# PT: Os arquivos da v0.1. O da visão 3 entra com a #27, na v0.2. O
-#     mrt_reconciliacao_versoes fica fora, porque nenhuma visão da v0.1 o usa.
-# EN: The v0.1 files. View 3's file comes with #27 in v0.2.
+# PT: Os arquivos das visões. Os da visão 3 entraram com a #27, na v0.2, e
+#     não saem de um mart: o script da previsão os grava, com a chave
+#     gerado_por, e a exportação só os lê do disco para o manifesto. O
+#     mrt_reconciliacao_versoes fica fora, porque nenhuma visão o usa.
+# EN: The views' files. View 3's come from the forecast script (gerado_por),
+#     not from a mart; the export only reads them from disk for the manifest.
 # -----------------------------------------------------------------------------
 arquivos:
 
@@ -207,6 +211,47 @@ arquivos:
       - {nome: empresas_ativas_reconstruida, tipo: integer, unidade: empresas, nulo: false, definicao: "ontology/fontes_externas.yml#estoque_reconstruido"}
       - {nome: erro_relativo, tipo: number, unidade: variacao_relativa, nulo: false, definicao: "ADR 0009"}
 
+  - arquivo: projecao_da_carteira.json
+    origem: mrt_carteira_mensal
+    gerado_por: scripts/analises/previsao_da_carteira.py
+    grao: "Recorte e mês: o país, as 13 modalidades e as 27 UFs, nos 31 meses realizados e nos 3 projetados"
+    filtro: >
+      cliente = 'PJ'. O script soma a carteira ativa do mart por recorte, sem
+      calcular razão, escolhe o modelo de cada recorte pelo backtest e projeta
+      os três meses seguintes à data-base, com intervalo de 80% (ADR 0023).
+    ordem: [tipo_de_recorte, recorte, data_base]
+    visoes: [3]
+    colunas:
+      - {nome: tipo_de_recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1", valores: ["modalidade", "pais", "uf"]}
+      - {nome: recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1"}
+      - {nome: data_base, tipo: string, unidade: data, nulo: false, definicao: "ontology/dimensoes.yml#dim_data_base"}
+      - {nome: realizado, tipo: number, unidade: reais, nulo: true, definicao: "ontology/metricas.yml#carteira_ativa"}
+      - {nome: projecao, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0023, decisão 4"}
+      - {nome: limite_inferior, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0023, decisão 4"}
+      - {nome: limite_superior, tipo: number, unidade: reais, nulo: true, definicao: "ADR 0023, decisão 4"}
+      - {nome: modelo, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 2", valores: ["deriva", "holt_amortecido", "ingenuo", "ingenuo_sazonal"]}
+
+  - arquivo: backtest_da_projecao.json
+    origem: mrt_carteira_mensal
+    gerado_por: scripts/analises/previsao_da_carteira.py
+    grao: "Recorte, modelo candidato e horizonte de 1 a 3 meses"
+    filtro: >
+      As medidas de cada candidato nas origens do backtest: o MASE na janela de
+      escolha, que decide o modelo, e o MASE, o MAPE e a cobertura do
+      intervalo na janela de avaliação, que é o erro publicado (ADR 0023).
+    ordem: [tipo_de_recorte, recorte, modelo, horizonte]
+    visoes: [3]
+    colunas:
+      - {nome: tipo_de_recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1", valores: ["modalidade", "pais", "uf"]}
+      - {nome: recorte, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 1"}
+      - {nome: modelo, tipo: string, unidade: texto, nulo: false, definicao: "ADR 0023, decisão 2", valores: ["deriva", "holt_amortecido", "ingenuo", "ingenuo_sazonal"]}
+      - {nome: horizonte, tipo: integer, unidade: meses, nulo: false, definicao: "ADR 0023, decisão 3"}
+      - {nome: escolhido, tipo: boolean, unidade: booleano, nulo: false, definicao: "ADR 0023, decisão 3"}
+      - {nome: mase_na_escolha, tipo: number, unidade: indice, nulo: false, definicao: "ADR 0023, decisão 3"}
+      - {nome: mase, tipo: number, unidade: indice, nulo: false, definicao: "ADR 0023, decisão 3"}
+      - {nome: mape, tipo: number, unidade: media_de_fracoes, nulo: false, definicao: "ADR 0023, decisão 3"}
+      - {nome: cobertura, tipo: number, unidade: fracao, nulo: false, definicao: "ADR 0023, decisão 4"}
+
 # -----------------------------------------------------------------------------
 # PT: Arquivos que não saem de um mart.
 # EN: Files that do not come from a mart.
@@ -228,7 +273,7 @@ auxiliares:
       vai o mapa de cada coluna para a sua definição, um conceito ou um ADR,
       que é o que deixa o site ir do número à definição (RF-G07). Gerado do
       YAML da ontologia, nunca digitado.
-    visoes: [1, 2, 4]
+    visoes: [1, 2, 3, 4]
 
   - arquivo: manifesto.json
     origem: "A própria exportação"
@@ -240,7 +285,7 @@ auxiliares:
       visão sem ler este YAML. Não guarda data de geração: rodar de novo com
       o mesmo dado produz os mesmos arquivos, byte a byte, como a
       docs/recomendacao.md.
-    visoes: [1, 2, 4]
+    visoes: [1, 2, 3, 4]
 
   - arquivo: geo/ufs.json
     origem: "API de malhas v3 do IBGE, malha territorial de 2022 na qualidade mínima (#67)"

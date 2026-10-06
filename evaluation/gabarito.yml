@@ -441,7 +441,7 @@ perguntas:
     tipo_de_acerto: valor
     pendente:
       depende_de: ["#27"]
-      motivo: "A projeção entra na v0.2, com backtest e erro publicado."
+      motivo: "A projeção entra na v0.2, com backtest e erro publicado (ADR 0023). Se a resposta de referência é a projeção do país e com que tolerância fica para a revisão da #27."
 
   # ---------------------------------------------------------------------------
   # PT: Automação do trabalho repetitivo

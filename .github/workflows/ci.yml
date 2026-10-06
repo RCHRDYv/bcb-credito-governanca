@@ -173,6 +173,14 @@ jobs:
       - name: Dados do dashboard (controle negativo)
         run: uv run python -m scripts.validar_dados_do_dashboard --autoteste
 
+      # PT: O método da previsão da carteira (#27, ADR 0023) com séries
+      #     sintéticas de comportamento conhecido, sem Databricks: as janelas
+      #     de escolha e de avaliação não se cruzam, a tendência ganha do
+      #     ingênuo, e o intervalo contém a projeção.
+      # EN: The portfolio forecast method on synthetic series, no Databricks.
+      - name: Previsão da carteira (autoteste do método)
+        run: uv run python -m scripts.analises.previsao_da_carteira --autoteste
+
       # PT: Carga do projeto dbt: Jinja, macros, referências entre modelos,
       #     fontes e testes. Não conecta no warehouse e não precisa de
       #     credencial (ver .github/dbt/profiles.yml). É o que pega um `ref`
