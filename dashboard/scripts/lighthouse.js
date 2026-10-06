@@ -76,6 +76,10 @@ async function auditar(endereco, porta, perfil) {
   const { categories, audits } = resultado.lhr;
   const falhas = [];
   console.log(`\n${perfil}`);
+  // PT: a nota de CPU que o Lighthouse mede da máquina; a simulação do
+  //     celular multiplica o tempo observado, então máquina lenta pesa (#89)
+  // EN: Lighthouse's own CPU benchmark of the host
+  console.log(`  benchmarkIndex da máquina: ${resultado.lhr.environment.benchmarkIndex}`);
   for (const [categoria, meta] of Object.entries(metas)) {
     const nota = categories[categoria]?.score ?? 0;
     const ok = nota >= meta;
