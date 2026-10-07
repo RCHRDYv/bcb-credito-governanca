@@ -228,17 +228,61 @@ TABELAS_CNPJ = (
 #     reasons and qualifications stay out too, since nothing queries them.
 
 # -----------------------------------------------------------------------------
-# PT: População residente estimada por UF, IBGE, tabela 6579 do SIDRA. A
-#     estimativa tem data de referência em 1º de julho de cada ano.
-#     n3/all = todas as UFs; v/9324 = população residente estimada.
-# EN: Estimated resident population by state, IBGE, SIDRA table 6579.
-#     Reference date is July 1st of each year.
+# PT: Tabelas do SIDRA, do IBGE, todas por UF (n3/all). Definições em
+#     ontology/fontes_externas.yml.
+#     - 6579: população residente estimada (issue #25), anual, com data de
+#       referência em 1º de julho;
+#     - 6472 e 6474: rendimento médio e massa de rendimento do trabalho da
+#       PNAD Contínua (issue #38, ADR 0025), trimestrais. Só o valor nominal
+#       e o coeficiente de variação. O valor real é deflacionado a preços do
+#       último trimestre, e o IBGE refaz a série inteira a cada divulgação.
+#
+#     A PNAD começa no trimestre anterior ao primeiro mês do SCR: cada mês
+#     usa o último trimestre encerrado até a data-base, e jan e fev do
+#     primeiro ano usam o 4º trimestre do ano anterior. Março já usa o 1º,
+#     que termina na própria data-base. O fim é o último trimestre
+#     publicado. Histórico anterior não é baixado.
+# EN: SIDRA tables from IBGE, all by state. 6579 is estimated population,
+#     yearly; 6472 and 6474 are average and total labor income from the
+#     quarterly PNAD Contínua, nominal value and coefficient of variation
+#     only (the real value is re-deflated to the latest quarter on every
+#     release). The PNAD starts one quarter before the first SCR month, since
+#     each month uses the last quarter ended by its reference date; it ends at
+#     the latest published quarter.
 # -----------------------------------------------------------------------------
 
-SIDRA_POPULACAO = "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/{anos}"
-ANOS_POPULACAO = ANOS
+SIDRA_URL = "https://apisidra.ibge.gov.br/values/t/{tabela}/n3/all/v/{variaveis}/p/{periodos}"
+SIDRA_PERIODOS = "https://servicodados.ibge.gov.br/api/v3/agregados/{tabela}/periodos"
+PRIMEIRO_TRIMESTRE_PNAD = f"{ANOS[0] - 1}04"
 DIR_RAW_IBGE = DIR_RAW / "ibge"
 DIR_LANDING_IBGE = DIR_LANDING / "ibge"
+
+
+@dataclass(frozen=True)
+class TabelaSidra:
+    """
+    PT: Uma tabela do SIDRA. O nome vira a pasta, o arquivo e o sufixo da
+        tabela bronze (bronze_ibge_<nome>). O período é o rótulo da terceira
+        dimensão no SIDRA: "Ano" ou "Trimestre".
+    EN: One SIDRA table. The name becomes folder, file and bronze table
+        suffix. The period is SIDRA's label for the third dimension.
+    """
+
+    nome: str
+    tabela: int
+    variaveis: tuple[str, ...]
+    periodo: str
+
+    @property
+    def arquivo(self) -> str:
+        return f"{self.nome}_{self.tabela}.json"
+
+
+TABELAS_SIDRA = (
+    TabelaSidra(nome="populacao", tabela=6579, variaveis=("9324",), periodo="Ano"),
+    TabelaSidra(nome="rendimento", tabela=6472, variaveis=("5929", "5937"), periodo="Trimestre"),
+    TabelaSidra(nome="massa", tabela=6474, variaveis=("6288", "6289"), periodo="Trimestre"),
+)
 
 # -----------------------------------------------------------------------------
 # PT: Malha das UFs, pela API de malhas v3 do IBGE (issue #67). Só o site do

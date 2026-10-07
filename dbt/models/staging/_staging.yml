@@ -361,6 +361,50 @@ models:
       - name: populacao
         data_tests: [not_null]
 
+  - name: stg_ibge_rendimento
+    description: "Rendimento médio mensal do trabalho por UF e trimestre, tabela 6472 do SIDRA, com as duas variáveis em linhas."
+    columns:
+      - name: ano
+        data_tests: [not_null]
+      - name: trimestre
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+                quote: false
+      - name: codigo_ibge_uf
+        data_tests: [not_null]
+      - name: codigo_variavel
+        description: "5929, o valor nominal em reais, ou 5937, o coeficiente de variação em %."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["5929", "5937"]
+      - name: valor
+        data_tests: [not_null]
+
+  - name: stg_ibge_massa
+    description: "Massa de rendimento mensal do trabalho por UF e trimestre, tabela 6474 do SIDRA, com as duas variáveis em linhas."
+    columns:
+      - name: ano
+        data_tests: [not_null]
+      - name: trimestre
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+                quote: false
+      - name: codigo_ibge_uf
+        data_tests: [not_null]
+      - name: codigo_variavel
+        description: "6288, o valor nominal em milhões de reais, ou 6289, o coeficiente de variação em %."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["6288", "6289"]
+      - name: valor
+        data_tests: [not_null]
+
   - name: stg_sgs_series
     description: "Séries do SGS do BCB, com data e valor tipados. Hoje só a meta da Selic, série 432, em % ao ano."
     columns:

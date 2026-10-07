@@ -351,6 +351,41 @@ models:
       - name: populacao
         data_tests: [not_null]
 
+  - name: fct_renda_do_trabalho
+    description: >
+      Rendimento médio e massa de rendimento mensal do trabalho por UF e
+      trimestre, da PNAD Contínua do IBGE (tabelas 6472 e 6474, ADR 0025).
+      Valores nominais. O grão é o trimestre; cada mês da carteira usa o
+      último trimestre encerrado até a data-base, pela coluna
+      fim_do_trimestre.
+    columns:
+      - name: ano
+        data_tests: [not_null]
+      - name: trimestre
+        data_tests: [not_null]
+      - name: fim_do_trimestre
+        description: "Último dia do trimestre. Um mês usa o maior fim_do_trimestre menor ou igual à data-base."
+        data_tests: [not_null]
+      - name: uf
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_uf')
+                field: uf
+      - name: rendimento_medio
+        description: "Rendimento médio mensal nominal do trabalho, habitualmente recebido em todos os trabalhos, das pessoas de 14 anos ou mais ocupadas, em reais."
+        data_tests: [not_null]
+      - name: cv_rendimento_medio
+        description: "Coeficiente de variação do rendimento médio, em %, como o IBGE publica."
+        data_tests: [not_null]
+      - name: massa_de_rendimento
+        description: "Massa de rendimento mensal nominal do trabalho, habitualmente recebido em todos os trabalhos, em reais. O IBGE publica em milhões, arredondado ao milhão."
+        data_tests: [not_null]
+      - name: cv_massa_de_rendimento
+        description: "Coeficiente de variação da massa, em %."
+        data_tests: [not_null]
+
   - name: mrt_carteira_por_uf
     description: >
       Tela 1 do dashboard. Carteira por UF e mês, com o denominador de

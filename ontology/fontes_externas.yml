@@ -2,7 +2,8 @@
 # PT: Ontologia das fontes externas por UF: o número de empresas ativas, do
 #     CNPJ aberto da Receita Federal, e a população residente estimada, do
 #     IBGE. Elas são os denominadores das perguntas Q11, Q12 e Q14 e do
-#     indicador de espaço da camada de decisão (issue #25).
+#     indicador de espaço da camada de decisão (issue #25). A renda do
+#     trabalho da PNAD Contínua é o denominador da Q13 e da Q15 (issue #38).
 #
 #     Existe pelo mesmo motivo das outras: cada denominador tem uma armadilha
 #     que o nome da coluna não mostra. A principal é que a UF do SCR é a da
@@ -29,7 +30,7 @@
 
 esquema:
   id: fontes-externas-uf
-  titulo: "Denominadores por UF: empresas ativas e população"
+  titulo: "Denominadores por UF: empresas ativas, população e renda do trabalho"
   data_leitura: "2026-09-24"
 
 fontes:
@@ -73,6 +74,39 @@ fontes:
     data_de_referencia: "1º de julho de cada ano"
     confianca: verbatim
     fonte: "Resposta da API do SIDRA em 2026-09-24"
+
+  - id: sidra_6472
+    prefLabel_pt: "Rendimento médio do trabalho, PNAD Contínua, tabela 6472 do SIDRA"
+    prefLabel_en: "Average labor income, PNAD Contínua, SIDRA table 6472"
+    publicador: "IBGE"
+    endereco: "https://apisidra.ibge.gov.br/values/t/6472/n3/all/v/5929,5937/p/{trimestres}"
+    documentacao: "https://sidra.ibge.gov.br/tabela/6472"
+    periodicidade: "trimestral, por trimestre civil, publicada cerca de 45 dias depois do fim do trimestre"
+    formato: "JSON da API do SIDRA, com a primeira linha trazendo o dicionário das colunas"
+    data_de_referencia: >
+      O trimestre civil, com um valor mensal médio do trimestre. Cada mês do
+      SCR usa o último trimestre encerrado até a data-base: jul/2026 usa o 2º
+      trimestre de 2026, porque o 3º só é publicado em novembro
+      (avisos.renda_do_trimestre_anterior). O mês que fecha o trimestre usa
+      o próprio trimestre: mar/2024 usa o 1º de 2024. A ingestão pede do 4º
+      trimestre de 2023, que serve jan e fev/2024, até o último publicado,
+      numa lista explícita de trimestres.
+    confianca: verbatim
+    fonte: "Metadados da tabela na API de agregados do IBGE e resposta da API do SIDRA em 2026-10-07"
+
+  - id: sidra_6474
+    prefLabel_pt: "Massa de rendimento do trabalho, PNAD Contínua, tabela 6474 do SIDRA"
+    prefLabel_en: "Total labor income, PNAD Contínua, SIDRA table 6474"
+    publicador: "IBGE"
+    endereco: "https://apisidra.ibge.gov.br/values/t/6474/n3/all/v/6288,6289/p/{trimestres}"
+    documentacao: "https://sidra.ibge.gov.br/tabela/6474"
+    periodicidade: "trimestral, por trimestre civil, publicada cerca de 45 dias depois do fim do trimestre"
+    formato: "JSON da API do SIDRA, com a primeira linha trazendo o dicionário das colunas; valor em milhões de reais, arredondado ao milhão"
+    data_de_referencia: >
+      O trimestre civil, como na tabela 6472, com a mesma regra de junção
+      com o mês do SCR.
+    confianca: verbatim
+    fonte: "Metadados da tabela na API de agregados do IBGE e resposta da API do SIDRA em 2026-10-07"
 
   - id: sgs_432
     prefLabel_pt: "Meta da Selic, série 432 do SGS"
@@ -202,6 +236,51 @@ conceitos:
       diante da da carteira, e interpolar seria inventar um dado que o IBGE
       não publica. O IBGE revisa estimativas de anos anteriores, e a revisão
       aparece como sha256 novo no manifesto da ingestão.
+
+  - id: rendimento_medio_do_trabalho
+    notation: rendimento_medio
+    prefLabel_pt: "Rendimento médio mensal do trabalho"
+    prefLabel_en: "Average monthly labor income"
+    definition: >
+      Rendimento médio mensal nominal, em reais, habitualmente recebido em
+      todos os trabalhos pelas pessoas de 14 anos ou mais ocupadas na semana
+      de referência com rendimento de trabalho, por UF e trimestre.
+    confianca: parafraseado
+    fonte: "IBGE, PNAD Contínua trimestral, tabela 6472 do SIDRA, variável 5929; coeficiente de variação na 5937"
+    scopeNote: >
+      É a "renda média por UF" da Q13 (ADR 0025). Valor nominal, como a
+      carteira do SCR. O valor real que o IBGE também publica é deflacionado
+      a preços do último trimestre e muda inteiro a cada divulgação, o que
+      quebraria a identidade da ingestão e o gabarito. Habitual é o que a
+      pessoa normalmente recebe no mês, sem pagamentos extraordinários. A
+      média é das pessoas ocupadas, e não da população. Cada mês do SCR usa o
+      último trimestre encerrado até a data-base.
+    armadilha: >
+      A coluna porte do SCR, para pessoa física, é a faixa de rendimento do
+      tomador em salários mínimos (ontology/dimensoes.yml). É outro conceito:
+      a renda de quem tomou crédito, e não a renda média da UF.
+
+  - id: massa_de_rendimento_do_trabalho
+    notation: massa_de_rendimento
+    prefLabel_pt: "Massa de rendimento mensal do trabalho"
+    prefLabel_en: "Total monthly labor income"
+    definition: >
+      Soma do rendimento mensal nominal habitualmente recebido em todos os
+      trabalhos pelas pessoas de 14 anos ou mais ocupadas, por UF e
+      trimestre. O IBGE publica em milhões de reais, e o fato converte para
+      reais.
+    confianca: parafraseado
+    fonte: "IBGE, PNAD Contínua trimestral, tabela 6474 do SIDRA, variável 6288; coeficiente de variação na 6289"
+    scopeNote: >
+      É a "massa salarial regional" da Q15 (ADR 0025). É fluxo de um mês, e a
+      carteira é estoque: a razão carteira por massa se lê em meses de renda
+      do trabalho da UF. A soma das 27 UFs bate com o total do Brasil, a
+      menos do arredondamento ao milhão.
+    armadilha: >
+      "Massa salarial" sugere só salário de empregado com carteira, mas a
+      massa da PNAD soma todo rendimento do trabalho, formal e informal, de
+      empregados, conta própria e empregadores
+      (avisos.renda_do_trabalho_nao_e_renda_domiciliar).
 
   - id: porte_da_empresa_na_receita
     notation: porte_receita
@@ -410,3 +489,43 @@ avisos:
       meses e falha se aparecer um terceiro.
     confianca: verbatim
     fonte: "Medição nos JSONs brutos da API, 2026-09-24"
+
+  - id: renda_do_trabalho_nao_e_renda_domiciliar
+    gravidade: media
+    descricao: >
+      A renda da PNAD trimestral é só a do trabalho. Aposentadoria, pensão,
+      programas sociais, aluguel e aplicações ficam fora. A renda domiciliar
+      per capita, que inclui tudo isso, só existe na PNAD anual, com um ano
+      de defasagem (2025 era o último ano em 2026-10-07).
+    consequencia: >
+      Nas UFs onde transferências e aposentadorias pesam mais, a renda do
+      trabalho subestima a renda disponível para pagar dívida. A Q13 e a Q15
+      usam a renda do trabalho, e a resposta precisa dizer isso.
+    confianca: parafraseado
+    fonte: "Metadados das tabelas 6472, 6474 e 7531 na API de agregados do IBGE, 2026-10-07"
+
+  - id: renda_do_trimestre_anterior
+    gravidade: media
+    descricao: >
+      A PNAD trimestral sai cerca de 45 dias depois do fim do trimestre. O
+      mês mais recente do SCR quase nunca tem o próprio trimestre publicado:
+      em 2026-10-07, jul/2026 estava no 3º trimestre, que só sai em novembro.
+    consequencia: >
+      Cada mês usa o último trimestre encerrado até a data-base, e a resposta
+      diz qual trimestre usou. Uma junção pelo trimestre do próprio mês
+      deixaria o mês mais recente sem renda, sem erro.
+    confianca: verbatim
+    fonte: "Períodos publicados na API de agregados do IBGE, 2026-10-07"
+
+  - id: renda_imprecisa_nas_ufs_pequenas
+    gravidade: baixa
+    descricao: >
+      A PNAD é amostral, e o coeficiente de variação cresce nas UFs pequenas.
+      No 2º trimestre de 2026, o do rendimento médio ia de 1,5% em SC a 6,8%
+      em RR, e o da massa de 1,7% em SC a 7,9% em RR.
+    consequencia: >
+      Diferenças pequenas entre UFs pequenas podem ser ruído da amostra. Uma
+      correlação entre 27 UFs tem poucos pares, e a resposta precisa tratar o
+      número como indício, e não como prova. O fato guarda os coeficientes.
+    confianca: verbatim
+    fonte: "Variáveis 5937 e 6289 do SIDRA, 2026-10-07"

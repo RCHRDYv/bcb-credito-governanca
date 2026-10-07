@@ -122,6 +122,29 @@ sources:
             description: "População, em pessoas, como texto."
             data_tests: [not_null]
 
+      - name: bronze_ibge_rendimento
+        description: >
+          Rendimento médio mensal do trabalho por UF e trimestre, PNAD
+          Contínua, tabela 6472 do SIDRA (issue #38). Só o valor nominal
+          (variável 5929) e o coeficiente de variação (5937), com os nomes de
+          campo da API (V = valor, D1C = código da UF, D2C = variável, D3C =
+          trimestre AAAATT).
+        columns:
+          - name: V
+            description: "Valor, como texto."
+            data_tests: [not_null]
+
+      - name: bronze_ibge_massa
+        description: >
+          Massa de rendimento mensal do trabalho por UF e trimestre, PNAD
+          Contínua, tabela 6474 do SIDRA (issue #38). Só o valor nominal, em
+          milhões de reais (variável 6288), e o coeficiente de variação
+          (6289), com os nomes de campo da API.
+        columns:
+          - name: V
+            description: "Valor, como texto."
+            data_tests: [not_null]
+
       - name: bronze_sgs_series
         description: >
           Séries do SGS do BCB, uma linha por dia e por série, como a API

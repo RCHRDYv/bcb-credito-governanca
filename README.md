@@ -155,7 +155,7 @@ uv run python -m ingestion.baixar             # ZIPs oficiais do SCR para data/r
 uv run python -m ingestion.converter_parquet  # CSV para Parquet só texto, com validação
 uv run python -m ingestion.baixar_cnpj        # CNPJ da Receita, três retratos, cerca de 16 GB
 uv run python -m ingestion.converter_cnpj     # CNPJ para Parquet só texto, em partes
-uv run python -m ingestion.baixar_ibge        # população por UF, SIDRA 6579
+uv run python -m ingestion.baixar_ibge        # população e renda do trabalho por UF, SIDRA 6579, 6472 e 6474
 uv run python -m ingestion.baixar_sgs         # meta da Selic, série 432 do SGS
 uv run python -m ingestion.baixar_pix         # PIX por município, meses fechados
 uv run python -m ingestion.baixar_malha       # malha das UFs do IBGE, só para o site
