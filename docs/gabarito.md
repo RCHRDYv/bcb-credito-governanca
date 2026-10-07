@@ -2,7 +2,7 @@
 
 **Mês de referência:** jul/2026. Gerado por `scripts/gerar_gabarito.py` a partir de [`evaluation/gabarito.yml`](../evaluation/gabarito.yml) e dos SQL em [`evaluation/gabarito/`](../evaluation/gabarito/). Nenhum número deste documento é digitado à mão: para atualizar, rode o script de novo.
 
-São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer execução ([`questions_v3.yml`](../evaluation/questions_v3.yml)). 39 têm resposta nesta versão, com 48 leituras e 53 consultas, e 2 dependem de fonte ou modelo que ainda não está no projeto.
+São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer execução ([`questions_v3.yml`](../evaluation/questions_v3.yml)). 41 têm resposta nesta versão, com 51 leituras e 56 consultas, e 0 dependem de fonte ou modelo que ainda não está no projeto.
 
 ## Como ler
 
@@ -442,7 +442,27 @@ São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer e
 
 **Tipo de acerto:** `valor`
 
-**Pendente:** depende de #38. Renda média por UF ainda não está no projeto.
+**Fonte da definição:** `fontes_externas.rendimento_medio_do_trabalho`, `metricas.indicador_inadimplencia`, `fontes_externas.renda_do_trimestre_anterior`
+
+**Leitura `pf`:** Correlação, entre as 27 UFs, do rendimento médio do trabalho com a taxa de inadimplência da carteira de pessoa física, em 12 meses e no recorte inteiro.
+
+[`Q13_pf.sql`](../evaluation/gabarito/Q13_pf.sql)
+
+| Janela | Primeiro mês | Último mês | Primeiro trimestre da renda | Último trimestre da renda | Correlação | Pares |
+|---|---|---|---|---|---|---|
+| 12 meses | ago/2025 | jul/2026 | 202.502 | 202.602 | -0,487 | 27 |
+| recorte inteiro | jan/2024 | jul/2026 | 202.304 | 202.602 | -0,605 | 27 |
+
+**Leitura `total`:** Correlação, entre as 27 UFs, do rendimento médio do trabalho com a taxa de inadimplência da carteira inteira, pessoa física e jurídica, em 12 meses e no recorte inteiro.
+
+[`Q13_total.sql`](../evaluation/gabarito/Q13_total.sql)
+
+| Janela | Primeiro mês | Último mês | Primeiro trimestre da renda | Último trimestre da renda | Correlação | Pares |
+|---|---|---|---|---|---|---|
+| 12 meses | ago/2025 | jul/2026 | 202.502 | 202.602 | -0,563 | 27 |
+| recorte inteiro | jan/2024 | jul/2026 | 202.304 | 202.602 | -0,719 | 27 |
+
+**Observação:** A renda é a do trabalho, da PNAD Contínua trimestral, em valor nominal, e cada mês usa o último trimestre encerrado até a data-base (ADR 0025). São 27 pares, e a PNAD é imprecisa nas UFs pequenas: a resposta precisa tratar a correlação como indício, e não como prova.
 
 ### Q14. Quais UFs estão sub-atendidas em crédito de pessoa jurídica, considerando o número de empresas ativas na região?
 
@@ -536,7 +556,47 @@ São 41 perguntas, do conjunto v3, registrado em 2026-09-25, antes de qualquer e
 
 **Tipo de acerto:** `valor`
 
-**Pendente:** depende de #38. Massa salarial por UF ainda não está no projeto.
+**Fonte da definição:** `fontes_externas.massa_de_rendimento_do_trabalho`, `metricas.carteira_ativa`, `fontes_externas.renda_do_trabalho_nao_e_renda_domiciliar`
+
+**Como se responde:** Carteira de pessoa física por UF no último mês, dividida pela massa de rendimento mensal do trabalho da UF. Sugere sobre-endividamento a UF cuja razão fica acima da do Brasil.
+
+[`Q15.sql`](../evaluation/gabarito/Q15.sql)
+
+<details><summary>27 linhas</summary>
+
+| Posição | UF | Data base | Trimestre da renda | Carteira PF | Massa de rendimento | Meses de renda | Meses de renda no brasil | Diferenca para o brasil | Acima da razão nacional |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | MT | jul/2026 | 202.602 | R$ 179,7 bi | 8.494.000.000,00 | 21,15 | 12,31 | 71,88% | sim |
+| 2 | MS | jul/2026 | 202.602 | R$ 103,5 bi | 5.504.000.000,00 | 18,80 | 12,31 | 52,79% | sim |
+| 3 | RO | jul/2026 | 202.602 | R$ 52,3 bi | 3.072.000.000,00 | 17,04 | 12,31 | 38,42% | sim |
+| 4 | GO | jul/2026 | 202.602 | R$ 254,8 bi | 15.222.000.000,00 | 16,74 | 12,31 | 36,01% | sim |
+| 5 | TO | jul/2026 | 202.602 | R$ 42,5 bi | 2.648.000.000,00 | 16,06 | 12,31 | 30,48% | sim |
+| 6 | MA | jul/2026 | 202.602 | R$ 89,8 bi | 6.100.000.000,00 | 14,72 | 12,31 | 19,57% | sim |
+| 7 | AC | jul/2026 | 202.602 | R$ 15,1 bi | 1.042.000.000,00 | 14,51 | 12,31 | 17,86% | sim |
+| 8 | RS | jul/2026 | 202.602 | R$ 344,9 bi | 24.183.000.000,00 | 14,26 | 12,31 | 15,87% | sim |
+| 9 | AL | jul/2026 | 202.602 | R$ 43,6 bi | 3.095.000.000,00 | 14,08 | 12,31 | 14,40% | sim |
+| 10 | RN | jul/2026 | 202.602 | R$ 53,8 bi | 3.918.000.000,00 | 13,72 | 12,31 | 11,49% | sim |
+| 11 | PR | jul/2026 | 202.602 | R$ 354,6 bi | 26.197.000.000,00 | 13,53 | 12,31 | 9,97% | sim |
+| 12 | PB | jul/2026 | 202.602 | R$ 63,1 bi | 4.771.000.000,00 | 13,24 | 12,31 | 7,54% | sim |
+| 13 | AP | jul/2026 | 202.602 | R$ 13,2 bi | 1.067.000.000,00 | 12,38 | 12,31 | 0,56% | sim |
+| 14 | PI | jul/2026 | 202.602 | R$ 41,0 bi | 3.328.000.000,00 | 12,32 | 12,31 | 0,10% | sim |
+| 15 | PE | jul/2026 | 202.602 | R$ 122,9 bi | 10.055.000.000,00 | 12,23 | 12,31 | -0,65% | não |
+| 16 | PA | jul/2026 | 202.602 | R$ 113,6 bi | 9.427.000.000,00 | 12,05 | 12,31 | -2,07% | não |
+| 17 | RR | jul/2026 | 202.602 | R$ 13,1 bi | 1.091.000.000,00 | 11,99 | 12,31 | -2,56% | não |
+| 18 | CE | jul/2026 | 202.602 | R$ 117,3 bi | 9.820.000.000,00 | 11,95 | 12,31 | -2,93% | não |
+| 19 | MG | jul/2026 | 202.602 | R$ 446,0 bi | 37.579.000.000,00 | 11,87 | 12,31 | -3,56% | não |
+| 20 | BA | jul/2026 | 202.602 | R$ 192,7 bi | 16.427.000.000,00 | 11,73 | 12,31 | -4,67% | não |
+| 21 | SC | jul/2026 | 202.602 | R$ 231,4 bi | 19.752.000.000,00 | 11,72 | 12,31 | -4,79% | não |
+| 22 | SP | jul/2026 | 202.602 | R$ 1.250,1 bi | 108.690.000.000,00 | 11,50 | 12,31 | -6,55% | não |
+| 23 | SE | jul/2026 | 202.602 | R$ 33,1 bi | 2.895.000.000,00 | 11,45 | 12,31 | -6,99% | não |
+| 24 | ES | jul/2026 | 202.602 | R$ 78,9 bi | 7.369.000.000,00 | 10,71 | 12,31 | -12,97% | não |
+| 25 | AM | jul/2026 | 202.602 | R$ 46,3 bi | 4.781.000.000,00 | 9,69 | 12,31 | -21,26% | não |
+| 26 | DF | jul/2026 | 202.602 | R$ 90,6 bi | 9.607.000.000,00 | 9,43 | 12,31 | -23,39% | não |
+| 27 | RJ | jul/2026 | 202.602 | R$ 292,6 bi | 34.175.000.000,00 | 8,56 | 12,31 | -30,44% | não |
+
+</details>
+
+**Observação:** A massa é fluxo de um mês e a carteira é estoque, então a razão se lê em meses de renda do trabalho. A massa vem do último trimestre da PNAD encerrado até a data-base (ADR 0025), e não inclui aposentadoria nem transferências.
 
 ## Modalidade e produto
 

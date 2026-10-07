@@ -19,13 +19,18 @@ PT: QA das fontes externas por UF (issue #25), independente do dbt.
        saída e matriz ativa sem data de início.
     5. **A população.** A soma das UFs de cada ano contra o total do Brasil,
        pedido separadamente ao SIDRA.
+    6. **A massa de rendimento do trabalho (issue #38).** A soma das UFs de
+       cada trimestre contra o total do Brasil, pedido separadamente ao
+       SIDRA. O IBGE arredonda cada valor ao milhão, então a diferença pode
+       chegar a meio milhão por UF.
 
 EN: External sources QA, independent from dbt. It redoes the active-company
     stock reconstruction by another path, in polars over the local Parquet
     files, without Databricks, and checks: each snapshot's effective cutoff
     date; exact identity in the latest snapshot; the error in older
     snapshots, overall and by state; cases the rule cannot place; and that
-    state populations add up to the national total SIDRA reports.
+    state populations and state labor income totals add up to the national
+    totals SIDRA reports.
 
 Uso / Usage:
     uv run python -m scripts.analises.qa_fontes_externas
@@ -44,6 +49,7 @@ from ingestion.fontes import DIR_LANDING_CNPJ, DIR_LANDING_IBGE, RAIZ, RETRATO_D
 
 ONTOLOGIA_DIMENSOES = RAIZ / "ontology" / "dimensoes.yml"
 SIDRA_BRASIL = "https://apisidra.ibge.gov.br/values/t/6579/n1/all/v/9324/p/{anos}"
+SIDRA_MASSA_BRASIL = "https://apisidra.ibge.gov.br/values/t/6474/n1/all/v/6288/p/{trimestres}"
 
 
 def ufs_da_ontologia() -> list[str]:
@@ -154,9 +160,27 @@ def conferir_populacao() -> None:
         print(f"     {ano}: UFs {soma:,}, Brasil {brasil[ano]:,}, {situacao}")
 
 
+def conferir_massa() -> None:
+    """PT: massa das UFs contra a do Brasil / EN: states' labor income vs national"""
+    ufs = pl.read_parquet(DIR_LANDING_IBGE / "massa" / "*.parquet").filter(pl.col("D2C") == "6288")
+    trimestres = sorted(ufs["D3C"].unique().to_list())
+    req = urllib.request.Request(SIDRA_MASSA_BRASIL.format(trimestres=",".join(trimestres)), headers=CABECALHOS)
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        brasil = {linha["D3C"]: int(linha["V"]) for linha in json.loads(resp.read())[1:]}
+
+    tolerancia = ufs.filter(pl.col("D3C") == trimestres[0]).height / 2 + 0.5
+    print(f"\n  6. massa de rendimento, soma das UFs contra o Brasil, em R$ milhões (tolerância {tolerancia:g}):")
+    for trimestre in trimestres:
+        soma = ufs.filter(pl.col("D3C") == trimestre)["V"].cast(pl.Int64).sum()
+        diferenca = soma - brasil[trimestre]
+        situacao = "confere" if abs(diferenca) <= tolerancia else "FALHA"
+        print(f"     {trimestre}: UFs {soma:,}, Brasil {brasil[trimestre]:,}, diferença {diferenca:+,}, {situacao}")
+
+
 def main() -> None:
     conferir_cnpj()
     conferir_populacao()
+    conferir_massa()
 
 
 if __name__ == "__main__":

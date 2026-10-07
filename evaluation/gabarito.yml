@@ -213,9 +213,28 @@ perguntas:
 
   Q13:
     tipo_de_acerto: valor
-    pendente:
-      depende_de: ["#38"]
-      motivo: "Renda média por UF ainda não está no projeto."
+    fonte:
+      - fontes_externas.rendimento_medio_do_trabalho
+      - metricas.indicador_inadimplencia
+      - fontes_externas.renda_do_trimestre_anterior
+    leituras:
+      - id: pf
+        descricao: >
+          Correlação, entre as 27 UFs, do rendimento médio do trabalho com a
+          taxa de inadimplência da carteira de pessoa física, em 12 meses e
+          no recorte inteiro.
+        consultas: [Q13_pf.sql]
+      - id: total
+        descricao: >
+          Correlação, entre as 27 UFs, do rendimento médio do trabalho com a
+          taxa de inadimplência da carteira inteira, pessoa física e
+          jurídica, em 12 meses e no recorte inteiro.
+        consultas: [Q13_total.sql]
+    observacao: >
+      A renda é a do trabalho, da PNAD Contínua trimestral, em valor nominal,
+      e cada mês usa o último trimestre encerrado até a data-base (ADR 0025).
+      São 27 pares, e a PNAD é imprecisa nas UFs pequenas: a resposta precisa
+      tratar a correlação como indício, e não como prova.
 
   Q14:
     tipo_de_acerto: valor_com_ressalva
@@ -248,9 +267,22 @@ perguntas:
 
   Q15:
     tipo_de_acerto: valor
-    pendente:
-      depende_de: ["#38"]
-      motivo: "Massa salarial por UF ainda não está no projeto."
+    fonte:
+      - fontes_externas.massa_de_rendimento_do_trabalho
+      - metricas.carteira_ativa
+      - fontes_externas.renda_do_trabalho_nao_e_renda_domiciliar
+    leituras:
+      - id: unica
+        descricao: >
+          Carteira de pessoa física por UF no último mês, dividida pela massa
+          de rendimento mensal do trabalho da UF. Sugere sobre-endividamento
+          a UF cuja razão fica acima da do Brasil.
+        consultas: [Q15.sql]
+    observacao: >
+      A massa é fluxo de um mês e a carteira é estoque, então a razão se lê
+      em meses de renda do trabalho. A massa vem do último trimestre da PNAD
+      encerrado até a data-base (ADR 0025), e não inclui aposentadoria nem
+      transferências.
 
   # ---------------------------------------------------------------------------
   # PT: Modalidade e produto

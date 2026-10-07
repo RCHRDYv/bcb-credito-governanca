@@ -67,14 +67,23 @@ perguntas:
   Q12:
     modelos: [fct_carteira, fct_populacao, dim_uf, dim_tempo]
     limite: "Doze meses atravessam dois anos de estimativa de população, e o ajuste usa a de cada ano."
-  Q13: {modelos: [fct_carteira, dim_uf], depende_de: ["#38"]}
+  Q13:
+    modelos: [fct_carteira, fct_renda_do_trabalho, dim_uf]
+    limite: >
+      Renda do trabalho da PNAD Contínua, trimestral e nominal. Cada mês usa o
+      último trimestre encerrado até a data-base (ADR 0025).
   Q14:
     modelos: [fct_carteira, fct_empresas_ativas, dim_uf, dim_natureza_juridica]
     limite: >
       UF é domicílio da pessoa ou sede da empresa, não local da operação
       (dim_uf.definicao_da_uf). O número de empresas é reconstruído de um
       retrato do CNPJ, com erro medido (ADR 0009).
-  Q15: {modelos: [fct_carteira, dim_uf], depende_de: ["#38"]}
+  Q15:
+    modelos: [fct_carteira, fct_renda_do_trabalho, dim_uf]
+    limite: >
+      Massa de rendimento do trabalho da PNAD Contínua, do último trimestre
+      encerrado até a data-base, sem aposentadoria nem transferências
+      (ADR 0025).
 
   # ---------------------------------------------------------------------------
   # PT: Modalidade e produto

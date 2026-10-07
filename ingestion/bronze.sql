@@ -88,6 +88,22 @@ SELECT
   current_timestamp() AS ingerido_em
 FROM read_files('{volume}/ibge/populacao/*.parquet', format => 'parquet');
 
+CREATE OR REPLACE TABLE {catalogo}.{schema}.bronze_ibge_rendimento
+COMMENT 'Rendimento médio mensal do trabalho por UF e trimestre, PNAD Contínua, tabela 6472 do SIDRA (issue 38). Pessoas de 14 anos ou mais ocupadas, habitualmente recebido em todos os trabalhos. Só o valor nominal, em reais (variável 5929), e o coeficiente de variação, em % (5937). Como a API devolveu, todas as colunas como texto e com os nomes de campo do SIDRA.'
+AS
+SELECT
+  *,
+  current_timestamp() AS ingerido_em
+FROM read_files('{volume}/ibge/rendimento/*.parquet', format => 'parquet');
+
+CREATE OR REPLACE TABLE {catalogo}.{schema}.bronze_ibge_massa
+COMMENT 'Massa de rendimento mensal do trabalho por UF e trimestre, PNAD Contínua, tabela 6474 do SIDRA (issue 38). Pessoas de 14 anos ou mais ocupadas, habitualmente recebido em todos os trabalhos. Só o valor nominal, em milhões de reais (variável 6288), e o coeficiente de variação, em % (6289). Como a API devolveu, todas as colunas como texto e com os nomes de campo do SIDRA.'
+AS
+SELECT
+  *,
+  current_timestamp() AS ingerido_em
+FROM read_files('{volume}/ibge/massa/*.parquet', format => 'parquet');
+
 CREATE OR REPLACE TABLE {catalogo}.{schema}.bronze_sgs_series
 COMMENT 'Séries do SGS do BCB, uma linha por dia e por série, como a API devolveu, todas as colunas como texto. Hoje só a meta da Selic definida pelo Copom (série 432, issue 37). Data no formato DD/MM/AAAA e valor com ponto decimal. A consulta termina na data da extração, registrada em data_extracao.'
 AS

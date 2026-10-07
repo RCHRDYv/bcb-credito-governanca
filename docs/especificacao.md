@@ -48,15 +48,16 @@ Todas verificadas no arquivo, e todas são material para a camada de staging e p
 6. **`carteira_inadimplencia` e `ativo_problematico` são colunas distintas**, com definição normativa diferente
 7. **As faixas de vencimento somam `carteira_a_vencer`**, o que rende um teste de qualidade natural
 
-### Fontes externas: empresas ativas, população, Selic e PIX
+### Fontes externas: empresas ativas, população, renda do trabalho, Selic e PIX
 
-Os denominadores de Q11, Q12 e Q14 e do indicador de espaço (issue #25), a Selic de Q25 e Q26 (issue #37) e o PIX de Q22 a Q24 (issue #36). Definições e armadilhas em [`ontology/fontes_externas.yml`](../ontology/fontes_externas.yml), e as decisões no [ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md).
+Os denominadores de Q11, Q12 e Q14 e do indicador de espaço (issue #25), a renda do trabalho de Q13 e Q15 (issue #38, [ADR 0025](adr/0025-renda-do-trabalho-da-pnad-nominal-pelo-ultimo-trimestre.md)), a Selic de Q25 e Q26 (issue #37) e o PIX de Q22 a Q24 (issue #36). Definições e armadilhas em [`ontology/fontes_externas.yml`](../ontology/fontes_externas.yml), e as decisões no [ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md).
 
 | Recurso | Fonte | Uso |
 |---|---|---|
 | CNPJ aberto | Receita Federal, retrato mensal completo do cadastro | Matrizes ativas por UF, porte, natureza jurídica e MEI |
 | Transporte do CNPJ | Espelho da Casa dos Dados, `https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/` | Download, com o tamanho de cada arquivo conferido contra a listagem da Receita |
 | População | IBGE, tabela 6579 do SIDRA, `https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2024,2025,2026` | População residente estimada por UF e ano |
+| Renda do trabalho | IBGE, PNAD Contínua trimestral, tabelas 6472 (variáveis 5929 e 5937) e 6474 (6288 e 6289) do SIDRA, do 4º trimestre de 2023 ao último publicado | Rendimento médio e massa de rendimento do trabalho por UF e trimestre, nominais, com o coeficiente de variação |
 | Selic | BCB, série 432 do SGS, `https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados` | Meta do Copom vigente no último dia de cada mês ([ADR 0010](adr/0010-selic-e-a-meta-do-copom-vigente-no-fim-do-mes.md)) |
 | PIX | BCB, `TransacoesPixPorMunicipio` do serviço OData `Pix_DadosAbertos` | Valor e quantidade por mês, UF, lado e tipo de cliente, só o liquidado no SPI ([ADR 0011](adr/0011-pix-por-municipio-so-liquidado-no-spi.md)) |
 

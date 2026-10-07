@@ -1114,11 +1114,62 @@
       "sha256": "07c671aa87aa1ab296c446de6294df9827112782537b996c0a160284907e7c0f",
       "url": "https://servicodados.ibge.gov.br/api/v3/malhas/paises/BR?formato=application/vnd.geo%2Bjson&qualidade=minima&intrarregiao=UF&periodo=2022"
     },
+    "massa_6474.json": {
+      "bytes": 269436,
+      "data_extracao": "2026-10-07",
+      "linhas": 594,
+      "modificacao_no_ibge": "14/08/2026",
+      "periodos": [
+        "202304",
+        "202401",
+        "202402",
+        "202403",
+        "202404",
+        "202501",
+        "202502",
+        "202503",
+        "202504",
+        "202601",
+        "202602"
+      ],
+      "sha256": "70a37c4624f7c5f5422c3203afab55077b0a491fccd100e51d3f31d302ea8166",
+      "tabela": "ibge_massa",
+      "url": "https://apisidra.ibge.gov.br/values/t/6474/n3/all/v/6288,6289/p/202304,202401,202402,202403,202404,202501,202502,202503,202504,202601,202602"
+    },
     "populacao_6579.json": {
       "bytes": 22483,
+      "data_extracao": "2026-10-07",
       "linhas": 81,
+      "periodos": [
+        "2024",
+        "2025",
+        "2026"
+      ],
       "sha256": "96f4e06070eed3a7b98cc35b4c389be21c0abb482196d0c79ba773c39aa53736",
+      "tabela": "ibge_populacao",
       "url": "https://apisidra.ibge.gov.br/values/t/6579/n3/all/v/9324/p/2024,2025,2026"
+    },
+    "rendimento_6472.json": {
+      "bytes": 264017,
+      "data_extracao": "2026-10-07",
+      "linhas": 594,
+      "modificacao_no_ibge": "14/08/2026",
+      "periodos": [
+        "202304",
+        "202401",
+        "202402",
+        "202403",
+        "202404",
+        "202501",
+        "202502",
+        "202503",
+        "202504",
+        "202601",
+        "202602"
+      ],
+      "sha256": "2d75cccc5a32aa0f0845092df7661939e7f9128f2255c5522caea1d9b46f760e",
+      "tabela": "ibge_rendimento",
+      "url": "https://apisidra.ibge.gov.br/values/t/6472/n3/all/v/5929,5937/p/202304,202401,202402,202403,202404,202501,202502,202503,202504,202601,202602"
     }
   },
   "pix": {

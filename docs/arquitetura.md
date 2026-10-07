@@ -10,7 +10,7 @@ No diagrama da ontologia, a seta pontilhada liga uma verificação àquilo que e
 
 `fct_carteira` guarda o grão cheio da V2. `fct_carteira_v1` é o fato legado, agregado, e existe para que as perguntas de comparação entre versões tenham dado da V1. Ele se liga só ao tempo e à UF, porque a taxonomia da V1 não é a das dimensões.
 
-Os denominadores por UF vêm das fontes externas ([ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md)). `fct_empresas_ativas` conta matrizes ativas no fim de cada mês, e `fct_populacao` tem uma estimativa por ano, então a junção com a carteira é pelo ano da data-base. `dim_porte_receita` não se liga à `dim_porte`, de propósito: os dois portes têm critérios diferentes. `fct_selic` tem uma linha por mês, com a meta do Copom vigente no último dia ([ADR 0010](adr/0010-selic-e-a-meta-do-copom-vigente-no-fim-do-mes.md)). `fct_pix` guarda os dois lados do PIX, pagador e recebedor, porque por UF eles diferem ([ADR 0011](adr/0011-pix-por-municipio-so-liquidado-no-spi.md)).
+Os denominadores por UF vêm das fontes externas ([ADR 0009](adr/0009-empresas-ativas-reconstruidas-de-um-retrato-do-cnpj.md)). `fct_empresas_ativas` conta matrizes ativas no fim de cada mês, e `fct_populacao` tem uma estimativa por ano, então a junção com a carteira é pelo ano da data-base. `dim_porte_receita` não se liga à `dim_porte`, de propósito: os dois portes têm critérios diferentes. `fct_selic` tem uma linha por mês, com a meta do Copom vigente no último dia ([ADR 0010](adr/0010-selic-e-a-meta-do-copom-vigente-no-fim-do-mes.md)). `fct_pix` guarda os dois lados do PIX, pagador e recebedor, porque por UF eles diferem ([ADR 0011](adr/0011-pix-por-municipio-so-liquidado-no-spi.md)). `fct_renda_do_trabalho` tem o rendimento médio e a massa de rendimento do trabalho da PNAD Contínua por trimestre, em valor nominal, e cada mês da carteira usa o último trimestre encerrado até a data-base, pela coluna `fim_do_trimestre` ([ADR 0025](adr/0025-renda-do-trabalho-da-pnad-nominal-pelo-ultimo-trimestre.md)).
 
 ```mermaid
 erDiagram
@@ -27,6 +27,7 @@ erDiagram
     dim_porte_receita ||--o{ fct_empresas_ativas : porte_empresa
     dim_natureza_juridica ||--o{ fct_empresas_ativas : grupo_natureza_juridica
     dim_uf ||--o{ fct_populacao : uf
+    dim_uf ||--o{ fct_renda_do_trabalho : uf
     dim_tempo ||--|| fct_selic : data_base
     dim_tempo ||--o{ fct_pix : data_base
     dim_uf |o--o{ fct_pix : uf
@@ -92,6 +93,15 @@ erDiagram
         int ano "estimativa de 1º de julho"
         string uf FK
         bigint populacao
+    }
+
+    fct_renda_do_trabalho {
+        int ano
+        int trimestre
+        date fim_do_trimestre "junção com o mês, ADR 0025"
+        string uf FK
+        decimal rendimento_medio "nominal, R$"
+        decimal massa_de_rendimento "nominal, R$"
     }
 
     dim_tempo {

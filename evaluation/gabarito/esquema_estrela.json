@@ -361,6 +361,40 @@
       "bigint"
     ]
   ],
+  "fct_renda_do_trabalho": [
+    [
+      "ano",
+      "int"
+    ],
+    [
+      "trimestre",
+      "int"
+    ],
+    [
+      "fim_do_trimestre",
+      "date"
+    ],
+    [
+      "uf",
+      "string"
+    ],
+    [
+      "rendimento_medio",
+      "decimal(18,2)"
+    ],
+    [
+      "cv_rendimento_medio",
+      "decimal(18,2)"
+    ],
+    [
+      "massa_de_rendimento",
+      "decimal(20,2)"
+    ],
+    [
+      "cv_massa_de_rendimento",
+      "decimal(18,2)"
+    ]
+  ],
   "fct_selic": [
     [
       "data_base",

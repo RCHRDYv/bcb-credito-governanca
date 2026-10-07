@@ -72,18 +72,22 @@ def checar_fontes_externas(w, wid: str, dados: dict) -> list[str]:
     """
     PT: Linhas por arquivo das fontes externas contra o manifesto (issue
         #25). No CNPJ, cada ZIP vira várias partes, e o manifesto guarda o
-        total de linhas por ZIP. No IBGE, há um arquivo só.
+        total de linhas por ZIP. No IBGE, há um arquivo por tabela do SIDRA.
     EN: Rows per file for the external sources against the manifest. Each
         CNPJ ZIP becomes several parts, and the manifest keeps the total per
-        ZIP; IBGE has a single file.
+        ZIP; IBGE has one file per SIDRA table.
     """
     esperado: dict[tuple[str, str], int] = {}
     for chave, reg in dados.get("cnpj", {}).items():
         conv = reg.get("conversao") or {}
         if conv:
             esperado[(conv["tabela"], f"{chave}/{conv['arquivo_interno']}")] = conv["linhas"]
+    # PT: Cada tabela do SIDRA diz no manifesto de qual bronze é. A malha das
+    #     UFs não tem tabela: ela só vai para o site.
+    # EN: Each SIDRA entry names its bronze table; the state mesh has none.
     for nome, reg in dados.get("ibge", {}).items():
-        esperado[("ibge_populacao", nome)] = reg["linhas"]
+        if "tabela" in reg:
+            esperado[(reg["tabela"], nome)] = reg["linhas"]
     for nome, reg in dados.get("sgs", {}).items():
         esperado[("sgs_series", nome)] = reg["linhas"]
     for nome, reg in dados.get("pix", {}).items():
