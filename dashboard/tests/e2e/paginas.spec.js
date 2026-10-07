@@ -29,6 +29,7 @@ const PAGINAS = [
   { onde: "na página inicial", caminho: "./" },
   { onde: "na Tela 2", caminho: "./#/risco-por-uf" },
   { onde: "na Tela 3", caminho: "./#/projecao" },
+  { onde: "na Tela 4", caminho: "./#/recomendacao" },
   { onde: "no catálogo", caminho: "./catalogo.html" },
 ];
 

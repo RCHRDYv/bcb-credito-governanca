@@ -1,0 +1,152 @@
+/*
+ * PT: O que é só da Tela 4 (#71): os dois números do custo de errar e a
+ *     fronteira do dado à esquerda, a matriz no palco, e as barras da
+ *     carteira por quadrante à direita. A disposição vem do modelo comum, em
+ *     `../palco.css`.
+ * EN: Screen 4 only: the two cost figures and data limits, the stage
+ *     matrix, and the portfolio-by-quadrant bars. Layout from `../palco.css`.
+ */
+
+@layer componentes {
+  /* PT: o custo de errar: o número grande e uma linha */
+  /* EN: cost of being wrong: big figure and one line */
+  .recomendacao__custo {
+    display: grid;
+    gap: var(--space-01);
+    justify-self: stretch;
+  }
+
+  .recomendacao__custo p {
+    margin: 0;
+  }
+
+  .recomendacao__custo-valor {
+    font: var(--type-heading-05);
+    letter-spacing: var(--type-heading-05-letter-spacing);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .recomendacao__custo-rotulo {
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  /* PT: a fronteira do dado, numa caixa discreta, como os dois números da Tela 2 */
+  /* EN: data limits in a quiet box, like Screen 2's two measures */
+  .recomendacao__limites {
+    display: grid;
+    gap: var(--space-03);
+    justify-self: stretch;
+    padding: var(--space-04);
+    border-radius: var(--radius-controle);
+    border: var(--border-fina) solid var(--color-border-subtle);
+    background: var(--color-background-page);
+  }
+
+  .recomendacao__subtitulo {
+    margin: 0;
+    font: var(--type-heading-compact-01);
+    letter-spacing: var(--type-heading-compact-01-letter-spacing);
+  }
+
+  .recomendacao__limites ul {
+    display: grid;
+    gap: var(--space-02);
+    margin: 0;
+    padding-inline-start: var(--space-05);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  /* PT: as barras da carteira por quadrante, na cor da marca de cada um */
+  /* EN: portfolio-by-quadrant bars, in each quadrant's mark color */
+  .recomendacao__barras {
+    display: grid;
+    gap: var(--space-03);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .recomendacao__barras li {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-01) var(--space-03);
+    font: var(--type-body-compact-01);
+    letter-spacing: var(--type-body-compact-01-letter-spacing);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .recomendacao__trilho {
+    display: block;
+    block-size: var(--space-04);
+  }
+
+  .recomendacao__barra {
+    display: block;
+    block-size: 100%;
+    border-radius: var(--radius-controle);
+  }
+
+  .recomendacao__barra--entrar {
+    background: var(--color-quadrante-entrar-marca);
+  }
+
+  .recomendacao__barra--observar {
+    background: var(--color-quadrante-observar-marca);
+  }
+
+  .recomendacao__barra--nao-entrar {
+    background: var(--color-quadrante-nao-entrar-marca);
+  }
+
+  .recomendacao__barra--manter {
+    background: var(--color-quadrante-manter-marca);
+  }
+
+  .recomendacao__celulas {
+    grid-column: 2 / -1;
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .recomendacao__fora {
+    margin: 0;
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .visao--recomendacao .visao__lado--direito .cartao-grafico__corpo {
+    display: grid;
+    gap: var(--space-05);
+  }
+
+  /* PT: tela única: a matriz ocupa o palco, com a legenda do tamanho embaixo,
+     e o cartão da esquerda fica em cima, logo abaixo da forma de ver */
+  /* EN: single screen: the matrix fills the stage, size legend below */
+  @media screen and (min-width: 1280px) and (min-height: 720px) {
+    .visao--recomendacao .recomendacao__matriz {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      block-size: 100%;
+    }
+
+    .visao--recomendacao .recomendacao__matriz .grafico--matriz {
+      block-size: 100%;
+      min-block-size: 0;
+    }
+
+    .visao--recomendacao .visao__sobre-o-territorio {
+      align-self: start;
+    }
+
+    .visao--recomendacao .visao__lado--direito {
+      grid-template-rows: auto;
+    }
+  }
+}

@@ -165,6 +165,30 @@ for (const janela of ACIMA_DO_PISO) {
   });
 }
 
+// PT: a Tela 4 (#71) tem matriz e tabela
+// EN: Screen 4 has matrix and table forms
+for (const janela of ACIMA_DO_PISO) {
+  test.describe(`a Tela 4 numa janela de ${janela.width}×${janela.height}`, () => {
+    test.use({ viewport: janela });
+
+    for (const forma of ["matriz", "tabela"]) {
+      test(`cabe sem rolagem da página, com ${forma}`, async ({ page }) => {
+        await page.goto("./#/recomendacao");
+        await expect(page.locator(".visao__forma svg").first()).toBeVisible();
+        await page.locator(`.visao__filtros [data-valor="${forma}"]`).click();
+        await expect(
+          page.locator(forma === "tabela" ? ".visao__tabela" : ".visao__forma svg").first(),
+        ).toBeVisible();
+        expect(await sobraVertical(page)).toBeLessThanOrEqual(0);
+        const altura = await page
+          .locator(".visao__forma")
+          .evaluate((el) => el.getBoundingClientRect().height);
+        expect(altura).toBeGreaterThanOrEqual(ALTURA_UTIL);
+      });
+    }
+  });
+}
+
 test("abaixo do piso, a página volta a rolar", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 600 });
   await abrir(page);
