@@ -167,6 +167,33 @@
     }
   }
 
+  /* PT: a legenda do tamanho da bola, embaixo, à direita (#71) */
+  /* EN: bubble size legend, bottom right */
+  .matriz__tamanho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-02) var(--space-05);
+    margin-block-start: var(--space-03);
+    font: var(--type-label-01);
+    letter-spacing: var(--type-label-01-letter-spacing);
+    color: var(--color-text-secondary);
+  }
+
+  .matriz__marca {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-02);
+  }
+
+  .matriz__bola {
+    inline-size: var(--diametro);
+    block-size: var(--diametro);
+    border: var(--border-fina) solid var(--color-text-secondary);
+    border-radius: var(--radius-capsula);
+  }
+
   /* PT: legenda das classes de cor, em HTML / EN: HTML color-class legend */
   .legenda {
     display: flex;

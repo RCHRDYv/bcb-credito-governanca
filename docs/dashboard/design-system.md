@@ -25,6 +25,7 @@ Itens marcados **em aberto** ainda não foram decididos e não são regra.
 3. **O vidro flutua, e o dado fica firme.** Vidro nos controles e nas superfícies que flutuam; tabela, gráfico e texto com contraste medido.
 4. **Nenhum significado só por cor.** Quadrante, estado e alerta levam ícone e rótulo junto da cor.
 5. **Movimento comunica mudança de estado,** e some quando o sistema pede movimento reduzido.
+6. **O visual vem antes do texto** (decidido em 2026-10-06, na revisão da Tela 4). Quem usa precisa entender o gráfico de relance, com o mínimo de texto explicativo. Antes de escrever uma informação, ela vai para o visual: mais uma dimensão do gráfico, como o tamanho da bola, a cor ou a posição. O texto só acrescenta o que o visual não consegue mostrar, e a ressalva obrigatória fica numa linha curta. Vale para as telas novas; as Telas 1 a 3 ficam como estão.
 
 ## Fundações
 
@@ -445,6 +446,9 @@ Os gráficos usam o ECharts ([ADR 0017](../adr/0017-interface-em-javascript-sem-
   - O eixo vertical é a variação da inadimplência além da do país, em pontos percentuais.
   - As linhas de corte ficam no 1 e no zero, e os pontos usam a marca do quadrante.
 - **Eixos invertidos** (decidido em 2026-09-27): Entrar fica no canto superior direito, Não entrar no inferior esquerdo, Manter no superior esquerdo e Observar no inferior direito.
+- **Tamanho da bola** (#71, opcional): a área da bola é proporcional a um valor, como a carteira PJ, para os pontos que importam aparecerem de relance. A legenda do tamanho fica embaixo, à direita, na mesma escala. Com tamanho, as bolas ficam um pouco transparentes, com borda, para a de baixo aparecer.
+- **Limites dos eixos** (#71, opcional): os eixos ficam na faixa onde estão quase todas as células, e o ponto que passa do limite vira uma seta na borda, apontando para fora, com o valor real na dica. Sem limites, o eixo vertical se ajusta aos dados.
+- **Na Tela 4:** a bola é a carteira PJ, e os eixos vão de 0,25 a 4 vezes a mediana e de -2 a +2 p.p. além do país.
 - **Quando usar:** na recomendação, para mostrar a regra de decisão e onde cada célula caiu.
 - **Quando não usar:** para comparar valores exatos entre células, que é papel do ranking e da tabela.
 - **Acessibilidade:** o quadrante aparece por três caminhos, e nunca só pela cor: a posição em relação às linhas de corte, a etiqueta com ícone e nome em cada canto, e a dica de cada ponto. Em tela estreita, as etiquetas descem para baixo do gráfico.

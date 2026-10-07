@@ -41,7 +41,53 @@ import { hex } from "./tema.js";
  * @property {number} indice_de_espaco Carteira por empresa sobre a mediana / ratio to median
  * @property {number} desvio_do_risco Fração: variação da UF menos a do país / fraction
  * @property {string} quadrante Como no mart: "entrar", "observar", "não entrar" ou "manter"
+ * @property {number} [tamanho] O valor que dá o tamanho da bola, como a carteira / bubble size value
+ * @property {string} [rotulo] Escrito ao lado da bola, para as que importam mais / label beside the bubble
  */
+
+/**
+ * @typedef {object} TamanhoDaBola
+ * @property {string} rotulo O que o tamanho mede, na legenda e na dica / what size encodes
+ * @property {(v: number) => string} formatar
+ * @property {number[]} marcas Os valores da legenda, do menor ao maior / legend values
+ */
+
+/**
+ * @typedef {object} DadosDaMatriz
+ * @property {Celula[]} celulas
+ * @property {TamanhoDaBola} [tamanho] Sem ele, todas as bolas têm o mesmo tamanho / without it, equal sizes
+ * @property {{ espaco?: [number, number], risco?: [number, number] }} [limites] Os limites dos eixos: o espaço em vezes a mediana, o risco em p.p.; o ponto de fora fica na borda, como uma seta / axis limits; points beyond become edge arrows
+ */
+
+/**
+ * PT: Os diâmetros da bola, em px. A área, e não o diâmetro, é proporcional
+ *     ao valor, para a bola grande não exagerar a diferença.
+ * EN: Bubble diameters; area, not diameter, is proportional to the value.
+ */
+const DIAMETRO_MAXIMO = 44;
+const DIAMETRO_MINIMO = 5;
+const DIAMETRO_PADRAO = 10;
+
+/**
+ * PT: A legenda do tamanho: uma bola por marca, na mesma escala do gráfico.
+ * EN: Size legend: one bubble per mark, on the chart's scale.
+ *
+ * @param {TamanhoDaBola} tamanho
+ * @param {number} maior O maior valor do gráfico / largest value
+ * @returns {HTMLElement}
+ */
+function legendaDoTamanho(tamanho, maior) {
+  const bolas = tamanho.marcas.map((valor) => {
+    const d = Math.max(DIAMETRO_MINIMO, DIAMETRO_MAXIMO * Math.sqrt(valor / maior));
+    const bola = elemento("span", { classe: "matriz__bola", atributos: { "aria-hidden": "true" } });
+    bola.style.setProperty("--diametro", `${d}px`);
+    return elemento("span", { classe: "matriz__marca" }, [bola, tamanho.formatar(valor)]);
+  });
+  return elemento("div", { classe: "matriz__tamanho" }, [
+    elemento("span", { classe: "matriz__tamanho-rotulo", texto: tamanho.rotulo }),
+    ...bolas,
+  ]);
+}
 
 /** PT: ordem fixa dos quadrantes / EN: fixed quadrant order */
 const QUADRANTES = /** @type {const} */ ([
@@ -88,16 +134,47 @@ function etiqueta(quadrante) {
  * EN: Builds the matrix element (plot plus corner labels) and its chart.
  *
  * @param {HTMLElement} el Um elemento vazio, já na página / empty element on the page
- * @param {{ celulas: Celula[] }} dados
+ * @param {DadosDaMatriz} dados
  * @returns {Promise<Grafico>}
  */
-export function matriz(el, { celulas }) {
+export function matriz(el, { celulas, tamanho, limites }) {
+  const espaco = limites?.espaco ?? [0.125, 8];
+  const risco = limites?.risco ?? null;
+  /**
+   * PT: A posição do ponto, presa aos limites quando há, e a direção para
+   *     onde ele passou deles, em graus, para a seta apontar para fora. Os
+   *     dois eixos são invertidos: o espaço maior fica à esquerda, e o risco
+   *     menor, em cima.
+   * EN: The point's position, clamped to the limits, and the rotation of the
+   *     outward arrow when it was clamped. Both axes are inverted.
+   *
+   * @param {Celula} c
+   * @returns {{ x: number, y: number, giro: number | null }}
+   */
+  const posicao = (c) => {
+    const x = Math.min(Math.max(c.indice_de_espaco, espaco[0]), espaco[1]);
+    const desvio = c.desvio_do_risco * 100;
+    const y = risco ? Math.min(Math.max(desvio, risco[0]), risco[1]) : desvio;
+    /** @type {number | null} */
+    let giro = null;
+    if (risco && desvio < risco[0]) giro = 0;
+    else if (risco && desvio > risco[1]) giro = 180;
+    else if (c.indice_de_espaco > espaco[1]) giro = 90;
+    else if (c.indice_de_espaco < espaco[0]) giro = -90;
+    return { x, y, giro };
+  };
   el.classList.add("matriz");
   for (const [lado, valor] of Object.entries(MARGENS)) {
     el.style.setProperty(`--matriz-${lado}`, `${valor}px`);
   }
   const area = elemento("div", { classe: "grafico grafico--matriz" });
   el.replaceChildren(area, ...QUADRANTES.map(([, chave]) => etiqueta(chave)));
+  const maior = Math.max(...celulas.map((c) => c.tamanho ?? 0));
+  const diametro = (/** @type {number | undefined} */ valor) =>
+    tamanho && valor !== undefined && maior > 0
+      ? Math.max(DIAMETRO_MINIMO, DIAMETRO_MAXIMO * Math.sqrt(valor / maior))
+      : DIAMETRO_PADRAO;
+  if (tamanho) el.append(legendaDoTamanho(tamanho, maior));
 
   return criarGrafico(area, (tema, { estreito }) => {
     const corte = { color: hex("color.border.strong", tema), width: 1, type: "solid" };
@@ -128,6 +205,9 @@ export function matriz(el, { celulas }) {
             `<strong>${echarts.format.encodeHTML(`${c.uf} · ${c.modalidade}`)}</strong>`,
             `${t("matriz.eixo-espaco-curto")}: ${vezes(c.indice_de_espaco)}`,
             `${t("matriz.eixo-risco-curto")}: ${pontos(c.desvio_do_risco)}`,
+            tamanho && c.tamanho !== undefined
+              ? `${tamanho.rotulo}: ${tamanho.formatar(c.tamanho)}`
+              : "",
             nome ? nomeDoQuadrante(nome) : "",
           ].join("<br>");
         },
@@ -136,8 +216,8 @@ export function matriz(el, { celulas }) {
         type: "log",
         inverse: true,
         logBase: 2,
-        min: 0.125,
-        max: 8,
+        min: espaco[0],
+        max: espaco[1],
         name: t(estreito ? "matriz.eixo-espaco-estreito" : "matriz.eixo-espaco"),
         nameLocation: "middle",
         nameGap: estreito ? 28 : 32,
@@ -147,19 +227,55 @@ export function matriz(el, { celulas }) {
       yAxis: {
         type: "value",
         inverse: true,
+        ...(risco ? { min: risco[0], max: risco[1] } : {}),
         name: t(estreito ? "matriz.eixo-risco-estreito" : "matriz.eixo-risco"),
         nameLocation: "middle",
         nameGap: estreito ? 28 : 48,
-        axisLabel: { formatter: (/** @type {number} */ v) => `${v > 0 ? "+" : ""}${numero(v, 0)}` },
+        axisLabel: {
+          formatter: (/** @type {number} */ v) =>
+            `${v > 0 ? "+" : ""}${numero(v, Number.isInteger(v) ? 0 : 1)}`,
+        },
         splitLine: { show: false },
       },
       series: QUADRANTES.map(([doMart, chave], i) => ({
         type: "scatter",
         name: nomeDoQuadrante(chave),
-        itemStyle: { color: hex(`color.quadrante.${chave}.marca`, tema) },
+        itemStyle: {
+          color: hex(`color.quadrante.${chave}.marca`, tema),
+          // PT: com tamanho, as bolas se sobrepõem; a transparência e a borda
+          //     deixam ver as de baixo
+          // EN: bubbles overlap; transparency and a border show the ones below
+          ...(tamanho
+            ? { opacity: 0.7, borderColor: hex("color.chart.surface", tema), borderWidth: 1 }
+            : {}),
+        },
         data: celulas
           .filter((c) => c.quadrante === doMart)
-          .map((c) => ({ value: [c.indice_de_espaco, c.desvio_do_risco * 100], celula: c })),
+          .map((c) => {
+            const { x, y, giro } = posicao(c);
+            return {
+              value: [x, y],
+              celula: c,
+              symbolSize: diametro(c.tamanho),
+              // PT: o ponto que passou do limite vira uma seta na borda
+              // EN: a clamped point becomes an arrow on the edge
+              ...(giro === null ? {} : { symbol: "triangle", symbolRotate: giro }),
+              ...(c.rotulo
+                ? {
+                    label: {
+                      show: true,
+                      position: "right",
+                      formatter: c.rotulo,
+                      color: hex("color.text.primary", tema),
+                      fontSize: 11,
+                    },
+                  }
+                : {}),
+            };
+          }),
+        // PT: rótulos que se cruzam somem, em vez de se empilhar
+        // EN: overlapping labels hide instead of piling up
+        labelLayout: { hideOverlap: true },
         ...(i === 0
           ? {
               markLine: {
