@@ -1,0 +1,325 @@
+# =============================================================================
+# PT: Pré-registro do experimento 2x2, ontologia contra documentos (issue #47,
+#     ADR 0013).
+#
+#     Este arquivo registra, antes de qualquer execução:
+#     1. as quatro condições, com o que entra no contexto de cada uma;
+#     2. como cada pergunta é executada e quantas vezes;
+#     3. as hipóteses H1 a H5, com direção, teste e família;
+#     4. a estatística, com nível, correção e tamanho de efeito;
+#     5. a regra de comparação entre a resposta da IA e o gabarito, que o
+#        ADR 0015 deixou para a #47. O que conta em cada leitura está em
+#        evaluation/comparacao.yml.
+#
+#     Decidido pelo Yuri em 2026-10-06 (seleção dos modelos pela condição A,
+#     ADR 0026) e em 2026-10-07 (todo o resto, em entrevista antes do
+#     registro).
+#
+#     Este arquivo, o comparacao.yml, o gabarito.yml e os SQL do gabarito
+#     estão congelados pelo evaluation/registro.yml, conferido no CI por
+#     scripts/validar_registro.py. Depois do registro, qualquer mudança entra
+#     só como errata datada, com o motivo, e é declarada junto do resultado.
+#
+#     O que ainda depende de outra issue não fica em aberto: fica como regra,
+#     e o número é fixado e versionado antes da primeira execução que o usa
+#     (ver fixado_antes_da_execucao).
+#
+# EN: Pre-registration of the 2x2 experiment, ontology versus documents. It
+#     records, before any run, the four conditions and their context, how
+#     each question is run, hypotheses H1 to H5 with direction, test and
+#     family, the statistics, and the rule for comparing the AI's answer with
+#     the answer key. Decided by Yuri on 2026-10-06 and 2026-10-07. Frozen by
+#     evaluation/registro.yml and checked in CI by scripts/validar_registro.py;
+#     after registration, changes only by dated errata.
+# =============================================================================
+
+metadata:
+  versao: 1
+  registrado_em: "2026-10-07"
+  decidido_por: "Yuri Vida"
+  registrado_antes_de_qualquer_execucao: true
+  conjunto_de_perguntas: "evaluation/questions_v3.yml"
+  gabarito: "evaluation/gabarito.yml"
+  comparacao: "evaluation/comparacao.yml"
+  registro: "evaluation/registro.yml"
+  adrs: ["0012", "0013", "0015", "0026"]
+
+# -----------------------------------------------------------------------------
+# PT: Condições. A e B não mudam (ADR 0013); C e D são a extensão.
+# EN: Conditions. A and B are unchanged; C and D are the extension.
+# -----------------------------------------------------------------------------
+condicoes:
+  comum: >
+    As quatro condições usam o mesmo modelo de prompt, com o mesmo enunciado,
+    as mesmas instruções e o mesmo formato de resposta. Só os blocos de
+    contexto mudam, e eles se ligam e desligam (ADR 0012). Todas consultam o
+    esquema estrela, e só ele (ADR 0007), no DuckDB, sobre o retrato
+    exportado pela #45. A descrição de cada condição é a da
+    docs/especificacao.md, palavra por palavra.
+  A:
+    nome: "só o esquema"
+    contexto: [esquema]
+    descricao: "O modelo recebe apenas o esquema cru, sem descrição."
+  B:
+    nome: "só a ontologia"
+    contexto: [esquema, ontologia]
+    descricao: "Esquema mais ontologia, descrições e regras de negócio."
+  C:
+    nome: "só os documentos"
+    contexto: [esquema, trechos]
+    descricao: "Esquema mais trechos dos documentos do BCB recuperados por busca (RAG), sem a ontologia."
+  D:
+    nome: "ontologia e documentos"
+    contexto: [esquema, ontologia, trechos]
+    descricao: "Esquema, ontologia e trechos recuperados. É exatamente o prompt de B, mais os mesmos trechos que C recebe na mesma pergunta."
+
+  rag:
+    corpus: >
+      Os documentos que a ontologia cita (ADR 0012, decisão 3), montados pela
+      #46: metodologias V1 e V2 do SCR.data, leiaute e instruções do
+      documento 3040, os normativos de docs/leitura-normativos.md e
+      docs/cadeia-normativa.md, o leiaute do CNPJ e a documentação das APIs
+      do PIX e do SGS.
+    trecho:
+      tamanho_maximo_em_tokens: 512
+      tokenizador: "o do modelo de embeddings"
+      sobreposicao_em_tokens: 64
+      corte: "Um trecho não cruza a fronteira de uma seção. Uma seção maior que o limite é partida."
+      metadados: [documento, secao, pagina]
+    busca:
+      tipo: "densa, por similaridade de cosseno entre embeddings"
+      consulta: "o enunciado em português da pergunta, como está no questions_v3.yml, sem reescrita"
+      quantidade_de_trechos: 5
+      chamadas: "uma, antes da geração. O modelo não chama a busca."
+      mesmos_trechos_em_C_e_D: true
+      registro: "Os trechos recuperados são gravados junto de cada execução."
+    modelo_de_embeddings: >
+      Multilíngue (ADR 0012). É o de maior acerto no gabarito de recuperação
+      da #46, escolhido e versionado antes de qualquer execução de C ou D.
+      Sem ajuste fino.
+
+  contexto_do_modelo: >
+    O mesmo num_ctx nas quatro condições: o menor múltiplo de 4.096 tokens
+    que comporta as duas chamadas do fluxo. A segunda é a maior: o maior
+    prompt de D, mais o SQL, mais o resultado no limite de linhas do SQL,
+    mais o limite de tokens da resposta. Um prompt que passaria do limite não
+    é cortado em silêncio: a execução daquela pergunta conta como erro, como
+    as outras falhas.
+
+# -----------------------------------------------------------------------------
+# PT: Execução
+# EN: Running
+# -----------------------------------------------------------------------------
+execucao:
+  modelos: "dois, de classes diferentes (~14B e ~7 a 8B, em 4 bits), escolhidos pela condição A (ADR 0026)"
+  perguntas: "as 41 do questions_v3.yml"
+  execucoes_por_pergunta: 5
+  temperatura: 0.2
+  seeds: [1, 2, 3, 4, 5]
+  fluxo: >
+    O modelo recebe o prompt e escreve um SQL, ou se abstém. O SQL roda uma
+    vez, só leitura, com limite de linhas e de tempo. O resultado volta ao
+    modelo, que escreve a resposta no formato registrado em
+    comparacao.formato_da_resposta.
+  falhas: >
+    Saída fora do formato, tempo esgotado, erro de SQL e prompt maior que o
+    num_ctx contam como erro, sem nova tentativa.
+  acerto_binario: >
+    Uma pergunta acerta numa condição e num modelo se 3 ou mais das 5
+    execuções acertam.
+  variancia: >
+    Por pergunta, condição e modelo, o número de execuções certas, de 0 a 5,
+    é publicado, com a distribuição por condição e a parcela de perguntas em
+    que as 5 execuções concordam.
+  fixado_antes_da_execucao:
+    - "nome, versão exata e quantização de cada modelo (#48, ADR 0026)"
+    - "modelo de prompt, com os blocos de contexto (#48)"
+    - "num_ctx, limite de tokens da resposta, limite de linhas e de tempo do SQL (#48)"
+    - "modelo de embeddings e índice do corpus (#46)"
+    - "retrato do esquema estrela no DuckDB, com o mes_de_referencia (#45)"
+
+# -----------------------------------------------------------------------------
+# PT: Hipóteses (ADR 0013). Cada uma pode ser refutada, e um resultado contra
+#     ela é publicado do mesmo jeito.
+# EN: Hypotheses. Each can be refuted, and a result against it is published
+#     the same way.
+# -----------------------------------------------------------------------------
+hipoteses:
+  H1:
+    enunciado: "B acerta mais que A. A ontologia ajuda."
+    comparacao: [B, A]
+    direcao: "B > A"
+    tipos_de_acerto: [valor, valor_com_ressalva, abstencao]
+    teste: mcnemar_exato_unilateral
+    familia: confirmatoria
+  H2:
+    enunciado: "C acerta mais que A. Os documentos ajudam."
+    comparacao: [C, A]
+    direcao: "C > A"
+    tipos_de_acerto: [valor, valor_com_ressalva, abstencao]
+    teste: mcnemar_exato_unilateral
+    familia: confirmatoria
+  H3:
+    enunciado: "B acerta mais que C nas perguntas de valor. Conhecimento estruturado vence texto bruto quando a resposta é SQL."
+    comparacao: [B, C]
+    direcao: "B > C"
+    tipos_de_acerto: [valor]
+    teste: mcnemar_exato_unilateral
+    familia: confirmatoria
+  H4:
+    enunciado: "D acerta pelo menos tanto quanto o melhor entre B e C. As duas camadas se somam, ou pelo menos não atrapalham."
+    comparacao: [D, B, C]
+    direcao: "D não inferior a B e D não inferior a C"
+    tipos_de_acerto: [valor, valor_com_ressalva, abstencao]
+    teste: nao_inferioridade_intersecao_uniao
+    familia: confirmatoria
+  H5:
+    enunciado: "A vantagem da ontologia sobre os documentos é maior nas perguntas de valor_com_ressalva e abstencao do que nas de valor."
+    comparacao: [B, C]
+    direcao: "(B − C) em valor_com_ressalva e abstencao > (B − C) em valor"
+    tipos_de_acerto: [valor, valor_com_ressalva, abstencao]
+    grupos:
+      ressalva_e_abstencao: [valor_com_ressalva, abstencao]
+      valor: [valor]
+    teste: permutacao_unilateral_da_interacao
+    familia: exploratoria
+
+# -----------------------------------------------------------------------------
+# PT: Estatística
+# EN: Statistics
+# -----------------------------------------------------------------------------
+estatistica:
+  unidade: "a pergunta, com o acerto binário da maioria de 5, pareada entre condições"
+  subconjuntos: "Os grupos de H3 e H5 saem do tipo_de_acerto do questions_v3.yml, por script, sem lista à mão."
+  alfa: 0.05
+  correcao:
+    metodo: holm
+    familia: [H1, H2, H3, H4]
+    escopo: "separada em cada um dos dois modelos"
+  omnibus: "Q de Cochran nas quatro condições, por modelo, descritivo, sem papel de portão"
+  testes:
+    mcnemar_exato_unilateral: >
+      Binomial exato sobre os pares discordantes, na direção registrada. O p
+      é a probabilidade de pelo menos tantas discordâncias a favor da
+      condição da hipótese, com probabilidade de 0,5 em cada par.
+    nao_inferioridade_intersecao_uniao: >
+      D contra B e D contra C, cada um pela diferença pareada de proporções
+      (D menos a outra), com o intervalo de Newcombe para proporções pareadas
+      (método 10, 1998). Margem de −0,05, ou −5 pontos percentuais. Cada
+      comparação é não inferior quando o limite inferior unilateral de 95%,
+      que é o limite inferior do intervalo bilateral de 90%, fica acima da
+      margem. O p de cada comparação é o menor α em que isso acontece, pela
+      inversão do intervalo. O p da H4 é o maior dos dois, e a H4 se sustenta
+      só se as duas comparações forem não inferiores.
+    permutacao_unilateral_da_interacao: >
+      A estatística é a diferença entre a média de (B − C) no grupo de
+      ressalva e abstenção e a média de (B − C) no grupo de valor. Os
+      rótulos de grupo são permutados entre as 41 perguntas, mantendo o
+      tamanho dos grupos. O p é a parcela de permutações com estatística
+      maior ou igual à observada. Intervalo de 95% por bootstrap de
+      percentil, reamostrando perguntas dentro de cada grupo. Exploratória:
+      fora do Holm, e declarada assim junto do resultado, porque o grupo de
+      ressalva e abstenção tem 12 perguntas.
+  simulacao:
+    permutacoes: 10000
+    reamostragens_bootstrap: 10000
+    seed: 47
+  tamanho_de_efeito: >
+    Sempre, em toda comparação: a diferença pareada de proporções, em
+    pontos percentuais, com o intervalo de Newcombe de 95% (método 10). Também
+    por tipo de acerto: valor, valor com ressalva e abstenção.
+  limite_declarado: >
+    São 41 perguntas, e o grupo de ressalva e abstenção tem 12. A conclusão
+    vale para este domínio e este conjunto, com tamanho de efeito, e não como
+    lei geral (ADR 0013). A seleção dos modelos pela condição A puxa contra a
+    H1 e a H2, e esse viés é declarado junto do resultado (ADR 0026).
+
+# -----------------------------------------------------------------------------
+# PT: Regra de comparação com o gabarito (ADR 0015, decisão 7)
+# EN: Rule for comparing with the answer key
+# -----------------------------------------------------------------------------
+comparacao:
+  respostas_do_gabarito: >
+    As respostas de evaluation/gabarito/respostas/ regeradas sobre o mesmo
+    retrato em que o experimento roda (#45). O mes_de_referencia é declarado
+    junto do resultado. As respostas ficam fora do registro.yml porque mudam
+    a cada mês publicado; o que fica congelado é como elas são calculadas.
+
+  formato_da_resposta:
+    interpretacao: "texto livre: a janela, a unidade e o método que a resposta usou"
+    sql: "o SQL executado, ou vazio numa abstenção"
+    valores: "os números e os itens da resposta final"
+    ressalva: "texto livre, o limite que torna o número interpretável, quando houver"
+    abstencao: "se o dado não permite responder, e o que faltaria"
+
+  acerto_por_tipo:
+    valor: "Os valores batem com uma das leituras aceitas, pelo comparacao.yml, e a interpretação declarada é a dessa leitura."
+    valor_com_ressalva: "O mesmo de valor, e a ressalva declara o fato da ressalva_obrigatoria do gabarito."
+    abstencao: "A resposta se abstém e diz o que faltaria, como a explicacao e o o_que_faltaria do gabarito. Resposta com número conta como erro."
+    abstencao_indevida: "Abster-se numa pergunta de valor ou valor_com_ressalva conta como erro (TrustSQL, docs/referencias.md)."
+
+  tolerancia:
+    relativa: "1% do valor do gabarito, para reais, contagens grandes, razões e índices como o HHI"
+    pontos: "0,1 ponto percentual absoluto ou 10% do valor do gabarito, o que for menor, para colunas que terminam em _pct ou _pp. Um valor de 0,015% aceita de 0,0135% a 0,0165%, e não 0%."
+    adimensional:
+      regra: "0,01 absoluto ou 1% relativo, o que for maior"
+      colunas: [correlacao, z]
+    exata:
+      regra: "igualdade exata, para posição, número de meses, defasagem, horizonte e contagem de itens"
+      colunas:
+        - posicao
+        - meses_com_ocorrencia
+        - meses_com_dado
+        - meses_no_recorte
+        - meses_na_media
+        - meses_com_home_equity_abaixo
+        - defasagem_em_meses
+        - horizonte_em_meses
+        - variacoes_no_historico
+        - pares
+        - recortes
+        - ano_da_populacao
+    identidade: "texto, data e chave de item: o mesmo item, pelo código ou pelo nome"
+    escala: "A resposta pode usar outra escala da mesma unidade, como bilhões ou trilhões de reais. O número é convertido antes da comparação."
+
+  listas:
+    ranking: "Os n primeiros itens, na ordem do gabarito. Dois itens cujos valores ficam dentro da tolerância um do outro podem trocar de posição."
+    conjunto: "Todos os itens do gabarito, sem item a mais."
+    valores: "Em cada item, os valores das colunas listadas seguem a tolerância."
+
+  limiar: >
+    Zona de indiferença. Quando o valor do gabarito, na leitura declarada,
+    fica dentro da tolerância da sua coluna em relação ao limiar, as duas
+    classificações valem, desde que o número bata. Num conjunto definido por
+    um limiar, o item na zona de indiferença pode estar na resposta ou não.
+    Nas colunas _pct e _pp, a zona em torno do limiar tem piso de 0,01 ponto
+    percentual: um valor a até 0,01 p.p. do limiar está sempre na zona. Na
+    Q21, um ganho de 0,0031 p.p. é opcional, e um de 0,027 p.p. é
+    obrigatório.
+    Exemplo: na Q29, contra os 12 meses, o z da carteira ativa é −1,995, a
+    0,005 do limiar de 2, dentro do piso de 0,01. A carteira ativa pode ser
+    dada como atípica ou não, se o z bater.
+
+  leitura_declarada: >
+    O script compara os valores com todas as leituras aceitas da pergunta, e
+    a resposta acerta se bater com uma delas. Nas perguntas com mais de uma
+    leitura ou com janela em aberto (as que têm mais de uma leitura no
+    comparacao.yml ou o bloco janelas), o Yuri confere, às cegas, se a
+    interpretação declarada é a da leitura ou da janela que bateu. Bater por
+    coincidência com uma leitura que a resposta não declarou conta como erro.
+
+  correcao:
+    por_script: "valores e listas, pelo comparacao.yml"
+    pelo_yuri: "ressalva, abstenção e leitura declarada"
+    rubrica: >
+      Os campos que o gabarito.yml já tem: ressalva_obrigatoria, nas
+      perguntas de valor_com_ressalva, e explicacao e o_que_faltaria, nas de
+      abstencao. Acerta a resposta que declara o mesmo fato, com paráfrase
+      permitida.
+    cegamento: >
+      O corretor vê só a interpretação, os valores, a ressalva ou a
+      abstenção, e o texto da rubrica, em ordem embaralhada. Não vê a
+      condição, o modelo, o SQL, os conceitos citados nem os trechos, que
+      entregariam a condição. Citações dentro do texto, como documento,
+      seção, página ou id da ontologia, são retiradas antes de o corretor
+      ver.

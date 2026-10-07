@@ -1,0 +1,660 @@
+# =============================================================================
+# PT: O que conta, em cada leitura do gabarito, para corrigir a resposta da IA
+#     (issue #47). A regra geral está em evaluation/hipoteses.yml, no bloco
+#     comparacao. Este arquivo diz, para cada consulta, que linhas e que
+#     colunas a resposta precisa trazer. Tudo sai só do enunciado do
+#     conjunto vigente (questions_v3.yml), e não do resultado.
+#
+#     A tolerância não se escreve aqui. Ela sai da coluna, pela regra do
+#     hipoteses.yml: colunas _pct e _pp em pontos, correlação e z com piso
+#     absoluto, inteiros de posição e de meses exatos, o resto relativo. Texto
+#     e data são identidade, e a chave de um item casa pelo código ou pelo
+#     nome.
+#
+#     Formas de conferir, numa lista "verificar":
+#       valor        uma coluna, numa linha só
+#       uma_de       basta uma das colunas, na mesma linha
+#       lista        itens identificados pela chave:
+#                      ranking   os n primeiros pela ordem, na ordem
+#                      conjunto  todos os itens que passam no filtro "onde",
+#                                ou todas as linhas, sem item a mais
+#                    e, em cada item, as colunas de "valores"
+#     linha escolhe a linha: primeira, ultima, {coluna: valor},
+#     {maior: coluna} ou {maior_em_modulo: coluna}. Sem linha, a consulta
+#     tem uma linha só.
+#
+#     onde é o filtro de um conjunto, uma condição ou várias, todas valendo
+#     juntas: coluna, op (maior_que, menor_que, modulo_maior_que) e valor ou
+#     contra (outra coluna). Um item cujo valor fica dentro da tolerância do
+#     limiar está na zona de indiferença: pode estar na resposta ou não.
+#     confere_com cita a coluna booleana do gabarito que o filtro reproduz, e
+#     o validador confere que reproduz.
+#
+#     janelas: quando a pergunta não diz o período, cada janela tem a sua
+#     lista, e vale a que a resposta declarar (ADR 0015, decisão 2).
+#
+#     As perguntas de abstenção não têm conferência de número: são
+#     corrigidas só pela rubrica.
+#
+#     Conferido por scripts/validar_registro.py, e protegido pelo
+#     evaluation/registro.yml: depois do registro, mudança só por errata
+#     datada.
+#
+# EN: What counts, in each answer key reading, when grading the AI's answer.
+#     The general rule lives in hipoteses.yml; this file says which rows and
+#     columns each query's answer must carry, derived from the question
+#     wording only. Tolerance comes from the column, by the rule in
+#     hipoteses.yml. Checked by scripts/validar_registro.py and frozen by
+#     evaluation/registro.yml: after registration, changes only by dated
+#     errata.
+# =============================================================================
+
+metadata:
+  versao: 1
+  gabarito: "evaluation/gabarito.yml"
+  regra_geral: "evaluation/hipoteses.yml#comparacao"
+
+perguntas:
+
+  # ---------------------------------------------------------------------------
+  # PT: Monitoramento e benchmark de mercado
+  # EN: Market monitoring and benchmark
+  # ---------------------------------------------------------------------------
+  Q01:
+    unica:
+      - consulta: Q01.sql
+        verificar:
+          - valor: carteira_ativa
+          - valor: carteira_ativa_do_ano_anterior
+          - uma_de: [variacao_pct, variacao_em_reais]
+
+  Q02:
+    percentual:
+      - consulta: Q02_percentual.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 5
+            ordem: posicao
+            valores: [crescimento_pct]
+    reais:
+      - consulta: Q02_reais.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 5
+            ordem: posicao
+            valores: [crescimento_em_reais]
+
+  Q03:
+    unica:
+      - consulta: Q03.sql
+        verificar:
+          - uma_de: [participacao_pf_pct, participacao_pj_pct]
+            linha: primeira
+          - uma_de: [participacao_pf_pct, participacao_pj_pct]
+            linha: ultima
+
+  Q04:
+    unica:
+      - consulta: Q04.sql
+        janelas:
+          12_meses:
+            - lista: conjunto
+              chave: segmento
+              valores: [crescimento_12_meses_pct]
+          recorte:
+            - lista: conjunto
+              chave: segmento
+              valores: [crescimento_no_recorte_pct]
+
+  Q05:
+    unica:
+      - consulta: Q05.sql
+        verificar:
+          - lista: conjunto
+            chave: uf
+          - valor: participacao_acumulada_pct
+            linha: ultima
+
+  # ---------------------------------------------------------------------------
+  # PT: Risco e inadimplência
+  # EN: Risk and default
+  # ---------------------------------------------------------------------------
+  Q06:
+    unica:
+      - consulta: Q06.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: todas
+            ordem: -taxa_inadimplencia_pct
+            valores: [taxa_inadimplencia_pct]
+
+  Q07:
+    pontos:
+      - consulta: Q07_pontos.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 3
+            ordem: posicao
+            valores: [variacao_pp]
+    relativa:
+      - consulta: Q07_relativa.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 3
+            ordem: posicao
+            valores: [variacao_relativa_pct]
+
+  Q08:
+    unica:
+      - consulta: Q08.sql
+        verificar:
+          - valor: taxa_no_ultimo_mes_pct
+          - valor: media_das_taxas_mensais_pct
+          - classificacao: acima_da_media
+            onde:
+              - {coluna: taxa_no_ultimo_mes_pct, op: maior_que, contra: media_das_taxas_mensais_pct}
+
+  Q09:
+    unica:
+      - consulta: Q09.sql
+        verificar:
+          - lista: conjunto
+            chave: codigo_modalidade
+            valores:
+              - uma_de: [distancia_em_reais, distancia_pp]
+
+  Q10:
+    unica:
+      - consulta: Q10.sql
+        janelas:
+          12_meses:
+            - lista: conjunto
+              chave: codigo_modalidade
+              onde:
+                - {coluna: crescimento_12_meses_pct, op: maior_que, valor: 0}
+                - {coluna: variacao_taxa_12_meses_pp, op: menor_que, valor: 0}
+              confere_com: cresce_e_inadimplencia_cai_em_12_meses
+          recorte:
+            - lista: conjunto
+              chave: codigo_modalidade
+              onde:
+                - {coluna: crescimento_no_recorte_pct, op: maior_que, valor: 0}
+                - {coluna: variacao_taxa_no_recorte_pp, op: menor_que, valor: 0}
+              confere_com: cresce_e_inadimplencia_cai_no_recorte
+
+  # ---------------------------------------------------------------------------
+  # PT: Expansão geográfica e priorização
+  # EN: Geographic expansion and prioritisation
+  # ---------------------------------------------------------------------------
+  Q11:
+    unica:
+      - consulta: Q11.sql
+        verificar:
+          - lista: ranking
+            chave: uf
+            n: 3
+            ordem: posicao
+            valores: [carteira_pj_por_habitante]
+
+  Q12:
+    reais:
+      - consulta: Q12_reais.sql
+        verificar:
+          - lista: ranking
+            chave: uf
+            n: 3
+            ordem: posicao
+            valores: [crescimento_por_habitante_em_reais]
+    percentual:
+      - consulta: Q12_percentual.sql
+        verificar:
+          - lista: ranking
+            chave: uf
+            n: 3
+            ordem: posicao
+            valores: [crescimento_por_habitante_pct]
+
+  Q13:
+    pf:
+      - consulta: Q13_pf.sql
+        janelas:
+          12_meses:
+            - valor: correlacao
+              linha: {janela: "12 meses"}
+          recorte:
+            - valor: correlacao
+              linha: {janela: "recorte inteiro"}
+    total:
+      - consulta: Q13_total.sql
+        janelas:
+          12_meses:
+            - valor: correlacao
+              linha: {janela: "12 meses"}
+          recorte:
+            - valor: correlacao
+              linha: {janela: "recorte inteiro"}
+
+  Q14:
+    empresariais_sem_mei:
+      - consulta: Q14_empresariais_sem_mei.sql
+        verificar:
+          - valor: mediana_das_ufs
+            linha: primeira
+          - lista: conjunto
+            chave: uf
+            onde:
+              - {coluna: carteira_por_empresa, op: menor_que, contra: mediana_das_ufs}
+            confere_com: abaixo_da_mediana
+            valores: [carteira_por_empresa]
+    todas_as_empresas:
+      - consulta: Q14_todas_as_empresas.sql
+        verificar:
+          - valor: mediana_das_ufs
+            linha: primeira
+          - lista: conjunto
+            chave: uf
+            onde:
+              - {coluna: carteira_por_empresa, op: menor_que, contra: mediana_das_ufs}
+            confere_com: abaixo_da_mediana
+            valores: [carteira_por_empresa]
+
+  Q15:
+    unica:
+      - consulta: Q15.sql
+        verificar:
+          - valor: meses_de_renda_no_brasil
+            linha: primeira
+          - lista: conjunto
+            chave: uf
+            onde:
+              - {coluna: meses_de_renda, op: maior_que, contra: meses_de_renda_no_brasil}
+            confere_com: acima_da_razao_nacional
+            valores: [meses_de_renda]
+
+  # ---------------------------------------------------------------------------
+  # PT: Modalidade e produto
+  # EN: Modality and product
+  # ---------------------------------------------------------------------------
+  Q16:
+    unica:
+      - consulta: Q16.sql
+        verificar:
+          - valor: participacao_do_consignado_pct
+            linha: primeira
+          - valor: participacao_do_consignado_pct
+            linha: ultima
+          - valor: crescimento_acumulado_consignado_pct
+            linha: ultima
+          - valor: crescimento_acumulado_nao_consignado_pct
+            linha: ultima
+
+  Q17:
+    abstencao: so_rubrica
+
+  Q18:
+    unica:
+      - consulta: Q18.sql
+        verificar:
+          - lista: conjunto
+            chave: codigo_modalidade
+            valores: [ticket_medio, carteira_sem_contagem_pct]
+
+  Q19:
+    unica:
+      - consulta: Q19.sql
+        janelas:
+          12_meses:
+            - lista: conjunto
+              chave: grupo
+              valores: [crescimento_12_meses_pct, variacao_taxa_12_meses_pp]
+          recorte:
+            - lista: conjunto
+              chave: grupo
+              valores: [crescimento_no_recorte_pct, variacao_taxa_no_recorte_pp]
+
+  # ---------------------------------------------------------------------------
+  # PT: Concentração e competição
+  # EN: Concentration and competition
+  # ---------------------------------------------------------------------------
+  Q20:
+    herfindahl:
+      - consulta: Q20_herfindahl.sql
+        janelas:
+          12_meses:
+            - valor: hhi_no_ultimo_mes
+            - valor: variacao_12_meses
+          recorte:
+            - valor: hhi_no_ultimo_mes
+            - valor: variacao_no_recorte
+    maior_segmento:
+      - consulta: Q20_maior_segmento.sql
+        janelas:
+          12_meses:
+            - valor: maior_segmento
+            - valor: participacao_no_ultimo_mes_pct
+            - valor: variacao_12_meses_pp
+          recorte:
+            - valor: maior_segmento
+            - valor: participacao_no_ultimo_mes_pct
+            - valor: variacao_no_recorte_pp
+
+  Q21:
+    unica:
+      - consulta: Q21.sql
+        janelas:
+          12_meses:
+            - lista: conjunto
+              chave: codigo_modalidade
+              onde:
+                - {coluna: ganho_ip_12_meses_pp, op: maior_que, valor: 0}
+            - lista: conjunto
+              chave: codigo_modalidade
+              onde:
+                - {coluna: ganho_fintech_12_meses_pp, op: maior_que, valor: 0}
+          recorte:
+            - lista: conjunto
+              chave: codigo_modalidade
+              onde:
+                - {coluna: ganho_ip_no_recorte_pp, op: maior_que, valor: 0}
+            - lista: conjunto
+              chave: codigo_modalidade
+              onde:
+                - {coluna: ganho_fintech_no_recorte_pp, op: maior_que, valor: 0}
+
+  # ---------------------------------------------------------------------------
+  # PT: PIX e mudança estrutural
+  # EN: PIX and structural change
+  # ---------------------------------------------------------------------------
+  Q22:
+    unica:
+      - consulta: Q22.sql
+        verificar:
+          - valor: volume
+            linha: primeira
+          - valor: volume
+            linha: ultima
+          - valor: crescimento_desde_o_inicio_da_janela_pct
+            linha: ultima
+
+  Q23:
+    modalidade:
+      - consulta: Q23_modalidade.sql
+        janelas:
+          12_meses:
+            - lista: conjunto
+              chave: codigo
+              onde:
+                - {coluna: carteira_12_meses_pct, op: menor_que, valor: 0}
+                - {coluna: pix_12_meses_pct, op: maior_que, valor: 0}
+              confere_com: retraiu_em_12_meses
+          recorte:
+            - lista: conjunto
+              chave: codigo
+              onde:
+                - {coluna: carteira_no_recorte_pct, op: menor_que, valor: 0}
+                - {coluna: pix_no_recorte_pct, op: maior_que, valor: 0}
+              confere_com: retraiu_no_recorte
+    submodalidade:
+      - consulta: Q23_submodalidade.sql
+        janelas:
+          12_meses:
+            - lista: conjunto
+              chave: codigo
+              onde:
+                - {coluna: carteira_12_meses_pct, op: menor_que, valor: 0}
+                - {coluna: pix_12_meses_pct, op: maior_que, valor: 0}
+              confere_com: retraiu_em_12_meses
+          recorte:
+            - lista: conjunto
+              chave: codigo
+              onde:
+                - {coluna: carteira_no_recorte_pct, op: menor_que, valor: 0}
+                - {coluna: pix_no_recorte_pct, op: maior_que, valor: 0}
+              confere_com: retraiu_no_recorte
+
+  Q24:
+    pagador:
+      - consulta: Q24_pagador.sql
+        verificar:
+          - lista: conjunto
+            chave: uf
+            valores: [razao_pix_sobre_carteira]
+    recebedor:
+      - consulta: Q24_recebedor.sql
+        verificar:
+          - lista: conjunto
+            chave: uf
+            valores: [razao_pix_sobre_carteira]
+
+  # ---------------------------------------------------------------------------
+  # PT: Contexto econômico
+  # EN: Economic context
+  # ---------------------------------------------------------------------------
+  Q25:
+    unica:
+      - consulta: Q25.sql
+        verificar:
+          - valor: selic_meta_pct
+            linha: primeira
+          - valor: selic_meta_pct
+            linha: ultima
+          - valor: taxa_inadimplencia_pct
+            linha: primeira
+          - valor: taxa_inadimplencia_pct
+            linha: ultima
+
+  Q26:
+    unica:
+      - consulta: Q26.sql
+        verificar:
+          - valor: defasagem_em_meses
+            linha: {maior: correlacao}
+          - valor: correlacao
+            linha: {maior: correlacao}
+
+  Q27:
+    deriva_pj:
+      - consulta: Q27.sql
+        verificar:
+          - lista: conjunto
+            chave: horizonte_em_meses
+            valores: [carteira_projetada, carteira_no_limite_inferior, carteira_no_limite_superior]
+
+  # ---------------------------------------------------------------------------
+  # PT: Automação do trabalho repetitivo
+  # EN: Automating repetitive work
+  # ---------------------------------------------------------------------------
+  Q28:
+    no_mes:
+      - consulta: Q28_totais.sql
+        verificar:
+          - valor: carteira_ativa
+          - valor: variacao_mensal_pct
+          - valor: variacao_anual_pct
+      - consulta: Q28_crescimento_no_mes.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 3
+            ordem: posicao
+            valores: [crescimento_pct]
+      - consulta: Q28_deterioracao_no_mes.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 3
+            ordem: posicao
+            valores: [variacao_pp]
+    em_12_meses:
+      - consulta: Q28_totais.sql
+        verificar:
+          - valor: carteira_ativa
+          - valor: variacao_mensal_pct
+          - valor: variacao_anual_pct
+      - consulta: Q28_crescimento_12_meses.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 3
+            ordem: posicao
+            valores: [crescimento_pct]
+      - consulta: Q28_deterioracao_12_meses.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 3
+            ordem: posicao
+            valores: [variacao_pp]
+
+  Q29:
+    12_meses:
+      - consulta: Q29_12_meses.sql
+        verificar:
+          - lista: conjunto
+            chave: metrica
+            onde:
+              - {coluna: z, op: modulo_maior_que, valor: 2}
+            confere_com: atipica
+            valores: [z]
+    24_meses:
+      - consulta: Q29_24_meses.sql
+        verificar:
+          - lista: conjunto
+            chave: metrica
+            onde:
+              - {coluna: z, op: modulo_maior_que, valor: 2}
+            confere_com: atipica
+            valores: [z]
+
+  Q30:
+    unica:
+      - consulta: Q30_presenca.sql
+        verificar:
+          - lista: conjunto
+            chave: codigo_submodalidade
+      - consulta: Q30_comparabilidade.sql
+        verificar:
+          - lista: conjunto
+            chave: modalidade_v1
+            valores: [diferenca_pct]
+
+  # ---------------------------------------------------------------------------
+  # PT: Armadilhas de classificação
+  # EN: Classification traps
+  # ---------------------------------------------------------------------------
+  Q31:
+    unica:
+      - consulta: Q31.sql
+        verificar:
+          - valor: total_do_cartao
+            linha: primeira
+          - lista: conjunto
+            chave: codigo_submodalidade
+            valores: [carteira_ativa]
+
+  Q32:
+    unica:
+      - consulta: Q32.sql
+        verificar:
+          - valor: participacao_da_modalidade_na_carteira_pct
+            linha: primeira
+          - lista: conjunto
+            chave: codigo_submodalidade
+            valores: [participacao_na_modalidade_pct]
+
+  Q33:
+    unica:
+      - consulta: Q33.sql
+        verificar:
+          - lista: conjunto
+            chave: porte_desambiguado
+            valores:
+              - uma_de: [carteira_ativa, participacao_no_cliente_pct]
+
+  Q34:
+    unica:
+      - consulta: Q34.sql
+        verificar:
+          - valor: carteira_ativa
+
+  Q35:
+    unica:
+      - consulta: Q35.sql
+        verificar:
+          - valor: meses_com_ocorrencia
+          - valor: maior_carteira_mensal
+          - valor: modalidade_v1_atribuida
+
+  # ---------------------------------------------------------------------------
+  # PT: Limites do dado e comparabilidade
+  # EN: Data limits and comparability
+  # ---------------------------------------------------------------------------
+  Q36:
+    unica:
+      - consulta: Q36.sql
+        janelas:
+          ultimo_mes:
+            - valor: carteira_sem_contagem_no_ultimo_mes_pct
+          recorte:
+            - valor: carteira_sem_contagem_no_recorte_pct
+
+  Q37:
+    unica:
+      - consulta: Q37.sql
+        verificar:
+          - valor: operacoes_limite_inferior
+          - valor: carteira_sem_contagem_pct
+
+  Q38:
+    v2:
+      - consulta: Q38_v2.sql
+        verificar:
+          - valor: variacao_na_quebra_pct
+            linha: {medida: ativo_problematico}
+          - valor: maior_variacao_nos_outros_meses_pct
+            linha: {medida: ativo_problematico}
+          - valor: variacao_na_quebra_pct
+            linha: {medida: carteira_inadimplida}
+          - valor: maior_variacao_nos_outros_meses_pct
+            linha: {medida: carteira_inadimplida}
+    v1:
+      - consulta: Q38_v1.sql
+        verificar:
+          - valor: variacao_na_quebra_pct
+            linha: {medida: ativo_problematico}
+          - valor: maior_variacao_nos_outros_meses_pct
+            linha: {medida: ativo_problematico}
+          - valor: variacao_na_quebra_pct
+            linha: {medida: carteira_inadimplida}
+          - valor: maior_variacao_nos_outros_meses_pct
+            linha: {medida: carteira_inadimplida}
+
+  Q39:
+    unica:
+      - consulta: Q39.sql
+        verificar:
+          - valor: diferenca_pct
+            linha: ultima
+          - valor: mes
+            linha: {maior_em_modulo: mudanca_da_diferenca_pp}
+          - valor: mudanca_da_diferenca_pp
+            linha: {maior_em_modulo: mudanca_da_diferenca_pp}
+
+  Q40:
+    unica:
+      - consulta: Q40.sql
+        janelas:
+          ultimo_mes:
+            - valor: ambigua_no_ultimo_mes_pct
+            - valor: inferida_no_ultimo_mes_pct
+          recorte:
+            - valor: ambigua_no_recorte_pct
+            - valor: inferida_no_recorte_pct
+
+  Q41:
+    abstencao: so_rubrica
