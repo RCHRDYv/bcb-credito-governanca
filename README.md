@@ -236,6 +236,7 @@ uv run python -m scripts.analises.qa_gabarito
 | [Especificação](docs/especificacao.md) | Arquitetura, esquema da fonte, camadas do dbt, desenho do experimento |
 | [Referências](docs/referencias.md) | Literatura e premissa de mercado que sustentam a tese |
 | [Desenvolvimento com IA](docs/desenvolvimento-com-ia.md) | O processo de ponta a ponta, incluindo os erros da IA e como foram pegos |
+| [Fluxo de trabalho](docs/fluxo-de-trabalho.md) | O passo a passo de uma issue com o Claude Code, da sessão nova ao merge, com as frases úteis |
 | [Análise V1 e V2](docs/analise-v1-v2.md) | A quebra de taxonomia entre as duas versões do SCR.data |
 | [Leitura dos normativos](docs/leitura-normativos.md) | O que as metodologias oficiais respondem, e o que não respondem |
 | [Cadeia normativa](docs/cadeia-normativa.md) | Por que o dado mudou: leiaute, instruções do documento 3040 e as normas por trás de cada quebra |

@@ -56,7 +56,8 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 
 ## Convenções
 - Comentários e docstrings bilíngues, um bloco PT seguido de um bloco EN, no estilo dos arquivos vizinhos.
-- Branch por issue (`feat/`, `ci/`, `chore/`), PR com `Closes #n`. Fluxo completo na skill `/entregar-issue`.
+- Branch por issue (`feat/`, `ci/`, `chore/`), PR com `Closes #n`.
+- Fluxo de uma issue: `/iniciar-issue <n>` até o plano aprovado, `/entregar-issue <n>` do commit à PR. Passo a passo em `docs/fluxo-de-trabalho.md`.
 - O hook de pre-commit `mixed-line-ending` corrige o arquivo e reprova o commit: rode `git add` de novo e repita o commit.
 - Para editar texto com acento, prefira as ferramentas de edição ou um script em arquivo. Heredoc no Bash quebra com barra invertida.
 
