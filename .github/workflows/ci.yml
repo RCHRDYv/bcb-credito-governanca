@@ -205,6 +205,51 @@ jobs:
           dbt parse --profiles-dir ../.github/dbt --target ci --no-partial-parse
 
   # ---------------------------------------------------------------------------
+  # PT: O que mudou (#105). O job do site é o mais longo do CI, e numa PR que
+  #     não toca em dashboard/ ele testaria o mesmo site que já está na main.
+  #     O site não lê nada fora da própria pasta: os dados dele ficam em
+  #     dashboard/public/data/. Então ele roda só quando muda algo em
+  #     dashboard/ ou neste workflow.
+  #
+  #     A comparação é com git diff, sem action de terceiros, e o workflow
+  #     continua só com permissão de leitura. Na PR, a base é a da PR; no
+  #     push na main, o commit anterior ao push. Sem base para comparar,
+  #     roda tudo.
+  # EN: What changed. The site job is CI's longest, and on a PR that does not
+  #     touch dashboard/ it would test the same site main already has. The
+  #     site reads nothing outside its folder, so it runs only when
+  #     dashboard/ or this workflow changes. Plain git diff, no third-party
+  #     action, read-only permissions. With no base to compare, run it all.
+  # ---------------------------------------------------------------------------
+  mudancas:
+    name: O que mudou
+    runs-on: ubuntu-latest
+    outputs:
+      site: ${{ steps.site.outputs.site }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: O site mudou?
+        id: site
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo "Sem base para comparar: roda o site."
+            echo "site=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$BASE" "$GITHUB_SHA" | grep -qE '^(dashboard/|\.github/workflows/ci\.yml$)'; then
+            echo "O site ou o workflow mudou: roda o site."
+            echo "site=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nada em dashboard/ nem no workflow: o site é o da main, e o job é pulado."
+            echo "site=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ---------------------------------------------------------------------------
   # PT: O site do dashboard (issues #65 e #62, ADRs 0017 e 0018). Roda na pasta
   #     dashboard/ e confere, nesta ordem: o CSS gerado em dia com os tokens,
   #     lint e formatação, tipos pelo JSDoc, testes unitários, build, orçamento
@@ -224,6 +269,8 @@ jobs:
   # ---------------------------------------------------------------------------
   site-do-dashboard:
     name: Site do dashboard
+    needs: mudancas
+    if: needs.mudancas.outputs.site == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -288,11 +335,16 @@ jobs:
   #     o Pages conferir que ela vem deste workflow. O token é o efêmero que
   #     o GitHub gera para cada execução, e o repositório não tem segredo
   #     nenhum. O ambiente github-pages só aceita publicação da main.
+  #
+  #     Quando o push não muda o site, o job dele é pulado e este também: o
+  #     site no ar continua sendo o da última publicação, que é o mesmo (#105).
   # EN: GitHub Pages deployment. Runs only on a push to main, after the three
   #     jobs above pass, so what ships is the dist/ that passed all of CI.
   #     Permissions live in this job and are only the two deployment needs;
   #     the token is the per-run ephemeral one, and the repository holds no
   #     secret. The github-pages environment accepts deployments from main.
+  #     When a push leaves the site unchanged, the site job is skipped and so
+  #     is this one: the live site is already the same.
   # ---------------------------------------------------------------------------
   publicacao-do-site:
     name: Publicação no Pages

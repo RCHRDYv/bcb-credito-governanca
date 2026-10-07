@@ -237,7 +237,7 @@ flowchart TB
         c_per["Pré-registro das perguntas"]
         c_cob["Cobertura da camada gold"]
         c_dbt["dbt parse, sem credencial"]
-        c_dash["Site do dashboard: lint, tipos,<br/>testes, axe e Lighthouse"]
+        c_dash["Site do dashboard, só quando<br/>dashboard/ muda: lint, tipos,<br/>testes, axe e Lighthouse"]
     end
 
     subgraph dados["3. Na máquina com acesso ao Databricks, por OAuth"]
