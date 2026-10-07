@@ -67,3 +67,10 @@ dashboard/node_modules/
 dashboard/dist/
 dashboard/test-results/
 dashboard/playwright-report/
+
+# PT: Do Claude Code, só as skills do projeto são versionadas. O resto de
+#     .claude/ (launch.json, settings locais) continua só na máquina.
+# EN: Only the project skills under .claude/ are versioned.
+!.claude/
+.claude/*
+!.claude/skills/
