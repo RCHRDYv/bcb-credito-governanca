@@ -33,6 +33,8 @@ uv run python -m scripts.validar_correspondencia --estrutura
 uv run python -m scripts.validar_perguntas
 uv run python -m scripts.validar_cobertura
 uv run python -m scripts.validar_gabarito
+uv run python -m scripts.validar_registro
+uv run python -m scripts.validar_registro --autoteste
 uv run python -m scripts.validar_dados_do_dashboard
 ```
 Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'` precisa sair limpo. O CI também roda `dbt parse` com `uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9`.
@@ -43,6 +45,7 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - SQL do gabarito: portátil entre Databricks e DuckDB, sem prefixo de catálogo, lendo só as tabelas que a cobertura lista.
 - `uv run python -m scripts.gerar_gabarito` usa o Databricks e regrava todas as respostas, `docs/gabarito.md` e `esquema_estrela.json`. Respostas que aparecem como modificadas só por final de linha não mudaram.
 - QA por outro caminho em `scripts/analises/`, por exemplo `qa_gabarito`, `qa_fontes_externas` e `qa_renda_do_trabalho`.
+- Pré-registro (#47, ADR 0026): `evaluation/hipoteses.yml`, `evaluation/comparacao.yml`, o `gabarito.yml` e os SQL do gabarito estão congelados pelo `evaluation/registro.yml`. Mudança só por errata datada no fim da lista do registro, nunca editando um hash. As respostas JSON ficam fora, porque mudam com o mês.
 
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).

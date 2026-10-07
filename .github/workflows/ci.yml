@@ -156,6 +156,24 @@ jobs:
       - name: Gabarito das perguntas
         run: uv run python -m scripts.validar_gabarito
 
+      # PT: Pré-registro do experimento (#47): as hipóteses, a comparação, o
+      #     gabarito.yml e os SQL do gabarito batem com o sha256 registrado, ou
+      #     com uma errata datada; o registro original não foi reescrito; e a
+      #     comparação cobre toda leitura com colunas que existem.
+      # EN: Experiment pre-registration: hypotheses, comparison spec, answer
+      #     key and its SQL match the registered sha256 or a dated errata; the
+      #     original registry is untouched; the comparison covers every reading.
+      - name: Pré-registro do experimento
+        run: uv run python -m scripts.validar_registro
+
+      # PT: Controle negativo: a validação precisa reprovar cópias alteradas
+      #     das hipóteses, do gabarito e dos SQL, cada uma pelo motivo certo, e
+      #     aceitar uma errata válida e uma cópia com CRLF e BOM.
+      # EN: Negative control: validation must reject altered copies, each for
+      #     the right reason, and accept a valid errata and a CRLF/BOM copy.
+      - name: Pré-registro do experimento (controle negativo)
+        run: uv run python -m scripts.validar_registro --autoteste
+
       # PT: Os JSON do site dentro do contrato (#66): colunas, tipos, nulos,
       #     grão, data-base, nenhum dado pessoal, e o ontologia.json e o
       #     manifesto.json iguais ao que a exportação monta. O arquivo que

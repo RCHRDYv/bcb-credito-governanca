@@ -1,0 +1,77 @@
+# =============================================================================
+# PT: Registro do pré-registro do experimento (issue #47). Guarda o sha256
+#     dos arquivos congelados. Não se edita à mão: depois do registro, uma
+#     mudança entra só como errata no fim da lista, com data, arquivo,
+#     motivo e o sha256 novo, e é declarada junto do resultado.
+#     Conferido por scripts/validar_registro.py.
+#
+# EN: Registry of the experiment's pre-registration. Holds the sha256 of
+#     the frozen files. After registration, a change enters only as an
+#     errata appended to the list, with date, file, reason and new sha256.
+# =============================================================================
+
+metadata:
+  registrado_em: '2026-10-07'
+  issue: 47
+  normalizacao: UTF-8 sem BOM, final de linha LF
+arquivos:
+  evaluation/comparacao.yml: 9801ac2062b8192e8668d42f58a0b59f63e57c7919dd79bcd3b31de08fde0185
+  evaluation/gabarito.yml: 6cb9ed0b918ab8df106acad14d851980b477ea5b060654dc5b2d049aac7c387b
+  evaluation/gabarito/Q01.sql: a26356d80b969c4b20612c37bbd2340df99f659eb4e2de8ba7df5acc0c8153a6
+  evaluation/gabarito/Q02_percentual.sql: b3c306e4b87e1358a6c6999f22d347dc7b1b6d44799ad4f266177d1f27dc5be8
+  evaluation/gabarito/Q02_reais.sql: 800722f32bd06381e28c64f9d5b327359c5d7de237e7041c2445a7b5f45673cb
+  evaluation/gabarito/Q03.sql: 2f4963c52e5594e7eb680caa65738c9a2c0c7d9ce16dda00f7a42158e4e3872c
+  evaluation/gabarito/Q04.sql: 832a5d3caa96f7e60554922a2c56c2cf399bf018e6b81ae649851875451e09f7
+  evaluation/gabarito/Q05.sql: bfa555066f466f1c4a7758026090eaf563398401c72a52b48abf192970128307
+  evaluation/gabarito/Q06.sql: 87c3ab51554a5c9fbd694ba34a814e9fd28630757f7c33a8e91564a9f774246f
+  evaluation/gabarito/Q07_pontos.sql: 7d22fa0c4835ddccbedbe03784d9dc067fae0bbc22f4c5da6aea4f348a20628b
+  evaluation/gabarito/Q07_relativa.sql: dc969f4416f4ced0c7212b333c40c76e83ac457ca291069eda1f088bcd2347d7
+  evaluation/gabarito/Q08.sql: f45160ca2ef50d25ee8b8df307fb1c97478a8e297392e5381720089288ac3e71
+  evaluation/gabarito/Q09.sql: c9446b6a1bb59d8038154cfb20ef5704a410bc178d527a266d9e54f46c6f345f
+  evaluation/gabarito/Q10.sql: 456f651aa157526eee5f049df83c4b75633365a13239e5f29713b68cc6c559fd
+  evaluation/gabarito/Q11.sql: 9a8b17fdc8ed8cf4bc739ce4096d24f0a667784f49b42368bca064fee298e6c1
+  evaluation/gabarito/Q12_percentual.sql: 18ff8334fb0f342c14c1ca9c425fa7954318f2018bcb8fb39d37f263fea6dd1a
+  evaluation/gabarito/Q12_reais.sql: a882aa5befdc961444cfd3a4d4faccb06cfbf1864e0de131c84692adf9cde9dc
+  evaluation/gabarito/Q13_pf.sql: 393b3b50876b06eaa702612c90104e43f2b306e2c4eaf600f93ec5bf028da121
+  evaluation/gabarito/Q13_total.sql: 44ff14b6b7cdb9f8ac0a616c56da7bd7b3a0d197910cef4db388c40e3a767275
+  evaluation/gabarito/Q14_empresariais_sem_mei.sql: 4a19445aaf239ef460ded091535a4cacc506897d9241c1fa074d905211f5a39e
+  evaluation/gabarito/Q14_todas_as_empresas.sql: 971dcda843a2af54e142fe6b81ee9a5b35c3ee46286c3d3fa2a2e7b96c5b8611
+  evaluation/gabarito/Q15.sql: cda5412d5d7a76c7791dc6bcd67af1cde0de79bbfdd56c26aaea2964a305a47c
+  evaluation/gabarito/Q16.sql: ad010b9dd3d534ac299982807ec4eb80c707fc6fc6e966cc94407206b1845dd4
+  evaluation/gabarito/Q17_definicoes.sql: cbcda7bfb4b45d331b94e7ca7609387f11eed218db4ab7e6da7d089d28dc5d6c
+  evaluation/gabarito/Q17_home_equity.sql: e4415daa22f23bb76df72c6c9ae1959feb95bc8a84c6461f293f15c6924967d3
+  evaluation/gabarito/Q18.sql: 3a888cafd1b5440caa1cd7918875901e1637d9dd891cf0243e1e7724eefa2d38
+  evaluation/gabarito/Q19.sql: 180a76dda7e3cba26b760672c3319fd5114b5b13ee126996776b4df9fe914fd2
+  evaluation/gabarito/Q20_herfindahl.sql: 0024180bb601f8a13db5aba57dfd3380f8fecf49435193c67f33ef3f503a2ccf
+  evaluation/gabarito/Q20_maior_segmento.sql: 107bb6ae40e5daed3e9dd9db19ad7bb14330beee428d36035219ec357d95775f
+  evaluation/gabarito/Q21.sql: e9efe7364e038c3b2071610948f9d15858ae591129bdc585ecc3a21e4ae1d7b7
+  evaluation/gabarito/Q22.sql: 30587c2d51d00c73440ac303c7f1d3cb0a416f80ec28939031c6d4ddb84b59c0
+  evaluation/gabarito/Q23_modalidade.sql: 930e00ed050df4d0c798ac9a5146ac74dadce7733394f60cbf8b55a97f5193ea
+  evaluation/gabarito/Q23_submodalidade.sql: cfd3edcc75c49c2e4d48811fdefe5c7a1d2b922c96b501d6071ffdbfb1d1dd88
+  evaluation/gabarito/Q24_pagador.sql: 153949bb4ec688237a143962147f0aa5db1c7401a851a50cbf72368e26202647
+  evaluation/gabarito/Q24_recebedor.sql: 6231ed54601435a550e516a7ddf75d89c5d644c9937fcf05b7431c929b562c1e
+  evaluation/gabarito/Q25.sql: 288d32f569fc6815da878be49020549546d1a7f4afeb95fd32b896c1be8813b2
+  evaluation/gabarito/Q26.sql: 0efd23d1b6583ae3be0dc7b88cf52645dd9007d9669479727db2011be733eaa1
+  evaluation/gabarito/Q27.sql: 7a7c22cc972a8d59904d3c348ef25b3ddb6ab0229169ccba6c66ecc58aff46cf
+  evaluation/gabarito/Q28_crescimento_12_meses.sql: c83fb5db640ad8af40dcff31beb661447ede1f9925304f2ae8712ce7334f80e4
+  evaluation/gabarito/Q28_crescimento_no_mes.sql: cf9108e32d8832ca56faa2c06bb10d59f5b205fe98bfc6c020df4c51ddbdb528
+  evaluation/gabarito/Q28_deterioracao_12_meses.sql: cfc96700337718f5b9a50d44b8bc290decce591f4cd2886107b203db298cbc97
+  evaluation/gabarito/Q28_deterioracao_no_mes.sql: 1be03f95b9f3c56b127fe31cc5186437271c27f8fc7bb69f6804cd9bc2fc2db6
+  evaluation/gabarito/Q28_totais.sql: 7c919ce2b543601ade23d420c07a5c7a5430bbad792f38b7ec37dd4747de214b
+  evaluation/gabarito/Q29_12_meses.sql: f68719cf15775af32a6a25372991828884c2a4ed9782e5a5125d937061bf5881
+  evaluation/gabarito/Q29_24_meses.sql: 5bd5d3a78db687dfa1b5577a92343c620a0cece5031cd928b46a590ddac01d65
+  evaluation/gabarito/Q30_comparabilidade.sql: f1c7b794b8dce6c0b4fd4081365c2cc75aa42f3ec055cbeef85e9bc3ec1042f6
+  evaluation/gabarito/Q30_presenca.sql: 5ef1bba214018565ffe641c9286878d63cf0741aeb6e71541d87db5cb42467ff
+  evaluation/gabarito/Q31.sql: ff2850951738b9e1d7217716ca89872efbf5ede94943e0d84d7fae3e27e21e4e
+  evaluation/gabarito/Q32.sql: 730f56adee872a3eb379b0fb028cfb42e8977d00405954e04d06f2f8eee5cad4
+  evaluation/gabarito/Q33.sql: 46b040a8acf25e804fbf37fc15e2b7c15d3535c01122a2d8754c210e61b2ac02
+  evaluation/gabarito/Q34.sql: f3e510c7ece75c022461f20113177611b8fc9cf437bbfbe3ccedc510598eefbd
+  evaluation/gabarito/Q35.sql: bfe8a08a41efb372bab743ffe9080fd0256b3148d17698f8b334a18ac2c1fa97
+  evaluation/gabarito/Q36.sql: d8e3b94b93a98089a2cba904465f4edbe5b3e365d0143c51ac954e0741947a55
+  evaluation/gabarito/Q37.sql: 131c249de5abea6408b28f4808b1069ac822244b5ea836f3077a5a0fce79e7ca
+  evaluation/gabarito/Q38_v1.sql: c272ae664788490e8cc3666faa02bfa2877c334137df53108ff50fabd75cb00b
+  evaluation/gabarito/Q38_v2.sql: 4db8411e52123423545a11cba0b69dd9743f67965be17daecf0279cb978e2222
+  evaluation/gabarito/Q39.sql: 3f9cbeca494def8c483e5e2934f2369c2a0ce3f2f2b6085a1acaf72745e514a6
+  evaluation/gabarito/Q40.sql: 9675f5c2497c45119f6c4964b83dbf13a432d3e6e82dccd9db34705d75e51a82
+  evaluation/hipoteses.yml: 122b477a84c3f6c8b9e107e422d5cb62fc80a21f42b3ae6bbef1bc2f01f508f6
+erratas: []
