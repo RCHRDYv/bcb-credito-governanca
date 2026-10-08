@@ -223,6 +223,38 @@ jobs:
           dbt parse --profiles-dir ../.github/dbt --target ci --no-partial-parse
 
   # ---------------------------------------------------------------------------
+  # PT: O esquema estrela publicado (#45, ADR 0027). Lê o dataset público do
+  #     Hugging Face na revisão fixada em esquema_estrela/manifesto.json, sem
+  #     credencial nenhuma, e confere: sha256 pela API do Hub, só os arquivos
+  #     esperados, esquema, totais por período contra o manifesto e os SQL do
+  #     gabarito contra as respostas versionadas. É o que prova que o DuckDB
+  #     lê o esquema estrela direto do dataset. Fica num job próprio, fora da
+  #     publicação do site: se o Hugging Face sair do ar, só ele reprova.
+  # EN: The published star schema. Reads the public Hugging Face dataset at
+  #     the pinned revision, with no credential, and checks hashes, file set,
+  #     schema, per-period totals and the answer key SQL. Its own job, outside
+  #     the site deployment, so a Hugging Face outage fails only this job.
+  # ---------------------------------------------------------------------------
+  esquema-estrela-publicado:
+    name: Esquema estrela publicado
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --frozen
+
+      - name: Leitura do dataset e conferência
+        run: uv run python -m scripts.analises.qa_esquema_estrela --origem hf
+
+  # ---------------------------------------------------------------------------
   # PT: O que mudou (#105). O job do site é o mais longo do CI, e numa PR que
   #     não toca em dashboard/ ele testaria o mesmo site que já está na main.
   #     O site não lê nada fora da própria pasta: os dados dele ficam em

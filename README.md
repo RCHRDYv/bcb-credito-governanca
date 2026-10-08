@@ -229,6 +229,19 @@ uv run python -m scripts.gerar_gabarito
 uv run python -m scripts.analises.qa_gabarito
 ```
 
+### Como exportar e publicar o esquema estrela
+
+O esquema estrela sai do Databricks em Parquet, uma tabela por arquivo, e é publicado no dataset público [`vidayuri/bcb-credito-governanca`](https://huggingface.co/datasets/vidayuri/bcb-credito-governanca) do Hugging Face. É dele que o experimento e o chat do dashboard leem, pelo DuckDB, sem Databricks e sem credencial ([ADR 0027](docs/adr/0027-retrato-do-esquema-estrela-no-hugging-face.md)). O retrato fica fixado em [`esquema_estrela/manifesto.json`](esquema_estrela/manifesto.json), com o mês de referência, o sha256 e os totais de cada tabela e a revisão publicada, e as views com os nomes do dbt ficam em [`esquema_estrela/views.sql`](esquema_estrela/views.sql).
+
+```bash
+uv run python -m scripts.exportar_esquema_estrela
+uv run python -m scripts.analises.qa_esquema_estrela --com-databricks
+uv run python -m scripts.publicar_esquema_estrela
+uv run python -m scripts.analises.qa_esquema_estrela --origem hf
+```
+
+O QA confere que os totais por mês batem exatamente entre o DuckDB e o Databricks, e roda no DuckDB os SQL do gabarito, comparando célula a célula com as respostas geradas no Databricks, dentro da tolerância do pré-registro. A publicação pede um token de escopo fino, restrito ao dataset, que fica só na memória do processo. O CI repete a leitura direta do dataset na revisão fixada.
+
 ### Documentação
 
 | Documento | O que traz |

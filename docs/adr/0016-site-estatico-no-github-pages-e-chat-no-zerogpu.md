@@ -1,6 +1,6 @@
 # ADR 0016: O site do dashboard é estático no GitHub Pages, e o chat roda num Space ZeroGPU
 
-**Status:** Aceito
+**Status:** Aceito. Em 2026-10-07, a decisão 3 foi detalhada pelo ADR [0027](0027-retrato-do-esquema-estrela-no-hugging-face.md), que diz em que forma o esquema estrela sai, como o retrato fica fixado e como o token do Hugging Face é usado.
 **Data:** 2026-09-25
 
 ## Contexto
