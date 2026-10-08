@@ -114,13 +114,34 @@ def ler_textos() -> dict[str, str]:
     EN: The texts as on disk, line endings and BOM included; hashing
         normalizes.
     """
-    textos = {}
-    for caminho in [*caminhos_protegidos(), REGISTRO]:
+    def ler(caminho: str) -> None:
         arquivo = RAIZ / caminho
         if arquivo.exists():
             with arquivo.open(encoding="utf-8", newline="") as f:
                 textos[caminho] = f.read()
+
+    textos: dict[str, str] = {}
+    for caminho in [*caminhos_protegidos(), REGISTRO]:
+        ler(caminho)
+    # PT: um arquivo que entrou por errata e continua valendo (como o gabarito
+    #     de recuperação da #46) também é lido, para o hash dele ser conferido.
+    #     O que uma errata tirou do registro não é lido.
+    # EN: files added by errata and still in force are read too, so their
+    #     hash is checked; files an errata removed are not.
+    if REGISTRO in textos:
+        for caminho in arquivos_de_errata(carregar(textos[REGISTRO])):
+            if caminho not in textos:
+                ler(caminho)
     return textos
+
+
+def arquivos_de_errata(registro: dict) -> list[str]:
+    """
+    PT: Arquivos que valem por errata e não estavam no registro original.
+    EN: Files in force through errata that were not in the original registry.
+    """
+    originais = set(registro.get("arquivos") or {})
+    return [c for c in hashes_vigentes(registro) if c not in originais]
 
 
 def ler_respostas() -> dict[str, dict]:
@@ -583,6 +604,14 @@ def autoteste(textos: dict[str, str], respostas: dict[str, dict]) -> list[str]:
         ("filtro que não reproduz o gabarito", _trocar(COMPARACAO, "op: modulo_maior_que, valor: 2}",
                                                        "op: modulo_maior_que, valor: 1}"), "não reproduz atipica", True),
     ]
+
+    # PT: um arquivo que entrou por errata (#46) também fica congelado.
+    # EN: a file added by errata is frozen too.
+    de_errata = [c for c in arquivos_de_errata(carregar(textos[REGISTRO])) if c in textos]
+    if de_errata:
+        def errata_alterada(t, caminho=de_errata[0]):
+            t[caminho] += "\n"
+        negativos.append(("arquivo que entrou por errata alterado", errata_alterada, f"{de_errata[0]}: alterado", False))
 
     def errata_valida(t):
         _com_errata(sql, data="2099-01-01", motivo="teste de errata válida")(t)

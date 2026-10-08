@@ -1107,6 +1107,198 @@
       "url_oficial": "https://arquivos.receitafederal.gov.br/public.php/webdav/2026-09/Simples.zip"
     }
   },
+  "documentos": {
+    "carta_circular_3617.json": {
+      "bytes": 7500,
+      "data_extracao": "2026-10-07",
+      "sha256": "be508edcbc29a7946269926ea711cf4232a7593dcdd069b31d252bca557971da",
+      "tipo": "normativo",
+      "titulo": "Carta Circular nº 3.617",
+      "titulo_na_fonte": "Carta Circular Nº 3.617",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Carta%20Circular&p2=3617",
+      "versao_na_fonte": null
+    },
+    "carta_circular_3773.json": {
+      "bytes": 3571,
+      "data_extracao": "2026-10-07",
+      "sha256": "020421b6823e13303445f76ed846a7c2b76d3c3d0ada3ffbd440c1e983cb7fbb",
+      "tipo": "normativo",
+      "titulo": "Carta Circular nº 3.773",
+      "titulo_na_fonte": "Carta Circular N° 3.773",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Carta%20Circular&p2=3773",
+      "versao_na_fonte": null
+    },
+    "carta_circular_3806.json": {
+      "bytes": 4155,
+      "data_extracao": "2026-10-07",
+      "sha256": "5a3d1e3cc6f2644ccfc3ac1955c7496c4e34df9bb6a69157ab65a175c3e652d5",
+      "tipo": "normativo",
+      "titulo": "Carta Circular nº 3.806",
+      "titulo_na_fonte": "Carta Circular N° 3.806",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Carta%20Circular&p2=3806",
+      "versao_na_fonte": null
+    },
+    "carta_circular_3817.json": {
+      "bytes": 2311,
+      "data_extracao": "2026-10-07",
+      "sha256": "59203cfd5b0afa3bacf6b8735201f1479043b8c51777f449818aa1cde16e16d5",
+      "tipo": "normativo",
+      "titulo": "Carta Circular nº 3.817",
+      "titulo_na_fonte": "Carta Circular N° 3.817",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Carta%20Circular&p2=3817",
+      "versao_na_fonte": null
+    },
+    "cnpj_leiaute.pdf": {
+      "bytes": 59315,
+      "data_extracao": "2026-10-07",
+      "sha256": "0a52d6bdfb61a07425e352a0e692932306a5ec9ecad682f5f9e28059e1a5fce0",
+      "tipo": "pdf",
+      "titulo": "Metadados dos dados abertos do CNPJ (Receita Federal)",
+      "url": "https://www.gov.br/receitafederal/dados/cnpj-metadados.pdf"
+    },
+    "in_bcb_414.json": {
+      "bytes": 11106,
+      "data_extracao": "2026-10-07",
+      "sha256": "2e002871baea27ba4c3bdb34a61b042d9b9f89cc49fee1b35d428d64dd007ae9",
+      "tipo": "normativo",
+      "titulo": "Instrução Normativa BCB nº 414",
+      "titulo_na_fonte": "Instrução Normativa BCB N° 414",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Instru%C3%A7%C3%A3o%20Normativa%20BCB&p2=414",
+      "versao_na_fonte": 1.0
+    },
+    "in_bcb_531.json": {
+      "bytes": 25949,
+      "data_extracao": "2026-10-07",
+      "sha256": "55e94c50ebe0793b6525c480fdafc0350c2b1af06a0a7f1bc613fa2f6f8522e7",
+      "tipo": "normativo",
+      "titulo": "Instrução Normativa BCB nº 531",
+      "titulo_na_fonte": "Instrução Normativa BCB N° 531",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Instru%C3%A7%C3%A3o%20Normativa%20BCB&p2=531",
+      "versao_na_fonte": 1.0
+    },
+    "in_bcb_627.json": {
+      "bytes": 26980,
+      "data_extracao": "2026-10-07",
+      "sha256": "252890603608f3a53e3f9696dd1dfa5dca368099a92ea1cf766a8c5d2d4dee4d",
+      "tipo": "normativo",
+      "titulo": "Instrução Normativa BCB nº 627",
+      "titulo_na_fonte": "Instrução Normativa BCB N° 627",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Instru%C3%A7%C3%A3o%20Normativa%20BCB&p2=627",
+      "versao_na_fonte": 1.0
+    },
+    "in_bcb_659.json": {
+      "bytes": 55559,
+      "data_extracao": "2026-10-07",
+      "sha256": "ea439c989bb9cbca4d2baf3c37f1f8680ff59e65c57b8b824235d418fa3a6108",
+      "tipo": "normativo",
+      "titulo": "Instrução Normativa BCB nº 659",
+      "titulo_na_fonte": "Instrução Normativa BCB N° 659",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Instru%C3%A7%C3%A3o%20Normativa%20BCB&p2=659",
+      "versao_na_fonte": 1.0
+    },
+    "instrucoes_3040.pdf": {
+      "bytes": 1618203,
+      "data_extracao": "2026-10-07",
+      "last_modified": "Wed, 06 May 2026 20:32:58 GMT",
+      "sha256": "3a2f9dff406b404b26617ab0dce79b5992cc67ac410ff60047236c73b11daf8b",
+      "tipo": "pdf",
+      "titulo": "Instruções de Preenchimento do Documento 3040",
+      "url": "https://www.bcb.gov.br/content/estabilidadefinanceira/Leiaute_de_documentos/scrdoc3040/SCR_InstrucoesDePreenchimento_Doc3040.pdf"
+    },
+    "leiaute_3040.xls": {
+      "bytes": 290304,
+      "data_extracao": "2026-10-07",
+      "last_modified": "Wed, 06 May 2026 20:31:45 GMT",
+      "sha256": "ab3cad54fe481a52b5c4c24c832af3b1c0ef1e0d75cbaa3639611c903ed5c70f",
+      "tipo": "xls",
+      "titulo": "Leiaute do Documento 3040",
+      "url": "https://www.bcb.gov.br/content/estabilidadefinanceira/Leiaute_de_documentos/scrdoc3040/SCR3040_Leiaute.xls"
+    },
+    "metodologia_v1.pdf": {
+      "bytes": 550671,
+      "data_extracao": "2026-10-07",
+      "last_modified": "Tue, 03 Jun 2025 18:31:47 GMT",
+      "sha256": "5b9f3ec6635e4ba973ce248343f86e7ede8c597675ce69a6825a1aace52c044d",
+      "tipo": "pdf",
+      "titulo": "Metodologia do SCR.data, Versão 1",
+      "url": "https://www.bcb.gov.br/content/estabilidadefinanceira/scr/scr.data/scr_data_metodologia.pdf"
+    },
+    "metodologia_v2.pdf": {
+      "bytes": 356060,
+      "data_extracao": "2026-10-07",
+      "last_modified": "Fri, 06 Mar 2026 14:05:16 GMT",
+      "sha256": "9f3b41eca401d54a1711fe834c98158e63217dba0ffe2cab5d83f2a5a31f78fe",
+      "tipo": "pdf",
+      "titulo": "Metodologia do SCR.data, Versão 2",
+      "url": "https://www.bcb.gov.br/pda/desig/metodologia_versao2.pdf"
+    },
+    "pix_api.html": {
+      "bytes": 39672,
+      "data_extracao": "2026-10-07",
+      "sha256": "ba361f0e730e2a4005ad6a72a1c2edf4477ddc4d70a7c8b329540c0c697f0d31",
+      "tipo": "olinda",
+      "titulo": "Documentação do serviço Pix_DadosAbertos (Olinda)",
+      "url": "https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/documentacao"
+    },
+    "res_4553.json": {
+      "bytes": 14824,
+      "data_extracao": "2026-10-07",
+      "sha256": "a363fcc55d2b0d01642f5b20eaa60930e5f142d0050f8c90b905519dcbcfc762",
+      "tipo": "normativo",
+      "titulo": "Resolução nº 4.553, de 30/1/2017",
+      "titulo_na_fonte": "Resolução N° 4.553",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Resolu%C3%A7%C3%A3o&p2=4553",
+      "versao_na_fonte": null
+    },
+    "res_bcb_512.json": {
+      "bytes": 6890,
+      "data_extracao": "2026-10-07",
+      "sha256": "03a88a62bf63a07cdc81d6c2c2edf9a3d2321e221f64bfbb155e2510a2b5bc83",
+      "tipo": "normativo",
+      "titulo": "Resolução BCB nº 512",
+      "titulo_na_fonte": "Resolução BCB N° 512",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Resolu%C3%A7%C3%A3o%20BCB&p2=512",
+      "versao_na_fonte": 1.0
+    },
+    "res_cmn_4966.json": {
+      "bytes": 306588,
+      "data_extracao": "2026-10-07",
+      "sha256": "8d2ac4d5dde4b1277564739854138c8154ea838e84396832c8fad7669b09358c",
+      "tipo": "normativo",
+      "titulo": "Resolução CMN nº 4.966, de 25/11/2021",
+      "titulo_na_fonte": "Resolução CMN N° 4.966",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Resolu%C3%A7%C3%A3o%20CMN&p2=4966",
+      "versao_na_fonte": 5.0
+    },
+    "res_cmn_5254.json": {
+      "bytes": 13688,
+      "data_extracao": "2026-10-07",
+      "sha256": "2c4678fa6b17a052903c818b4822de17a101e1a3831c893698ad1f0fd02e8a24",
+      "tipo": "normativo",
+      "titulo": "Resolução CMN nº 5.254",
+      "titulo_na_fonte": "Resolução CMN N° 5.254",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Resolu%C3%A7%C3%A3o%20CMN&p2=5254",
+      "versao_na_fonte": 1.0
+    },
+    "res_cmn_5255.json": {
+      "bytes": 68991,
+      "data_extracao": "2026-10-07",
+      "sha256": "e55a7d44a4f4adaeb1b12aa3ab6f36d01f3a69b4e7f6b00132782281f1e3e0f7",
+      "tipo": "normativo",
+      "titulo": "Resolução CMN nº 5.255",
+      "titulo_na_fonte": "Resolução CMN N° 5.255",
+      "url": "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1=Resolu%C3%A7%C3%A3o%20CMN&p2=5255",
+      "versao_na_fonte": 1.0
+    },
+    "sgs_api.json": {
+      "bytes": 12328,
+      "data_extracao": "2026-10-07",
+      "sha256": "7c4d747ae18c7768010548231e2dcf211c24baffbe67ec192c6984afa5e985fe",
+      "tipo": "ckan",
+      "titulo": "Taxa de juros - Meta Selic definida pelo Copom (portal de dados abertos, SGS 432)",
+      "url": "https://dadosabertos.bcb.gov.br/api/3/action/package_show?id=432-taxa-de-juros---meta-selic-definida-pelo-copom"
+    }
+  },
   "ibge": {
     "malha_ufs_2022.json": {
       "bytes": 98502,

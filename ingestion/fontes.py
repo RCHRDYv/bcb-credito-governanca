@@ -10,6 +10,7 @@ EN: Single source of ingestion configuration: which files to fetch, where
 from __future__ import annotations
 
 import os
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -369,3 +370,135 @@ PIX_INICIO = f"{ANOS[0]}01"  # PT: AAAAMM / EN: YYYYMM
 PIX_PAGINA = 10_000  # PT: limite por consulta, acima dos 5.572 municípios de um mês / EN: per-query limit
 DIR_RAW_PIX = DIR_RAW / "pix"
 DIR_LANDING_PIX = DIR_LANDING / "pix"
+
+# -----------------------------------------------------------------------------
+# PT: Corpus do RAG (issue #46, ADR 0028). São os documentos que a ontologia
+#     cita, na lista congelada do pré-registro (evaluation/hipoteses.yml,
+#     rag.corpus): metodologias V1 e V2 do SCR.data, leiaute e instruções do
+#     documento 3040, os normativos de docs/leitura-normativos.md e
+#     docs/cadeia-normativa.md, o leiaute do CNPJ e a documentação das APIs
+#     do PIX e do SGS. Nada além disso entra sem errata no registro.
+#
+#     O tipo diz como o arquivo é lido em rag/extrair.py:
+#     - pdf: texto página a página;
+#     - xls: o leiaute do 3040, aba por aba;
+#     - normativo: JSON da API de normativos do BCB, com o texto vigente em
+#       HTML no campo Texto. As normas anteriores a 2020 têm o tipo
+#       "Resolução", sem "CMN" (medido em 2026-10-07);
+#     - olinda: página de documentação do Olinda, que traz a especificação
+#       do serviço em JSON dentro do script da página;
+#     - ckan: package_show do portal de dados abertos, com a descrição da
+#       série e de cada recurso.
+#
+#     Os apelidos são as formas com que os campos fonte da ontologia citam o
+#     documento. O gerador do gabarito de recuperação os usa para ligar cada
+#     conceito ao seu documento.
+#
+# EN: RAG corpus (issue #46, ADR 0028): the documents the ontology cites, as
+#     listed in the frozen pre-registration. The type says how each file is
+#     read in rag/extrair.py. The aliases are how the ontology's fonte fields
+#     cite each document; the retrieval answer-key generator uses them.
+# -----------------------------------------------------------------------------
+
+NORMATIVOS_URL = "https://www.bcb.gov.br/api/conteudo/app/normativos/exibenormativo?p1={tipo}&p2={numero}"
+SCR_DOC3040_URL = "https://www.bcb.gov.br/content/estabilidadefinanceira/Leiaute_de_documentos/scrdoc3040"
+
+
+@dataclass(frozen=True)
+class DocumentoDoCorpus:
+    """
+    PT: Um documento do corpus do RAG. O id vira o nome do arquivo bruto e o
+        campo documento de cada trecho.
+    EN: One RAG corpus document. The id becomes the raw file name and the
+        document field of each chunk.
+    """
+
+    id: str
+    titulo: str
+    tipo: str  # PT: pdf, xls, normativo, olinda ou ckan / EN: pdf, xls, normativo, olinda or ckan
+    url: str
+    apelidos: tuple[str, ...] = ()
+
+    @property
+    def extensao(self) -> str:
+        return {"pdf": ".pdf", "xls": ".xls", "olinda": ".html"}.get(self.tipo, ".json")
+
+    @property
+    def arquivo(self) -> str:
+        return f"{self.id}{self.extensao}"
+
+
+def _normativo(id_: str, tipo: str, numero: int, titulo: str, apelidos: tuple[str, ...]) -> DocumentoDoCorpus:
+    """PT: normativo pela API do BCB / EN: regulation through the BCB API"""
+    url = NORMATIVOS_URL.format(tipo=urllib.parse.quote(tipo), numero=numero)
+    return DocumentoDoCorpus(id=id_, titulo=titulo, tipo="normativo", url=url, apelidos=apelidos)
+
+
+DOCUMENTOS_DO_CORPUS = (
+    DocumentoDoCorpus(
+        id="metodologia_v1",
+        titulo="Metodologia do SCR.data, Versão 1",
+        tipo="pdf",
+        url="https://www.bcb.gov.br/content/estabilidadefinanceira/scr/scr.data/scr_data_metodologia.pdf",
+        apelidos=("Metodologia V1", "Metodologia do SCR.data, Versão 1"),
+    ),
+    DocumentoDoCorpus(
+        id="metodologia_v2",
+        titulo="Metodologia do SCR.data, Versão 2",
+        tipo="pdf",
+        url=f"{URL_BASE}/metodologia_versao2.pdf",
+        apelidos=("Metodologia V2", "Metodologia do SCR.data, Versão 2"),
+    ),
+    DocumentoDoCorpus(
+        id="instrucoes_3040",
+        titulo="Instruções de Preenchimento do Documento 3040",
+        tipo="pdf",
+        url=f"{SCR_DOC3040_URL}/SCR_InstrucoesDePreenchimento_Doc3040.pdf",
+        apelidos=("Instruções 3040", "Instruções"),
+    ),
+    DocumentoDoCorpus(
+        id="leiaute_3040",
+        titulo="Leiaute do Documento 3040",
+        tipo="xls",
+        url=f"{SCR_DOC3040_URL}/SCR3040_Leiaute.xls",
+        apelidos=("Leiaute do Documento 3040", "Leiaute do documento 3040", "Anexo 3", "HistoricoAtualizacoes"),
+    ),
+    _normativo("res_4553", "Resolução", 4553, "Resolução nº 4.553, de 30/1/2017", ("Resolução nº 4.553/2017", "Res. 4.553")),
+    _normativo("res_cmn_4966", "Resolução CMN", 4966, "Resolução CMN nº 4.966, de 25/11/2021", ("Resolução CMN 4.966",)),
+    _normativo("res_cmn_5254", "Resolução CMN", 5254, "Resolução CMN nº 5.254", ("Resolução CMN 5.254", "CMN 5.254")),
+    _normativo("res_cmn_5255", "Resolução CMN", 5255, "Resolução CMN nº 5.255", ("Resolução CMN 5.255",)),
+    _normativo("res_bcb_512", "Resolução BCB", 512, "Resolução BCB nº 512", ("Resolução BCB 512",)),
+    _normativo("in_bcb_414", "Instrução Normativa BCB", 414, "Instrução Normativa BCB nº 414", ("IN BCB 414",)),
+    _normativo("in_bcb_531", "Instrução Normativa BCB", 531, "Instrução Normativa BCB nº 531", ("IN BCB 531",)),
+    _normativo("in_bcb_627", "Instrução Normativa BCB", 627, "Instrução Normativa BCB nº 627", ("IN BCB 627",)),
+    _normativo("in_bcb_659", "Instrução Normativa BCB", 659, "Instrução Normativa BCB nº 659", ("IN BCB 659",)),
+    _normativo("carta_circular_3617", "Carta Circular", 3617, "Carta Circular nº 3.617", ("Carta Circular 3.617",)),
+    _normativo("carta_circular_3773", "Carta Circular", 3773, "Carta Circular nº 3.773", ("Carta Circular 3.773",)),
+    _normativo("carta_circular_3806", "Carta Circular", 3806, "Carta Circular nº 3.806", ("Carta Circular 3.806",)),
+    _normativo("carta_circular_3817", "Carta Circular", 3817, "Carta Circular nº 3.817", ("Carta Circular 3.817",)),
+    DocumentoDoCorpus(
+        id="cnpj_leiaute",
+        titulo="Metadados dos dados abertos do CNPJ (Receita Federal)",
+        tipo="pdf",
+        url="https://www.gov.br/receitafederal/dados/cnpj-metadados.pdf",
+        apelidos=("Leiaute dos dados abertos do CNPJ",),
+    ),
+    DocumentoDoCorpus(
+        id="pix_api",
+        titulo="Documentação do serviço Pix_DadosAbertos (Olinda)",
+        tipo="olinda",
+        url="https://olinda.bcb.gov.br/olinda/servico/Pix_DadosAbertos/versao/v1/documentacao",
+        apelidos=("Documentação da API Pix_DadosAbertos", "Documentação da API do PIX"),
+    ),
+    DocumentoDoCorpus(
+        id="sgs_api",
+        titulo="Taxa de juros - Meta Selic definida pelo Copom (portal de dados abertos, SGS 432)",
+        tipo="ckan",
+        url=(
+            "https://dadosabertos.bcb.gov.br/api/3/action/package_show"
+            "?id=432-taxa-de-juros---meta-selic-definida-pelo-copom"
+        ),
+        apelidos=("SGS do BCB", "API do SGS"),
+    ),
+)
+DIR_RAW_DOCUMENTOS = DIR_RAW / "documentos"

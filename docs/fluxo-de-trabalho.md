@@ -8,9 +8,10 @@ EN: Step by step for working an issue in this project with Claude Code, from a n
 
 1. Uma sessão nova por issue, aberta na pasta do projeto.
 2. `/iniciar-issue <n>`: leitura da issue, entrevista sobre as decisões e plano.
-3. A execução e a sua revisão.
-4. `/entregar-issue <n>`: commit, PR e os textos de review e merge.
-5. Merge no GitHub e fim da sessão.
+3. A execução do plano.
+4. `/code-review` no diff da branch, a correção dos achados e a sua revisão.
+5. `/entregar-issue <n>`: commit, PR e os textos de review e merge.
+6. Merge no GitHub e fim da sessão.
 
 ## 1. Abrir a sessão
 
@@ -65,6 +66,8 @@ Pronto quando: o validador reprova uma cópia alterada das hipóteses e do gabar
 Roda o /code-review no diff e reporte só o que afeta correção ou o escopo da issue.
 ```
 
+É o passo entre o fim da execução e o `/entregar-issue`, e não se pula. Os achados que afetam correção ou o escopo da issue são corrigidos na mesma sessão, e os validadores rodam de novo depois da correção.
+
 Confira também o resumo final da sessão: arquivos, comandos que passaram e pontos em aberto. Ponto em aberto se resolve antes de aprovar.
 
 ## 5. Entregar
@@ -73,7 +76,7 @@ Confira também o resumo final da sessão: arquivos, comandos que passaram e pon
 /entregar-issue <n>
 ```
 
-A skill faz o commit, o push e a PR, liga a correção automática do CI e te manda os textos de review e de merge. Ela só roda quando você digita.
+A skill faz o commit, o push e a PR, liga a correção automática do CI e te manda os textos de review e de merge. Ela só roda quando você digita, e para se o `/code-review` do passo 4 não tiver rodado.
 
 No GitHub:
 1. Cole o texto de review.

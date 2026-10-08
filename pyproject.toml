@@ -32,3 +32,17 @@ dependencies = [
 # PT: projeto de aplicação, não pacote publicável.
 # EN: application project, not a publishable package.
 package = false
+
+[dependency-groups]
+# PT: corpus e índice do RAG (issue #46, ADR 0028). Ficam num grupo à parte
+#     porque o torch é pesado e nada do RAG roda no CI: o uv sync --frozen
+#     do CI não instala este grupo. O torch do PyPI é o de CPU no Windows,
+#     que é onde os embeddings rodam (decisão de 2026-10-07).
+#     Uso: uv run --group rag python -m rag.construir
+# EN: RAG corpus and index. A separate group because torch is heavy and
+#     nothing RAG runs in CI. PyPI torch is the CPU build on Windows.
+rag = [
+    "pypdf>=6",
+    "sentence-transformers>=5",
+    "xlrd>=2",
+]

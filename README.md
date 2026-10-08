@@ -142,6 +142,7 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | `ontology/` | Ontologia, glossário e contratos de dados, com citação normativa |
 | `dbt/` | Camada semântica: staging, intermediate, marts, testes |
 | `evaluation/` | Perguntas de negócio, gabarito e análise estatística |
+| `rag/` | Corpus e índice de busca dos documentos do BCB, para as condições com RAG do experimento |
 | `dashboard/` | Site estático do dashboard, no GitHub Pages. O chat da v0.3 roda num Space ZeroGPU do Hugging Face |
 | `scripts/` | Utilitários e verificadores |
 | `docs/adr/` | Registro de decisões de arquitetura |
@@ -241,6 +242,20 @@ uv run python -m scripts.analises.qa_esquema_estrela --origem hf
 ```
 
 O QA confere que os totais por mês batem exatamente entre o DuckDB e o Databricks, e roda no DuckDB os SQL do gabarito, comparando célula a célula com as respostas geradas no Databricks, dentro da tolerância do pré-registro. A publicação pede um token de escopo fino, restrito ao dataset, que fica só na memória do processo. O CI repete a leitura direta do dataset na revisão fixada.
+
+### Como montar o corpus e o índice do RAG
+
+As condições com documentos do experimento recebem trechos dos documentos que a ontologia cita, recuperados por busca ([ADR 0028](docs/adr/0028-corpus-e-indice-do-rag.md)). Os documentos são baixados com sha256 no manifesto da ingestão e ficam fora do repositório. O índice é reconstruído do zero por um comando, na CPU, e o que vai ao repositório é a identidade dele, em [`rag/manifesto.json`](rag/manifesto.json), e a medida da recuperação, em [`rag/avaliacao.json`](rag/avaliacao.json). As dependências ficam no grupo `rag` do uv, que o CI não instala.
+
+```bash
+uv run python -m ingestion.baixar_documentos
+uv run --group rag python -m rag.construir
+uv run python -m scripts.gerar_gabarito_de_recuperacao
+uv run --group rag python -m rag.avaliar
+uv run --group rag python -m scripts.analises.qa_corpus
+```
+
+O gabarito de recuperação ([`evaluation/recuperacao.yml`](evaluation/recuperacao.yml)) sai dos campos de fonte da ontologia: para cada conceito, a página ou a seção de onde a definição foi tirada. O modelo de embeddings do experimento é o candidato que mais traz esse lugar entre os 5 primeiros trechos, como o pré-registro manda.
 
 ### Documentação
 
