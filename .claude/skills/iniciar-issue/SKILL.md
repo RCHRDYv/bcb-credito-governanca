@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Iniciar a issue $ARGUMENTS
 
-O guia completo do fluxo está em `docs/fluxo-de-trabalho.md`. Esta skill cobre do começo até o plano aprovado. O fechamento fica com `/entregar-issue`.
+O guia completo do fluxo está em `docs/fluxo-de-trabalho.md`. Esta skill cobre do começo até a execução do plano aprovado. Depois vem o `/code-review` no diff, e o fechamento fica com `/entregar-issue`.
 
 ## 1. Conferir a sessão
 - Diga quais instruções e memórias carregou: o `~/.claude/CLAUDE.md`, o `CLAUDE.md` do projeto e a memória do projeto. Se faltar algum, avise antes de seguir, porque a pasta da sessão pode estar errada.
@@ -40,4 +40,4 @@ O guia completo do fluxo está em `docs/fluxo-de-trabalho.md`. Esta skill cobre 
 ## 5. Ao terminar a execução
 - Mostre a evidência: comandos que passaram, números e arquivos novos e alterados.
 - Liste os pontos em aberto, um por linha.
-- Diga que o próximo passo é o Yuri revisar e digitar `/entregar-issue $ARGUMENTS`. Não faça commit.
+- Diga que o próximo passo é a revisão de código: o Yuri roda o `/code-review` no diff da branch, os achados que afetam correção ou o escopo da issue são corrigidos, e só depois ele digita `/entregar-issue $ARGUMENTS`. Não faça commit.

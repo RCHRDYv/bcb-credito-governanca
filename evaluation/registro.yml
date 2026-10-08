@@ -74,4 +74,22 @@ arquivos:
   evaluation/gabarito/Q39.sql: 3f9cbeca494def8c483e5e2934f2369c2a0ce3f2f2b6085a1acaf72745e514a6
   evaluation/gabarito/Q40.sql: 9675f5c2497c45119f6c4964b83dbf13a432d3e6e82dccd9db34705d75e51a82
   evaluation/hipoteses.yml: 122b477a84c3f6c8b9e107e422d5cb62fc80a21f42b3ae6bbef1bc2f01f508f6
-erratas: []
+erratas:
+- data: '2026-10-08'
+  arquivo: evaluation/recuperacao.yml
+  motivo: >-
+    Arquivo novo, da #46 (ADR 0028). É o gabarito de recuperação de que
+    hipoteses.yml#condicoes.rag.modelo_de_embeddings depende para escolher o
+    modelo: 95 conceitos com o lugar citado e 10 excluídos com motivo, gerado
+    da ontologia. Congelado antes de qualquer execução de C ou D, por decisão
+    do Yuri em 2026-10-07.
+  sha256: f3b47a19cc0d27358186e016221eb3c379a6d6e9086f49b6cd3d245a13fd53f9
+- data: '2026-10-08'
+  arquivo: rag/manifesto.json
+  motivo: >-
+    Arquivo novo, da #46 (ADR 0028). Fixa o corpus (20 documentos com sha256),
+    os três candidatos nas revisões do Hugging Face, o sha256 dos trechos e
+    dos embeddings e o modelo escolhido, Qwen/Qwen3-Embedding-0.6B, como
+    hipoteses.yml#execucao.fixado_antes_da_execucao pede. Congelado antes de
+    qualquer execução de C ou D, por decisão do Yuri em 2026-10-07.
+  sha256: 3fe38f06ac5a58766eb687145cabffc9055c2d2516a4451075ac81e3bfa0918c

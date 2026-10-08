@@ -1,0 +1,54 @@
+# =============================================================================
+# PT: Gabarito de recuperação e manifesto do RAG (#46, ADR 0028). Sem rede,
+#     sem credencial e sem as dependências do RAG (o grupo rag do uv não é
+#     instalado): confere que o evaluation/recuperacao.yml é o que o gerador
+#     produz a partir da ontologia, que a forma dele está certa, com o
+#     controle negativo, e que o rag/manifesto.json e o rag/avaliacao.json
+#     são coerentes entre si e com a ingestão. O índice em si não roda aqui:
+#     ele precisa dos documentos e dos modelos, e é reconstruído na máquina
+#     do Yuri por rag.construir.
+#
+#     Fica num workflow próprio, e não no ci.yml, porque mudar o ci.yml
+#     dispara o job do site (#105), que leva mais de 10 minutos.
+# EN: RAG retrieval answer key and manifest. No network, no credential and
+#     no RAG dependencies: checks the answer key equals the generated one,
+#     its shape (with the negative control), and that the RAG manifest and
+#     evaluation agree. Its own workflow, not ci.yml, because changing
+#     ci.yml triggers the 10-minute site job.
+# =============================================================================
+
+name: Gabarito de recuperação do RAG
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# PT: Permissão mínima. O workflow só precisa ler o código.
+# EN: Least privilege. The workflow only needs to read the code.
+permissions:
+  contents: read
+
+jobs:
+  recuperacao:
+    name: Gabarito de recuperação do RAG
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --frozen
+
+      - name: Gabarito de recuperação e manifesto
+        run: uv run python -m scripts.validar_recuperacao
+
+      - name: Controle negativo
+        run: uv run python -m scripts.validar_recuperacao --autoteste

@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Só comece depois da aprovação explícita do Yuri. Em entrega visual, a aprovação é da tela renderizada.
 
+Antes da aprovação vem o `/code-review` no diff da branch (`docs/fluxo-de-trabalho.md`, passo 4). Se ele não rodou nesta sessão, ou se um achado que afeta correção ou o escopo da issue ficou sem resposta, pare e diga isso ao Yuri antes do commit.
+
 ## 1. Conferir antes do commit
 - `git status` e `git diff --stat`. Confira que nada fora do escopo da issue entrou: capturas, páginas de revisão, `data/`.
 - Rode os validadores do CI listados no `CLAUDE.md`. Se a entrega mexe em dados, rode também o `dbt build` da seleção afetada e o QA de `scripts/analises/` correspondente.

@@ -1,0 +1,144 @@
+{
+  "issue": 46,
+  "adr": "0028",
+  "parametros": {
+    "tamanho_maximo_em_tokens": 512,
+    "sobreposicao_em_tokens": 64,
+    "quantidade_de_trechos": 5,
+    "busca": "exata, por cosseno entre embeddings normalizados, na CPU"
+  },
+  "documentos": {
+    "metodologia_v1": {
+      "arquivo": "metodologia_v1.pdf",
+      "sha256": "5b9f3ec6635e4ba973ce248343f86e7ede8c597675ce69a6825a1aace52c044d"
+    },
+    "metodologia_v2": {
+      "arquivo": "metodologia_v2.pdf",
+      "sha256": "9f3b41eca401d54a1711fe834c98158e63217dba0ffe2cab5d83f2a5a31f78fe"
+    },
+    "instrucoes_3040": {
+      "arquivo": "instrucoes_3040.pdf",
+      "sha256": "3a2f9dff406b404b26617ab0dce79b5992cc67ac410ff60047236c73b11daf8b"
+    },
+    "leiaute_3040": {
+      "arquivo": "leiaute_3040.xls",
+      "sha256": "ab3cad54fe481a52b5c4c24c832af3b1c0ef1e0d75cbaa3639611c903ed5c70f"
+    },
+    "res_4553": {
+      "arquivo": "res_4553.json",
+      "sha256": "a363fcc55d2b0d01642f5b20eaa60930e5f142d0050f8c90b905519dcbcfc762"
+    },
+    "res_cmn_4966": {
+      "arquivo": "res_cmn_4966.json",
+      "sha256": "8d2ac4d5dde4b1277564739854138c8154ea838e84396832c8fad7669b09358c"
+    },
+    "res_cmn_5254": {
+      "arquivo": "res_cmn_5254.json",
+      "sha256": "2c4678fa6b17a052903c818b4822de17a101e1a3831c893698ad1f0fd02e8a24"
+    },
+    "res_cmn_5255": {
+      "arquivo": "res_cmn_5255.json",
+      "sha256": "e55a7d44a4f4adaeb1b12aa3ab6f36d01f3a69b4e7f6b00132782281f1e3e0f7"
+    },
+    "res_bcb_512": {
+      "arquivo": "res_bcb_512.json",
+      "sha256": "03a88a62bf63a07cdc81d6c2c2edf9a3d2321e221f64bfbb155e2510a2b5bc83"
+    },
+    "in_bcb_414": {
+      "arquivo": "in_bcb_414.json",
+      "sha256": "2e002871baea27ba4c3bdb34a61b042d9b9f89cc49fee1b35d428d64dd007ae9"
+    },
+    "in_bcb_531": {
+      "arquivo": "in_bcb_531.json",
+      "sha256": "55e94c50ebe0793b6525c480fdafc0350c2b1af06a0a7f1bc613fa2f6f8522e7"
+    },
+    "in_bcb_627": {
+      "arquivo": "in_bcb_627.json",
+      "sha256": "252890603608f3a53e3f9696dd1dfa5dca368099a92ea1cf766a8c5d2d4dee4d"
+    },
+    "in_bcb_659": {
+      "arquivo": "in_bcb_659.json",
+      "sha256": "ea439c989bb9cbca4d2baf3c37f1f8680ff59e65c57b8b824235d418fa3a6108"
+    },
+    "carta_circular_3617": {
+      "arquivo": "carta_circular_3617.json",
+      "sha256": "be508edcbc29a7946269926ea711cf4232a7593dcdd069b31d252bca557971da"
+    },
+    "carta_circular_3773": {
+      "arquivo": "carta_circular_3773.json",
+      "sha256": "020421b6823e13303445f76ed846a7c2b76d3c3d0ada3ffbd440c1e983cb7fbb"
+    },
+    "carta_circular_3806": {
+      "arquivo": "carta_circular_3806.json",
+      "sha256": "5a3d1e3cc6f2644ccfc3ac1955c7496c4e34df9bb6a69157ab65a175c3e652d5"
+    },
+    "carta_circular_3817": {
+      "arquivo": "carta_circular_3817.json",
+      "sha256": "59203cfd5b0afa3bacf6b8735201f1479043b8c51777f449818aa1cde16e16d5"
+    },
+    "cnpj_leiaute": {
+      "arquivo": "cnpj_leiaute.pdf",
+      "sha256": "0a52d6bdfb61a07425e352a0e692932306a5ec9ecad682f5f9e28059e1a5fce0"
+    },
+    "pix_api": {
+      "arquivo": "pix_api.html",
+      "sha256": "ba361f0e730e2a4005ad6a72a1c2edf4477ddc4d70a7c8b329540c0c697f0d31"
+    },
+    "sgs_api": {
+      "arquivo": "sgs_api.json",
+      "sha256": "7c4d747ae18c7768010548231e2dcf211c24baffbe67ec192c6984afa5e985fe"
+    }
+  },
+  "secoes": {
+    "blocos": 377,
+    "sha256": "f208eb80c0f336201acfea7a3f3e12d5ec6ea0e4e491021fc0f07c29a39f40d9"
+  },
+  "candidatos": {
+    "bge-m3": {
+      "repositorio": "BAAI/bge-m3",
+      "revisao": "5617a9f61b028005a4858fdac845db406aefb181",
+      "prefixo_consulta": "",
+      "prefixo_trecho": "",
+      "prompt_consulta": null,
+      "dimensao": 1024,
+      "trechos": 454,
+      "sha256_trechos": "e9e13289b136913c4131c4787e026dd53016b8f4832423ed4668304b34255b98",
+      "sha256_embeddings": "c26413f57e2e0511352af77e8059d735238315e7e203f9b64cc73af86e4eff2a",
+      "memoria_dos_pesos_em_mb": 2165.9
+    },
+    "multilingual-e5-large": {
+      "repositorio": "intfloat/multilingual-e5-large",
+      "revisao": "3d7cfbdacd47fdda877c5cd8a79fbcc4f2a574f3",
+      "prefixo_consulta": "query: ",
+      "prefixo_trecho": "passage: ",
+      "prompt_consulta": null,
+      "dimensao": 1024,
+      "trechos": 456,
+      "sha256_trechos": "004ae754f6826ef0c201eb1a58765924e0630e00f537160488188771f6f96924",
+      "sha256_embeddings": "cff8bb7855b0717a9b9b94d7500e3d6f3fbcbd94289c56adfbf271c5030588d8",
+      "memoria_dos_pesos_em_mb": 2135.8
+    },
+    "qwen3-embedding-0.6b": {
+      "repositorio": "Qwen/Qwen3-Embedding-0.6B",
+      "revisao": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+      "prefixo_consulta": "",
+      "prefixo_trecho": "",
+      "prompt_consulta": "query",
+      "dimensao": 1024,
+      "trechos": 525,
+      "sha256_trechos": "1239f9ea42d3b129dde12f21b4d8deb8f1f1cdf358df432fd408090e4256266b",
+      "sha256_embeddings": "7ae23c1e837c06cfb3459cce8a350008e894e3b17d78945eca25be698c4dfbb2",
+      "memoria_dos_pesos_em_mb": 2272.7
+    }
+  },
+  "escolhido": {
+    "nome": "qwen3-embedding-0.6b",
+    "repositorio": "Qwen/Qwen3-Embedding-0.6B",
+    "revisao": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+    "regra": "maior acerto@5 no gabarito de recuperação; empate pela menor memória dos pesos (decisão de 2026-10-07)",
+    "decidido_por": "acerto@5",
+    "acerto_em_5": 0.8737,
+    "sha256_trechos": "1239f9ea42d3b129dde12f21b4d8deb8f1f1cdf358df432fd408090e4256266b",
+    "sha256_embeddings": "7ae23c1e837c06cfb3459cce8a350008e894e3b17d78945eca25be698c4dfbb2"
+  }
+}

@@ -52,6 +52,13 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - `uv run python -m scripts.analises.qa_esquema_estrela [--com-databricks | --origem hf]` compara o DuckDB com o Databricks: totais por período e os SQL do gabarito.
 - A publicação no Hugging Face (`scripts.publicar_esquema_estrela`) pede o token por getpass e é o Yuri quem roda. Nunca peça nem grave o token.
 
+## RAG (#46, ADR 0028)
+- Corpus em `ingestion/fontes.py` (`DOCUMENTOS_DO_CORPUS`), baixado por `uv run python -m ingestion.baixar_documentos` para `data/raw/documentos/`. Documento novo só entra por errata no registro.
+- Dependências no grupo `rag` do uv, fora do CI: `uv run --group rag python -m rag.construir` refaz o índice do zero na CPU, e `rag.avaliar` mede e escolhe o modelo. A #49 usa `rag.indice.buscar`.
+- `evaluation/recuperacao.yml` é gerado por `scripts.gerar_gabarito_de_recuperacao` e conferido por `scripts.validar_recuperacao`, no workflow `recuperacao.yml`. Mudou uma fonte na ontologia, regere.
+- QA por outro caminho: `uv run --group rag python -m scripts.analises.qa_corpus`.
+- `evaluation/recuperacao.yml` e `rag/manifesto.json` estão congelados pelo registro: reconstruir ou regerar que mude um deles pede errata.
+
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).
 - Textos em `src/textos/pt-BR.js`: `t()` lança erro se faltar a chave.
@@ -63,7 +70,7 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - Comentários e docstrings bilíngues, um bloco PT seguido de um bloco EN, no estilo dos arquivos vizinhos.
 - Branch por issue (`feat/`, `ci/`, `chore/`), PR com `Closes #n`.
 - IMPORTANT: não mexa no `.github/workflows/ci.yml` numa PR que não é do site. Qualquer mudança nele dispara o job do site do dashboard (#105), que leva mais de 10 minutos. Job novo vai num workflow próprio em `.github/workflows/`, como o `esquema-estrela.yml`. Só mude o `ci.yml` se o Yuri pedir.
-- Fluxo de uma issue: `/iniciar-issue <n>` até o plano aprovado, `/entregar-issue <n>` do commit à PR. Passo a passo em `docs/fluxo-de-trabalho.md`.
+- Fluxo de uma issue: `/iniciar-issue <n>` até a execução do plano aprovado, `/code-review` no diff da branch com os achados corrigidos, e só então `/entregar-issue <n>` do commit à PR. Passo a passo em `docs/fluxo-de-trabalho.md`.
 - O hook de pre-commit `mixed-line-ending` corrige o arquivo e reprova o commit: rode `git add` de novo e repita o commit.
 - Para editar texto com acento, prefira as ferramentas de edição ou um script em arquivo. Heredoc no Bash quebra com barra invertida.
 

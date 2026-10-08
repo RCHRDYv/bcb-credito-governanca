@@ -1,0 +1,707 @@
+# =============================================================================
+# PT: Gabarito de recuperação do RAG (issue #46, ADR 0028). GERADO por
+#     scripts/gerar_gabarito_de_recuperacao.py a partir dos campos fonte da
+#     ontologia. Não edite à mão: o CI regera e compara.
+#
+#     alvos: para cada conceito, a consulta e onde a definição está no
+#     corpus. Um alvo acerta quando um dos 5 trechos trazidos é do documento
+#     e cai na página ou na seção citada (ou em qualquer lugar do documento,
+#     quando a granularidade é documento).
+#     excluidos: conceitos fora do denominador, com o motivo.
+#
+# EN: RAG retrieval answer key. GENERATED from the ontology's fonte fields;
+#     do not edit by hand. A target is hit when one of the 5 retrieved
+#     chunks is from the document and falls on the cited page or section.
+# =============================================================================
+
+metadata: {issue: 46, decidido_em: '2026-10-07', consulta: 'O que é <prefLabel_pt>?', conceitos_na_ontologia: 105,
+  denominador: 95, excluidos: 10}
+alvos:
+- conceito: dimensoes.dim_data_base
+  fonte: Metodologia V2, seção 3.a
+  consulta: O que é Data-base?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.a]
+    granularidade: secao
+- conceito: dimensoes.dim_uf
+  fonte: Metodologia V2, seção 3.b
+  consulta: O que é Unidade da federação?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.b]
+    granularidade: secao
+- conceito: dimensoes.dim_segmento
+  fonte: Metodologia V2, seção 3.c
+  consulta: O que é Segmento da instituição financeira?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.c]
+    granularidade: secao
+- conceito: dimensoes.dim_cliente
+  fonte: Metodologia V2, seção 3.d
+  consulta: O que é Tipo de cliente?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.d]
+    granularidade: secao
+- conceito: dimensoes.dim_porte
+  fonte: Metodologia V2, seção 3.g
+  consulta: O que é Porte do cliente?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.g]
+    granularidade: secao
+- conceito: dimensoes.dim_cnae_ocupacao
+  fonte: Metodologia V2, seções 3.e e 3.f
+  consulta: O que é CNAE ou natureza da ocupação?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.e, 3.f]
+    granularidade: secao
+- conceito: dimensoes.dim_origem
+  fonte: Metodologia V2, seção 3.j
+  consulta: O que é Origem dos recursos?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.j]
+    granularidade: secao
+- conceito: dimensoes.dim_indexador
+  fonte: Metodologia V2, seção 3.k
+  consulta: O que é Indexador da operação?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.k]
+    granularidade: secao
+- conceito: fontes_externas.empresa_ativa
+  fonte: 'Leiaute dos dados abertos do CNPJ: identificador matriz/filial (1 = matriz) e situação cadastral
+    (2 = ativa)'
+  consulta: O que é Empresa ativa?
+  alvos:
+  - {documento: cnpj_leiaute, granularidade: documento}
+- conceito: fontes_externas.porte_da_empresa_na_receita
+  fonte: Leiaute dos dados abertos do CNPJ, tabela Empresas
+  consulta: O que é Porte da empresa no CNPJ?
+  alvos:
+  - documento: cnpj_leiaute
+    secoes: [tabela EMPRESAS]
+    granularidade: secao
+- conceito: fontes_externas.mei
+  fonte: 'Leiaute dos dados abertos do CNPJ, tabela Simples: opção pelo MEI, data de opção e data de exclusão'
+  consulta: O que é Microempreendedor individual?
+  alvos:
+  - documento: cnpj_leiaute
+    secoes: [tabela SIMPLES]
+    granularidade: secao
+- conceito: fontes_externas.selic_meta
+  fonte: 'SGS do BCB, série 432; escolha registrada na issue #37 e no ADR 0010'
+  consulta: O que é Meta da taxa Selic?
+  alvos:
+  - {documento: sgs_api, granularidade: documento}
+- conceito: fontes_externas.volume_de_pix
+  fonte: Documentação da API Pix_DadosAbertos, recursos TransacoesPixPorMunicipio e EstatisticasTransacoesPix
+  consulta: O que é Volume financeiro de PIX?
+  alvos:
+  - documento: pix_api
+    secoes: [TransacoesPixPorMunicipio, EstatisticasTransacoesPix]
+    granularidade: secao
+- conceito: metricas.carteira_inadimplencia
+  fonte: Metodologia V2, seção 3.x
+  consulta: O que é Carteira inadimplida?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.x]
+    granularidade: secao
+- conceito: metricas.ativo_problematico
+  fonte: Metodologia V2, seção 3.y
+  consulta: O que é Ativo problemático?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.y]
+    granularidade: secao
+- conceito: metricas.carteira_ativa
+  fonte: Metodologia V2, seção 3.w
+  consulta: O que é Carteira ativa?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.w]
+    granularidade: secao
+- conceito: metricas.carteira_a_vencer
+  fonte: Metodologia V2, seção 3.s
+  consulta: O que é Carteira a vencer?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.s]
+    granularidade: secao
+- conceito: metricas.carteira_vencida
+  fonte: Metodologia V2, seção 3.v
+  consulta: O que é Carteira vencida?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.v]
+    granularidade: secao
+- conceito: metricas.numero_de_operacoes
+  fonte: Metodologia V2, seção 3.l
+  consulta: O que é Número de operações?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [3.l]
+    granularidade: secao
+- conceito: metricas.indicador_inadimplencia
+  fonte: Metodologia V2, seção 2.c
+  consulta: O que é Inadimplência (indicador)?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [2.c]
+    granularidade: secao
+- conceito: metricas.indicador_ativo_problematico
+  fonte: Metodologia V2, seção 2.d
+  consulta: O que é Ativo problemático (indicador)?
+  alvos:
+  - documento: metodologia_v2
+    secoes: [2.d]
+    granularidade: secao
+- conceito: modalidades.mod_01
+  fonte: Instruções 3040, p. 20
+  consulta: O que é Adiantamentos a depositantes?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [20]
+    granularidade: pagina
+- conceito: modalidades.sub_0101
+  fonte: Instruções 3040, p. 20
+  consulta: O que é adiantamentos a depositantes?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [20]
+    granularidade: pagina
+- conceito: modalidades.mod_02
+  fonte: Instruções 3040, p. 20
+  consulta: O que é Empréstimos?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [20]
+    granularidade: pagina
+- conceito: modalidades.sub_0202
+  fonte: Instruções 3040, pp. 20 e 21
+  consulta: O que é crédito pessoal - com consignação em folha de pagam?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [20, 21]
+    granularidade: pagina
+- conceito: modalidades.sub_0203
+  fonte: Instruções 3040, p. 21
+  consulta: O que é crédito pessoal - sem consignação em folha de pagam?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [21]
+    granularidade: pagina
+- conceito: modalidades.sub_0204
+  fonte: Instruções 3040, p. 21
+  consulta: O que é crédito rotativo vinculado a cartão de crédito?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [21]
+    granularidade: pagina
+- conceito: modalidades.sub_0209
+  fonte: Instruções 3040, p. 21
+  consulta: O que é ARO - adiantamento de receitas orçamentárias?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [21]
+    granularidade: pagina
+- conceito: modalidades.sub_0210
+  fonte: Instruções 3040, p. 22
+  consulta: O que é cartão de crédito – compra, fatura parcelada ou saque financiados pela instituição
+    emitente do cartão?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [22]
+    granularidade: pagina
+- conceito: modalidades.sub_0211
+  fonte: Instruções 3040, p. 22
+  consulta: O que é home equity?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [22]
+    granularidade: pagina
+- conceito: modalidades.sub_0212
+  fonte: Instruções 3040, p. 22
+  consulta: O que é microcrédito?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [22]
+    granularidade: pagina
+- conceito: modalidades.sub_0213
+  fonte: Instruções 3040, pp. 23 e 24
+  consulta: O que é cheque especial?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [23, 24]
+    granularidade: pagina
+- conceito: modalidades.sub_0214
+  fonte: Instruções 3040, p. 24
+  consulta: O que é conta garantida?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [24]
+    granularidade: pagina
+- conceito: modalidades.sub_0215
+  fonte: Instruções 3040, p. 24
+  consulta: O que é capital de giro com prazo de vencimento até 365 d?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [24]
+    granularidade: pagina
+- conceito: modalidades.sub_0216
+  fonte: Instruções 3040, p. 24
+  consulta: O que é capital de giro com prazo vencimento superior 365 d?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [24]
+    granularidade: pagina
+- conceito: modalidades.sub_0217
+  fonte: Instruções 3040, p. 24
+  consulta: O que é capital de giro rotativo?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [24]
+    granularidade: pagina
+- conceito: modalidades.sub_0218
+  fonte: Instruções 3040, pp. 24 e 25
+  consulta: O que é cartão de crédito – não migrado?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [24, 25]
+    granularidade: pagina
+- conceito: modalidades.sub_0250
+  fonte: Instruções 3040, p. 25
+  consulta: O que é recebíveis adquiridos?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [25]
+    granularidade: pagina
+- conceito: modalidades.sub_0299
+  fonte: Instruções 3040, p. 25
+  consulta: O que é outros empréstimos?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [25]
+    granularidade: pagina
+- conceito: modalidades.mod_03
+  fonte: Instruções 3040, p. 25
+  consulta: O que é Direitos creditórios descontados?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [25]
+    granularidade: pagina
+- conceito: modalidades.sub_0301
+  fonte: Instruções 3040, p. 26
+  consulta: O que é desconto de duplicatas?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [26]
+    granularidade: pagina
+- conceito: modalidades.sub_0302
+  fonte: Instruções 3040, p. 26
+  consulta: O que é desconto de cheques?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [26]
+    granularidade: pagina
+- conceito: modalidades.sub_0303
+  fonte: Instruções 3040, p. 26
+  consulta: O que é antecipação de fatura de cartão de crédito?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [26]
+    granularidade: pagina
+- conceito: modalidades.sub_0398
+  fonte: Instruções 3040, p. 26
+  consulta: O que é outros direitos creditórios descontados?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [26]
+    granularidade: pagina
+- conceito: modalidades.sub_0399
+  fonte: Instruções 3040, p. 26
+  consulta: O que é outros títulos descontados?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [26]
+    granularidade: pagina
+- conceito: modalidades.mod_04
+  fonte: Instruções 3040, p. 27
+  consulta: O que é Financiamentos?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [27]
+    granularidade: pagina
+- conceito: modalidades.sub_0401
+  fonte: Instruções 3040, p. 27
+  consulta: O que é aquisição de bens – veículos automotores?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [27]
+    granularidade: pagina
+- conceito: modalidades.sub_0402
+  fonte: Instruções 3040, p. 27
+  consulta: O que é aquisição de bens – outros bens?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [27]
+    granularidade: pagina
+- conceito: modalidades.sub_0403
+  fonte: Instruções 3040, p. 27
+  consulta: O que é microcrédito?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [27]
+    granularidade: pagina
+- conceito: modalidades.sub_0404
+  fonte: Instruções 3040, pp. 27 e 28
+  consulta: O que é vendor?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [27, 28]
+    granularidade: pagina
+- conceito: modalidades.sub_0405
+  fonte: Instruções 3040, p. 28
+  consulta: O que é compror?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [28]
+    granularidade: pagina
+- conceito: modalidades.sub_0406
+  fonte: Instruções 3040, p. 28
+  consulta: O que é cartão de crédito – compra ou fatura parcelada pela instituição financeira emitente
+    do cartão?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [28]
+    granularidade: pagina
+- conceito: modalidades.sub_0440
+  fonte: Instruções 3040, p. 28
+  consulta: O que é financiamentos agroindustriais?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [28]
+    granularidade: pagina
+- conceito: modalidades.sub_0450
+  fonte: Instruções 3040, pp. 28 e 29
+  consulta: O que é recebíveis adquiridos?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [28, 29]
+    granularidade: pagina
+- conceito: modalidades.sub_0490
+  fonte: Instruções 3040, p. 29
+  consulta: O que é financiamento de projeto?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [29]
+    granularidade: pagina
+- conceito: modalidades.sub_0499
+  fonte: Instruções 3040, p. 29
+  consulta: O que é outros financiamentos?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [29]
+    granularidade: pagina
+- conceito: modalidades.mod_05
+  fonte: Instruções 3040, p. 29
+  consulta: O que é Financiamentos à exportação?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [29]
+    granularidade: pagina
+- conceito: modalidades.sub_0501
+  fonte: Instruções 3040, p. 29
+  consulta: O que é financiamento à exportação?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [29]
+    granularidade: pagina
+- conceito: modalidades.sub_0502
+  fonte: Instruções 3040, p. 29
+  consulta: O que é adiantamento sobre contratos de câmbio?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [29]
+    granularidade: pagina
+- conceito: modalidades.sub_0503
+  fonte: Instruções 3040, p. 29
+  consulta: O que é adiantamento sobre cambiais entregues?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [29]
+    granularidade: pagina
+- conceito: modalidades.sub_0504
+  fonte: Instruções 3040, p. 30
+  consulta: O que é créd decorrentes de contratos de exportação-export note?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30]
+    granularidade: pagina
+- conceito: modalidades.sub_0590
+  fonte: Instruções 3040, p. 30
+  consulta: O que é financiamento de projeto?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30]
+    granularidade: pagina
+- conceito: modalidades.sub_0599
+  fonte: Instruções 3040, p. 30
+  consulta: O que é outros financiamentos à exportação?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30]
+    granularidade: pagina
+- conceito: modalidades.mod_06
+  fonte: Instruções 3040, p. 30
+  consulta: O que é Financiamentos à importação?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30]
+    granularidade: pagina
+- conceito: modalidades.sub_0601
+  fonte: Instruções 3040, p. 30
+  consulta: O que é financiamento à importação?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30]
+    granularidade: pagina
+- conceito: modalidades.mod_07
+  fonte: Instruções 3040, p. 30
+  consulta: O que é Financiamentos com interveniência?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30]
+    granularidade: pagina
+- conceito: modalidades.sub_0701
+  fonte: Instruções 3040, p. 30
+  consulta: O que é aquisição de bens com interveniência – veículos autom?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30]
+    granularidade: pagina
+- conceito: modalidades.sub_0702
+  fonte: Instruções 3040, pp. 30 e 31
+  consulta: O que é aquisição de bens com interveniência – outros bens?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [30, 31]
+    granularidade: pagina
+- conceito: modalidades.sub_0799
+  fonte: Instruções 3040, p. 31
+  consulta: O que é outros financiamentos com interveniência?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [31]
+    granularidade: pagina
+- conceito: modalidades.mod_08
+  fonte: Instruções 3040, p. 32
+  consulta: O que é Financiamentos rurais?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.sub_0801
+  fonte: Instruções 3040, p. 32
+  consulta: O que é custeio?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.sub_0802
+  fonte: Instruções 3040, p. 32
+  consulta: O que é investimento?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.sub_0803
+  fonte: Instruções 3040, p. 32
+  consulta: O que é comercialização?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.sub_0804
+  fonte: Instruções 3040, p. 32
+  consulta: O que é industrialização?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.mod_09
+  fonte: Instruções 3040, p. 32
+  consulta: O que é Financiamentos imobiliários?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.sub_0901
+  fonte: Instruções 3040, p. 32
+  consulta: O que é financiamento habitacional – SFH?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.sub_0902
+  fonte: Instruções 3040, p. 32
+  consulta: O que é financiamento habitacional – exceto SFH?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [32]
+    granularidade: pagina
+- conceito: modalidades.sub_0903
+  fonte: Instruções 3040, p. 33
+  consulta: O que é financiamento imobiliário – empreendim, exceto habitac?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [33]
+    granularidade: pagina
+- conceito: modalidades.sub_0990
+  fonte: Instruções 3040, p. 33
+  consulta: O que é financiamento de projeto?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [33]
+    granularidade: pagina
+- conceito: modalidades.mod_10
+  fonte: Instruções 3040, p. 33
+  consulta: O que é Financiamentos de títulos e valores mobiliários?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [33]
+    granularidade: pagina
+- conceito: modalidades.sub_1001
+  fonte: Instruções 3040, p. 33
+  consulta: O que é financiamento de TVM?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [33]
+    granularidade: pagina
+- conceito: modalidades.mod_11
+  fonte: Instruções 3040, p. 33
+  consulta: O que é Financiamentos de infraestrutura e desenvolvimento?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [33]
+    granularidade: pagina
+- conceito: modalidades.sub_1101
+  fonte: Instruções 3040, p. 33
+  consulta: O que é financiamento de infraestrutura e desenvolvimento?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [33]
+    granularidade: pagina
+- conceito: modalidades.sub_1190
+  fonte: Instruções 3040, p. 33
+  consulta: O que é financiamento de projeto?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [33]
+    granularidade: pagina
+- conceito: modalidades.mod_12
+  fonte: Instruções 3040, p. 34
+  consulta: O que é Operações de arrendamento?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [34]
+    granularidade: pagina
+- conceito: modalidades.sub_1201
+  fonte: Instruções 3040, p. 34
+  consulta: O que é arrendamento financeiro exceto veículos automotores e imóveis?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [34]
+    granularidade: pagina
+- conceito: modalidades.sub_1202
+  fonte: Instruções 3040, p. 34
+  consulta: O que é arrendamento financeiro imobiliário?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [34]
+    granularidade: pagina
+- conceito: modalidades.sub_1205
+  fonte: Instruções 3040, p. 34
+  consulta: O que é arrendamento operacional?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [34]
+    granularidade: pagina
+- conceito: modalidades.sub_1206
+  fonte: Instruções 3040, p. 34
+  consulta: O que é arrendamento financeiro de veículos automotores?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [34]
+    granularidade: pagina
+- conceito: modalidades.sub_1301
+  fonte: Instruções 3040, p. 35
+  consulta: O que é avais e fianças honrados?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [35]
+    granularidade: pagina
+- conceito: modalidades.sub_1302
+  fonte: Instruções 3040, p. 35
+  consulta: O que é devedores por compra de valores e bens?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [35]
+    granularidade: pagina
+- conceito: modalidades.sub_1303
+  fonte: Instruções 3040, p. 35
+  consulta: O que é títulos e créditos a receber?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [35]
+    granularidade: pagina
+- conceito: modalidades.sub_1304
+  fonte: Instruções 3040, p. 35
+  consulta: O que é cartão de crédito - compra à vista e parcelado lojista?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [35]
+    granularidade: pagina
+- conceito: modalidades.sub_1350
+  fonte: Instruções 3040, p. 35
+  consulta: O que é recebíveis adquiridos?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [35]
+    granularidade: pagina
+- conceito: modalidades.sub_1399
+  fonte: Instruções 3040, p. 36
+  consulta: O que é outros com característica de crédito?
+  alvos:
+  - documento: instrucoes_3040
+    paginas: [36]
+    granularidade: pagina
+excluidos:
+- {conceito: fontes_externas.estoque_reconstruido, fonte: 'Método do projeto, ADR 0009', motivo: 'método
+    do projeto, sem documento do corpus'}
+- {conceito: fontes_externas.populacao_residente_estimada, fonte: 'IBGE, tabela 6579 do SIDRA, variável
+    9324', motivo: 'fonte fora do corpus (IBGE, SIDRA, CONCLA)'}
+- {conceito: fontes_externas.rendimento_medio_do_trabalho, fonte: 'IBGE, PNAD Contínua trimestral, tabela
+    6472 do SIDRA, variável 5929; coeficiente de variação na 5937', motivo: 'fonte fora do corpus (IBGE,
+    SIDRA, CONCLA)'}
+- {conceito: fontes_externas.massa_de_rendimento_do_trabalho, fonte: 'IBGE, PNAD Contínua trimestral,
+    tabela 6474 do SIDRA, variável 6288; coeficiente de variação na 6289', motivo: 'fonte fora do corpus
+    (IBGE, SIDRA, CONCLA)'}
+- {conceito: fontes_externas.grupo_de_natureza_juridica, fonte: Tabela de Natureza Jurídica da CONCLA/IBGE;
+    código no campo natureza_juridica da tabela Empresas do CNPJ, motivo: 'fonte fora do corpus (IBGE,
+    SIDRA, CONCLA)'}
+- {conceito: modalidades.sub_0207, fonte: 'Anexo 3 (nome); ausente da tabela de Empréstimos das Instruções,
+    p. 20', motivo: 'lacuna: a fonte não traz a definição'}
+- {conceito: modalidades.sub_0208, fonte: 'Anexo 3 (nome); ausente da tabela de Empréstimos das Instruções,
+    p. 20', motivo: 'lacuna: a fonte não traz a definição'}
+- {conceito: modalidades.sub_0290, fonte: 'Anexo 3 (nome); ausente da tabela de Empréstimos das Instruções,
+    p. 20', motivo: 'lacuna: a fonte não traz a definição'}
+- {conceito: modalidades.sub_0790, fonte: 'Anexo 3 (nome); ausente da tabela de Financiamentos com interveniência
+    das Instruções, p. 30', motivo: 'lacuna: a fonte não traz a definição'}
+- {conceito: modalidades.mod_13, fonte: 'Instruções 3040, p. 35 (a modalidade não tem definição própria,
+    só as submodalidades)', motivo: 'lacuna: a fonte não traz a definição'}
