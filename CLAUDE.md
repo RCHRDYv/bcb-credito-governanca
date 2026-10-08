@@ -47,6 +47,11 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - QA por outro caminho em `scripts/analises/`, por exemplo `qa_gabarito`, `qa_fontes_externas` e `qa_renda_do_trabalho`.
 - Pré-registro (#47, ADR 0026): `evaluation/hipoteses.yml`, `evaluation/comparacao.yml`, o `gabarito.yml` e os SQL do gabarito estão congelados pelo `evaluation/registro.yml`. Mudança só por errata datada no fim da lista do registro, nunca editando um hash. As respostas JSON ficam fora, porque mudam com o mês.
 
+## Esquema estrela publicado (#45, ADR 0027)
+- `uv run python -m scripts.exportar_esquema_estrela` grava os Parquets em `data/esquema_estrela/` e o `esquema_estrela/manifesto.json`. O que pode sair é o `evaluation/gabarito/esquema_estrela.json`, que ele só lê.
+- `uv run python -m scripts.analises.qa_esquema_estrela [--com-databricks | --origem hf]` compara o DuckDB com o Databricks: totais por período e os SQL do gabarito.
+- A publicação no Hugging Face (`scripts.publicar_esquema_estrela`) pede o token por getpass e é o Yuri quem roda. Nunca peça nem grave o token.
+
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).
 - Textos em `src/textos/pt-BR.js`: `t()` lança erro se faltar a chave.
@@ -57,6 +62,7 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 ## Convenções
 - Comentários e docstrings bilíngues, um bloco PT seguido de um bloco EN, no estilo dos arquivos vizinhos.
 - Branch por issue (`feat/`, `ci/`, `chore/`), PR com `Closes #n`.
+- IMPORTANT: não mexa no `.github/workflows/ci.yml` numa PR que não é do site. Qualquer mudança nele dispara o job do site do dashboard (#105), que leva mais de 10 minutos. Job novo vai num workflow próprio em `.github/workflows/`, como o `esquema-estrela.yml`. Só mude o `ci.yml` se o Yuri pedir.
 - Fluxo de uma issue: `/iniciar-issue <n>` até o plano aprovado, `/entregar-issue <n>` do commit à PR. Passo a passo em `docs/fluxo-de-trabalho.md`.
 - O hook de pre-commit `mixed-line-ending` corrige o arquivo e reprova o commit: rode `git add` de novo e repita o commit.
 - Para editar texto com acento, prefira as ferramentas de edição ou um script em arquivo. Heredoc no Bash quebra com barra invertida.
