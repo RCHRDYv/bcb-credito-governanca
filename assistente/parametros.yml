@@ -22,8 +22,6 @@
 #     pre-registered and checked.
 # =============================================================================
 
-provisorio: true
-
 servidor:
   # PT: API nativa do Ollama, que aceita num_ctx, seed e o esquema JSON por
   #     requisição (decisão de 2026-10-08). A rota compatível com a OpenAI
@@ -34,29 +32,23 @@ servidor:
   tempo_maximo_em_segundos: 600
 
 modelos:
-  # PT: modelo provisório, só para a fumaça. A #48 escolhe os do experimento
-  #     pelo gabarito, na condição A (ADR 0026), e o scripts.resumir_selecao
-  #     troca esta lista pelos dois escolhidos, um por classe. O primeiro é
-  #     o padrão; --modelo escolhe outro. O num_ctx e a razão de caracteres
-  #     por token são de cada modelo, porque o tokenizador muda.
-  #
-  #     O num_ctx é o menor múltiplo de 4.096 que comporta a segunda chamada
-  #     de D mais o limite da resposta (hipoteses.yml,
-  #     execucao.contexto_do_modelo). A fumaça de 2026-10-08, com o
-  #     qwen3:8b, mediu 38.923 tokens no maior prompt de D; com os 2.048 da
-  #     resposta, os 40.960 de antes estouravam por 11.
-  #
-  #     A razão é a base da estimativa de tokens feita antes do envio: o
-  #     Ollama corta o prompt grande em vez de recusar, e o
-  #     prompt_eval_count pode deixar de fora o prefixo em cache. A fumaça
-  #     mediu cerca de 3,1 caracteres por token em D; 3,0 erra para o lado
-  #     de estimar tokens a mais.
-  # EN: provisional model, smoke test only. #48 replaces this list with the
-  #     two chosen models, one per class; the first is the default and
-  #     --modelo picks another. num_ctx and the characters-per-token ratio
-  #     are per model, since tokenizers differ.
-  - nome: "qwen3:8b"
-    num_ctx: 45056
+  # PT: os dois modelos do experimento, escolhidos pela seleção da #48
+  #     (evaluation/selecao/resultado.json), gravados por
+  #     scripts.resumir_selecao. O primeiro é o padrão.
+  # EN: the experiment's two models, chosen by the #48 selection.
+  - nome: "hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0"
+    classe: "14b"
+    repositorio: "google/gemma-4-12B-it-qat-q4_0-gguf"
+    revisao: "29d097773436b69ff9feafd636ab4cf873786537"
+    sha256: "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b"
+    num_ctx: 53248
+    caracteres_por_token_na_estimativa: 2.9
+  - nome: "hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M"
+    classe: "8b"
+    repositorio: "unsloth/Qwen3.5-9B-GGUF"
+    revisao: "3885219b6810b007914f3a7950a8d1b469d598a5"
+    sha256: "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8"
+    num_ctx: 53248
     caracteres_por_token_na_estimativa: 3.0
 
 geracao:
