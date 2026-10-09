@@ -3,7 +3,7 @@ PT: Gera evaluation/recuperacao.yml, o gabarito de recuperação do RAG
     (issue #46, ADR 0028): para cada conceito da ontologia, a consulta e o
     lugar do corpus de onde a definição saiu, para medir se a busca o traz.
 
-    A consulta é "O que é <prefLabel_pt>?", decidida pelo Yuri em
+    A consulta é "O que é <prefLabel_pt>?", decidida em
     2026-10-07. O alvo sai do campo fonte do conceito, que cita o documento
     por um apelido (ingestion/fontes.py, DOCUMENTOS_DO_CORPUS) e o lugar por
     página ("p. 20", "pp. 20 e 21", "pp. 20 a 22"), seção ("seção 3.x",

@@ -65,7 +65,7 @@ seeds:
 # =============================================================================
 # PT: Parâmetros da camada de decisão (issue #26, ADR 0014). Ficam aqui para a
 #     regra da matriz ser lida e mudada num lugar só. Os três primeiros são
-#     decisões do Yuri de 2026-09-24.
+#     decisões de 2026-09-24.
 # EN: Decision layer parameters, kept in one place so the matrix rule is read
 #     and changed there.
 # =============================================================================
