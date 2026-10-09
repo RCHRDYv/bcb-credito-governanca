@@ -114,3 +114,23 @@ erratas:
     afinado nas perguntas registradas: a fumaça usou só perguntas
     inventadas. Decidi em 2026-10-09.
   sha256: 4f03fd590c22427addf69c6040613cbd4da380f4a8add8b9be26364cfbff49da
+- data: '2026-10-09'
+  arquivo: assistente/parametros.yml
+  motivo: >-
+    Arquivo da #49 (ADR 0029), fixado pela #48 (ADR 0030) depois da seleção:
+    os dois modelos do experimento, Gemma 4 12B e Qwen3.5-9B, com a revisão,
+    o sha256 do GGUF, o num_ctx e a razão de caracteres por token do
+    evaluation/selecao.yml, sem o provisorio. A geração e os limites do SQL
+    são os da seleção. Escolhidos pela regra congelada na errata do
+    selecao.yml, com efeito chão declarado no ADR 0030. Decidi aceitar o
+    resultado como registrado em 2026-10-09.
+  sha256: ced156c4992702c86099b52afa93797b4e352348a6c199c895316e5a8eccd9c4
+- data: '2026-10-09'
+  arquivo: evaluation/selecao/resultado.json
+  motivo: >-
+    Arquivo novo, da #48 (ADR 0030). O resultado da seleção dos modelos na
+    condição A: as execuções de cada pergunta por candidato, as perguntas
+    certas, os erros por motivo, a VRAM, o ambiente, os escolhidos e os 27
+    julgamentos às cegas. Congelado antes de qualquer execução do
+    experimento (#50).
+  sha256: d509fcb14749e511916447c1ce82792bc04408579e05bfaa362ecba37b9aa784

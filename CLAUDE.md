@@ -77,7 +77,7 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 
 ## Assistente (#49, ADR 0029)
 - Pacote `assistente/`: `uv run python -m assistente "pergunta" --condicao B`. C e D pedem `--group rag`, e a interface Gradio pede `--group assistente --group rag` (`python -m assistente.interface`).
-- `assistente/parametros.yml` fica provisório até a seleção da #48, e o `assistente/modelo_de_prompt.yml` congela antes dela. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
+- `assistente/parametros.yml` (os dois modelos escolhidos pela #48) e `assistente/modelo_de_prompt.yml` estão congelados por errata. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
 - A fumaça com o Ollama (`scripts.analises.fumaca_assistente`) usa só perguntas inventadas, e quem a roda é o Yuri. O `validar_assistente` e o `--autoteste` rodam sem modelo no workflow `assistente.yml`.
 
 ## Seleção dos modelos (#48, ADR 0030)

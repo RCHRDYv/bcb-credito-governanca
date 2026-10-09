@@ -260,7 +260,7 @@ O gabarito de recuperação ([`evaluation/recuperacao.yml`](evaluation/recuperac
 
 ### Como usar o assistente de dados
 
-O assistente responde em SQL sobre o retrato local do esquema estrela, com a ontologia e os trechos do RAG ligados ou desligados conforme a condição do experimento ([ADR 0029](docs/adr/0029-assistente-local-com-ollama-e-proveniencia-pelo-codigo.md)). O modelo roda no Ollama local. A resposta traz os cinco campos registrados, e o código anexa a proveniência: o SQL executado, o resultado, os conceitos da ontologia com confiança e fonte, e os trechos. Os parâmetros de [`assistente/parametros.yml`](assistente/parametros.yml) ficam provisórios até a seleção dos modelos, abaixo.
+O assistente responde em SQL sobre o retrato local do esquema estrela, com a ontologia e os trechos do RAG ligados ou desligados conforme a condição do experimento ([ADR 0029](docs/adr/0029-assistente-local-com-ollama-e-proveniencia-pelo-codigo.md)). O modelo roda no Ollama local. A resposta traz os cinco campos registrados, e o código anexa a proveniência: o SQL executado, o resultado, os conceitos da ontologia com confiança e fonte, e os trechos. Os parâmetros de [`assistente/parametros.yml`](assistente/parametros.yml) trazem os dois modelos escolhidos pela seleção, abaixo.
 
 ```bash
 ollama pull qwen3:8b
@@ -287,7 +287,7 @@ uv run python -m scripts.resumir_selecao
 uv run python -m scripts.validar_selecao --autoteste
 ```
 
-O resultado vai para `docs/selecao-dos-modelos.md`, gerado por script. O validador roda no CI sem modelo: confere o corretor nas próprias respostas do gabarito, disfarçadas e estragadas.
+O resultado está em [`docs/selecao-dos-modelos.md`](docs/selecao-dos-modelos.md), gerado por script: ficaram o Gemma 4 12B e o Qwen3.5-9B, com efeito chão declarado no ADR 0030. O validador roda no CI sem modelo: confere o corretor nas próprias respostas do gabarito, disfarçadas e estragadas.
 
 ### Documentação
 

@@ -92,7 +92,28 @@ Decisões que tomei em 2026-10-09, antes do código (comentário na #48).
 
 ## Resultado medido
 
-Entra depois da seleção, junto da segunda errata.
+Rodei a seleção em 2026-10-09 na minha máquina, com o Ollama 0.40.1, o cache KV em `q8_0` e o `num_ctx` de 53.248 em todos os candidatos. As 1.025 execuções levaram cerca de 5 horas. O Ministral 3 14B levou 3,5 horas sozinho, com mediana de 38 s por chamada, contra 2 a 6 s dos outros: parte das camadas dele ficou na CPU. Corrigi às cegas 27 execuções, as únicas que ainda mudavam o acerto de alguma pergunta. A página completa, gerada por script, está em [`docs/selecao-dos-modelos.md`](../selecao-dos-modelos.md).
+
+| Classe | Candidato | Perguntas certas | Quais | Abstenção indevida | VRAM |
+|---|---|---:|---|---:|---:|
+| ~14B | **Gemma 4 12B** | 3 de 41 | Q17, Q33, Q41 | 171 de 205 | 7,0 GB |
+| ~14B | Ministral 3 14B | 2 de 41 | Q33, Q41 | 87 de 205 | 8,8 GB |
+| ~7 a 8B | **Qwen3.5-9B** | 2 de 41 | Q17, Q41 | 194 de 205 | 6,2 GB |
+| ~7 a 8B | Granite 4.2 8B | 2 de 41 | Q17, Q41 | 129 de 205 | 9,4 GB |
+| ~7 a 8B | Ministral 3 8B | 1 de 41 | Q11 | 15 de 205 | 8,6 GB |
+
+Ficam o **Gemma 4 12B** e o **Qwen3.5-9B**, pela regra congelada na primeira errata. O Qwen3.5-9B empatou com o Granite 4.2 8B em 2 perguntas, e o desempate foi a menor VRAM.
+
+**O resultado tem efeito chão, e eu o aceito como registrado** (decisão de 2026-10-09). Na condição A, só com o esquema, os candidatos acertaram de 1 a 3 das 41 perguntas:
+- **A abstenção domina.** O Qwen3.5-9B se absteve em 194 das 205 execuções, e o Gemma 4 12B em 171. Os dois acertaram justamente as duas perguntas de abstenção (Q17 e Q41), e a escolha saiu sobretudo delas. A regra escolheu os modelos que mais se abstêm sem contexto.
+- **Quem tenta errar o número.** O Ministral 3 8B quase não se abstém (15), mas 75 das execuções dele terminaram em erro de SQL e 49 em valor errado. Ele foi o único com uma pergunta de valor certa (Q11).
+- **Conferi que é o modelo, e não o corretor.** Nas respostas com número que reprovaram, o erro está na resposta: a Q01 com as duas carteiras certas e sem a variação, que o gabarito registrado exige; a Q22 somando o PIX sem o filtro da pergunta; e a Q06 com as modalidades antigas no lugar dos códigos.
+- **Não mudei a regra depois de ver o resultado.** Declarar a seleção inconclusiva com um critério novo, ou mexer no prompt para reduzir a abstenção, seria ajustar o método ao resultado no próprio conjunto de teste. O pré-registro existe para impedir isso.
+
+**Consequências para o experimento (#50).**
+- O viés da seleção pela condição A é ainda mais conservador do que o ADR 0026 previa: os escolhidos se abstêm em quase tudo sem contexto. Se a ontologia (B) ou os trechos (C) reduzirem a abstenção, a diferença aparece contra uma linha de base perto de zero.
+- Com a condição A perto de zero, a H1 e a H2 podem dar certo por pouco que B e C acertem. Por isso, o tamanho de efeito com intervalo, que o pré-registro já exige, pesa mais que o p.
+- A abstenção indevida é um resultado em si, e entra na análise por tipo de acerto da #50.
 
 ## Alternativas descartadas
 
