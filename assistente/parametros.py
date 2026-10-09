@@ -1,12 +1,16 @@
 """
-PT: Parâmetros e modelo de prompt do assistente. Os dois arquivos são
-    provisórios até a #48 (assistente/parametros.yml); a temperatura e as
-    seeds repetem o bloco execucao do evaluation/hipoteses.yml, congelado no
-    pré-registro (#47), e conferir_pre_registro() para se divergirem.
+PT: Parâmetros e modelo de prompt do assistente. A #48 fixa os dois
+    arquivos e os congela por errata (ADR 0030); até lá, o parametros.yml
+    marca provisorio. O parametros.yml lista os modelos, cada um com o
+    próprio num_ctx e a própria razão de caracteres por token. A temperatura
+    e as seeds repetem o bloco execucao do evaluation/hipoteses.yml,
+    congelado no pré-registro (#47), e conferir_pre_registro() para se
+    divergirem.
 
-EN: Assistant parameters and prompt template. Both files are provisional
-    until #48; temperature and seeds repeat the frozen execucao block, and
-    conferir_pre_registro() stops if they diverge.
+EN: Assistant parameters and prompt template, fixed and frozen by #48.
+    parametros.yml lists the models, each with its own num_ctx and
+    characters-per-token ratio. Temperature and seeds repeat the frozen
+    execucao block, and conferir_pre_registro() stops if they diverge.
 """
 
 from __future__ import annotations
@@ -54,19 +58,32 @@ class Parametros:
     limite_de_tempo_do_sql: float
 
 
-def carregar(arquivo: Path = PARAMETROS) -> Parametros:
-    """PT: lê o parametros.yml / EN: reads the parameters file"""
+def modelos(arquivo: Path = PARAMETROS) -> list[str]:
+    """PT: os nomes dos modelos do arquivo / EN: the file's model names"""
+    return [m["nome"] for m in yaml.safe_load(arquivo.read_text(encoding="utf-8"))["modelos"]]
+
+
+def carregar(arquivo: Path = PARAMETROS, modelo: str | None = None) -> Parametros:
+    """
+    PT: Lê o parametros.yml, com o modelo dado ou o primeiro da lista. O
+        num_ctx e a razão de caracteres por token são do modelo.
+    EN: Reads the parameters file, for the given model or the first one.
+    """
     p = yaml.safe_load(arquivo.read_text(encoding="utf-8"))
+    por_nome = {m["nome"]: m for m in p["modelos"]}
+    if modelo is not None and modelo not in por_nome:
+        raise SystemExit(f"ERRO modelo {modelo} fora do {arquivo.name}: {sorted(por_nome)}")
+    m = por_nome[modelo] if modelo is not None else p["modelos"][0]
     return Parametros(
         provisorio=bool(p.get("provisorio", False)),
         endereco=p["servidor"]["endereco"],
         tempo_maximo_do_servidor=float(p["servidor"]["tempo_maximo_em_segundos"]),
-        modelo=p["modelo"]["nome"],
+        modelo=m["nome"],
         temperatura=float(p["geracao"]["temperatura"]),
         seeds=tuple(p["geracao"]["seeds"]),
-        num_ctx=int(p["geracao"]["num_ctx"]),
+        num_ctx=int(m["num_ctx"]),
         limite_de_tokens_da_resposta=int(p["geracao"]["limite_de_tokens_da_resposta"]),
-        caracteres_por_token_na_estimativa=float(p["geracao"]["caracteres_por_token_na_estimativa"]),
+        caracteres_por_token_na_estimativa=float(m["caracteres_por_token_na_estimativa"]),
         think=bool(p["geracao"]["think"]),
         esquema_json=bool(p["geracao"]["esquema_json"]),
         limite_de_linhas=int(p["sql"]["limite_de_linhas"]),

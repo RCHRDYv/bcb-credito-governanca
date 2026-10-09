@@ -13,6 +13,7 @@ EN: One question to the assistant from the command line. Prints the answer
 Uso / Usage:
     uv run python -m assistente "Qual a carteira ativa de PJ no Acre?" --condicao B
     uv run --group rag python -m assistente "..." --condicao D --seed 2
+    uv run python -m assistente "..." --modelo <nome do assistente/parametros.yml>
 """
 
 from __future__ import annotations
@@ -76,9 +77,11 @@ def main() -> None:
     # PT: B é o padrão porque roda sem o grupo rag / EN: B runs without the rag group
     parser.add_argument("--condicao", choices=sorted(CONDICOES), default="B")
     parser.add_argument("--seed", type=int, default=None, help="padrão: a primeira seed registrada")
+    parser.add_argument("--modelo", choices=parametros.modelos(), default=None,
+                        help="padrão: o primeiro do assistente/parametros.yml")
     args = parser.parse_args()
 
-    p = parametros.carregar()
+    p = parametros.carregar(modelo=args.modelo)
     parametros.conferir_pre_registro(p)
     if p.provisorio:
         print("Aviso: parâmetros provisórios, até a #48 / provisional parameters, until #48", file=sys.stderr)

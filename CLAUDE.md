@@ -38,6 +38,8 @@ uv run python -m scripts.validar_registro --autoteste
 uv run python -m scripts.validar_dados_do_dashboard
 uv run python -m scripts.validar_assistente
 uv run python -m scripts.validar_assistente --autoteste
+uv run python -m scripts.validar_selecao
+uv run python -m scripts.validar_selecao --autoteste
 ```
 Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'` precisa sair limpo. O CI também roda `dbt parse` com `uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9`.
 
@@ -63,8 +65,14 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 
 ## Assistente (#49, ADR 0029)
 - Pacote `assistente/`: `uv run python -m assistente "pergunta" --condicao B`. C e D pedem `--group rag`, e a interface Gradio pede `--group assistente --group rag` (`python -m assistente.interface`).
-- `assistente/parametros.yml` e `assistente/modelo_de_prompt.yml` são provisórios. A #48 fixa os valores e congela os dois por errata. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
+- `assistente/parametros.yml` fica provisório até a seleção da #48, e o `assistente/modelo_de_prompt.yml` congela antes dela. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
 - A fumaça com o Ollama (`scripts.analises.fumaca_assistente`) usa só perguntas inventadas, e quem a roda é o Yuri. O `validar_assistente` e o `--autoteste` rodam sem modelo no workflow `assistente.yml`.
+
+## Seleção dos modelos (#48, ADR 0030)
+- Candidatos, regras e configuração em `evaluation/selecao.yml`. Os campos medidos (revisão, sha256, `num_ctx`, razão) saem de `uv run --group rag python -m scripts.dimensionar_contexto`, que o Yuri roda.
+- Errata 1 (antes de rodar): `evaluation/selecao.yml` e `assistente/modelo_de_prompt.yml`. O `scripts.selecionar_modelos` se recusa a rodar sem ela. Errata 2 (depois): `assistente/parametros.yml` e `evaluation/selecao/resultado.json`.
+- A execução (`scripts.selecionar_modelos`) e a correção às cegas (`correcao.as_cegas`) são do Yuri, na máquina dele, com o Ollama. `scripts.resumir_selecao` gera o resultado, a página `docs/selecao-dos-modelos.md` e os modelos do `parametros.yml`.
+- O corretor (`correcao/`) compara por valor e é o da #50. O `validar_selecao` e o `--autoteste` rodam sem modelo no workflow `selecao.yml`; o `--ensaio` do executor também.
 
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).

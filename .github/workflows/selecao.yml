@@ -1,0 +1,56 @@
+# =============================================================================
+# PT: A seleção dos modelos do experimento (#48, ADR 0030). Confere, sem
+#     rede, sem modelo e sem dado, as regras do evaluation/selecao.yml, o
+#     corretor nas próprias respostas do gabarito, disfarçadas e estragadas,
+#     o acerto de 3 em 5, o cegamento e, quando existe, a coerência do
+#     resultado com a regra de escolha. O ensaio roda o executor com o
+#     cliente falso e o banco vazio. O controle negativo estraga uma peça
+#     por vez.
+#
+#     Fica num workflow próprio, e não no ci.yml, porque mudar o ci.yml
+#     dispara o job do site (#105), que leva mais de 10 minutos.
+# EN: The experiment's model selection. Checks, with no network, model or
+#     data, the selection rules, the grader on disguised and broken answer
+#     key tables, the 3-of-5 rule, blinding and the result's consistency.
+#     The dry run exercises the runner with the fake client. Its own
+#     workflow, not ci.yml, which would trigger the 10-minute site job.
+# =============================================================================
+
+name: Seleção dos modelos
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# PT: Permissão mínima. O workflow só precisa ler o código.
+# EN: Least privilege. The workflow only needs to read the code.
+permissions:
+  contents: read
+
+jobs:
+  selecao:
+    name: Seleção dos modelos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --frozen
+
+      - name: Regras, corretor, acerto, cegamento e resultado
+        run: uv run python -m scripts.validar_selecao
+
+      - name: Controle negativo
+        run: uv run python -m scripts.validar_selecao --autoteste
+
+      - name: Ensaio do executor, sem modelo
+        run: uv run python -m scripts.selecionar_modelos --ensaio

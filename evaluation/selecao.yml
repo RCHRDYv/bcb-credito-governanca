@@ -1,0 +1,195 @@
+# =============================================================================
+# PT: Seleção dos modelos do experimento (#48, ADRs 0026 e 0030). Fixa, antes
+#     de qualquer execução contra o gabarito:
+#     1. a regra de entrada, a regra de escolha e o desempate;
+#     2. os candidatos de cada classe, com a versão exata do conteúdo
+#        (repositório, revisão, arquivo e sha256 do GGUF) e a quantização;
+#     3. a configuração do servidor e da geração, a mesma do experimento;
+#     4. o num_ctx e a razão de caracteres por token de cada candidato,
+#        medidos pelo tokenizador da revisão fixada, sem rodar o modelo.
+#
+#     Os campos null são preenchidos por scripts.dimensionar_contexto, na
+#     minha máquina. Depois disso, este arquivo e o
+#     assistente/modelo_de_prompt.yml entram por errata no
+#     evaluation/registro.yml, e só então a seleção roda
+#     (scripts.selecionar_modelos confere a errata). Decidido em 2026-10-09.
+#
+#     Conferido por scripts/validar_selecao.py.
+#
+# EN: Selection of the experiment's models. Fixes, before any run against
+#     the answer key, the entry, choice and tie-break rules, the candidates
+#     with their exact content version and quantization, the server and
+#     generation settings (the experiment's own), and each candidate's
+#     num_ctx and characters-per-token ratio, measured with the pinned
+#     tokenizer without running the model. Null fields are filled by
+#     scripts.dimensionar_contexto; then this file and the prompt template
+#     are frozen by errata, and only then does the selection run.
+# =============================================================================
+
+metadata:
+  issue: 48
+  adrs: ["0012", "0026", "0030"]
+  decidido_em: "2026-10-09"
+  condicao: A
+  perguntas: "evaluation/questions_v3.yml"
+  regra_de_comparacao: "evaluation/hipoteses.yml#comparacao"
+
+regras:
+  entrada: >
+    Contexto publicado de pelo menos 65.536 tokens: o max_position_embeddings
+    do config.json da revisão fixada, sem mudar o RoPE. O mesmo modelo roda
+    as quatro condições, e o prompt de D passa de 38 mil tokens. GGUF em 4
+    bits, publicado pelo autor do modelo ou por quantizador conhecido.
+  contexto_minimo: 65536
+  escolha: >
+    Em cada classe, fica o candidato com mais perguntas certas nas 41, na
+    condição A, pela regra do hipoteses.yml: 5 execuções por pergunta e
+    acerto quando 3 ou mais acertam (ADR 0026, decisão 2).
+  desempate: >
+    O mesmo número de perguntas certas é empate. Desempata a menor VRAM, o
+    size_vram do /api/ps do Ollama com o num_ctx do candidato (ADR 0026,
+    decisão 3). Persistindo o empate, fica o primeiro da classe nesta lista.
+  medida_de_vram: "size_vram do /api/ps, em bytes, com o modelo carregado no num_ctx do candidato"
+
+# -----------------------------------------------------------------------------
+# PT: O servidor e a geração, os mesmos no experimento.
+# EN: Server and generation, the same in the experiment.
+# -----------------------------------------------------------------------------
+servidor:
+  # PT: variáveis de ambiente do ollama serve. O cache KV em 8 bits deixa o
+  #     contexto de D caber nos 12 GB da placa; ele muda a saída, então é o
+  #     mesmo para todos e no experimento.
+  # EN: ollama serve environment. The 8-bit KV cache fits D's context in
+  #     12 GB; it changes outputs, so it is the same for all and later.
+  OLLAMA_KV_CACHE_TYPE: "q8_0"
+  OLLAMA_FLASH_ATTENTION: "1"
+  api: "/api/chat"
+
+geracao:
+  # PT: do pré-registro, conferidos contra o hipoteses.yml
+  # EN: pre-registered, checked against hipoteses.yml
+  temperatura: 0.2
+  seeds: [1, 2, 3, 4, 5]
+  # PT: fixados aqui (hipoteses.yml, execucao.fixado_antes_da_execucao)
+  # EN: fixed here
+  limite_de_tokens_da_resposta: 2048
+  think: false
+  esquema_json: true
+  tempo_maximo_do_servidor_em_segundos: 600
+
+sql:
+  # PT: a maior resposta do gabarito tem 64 linhas (Q23)
+  # EN: the largest answer key result has 64 rows
+  limite_de_linhas: 100
+  limite_de_tempo_em_segundos: 30
+
+dimensionamento:
+  # PT: como scripts.dimensionar_contexto calcula o num_ctx: o menor
+  #     múltiplo de 4.096 que comporta a segunda chamada de D no pior caso.
+  # EN: how num_ctx is computed: the smallest multiple of 4,096 that fits
+  #     D's second call in the worst case.
+  multiplo: 4096
+  componentes:
+    - "o maior prompt da primeira chamada de D entre as 41 perguntas, com os trechos da busca"
+    - "o limite de tokens da resposta, pela resposta da primeira chamada (o SQL)"
+    - "a mensagem com o resultado no limite de linhas, pela resposta do gabarito com mais tokens por linha"
+    - "o limite de tokens da resposta, pela segunda chamada"
+    - "16 tokens por mensagem, pelo modelo de chat"
+  tokens_por_mensagem: 16
+  # PT: a razão é a menor medida nos prompts de D, vezes 0,95 e arredondada
+  #     para baixo em 0,1: a estimativa erra para o lado de mais tokens.
+  # EN: the ratio is the smallest measured on D prompts, times 0.95, rounded
+  #     down to 0.1, so the estimate errs toward more tokens.
+  margem_da_razao: 0.95
+
+# -----------------------------------------------------------------------------
+# PT: Candidatos. ollama é o nome no servidor, puxado com ollama pull; o
+#     executor confere que o digest da camada do modelo é o sha256 daqui.
+# EN: Candidates. ollama is the server name, pulled with ollama pull; the
+#     runner checks the model layer digest equals the sha256 here.
+# -----------------------------------------------------------------------------
+candidatos:
+  - nome: gemma-4-12b
+    classe: "14b"
+    repositorio: "google/gemma-4-12B-it-qat-q4_0-gguf"
+    arquivo: "gemma-4-12b-it-qat-q4_0.gguf"
+    quantizacao: "Q4_0, treinado ciente da quantização (QAT)"
+    ollama: "hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0"
+    tokenizador: "google/gemma-4-12B-it-qat-q4_0-unquantized"
+    contexto_publicado: 262144
+    revisao: null
+    sha256: null
+    revisao_do_tokenizador: null
+    num_ctx: null
+    caracteres_por_token: null
+
+  - nome: ministral-3-14b
+    classe: "14b"
+    repositorio: "mistralai/Ministral-3-14B-Instruct-2512-GGUF"
+    arquivo: "Ministral-3-14B-Instruct-2512-Q4_K_M.gguf"
+    quantizacao: "Q4_K_M"
+    ollama: "hf.co/mistralai/Ministral-3-14B-Instruct-2512-GGUF:Q4_K_M"
+    tokenizador: "mistralai/Ministral-3-14B-Instruct-2512"
+    contexto_publicado: 262144
+    revisao: null
+    sha256: null
+    revisao_do_tokenizador: null
+    num_ctx: null
+    caracteres_por_token: null
+
+  - nome: qwen3.5-9b
+    classe: "8b"
+    repositorio: "unsloth/Qwen3.5-9B-GGUF"
+    arquivo: "Qwen3.5-9B-Q4_K_M.gguf"
+    quantizacao: "Q4_K_M"
+    ollama: "hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M"
+    tokenizador: "Qwen/Qwen3.5-9B"
+    contexto_publicado: 262144
+    revisao: null
+    sha256: null
+    revisao_do_tokenizador: null
+    num_ctx: null
+    caracteres_por_token: null
+
+  - nome: granite-4.2-8b
+    classe: "8b"
+    repositorio: "ibm-granite/granite-4.2-8b-GGUF"
+    arquivo: "granite-4.2-8b-Q4_K_M.gguf"
+    quantizacao: "Q4_K_M"
+    ollama: "hf.co/ibm-granite/granite-4.2-8b-GGUF:Q4_K_M"
+    tokenizador: "ibm-granite/granite-4.2-8b"
+    contexto_publicado: 131072
+    revisao: null
+    sha256: null
+    revisao_do_tokenizador: null
+    num_ctx: null
+    caracteres_por_token: null
+
+  - nome: ministral-3-8b
+    classe: "8b"
+    repositorio: "mistralai/Ministral-3-8B-Instruct-2512-GGUF"
+    arquivo: "Ministral-3-8B-Instruct-2512-Q4_K_M.gguf"
+    quantizacao: "Q4_K_M"
+    ollama: "hf.co/mistralai/Ministral-3-8B-Instruct-2512-GGUF:Q4_K_M"
+    tokenizador: "mistralai/Ministral-3-8B-Instruct-2512"
+    contexto_publicado: 262144
+    revisao: null
+    sha256: null
+    revisao_do_tokenizador: null
+    num_ctx: null
+    caracteres_por_token: null
+
+# -----------------------------------------------------------------------------
+# PT: Fora da seleção, pela regra de entrada (contexto publicado).
+# EN: Excluded by the entry rule (published context).
+# -----------------------------------------------------------------------------
+excluidos:
+  - nome: phi-4
+    repositorio: "microsoft/phi-4"
+    contexto_publicado: 16384
+  - nome: qwen3-14b
+    repositorio: "Qwen/Qwen3-14B"
+    contexto_publicado: 40960
+  - nome: qwen3-8b
+    repositorio: "Qwen/Qwen3-8B"
+    contexto_publicado: 40960
