@@ -47,6 +47,7 @@ class Parametros:
     seeds: tuple[int, ...]
     num_ctx: int
     limite_de_tokens_da_resposta: int
+    caracteres_por_token_na_estimativa: float
     think: bool
     esquema_json: bool
     limite_de_linhas: int
@@ -65,6 +66,7 @@ def carregar(arquivo: Path = PARAMETROS) -> Parametros:
         seeds=tuple(p["geracao"]["seeds"]),
         num_ctx=int(p["geracao"]["num_ctx"]),
         limite_de_tokens_da_resposta=int(p["geracao"]["limite_de_tokens_da_resposta"]),
+        caracteres_por_token_na_estimativa=float(p["geracao"]["caracteres_por_token_na_estimativa"]),
         think=bool(p["geracao"]["think"]),
         esquema_json=bool(p["geracao"]["esquema_json"]),
         limite_de_linhas=int(p["sql"]["limite_de_linhas"]),

@@ -31,6 +31,7 @@ instrucoes: |-
   - Dialeto do DuckDB. Um único comando SELECT; pode usar WITH para juntar várias etapas num comando só.
   - Leia só as tabelas do esquema abaixo, pelo nome, sem prefixo de esquema ou de catálogo.
   - Não use funções que leem arquivos nem comandos que mudam o banco.
+  - Não use PIVOT nem UNPIVOT; para pôr valores em colunas, use agregação com FILTER ou CASE.
   - O resultado é cortado em um limite de linhas. Agregue e ordene no próprio SQL.
 
   Regras da resposta:

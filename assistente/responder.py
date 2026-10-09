@@ -36,7 +36,7 @@ import time
 from dataclasses import asdict
 
 from assistente import contexto, ontologia
-from assistente.cliente import ErroDeGeracao, Geracao
+from assistente.cliente import ErroDeGeracao, Geracao, conferir_contexto, conferir_estimativa, estimar_tokens
 from assistente.parametros import CONDICOES, Parametros
 from assistente.sql import ErroDeSQL, executar
 
@@ -121,7 +121,7 @@ def celulas_de_texto(resultado: dict) -> set[str]:
     return {linha[i] for linha in resultado["linhas"] for i in indices if linha[i] is not None}
 
 
-def _chamada(mensagens: list[dict], geracao: Geracao) -> dict:
+def _chamada(mensagens: list[dict], geracao: Geracao, p: Parametros) -> dict:
     """
     PT: O registro de uma chamada. A mensagem de sistema, que leva a
         ontologia inteira em B e D, entra pelo sha256 e pelo tamanho: ela se
@@ -133,12 +133,29 @@ def _chamada(mensagens: list[dict], geracao: Geracao) -> dict:
         "sistema_sha256": hashlib.sha256(sistema.encode("utf-8")).hexdigest(),
         "sistema_caracteres": len(sistema),
         "mensagens": mensagens[1:],
+        "caracteres_do_prompt": sum(len(m["content"]) for m in mensagens),
+        "tokens_estimados": estimar_tokens(mensagens, p),
         "resposta": geracao.texto,
         "tokens_do_prompt": geracao.tokens_do_prompt,
         "tokens_da_resposta": geracao.tokens_da_resposta,
         "motivo_do_fim": geracao.motivo_do_fim,
         "segundos": geracao.segundos,
     }
+
+
+def _gerar(cliente, mensagens: list[dict], esquema: dict, seed: int, p: Parametros, registro: dict) -> Geracao:
+    """
+    PT: Uma chamada ao modelo entre as duas conferências de contexto. A
+        chamada entra no registro antes da segunda conferência, para que o
+        prompt grande demais fique medido.
+    EN: One model call between both context checks; it is recorded before
+        the second check, so an oversized prompt stays measured.
+    """
+    conferir_estimativa(mensagens, p)
+    geracao = cliente.gerar(mensagens, esquema, seed)
+    registro["chamadas"].append(_chamada(mensagens, geracao, p))
+    conferir_contexto(geracao, p)
+    return geracao
 
 
 def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Parametros,
@@ -174,8 +191,7 @@ def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Par
     etapa = "primeira_chamada"
     try:
         mensagens = contexto.primeira_chamada(condicao, pergunta, modelo, registro["trechos"] if usa_trechos else None)
-        geracao = cliente.gerar(mensagens, ESQUEMA_DA_PRIMEIRA, seed)
-        registro["chamadas"].append(_chamada(mensagens, geracao))
+        geracao = _gerar(cliente, mensagens, ESQUEMA_DA_PRIMEIRA, seed, p, registro)
         primeira = ler_json(geracao, ESQUEMA_DA_PRIMEIRA)
 
         if primeira["abstencao"].strip():
@@ -191,8 +207,7 @@ def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Par
 
             etapa = "segunda_chamada"
             mensagens = contexto.segunda_chamada(mensagens, geracao.texto, resultado, modelo)
-            geracao = cliente.gerar(mensagens, ESQUEMA_DA_SEGUNDA, seed)
-            registro["chamadas"].append(_chamada(mensagens, geracao))
+            geracao = _gerar(cliente, mensagens, ESQUEMA_DA_SEGUNDA, seed, p, registro)
             segunda = ler_json(geracao, ESQUEMA_DA_SEGUNDA)
             registro["resposta"] = {"interpretacao": segunda["interpretacao"], "sql": primeira["sql"],
                                     "valores": segunda["valores"], "ressalva": segunda["ressalva"],
@@ -206,7 +221,9 @@ def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Par
         "resultado": resultado,
         "trechos": registro["trechos"],
         "conceitos": ontologia.conceitos_usados(
-            set(resultado["colunas_lidas"]) if resultado else set(),
+            # PT: as colunas do resultado também, para que um select * conte.
+            # EN: result columns too, so a select * counts.
+            set(resultado["colunas_lidas"]) | set(resultado["colunas"]) if resultado else set(),
             set(resultado["literais"]) if resultado else set(),
             celulas_de_texto(resultado) if resultado else set(),
         ),

@@ -160,8 +160,11 @@ def travar(banco: duckdb.DuckDBPyConnection, pasta_permitida: str | None) -> duc
     EN: Restricts file access to the snapshot folder (or none), disables
         external access and locks the configuration.
     """
-    pastas = [pasta_permitida] if pasta_permitida else []
-    banco.execute(f"set allowed_directories = {pastas!r}")
+    # PT: literal de texto do SQL, com o apóstrofo dobrado; o repr do Python
+    #     poria aspas duplas num caminho com apóstrofo.
+    # EN: SQL string literal with the quote doubled.
+    pastas = ["'" + pasta_permitida.replace("'", "''") + "'"] if pasta_permitida else []
+    banco.execute(f"set allowed_directories = [{', '.join(pastas)}]")
     banco.execute("set enable_external_access = false")
     banco.execute("set lock_configuration = true")
     return banco

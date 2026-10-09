@@ -46,3 +46,12 @@ rag = [
     "sentence-transformers>=5",
     "xlrd>=2",
 ]
+
+# PT: interface local do assistente (#49, ADR 0029), em Gradio. Fica fora do
+#     núcleo e do CI, como o grupo rag. Não é o chat do Space (ADR 0019).
+#     Uso: uv run --group assistente --group rag python -m assistente.interface
+# EN: local assistant interface, in Gradio. Outside the core and CI, like
+#     the rag group. Not the Space chat.
+assistente = [
+    "gradio>=5",
+]

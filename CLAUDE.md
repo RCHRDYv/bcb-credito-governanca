@@ -36,6 +36,8 @@ uv run python -m scripts.validar_gabarito
 uv run python -m scripts.validar_registro
 uv run python -m scripts.validar_registro --autoteste
 uv run python -m scripts.validar_dados_do_dashboard
+uv run python -m scripts.validar_assistente
+uv run python -m scripts.validar_assistente --autoteste
 ```
 Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'` precisa sair limpo. O CI também roda `dbt parse` com `uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9`.
 
@@ -58,6 +60,11 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - `evaluation/recuperacao.yml` é gerado por `scripts.gerar_gabarito_de_recuperacao` e conferido por `scripts.validar_recuperacao`, no workflow `recuperacao.yml`. Mudou uma fonte na ontologia, regere.
 - QA por outro caminho: `uv run --group rag python -m scripts.analises.qa_corpus`.
 - `evaluation/recuperacao.yml` e `rag/manifesto.json` estão congelados pelo registro: reconstruir ou regerar que mude um deles pede errata.
+
+## Assistente (#49, ADR 0029)
+- Pacote `assistente/`: `uv run python -m assistente "pergunta" --condicao B`. C e D pedem `--group rag`, e a interface Gradio pede `--group assistente --group rag` (`python -m assistente.interface`).
+- `assistente/parametros.yml` e `assistente/modelo_de_prompt.yml` são provisórios. A #48 fixa os valores e congela os dois por errata. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
+- A fumaça com o Ollama (`scripts.analises.fumaca_assistente`) usa só perguntas inventadas, e quem a roda é o Yuri. O `validar_assistente` e o `--autoteste` rodam sem modelo no workflow `assistente.yml`.
 
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).

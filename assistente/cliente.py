@@ -6,9 +6,12 @@ PT: Clientes do modelo. O ClienteOllama fala com a API nativa do Ollama
 
     Prompt maior que o num_ctx conta como erro, sem corte em silêncio
     (evaluation/hipoteses.yml, execucao.contexto_do_modelo). O Ollama não
-    recusa o prompt grande: ele corta. Por isso a conferência é depois da
-    resposta, pelo prompt_eval_count: se o prompt avaliado mais o limite de
-    tokens da resposta passa do num_ctx, a execução é erro de contexto.
+    recusa o prompt grande: ele corta, e o prompt_eval_count pode deixar de
+    fora o prefixo em cache. Por isso são duas conferências, que o
+    responder faz: a estimativa pelos caracteres antes do envio
+    (conferir_estimativa) e o prompt_eval_count depois da resposta
+    (conferir_contexto). Qualquer uma que passe do num_ctx, somada ao limite
+    de tokens da resposta, faz da execução um erro de contexto.
 
     O ClienteFalso devolve respostas gravadas, em ordem, e guarda as
     mensagens recebidas. É o modelo dos testes no CI.
@@ -16,15 +19,19 @@ PT: Clientes do modelo. O ClienteOllama fala com a API nativa do Ollama
 EN: Model clients. ClienteOllama talks to local Ollama's native /api/chat,
     which takes num_ctx, seed, temperature and the answer's JSON schema per
     request; standard library only. A prompt larger than num_ctx is an error,
-    never silently cut: Ollama truncates instead of refusing, so the check
-    runs after the answer, on prompt_eval_count. ClienteFalso replays
+    never silently cut: Ollama truncates instead of refusing and
+    prompt_eval_count may skip the cached prefix, so the responder checks a
+    character-based estimate before sending and prompt_eval_count after.
+    ClienteFalso replays
     recorded answers in order and keeps the messages it got; it is the CI
     test model.
 """
 
 from __future__ import annotations
 
+import http.client
 import json
+import math
 import time
 import urllib.error
 import urllib.request
@@ -54,6 +61,28 @@ class Geracao:
     tokens_da_resposta: int | None = None
     motivo_do_fim: str | None = None
     segundos: float | None = None
+
+
+def estimar_tokens(mensagens: list[dict], p: Parametros) -> int:
+    """
+    PT: Os tokens do prompt estimados pelos caracteres das mensagens.
+    EN: Prompt tokens estimated from the messages' characters.
+    """
+    caracteres = sum(len(m["content"]) for m in mensagens)
+    return math.ceil(caracteres / p.caracteres_por_token_na_estimativa)
+
+
+def conferir_estimativa(mensagens: list[dict], p: Parametros) -> None:
+    """
+    PT: Erro de contexto, antes do envio, quando a estimativa do prompt mais
+        o limite da resposta passa do num_ctx.
+    EN: Context error, before sending, when the estimated prompt plus the
+        answer limit exceeds num_ctx.
+    """
+    estimados = estimar_tokens(mensagens, p)
+    if estimados + p.limite_de_tokens_da_resposta > p.num_ctx:
+        raise ErroDeGeracao("contexto", f"prompt estimado em {estimados} tokens mais "
+                                        f"{p.limite_de_tokens_da_resposta} da resposta passa do num_ctx {p.num_ctx}")
 
 
 def conferir_contexto(geracao: Geracao, p: Parametros) -> None:
@@ -106,14 +135,20 @@ class ClienteOllama:
             if isinstance(erro.reason, TimeoutError):
                 raise ErroDeGeracao("tempo", f"o modelo passou de {p.tempo_maximo_do_servidor:g} s") from None
             raise ErroDeGeracao("servidor", f"Ollama fora do ar em {p.endereco}: {erro.reason}") from None
+        except (OSError, http.client.HTTPException, ValueError) as erro:
+            # PT: conexão caída no meio da resposta ou corpo que não é JSON.
+            # EN: connection dropped mid-answer or a non-JSON body.
+            raise ErroDeGeracao("servidor", f"resposta inválida do Ollama: {erro!r}") from None
+        mensagem = dados.get("message") if isinstance(dados, dict) else None
+        if not isinstance(mensagem, dict) or not isinstance(mensagem.get("content"), str):
+            raise ErroDeGeracao("servidor", "resposta do Ollama sem message.content")
         geracao = Geracao(
-            texto=dados.get("message", {}).get("content", ""),
+            texto=mensagem["content"],
             tokens_do_prompt=dados.get("prompt_eval_count"),
             tokens_da_resposta=dados.get("eval_count"),
             motivo_do_fim=dados.get("done_reason"),
             segundos=round(time.perf_counter() - inicio, 3),
         )
-        conferir_contexto(geracao, p)
         return geracao
 
 
@@ -124,9 +159,8 @@ class ClienteFalso:
     EN: Replays recorded answers in order and keeps the calls it got.
     """
 
-    def __init__(self, respostas: list, p: Parametros | None = None):
+    def __init__(self, respostas: list):
         self.respostas = list(respostas)
-        self.p = p
         self.chamadas: list[dict] = []
 
     def gerar(self, mensagens: list[dict], esquema: dict | None, seed: int) -> Geracao:
@@ -134,7 +168,4 @@ class ClienteFalso:
         if not self.respostas:
             raise AssertionError("o cliente falso não tem mais respostas gravadas")
         resposta = self.respostas.pop(0)
-        geracao = resposta if isinstance(resposta, Geracao) else Geracao(texto=resposta)
-        if self.p is not None:
-            conferir_contexto(geracao, self.p)
-        return geracao
+        return resposta if isinstance(resposta, Geracao) else Geracao(texto=resposta)

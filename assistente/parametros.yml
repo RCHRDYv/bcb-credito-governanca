@@ -47,6 +47,14 @@ geracao:
   #     second call. think turns off Qwen3's reasoning mode.
   num_ctx: 40960
   limite_de_tokens_da_resposta: 2048
+  # PT: provisório. Base da estimativa de tokens feita antes do envio: o
+  #     Ollama corta o prompt grande em vez de recusar, e o
+  #     prompt_eval_count pode deixar de fora o prefixo em cache. 3,5 é a
+  #     razão da estimativa de 2026-10-08 (cerca de 103 mil caracteres para
+  #     29 mil tokens). A #48 calibra pelo relatório da fumaça.
+  # EN: provisional. Basis of the pre-send token estimate; #48 calibrates it
+  #     from the smoke report.
+  caracteres_por_token_na_estimativa: 3.5
   think: false
   esquema_json: true
 

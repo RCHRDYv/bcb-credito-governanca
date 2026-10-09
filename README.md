@@ -143,6 +143,7 @@ As decisões de arquitetura e suas alternativas descartadas estão registradas e
 | `dbt/` | Camada semântica: staging, intermediate, marts, testes |
 | `evaluation/` | Perguntas de negócio, gabarito e análise estatística |
 | `rag/` | Corpus e índice de busca dos documentos do BCB, para as condições com RAG do experimento |
+| `assistente/` | Assistente de dados: text-to-SQL sobre o esquema estrela, com a proveniência montada pelo código, para o experimento e o uso local |
 | `dashboard/` | Site estático do dashboard, no GitHub Pages. O chat da v0.3 roda num Space ZeroGPU do Hugging Face |
 | `scripts/` | Utilitários e verificadores |
 | `docs/adr/` | Registro de decisões de arquitetura |
@@ -256,6 +257,20 @@ uv run --group rag python -m scripts.analises.qa_corpus
 ```
 
 O gabarito de recuperação ([`evaluation/recuperacao.yml`](evaluation/recuperacao.yml)) sai dos campos de fonte da ontologia: para cada conceito, a página ou a seção de onde a definição foi tirada. O modelo de embeddings do experimento é o candidato que mais traz esse lugar entre os 5 primeiros trechos, como o pré-registro manda.
+
+### Como usar o assistente de dados
+
+O assistente responde em SQL sobre o retrato local do esquema estrela, com a ontologia e os trechos do RAG ligados ou desligados conforme a condição do experimento ([ADR 0029](docs/adr/0029-assistente-local-com-ollama-e-proveniencia-pelo-codigo.md)). O modelo roda no Ollama local. A resposta traz os cinco campos registrados, e o código anexa a proveniência: o SQL executado, o resultado, os conceitos da ontologia com confiança e fonte, e os trechos. Os parâmetros de [`assistente/parametros.yml`](assistente/parametros.yml) são provisórios até a #48.
+
+```bash
+ollama pull qwen3:8b
+uv run python -m assistente "Qual a carteira ativa de PJ no Acre?" --condicao B
+uv run --group rag python -m scripts.analises.fumaca_assistente
+uv run --group assistente --group rag python -m assistente.interface
+uv run python -m scripts.validar_assistente --autoteste
+```
+
+O validador roda no CI sem modelo, sem rede e sem dado, com um modelo falso e tabelas vazias.
 
 ### Documentação
 
