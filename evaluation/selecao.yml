@@ -117,11 +117,11 @@ candidatos:
     ollama: "hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0"
     tokenizador: "google/gemma-4-12B-it-qat-q4_0-unquantized"
     contexto_publicado: 262144
-    revisao: null
-    sha256: null
-    revisao_do_tokenizador: null
-    num_ctx: null
-    caracteres_por_token: null
+    revisao: "29d097773436b69ff9feafd636ab4cf873786537"
+    sha256: "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b"
+    revisao_do_modelo_base: "b6ed86275a6a5735884e208bfed95b445a684ca2"
+    num_ctx: 53248
+    caracteres_por_token: 2.9
 
   - nome: ministral-3-14b
     classe: "14b"
@@ -131,11 +131,11 @@ candidatos:
     ollama: "hf.co/mistralai/Ministral-3-14B-Instruct-2512-GGUF:Q4_K_M"
     tokenizador: "mistralai/Ministral-3-14B-Instruct-2512"
     contexto_publicado: 262144
-    revisao: null
-    sha256: null
-    revisao_do_tokenizador: null
-    num_ctx: null
-    caracteres_por_token: null
+    revisao: "74fac473c43357d7fb2671713608183cc72496d0"
+    sha256: "824e0f3373e69b84f2cae46fdcb9bd1ebc6ab3bfc7acc125d818b7b8178cc613"
+    revisao_do_modelo_base: "29439f81c2be264d8d393273f99e7db9c0961120"
+    num_ctx: 53248
+    caracteres_por_token: 2.9
 
   - nome: qwen3.5-9b
     classe: "8b"
@@ -145,11 +145,11 @@ candidatos:
     ollama: "hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M"
     tokenizador: "Qwen/Qwen3.5-9B"
     contexto_publicado: 262144
-    revisao: null
-    sha256: null
-    revisao_do_tokenizador: null
-    num_ctx: null
-    caracteres_por_token: null
+    revisao: "3885219b6810b007914f3a7950a8d1b469d598a5"
+    sha256: "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8"
+    revisao_do_modelo_base: "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+    num_ctx: 53248
+    caracteres_por_token: 3.0
 
   - nome: granite-4.2-8b
     classe: "8b"
@@ -159,11 +159,11 @@ candidatos:
     ollama: "hf.co/ibm-granite/granite-4.2-8b-GGUF:Q4_K_M"
     tokenizador: "ibm-granite/granite-4.2-8b"
     contexto_publicado: 131072
-    revisao: null
-    sha256: null
-    revisao_do_tokenizador: null
-    num_ctx: null
-    caracteres_por_token: null
+    revisao: "93f3f6a8938ee922b784cf4e5b4203cd3428df8f"
+    sha256: "16a9369d0805f80b7377d25d87f937a90c05dc04ad79173a52001e42c9aab311"
+    revisao_do_modelo_base: "f8de16cdcdbc6c779ca517604e050d82cc119e44"
+    num_ctx: 53248
+    caracteres_por_token: 2.7
 
   - nome: ministral-3-8b
     classe: "8b"
@@ -173,11 +173,11 @@ candidatos:
     ollama: "hf.co/mistralai/Ministral-3-8B-Instruct-2512-GGUF:Q4_K_M"
     tokenizador: "mistralai/Ministral-3-8B-Instruct-2512"
     contexto_publicado: 262144
-    revisao: null
-    sha256: null
-    revisao_do_tokenizador: null
-    num_ctx: null
-    caracteres_por_token: null
+    revisao: "0102285ad796bd99af90f58de616092e5630e970"
+    sha256: "33e7a72cf5e6e2cfc2f2847075acc013d68bba023e35310cef86b5cf8fdca761"
+    revisao_do_modelo_base: "5b26027e7b19eeb4b7352e1fed3926375dd2cb4d"
+    num_ctx: 53248
+    caracteres_por_token: 2.9
 
 # -----------------------------------------------------------------------------
 # PT: Fora da seleção, pela regra de entrada (contexto publicado).
