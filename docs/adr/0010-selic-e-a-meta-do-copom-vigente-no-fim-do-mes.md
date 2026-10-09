@@ -5,7 +5,7 @@
 
 ## Contexto
 
-As perguntas Q25 e Q26 cruzam a inadimplência com a Selic, que o SCR não traz (issue #37). Em 2026-09-24 o Yuri antecipou esta fonte para a v0.1, para o gabarito sair em SQL com o máximo de perguntas.
+As perguntas Q25 e Q26 cruzam a inadimplência com a Selic, que o SCR não traz (issue #37). Em 2026-09-24 antecipei esta fonte para a v0.1, para o gabarito sair em SQL com o máximo de perguntas.
 
 "Selic" não é um número só. O SGS do BCB publica pelo menos a meta definida pelo Copom (série 432, diária) e a taxa efetiva (série 4189, mensal, e série 11, diária). Os valores são próximos, mas não iguais: em set/2026, meta de 13,75% e efetiva de 13,82%. E a meta é diária, enquanto o SCR é mensal.
 

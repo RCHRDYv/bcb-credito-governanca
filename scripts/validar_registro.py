@@ -490,7 +490,7 @@ def checar_comparacao(comparacao: dict, gabarito: dict, respostas: dict[str, dic
 
     contagem = {c: list(classes.values()).count(c) for c in sorted(set(classes.values()))}
     print(f"  comparação: {len(por_id)} perguntas; colunas das respostas por tolerância {contagem}")
-    print(f"     leitura declarada conferida pelo Yuri em {len(conferidas_por_leitura)}: {conferidas_por_leitura}")
+    print(f"     leitura declarada conferida por mim em {len(conferidas_por_leitura)}: {conferidas_por_leitura}")
     return erros
 
 

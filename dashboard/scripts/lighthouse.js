@@ -56,7 +56,7 @@ const MEDIDAS = ["largest-contentful-paint", "cumulative-layout-shift", "total-b
  * PT: Quantas vezes cada perfil roda. O celular roda três vezes, e a meta
  *     compara a mediana de cada nota, como a documentação do Lighthouse
  *     recomenda contra a variação da máquina: uma rodada só reprovava o CI
- *     sem nada errado no site (#92, decidido pelo Yuri em 2026-10-06). O
+ *     sem nada errado no site (#92, decidido em 2026-10-06). O
  *     computador, que não varia, roda uma vez.
  * EN: Runs per profile; mobile runs three times and the targets apply to the
  *     median of each score, as Lighthouse recommends against host variance.

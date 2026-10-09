@@ -19,7 +19,7 @@ Faltava montar o corpus, o índice e o gabarito de recuperação, e escolher o m
 
 ## Decisões
 
-Decididas pelo Yuri em 2026-10-07, antes do código (comentário na #46). As decisões 6 a 8 são convenções de implementação que seguem delas, e estão aqui para serem revistas.
+Decidi em 2026-10-07, antes do código (comentário na #46). As decisões 6 a 8 são convenções de implementação que seguem delas, e estão aqui para serem revistas.
 
 1. **Candidatos a modelo de embeddings:** `BAAI/bge-m3`, `intfloat/multilingual-e5-large` e `Qwen/Qwen3-Embedding-0.6B`, cada um fixado por revisão do Hugging Face em `rag/parametros.py`. Os três têm licença MIT ou Apache, aceitam 512 tokens de entrada ou mais e rodam sem código remoto. Os prefixos do e5 (`query: ` e `passage: `) e o prompt de consulta do Qwen3 são o formato de entrada que o próprio modelo pede, e não reescrita da pergunta.
 2. **Consulta do gabarito de recuperação:** "O que é <prefLabel_pt>?" para cada conceito. O texto da definição não serve, porque metade dos conceitos é verbatim e a consulta copiaria o trecho.
@@ -36,7 +36,7 @@ Decididas pelo Yuri em 2026-10-07, antes do código (comentário na #46). As dec
    - a planilha de Equivalência de Modalidades;
    - IBGE e SIDRA;
    - o tutorial do SCR.data;
-   - as normas que só a ontologia cita (Res. 4.676, numa nota histórica, o Cosif e o Decreto 6.306), por decisão do Yuri em 2026-10-08;
+   - as normas que só a ontologia cita (Res. 4.676, numa nota histórica, o Cosif e o Decreto 6.306), por decisão de 2026-10-08;
    - os `.md` do projeto, que levariam conhecimento curado para a condição C.
 
    Documento novo só entra por errata no registro.
