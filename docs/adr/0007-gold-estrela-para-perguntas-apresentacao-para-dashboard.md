@@ -25,7 +25,7 @@ E o experimento acrescenta uma terceira restrição, que é a mais importante: *
 
 ### A IA consulta só o esquema estrela
 
-Decidido com o Yuri em 2026-09-24. Os marts de apresentação trazem a taxa de inadimplência calculada, a distância entre as métricas de risco calculada e a diferença entre versões calculada. Se a IA os visse, várias armadilhas desapareceriam nas duas condições, e o experimento mediria a tabela, e não a documentação.
+Decidi em 2026-09-24. Os marts de apresentação trazem a taxa de inadimplência calculada, a distância entre as métricas de risco calculada e a diferença entre versões calculada. Se a IA os visse, várias armadilhas desapareceriam nas duas condições, e o experimento mediria a tabela, e não a documentação.
 
 A matriz de cobertura (`evaluation/cobertura.yml`) sustenta a regra: pergunta só pode citar `dim_*` e `fct_*`, e o CI reprova o contrário.
 
@@ -68,7 +68,7 @@ Uma combinação de cliente, UF e modalidade pode não ter linha em algum mês. 
 
 **Uma família só, agregada.** Quebraria as perguntas que cruzam dimensões, e o experimento perderia justamente as mais difíceis.
 
-**A IA consultando toda a camada gold.** Mais parecido com o data warehouse de uma empresa, mas as duas condições acertariam mais pelo mesmo motivo, e a diferença medida encolheria. Descartada com o Yuri.
+**A IA consultando toda a camada gold.** Mais parecido com o data warehouse de uma empresa, mas as duas condições acertariam mais pelo mesmo motivo, e a diferença medida encolheria. Descartei.
 
 **Colunas de resposta nas dimensões**, como `eh_cartao_de_credito`. Desarmariam as armadilhas para as duas condições.
 

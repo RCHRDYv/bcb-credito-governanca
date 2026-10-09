@@ -7,7 +7,7 @@
 
 O experimento registrado compara duas condições: **A**, o modelo só com o esquema, e **B**, o esquema com a ontologia. O projeto se apresentava como **demonstração, e não descoberta**, porque o efeito de metadado sobre acerto de text-to-SQL já está na literatura (`docs/referencias.md`): no BIRD, por exemplo, 34,88% sem evidência de conhecimento externo contra 54,89% com ela.
 
-O ADR 0012 separou o contexto em duas camadas independentes, a ontologia e os documentos do BCB recuperados por RAG. Em 2026-09-24, o Yuri decidiu duas coisas:
+O ADR 0012 separou o contexto em duas camadas independentes, a ontologia e os documentos do BCB recuperados por RAG. Em 2026-09-24, decidi duas coisas:
 
 - os documentos entram como **novo teste**, e não como troca da condição B;
 - o projeto passa a **buscar uma descoberta**, e não só replicar um efeito conhecido.

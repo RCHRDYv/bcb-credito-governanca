@@ -96,8 +96,8 @@ PT: todos os candidatos; a ordem desempata a escolha, e o LightGBM global é
 CAMPEAO = "deriva"
 """
 PT: o modelo de referência, que só perde a série para um desafiante que
-    erre menos com significância (decidido pelo Yuri em 2026-10-06, ADR
-    0024, decisão 9) / EN: the reference model, the default champion
+    erre menos com significância (decidido em 2026-10-06, ADR 0024,
+    decisão 9) / EN: the reference model, the default champion
 """
 
 SIGNIFICANCIA = 0.10
@@ -147,7 +147,7 @@ PT: meses em que a carteira ativa da V2 dá um degrau que não é do crédito:
     a divergência entre V1 e V2 de set/2025 (ontology/dimensoes.yml,
     divergencia_entre_versoes; #19). O LightGBM não treina com exemplo cuja
     janela cruza um desses meses, para não ler o degrau como padrão do mês
-    do ano (decidido pelo Yuri em 2026-10-06, ADR 0024, decisão 7)
+    do ano (decidido em 2026-10-06, ADR 0024, decisão 7)
 EN: months with a V2 level step that is not credit behavior; LightGBM skips
     training examples whose window crosses them
 """

@@ -111,7 +111,7 @@ RECEITA_LINK_PUBLICO = "https://arquivos.receitafederal.gov.br/index.php/s/YggdB
 RECEITA_COMPARTILHAMENTO = RECEITA_LINK_PUBLICO.rsplit("/", 1)[-1]
 RECEITA_WEBDAV = "https://arquivos.receitafederal.gov.br/public.php/webdav"
 
-# PT: Espelho usado para o download, decidido com o Yuri em 2026-09-24 (ADR
+# PT: Espelho usado para o download, decidido em 2026-09-24 (ADR
 #     0009). O servidor da Receita entregava cerca de 4 MB/s com quedas e
 #     depois saiu do ar; o espelho da Casa dos Dados entrega os mesmos
 #     arquivos por CDN, sem login, a cerca de 100 MB/s. A Receita continua
@@ -119,7 +119,7 @@ RECEITA_WEBDAV = "https://arquivos.receitafederal.gov.br/public.php/webdav"
 #     baixados do servidor oficial antes da queda são idênticos byte a byte
 #     aos do espelho. As pastas do espelho têm o nome do dia da extração
 #     (2026-09-14), e não do mês.
-# EN: Mirror used for downloading, decided with Yuri on 2026-09-24. Receita's
+# EN: Mirror used for downloading, decided on 2026-09-24. Receita's
 #     server delivered about 4 MB/s with drops and then went offline; the
 #     Casa dos Dados mirror serves the same files through a CDN, with no
 #     login, at about 100 MB/s. Receita remains the declared source: the

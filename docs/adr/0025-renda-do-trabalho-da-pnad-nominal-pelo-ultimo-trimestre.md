@@ -16,7 +16,7 @@ E o SCR é mensal: o mês mais recente, jul/2026, está num trimestre que só sa
 
 ## Decisão
 
-Decisões do Yuri, em 2026-10-07:
+Decisões que tomei em 2026-10-07:
 
 1. **A renda é a do trabalho, da PNAD Contínua trimestral.**
    - O rendimento médio vem da tabela 6472 (variável 5929) e é a "renda média" da Q13.
