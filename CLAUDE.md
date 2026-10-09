@@ -3,9 +3,21 @@
 Projeto de portfólio sobre o crédito PJ do SCR.data do Banco Central: ingestão no Databricks Free Edition, camada semântica em dbt, ontologia SKOS, dashboard estático no GitHub Pages e o experimento ontologia contra RAG (ADR 0013). Repositório público. Visão geral em `README.md`, decisões em `docs/adr/`.
 
 ## Ambiente
-- Windows com Git Bash. `python` não está no PATH: use sempre `uv run python -m <módulo>`.
+- Windows. O Yuri roda os comandos no **PowerShell**, na pasta `C:\Users\viday\claude_projects\bcb-credito-governanca`. `python` não está no PATH: use sempre `uv run python -m <módulo>`.
 - Databricks por OAuth do CLI (perfil em `~/.databrickscfg`). Nunca peça nem grave token. Nada de Databricks roda no CI (ADR 0001).
 - `data/` (bruto e landing) é ignorado pelo git. Capturas e páginas de revisão ficam fora do repositório, em `../revisao-*`.
+
+## Como passar instruções para o Yuri executar
+IMPORTANT: quando o Yuri tiver de rodar algo na máquina dele, siga todas estas regras, sem exceção:
+- **PowerShell, não Git Bash.** Variável de ambiente é `$env:NOME="valor"`, nunca `export`. Caminho com `\`.
+- **Comece pelo `cd` com o caminho completo**: `cd C:\Users\viday\claude_projects\bcb-credito-governanca`. Nunca suponha que ele já está na pasta.
+- **Passos numerados, cada um com quatro partes:** onde rodar, o comando, como saber que deu certo e o que fazer se der errado (em geral: "cole a saída inteira aqui").
+- **Um comando por bloco de código**, na ordem exata. Diga quando é preciso esperar um terminar antes do próximo.
+- **Nada sem explicação.** Se precisar de uma segunda janela, diga como abrir ("tecla Windows, digite PowerShell, Enter") e qual não fechar. Não use nome que você não definiu, como "janela 2".
+- **Confira antes de mandar.** Branch, pasta, o que já está rodando (o Ollama da bandeja ocupa a porta 11434), o que o comando pressupõe. Se não der para conferir daqui, mande primeiro um comando de verificação.
+- **Avise dos tropeços conhecidos antes que aconteçam:** o pre-commit (gitleaks, final de linha) pode reprovar o commit; o app do Ollama na bandeja precisa ser encerrado com `Get-Process -Name "ollama*" | Stop-Process -Force`.
+- **Separe o que é dele do que é seu.** Em cada passo, deixe claro se ele roda ou se ele só te avisa com uma frase exata para colar.
+- **Seja curto.** Sem teoria antes dos comandos. A explicação vem em uma linha, depois do comando, se for preciso.
 
 ## Ingestão (ADR 0004)
 Etapas idempotentes, nesta ordem:
