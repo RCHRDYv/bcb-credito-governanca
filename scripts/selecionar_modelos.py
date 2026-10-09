@@ -18,8 +18,10 @@ PT: A seleção dos modelos do experimento (#48, ADRs 0026 e 0030). Roda as 41
 
     Grava um registro por execução em data/selecao/execucoes/<candidato>/,
     fora do git, e retoma de onde parou: execução gravada não roda de novo.
-    O ambiente de cada candidato (versão do Ollama, digest, VRAM pelo
-    /api/ps e parâmetros) vai para o ambiente.json da mesma pasta.
+    O ambiente de cada candidato (versão do Ollama, digest, VRAM e
+    parâmetros) vai para o ambiente.json da mesma pasta. A VRAM é medida
+    no /api/ps logo depois de carregar o modelo com o num_ctx do candidato,
+    antes das execuções.
 
     Com --ensaio, roda sem Ollama, sem dado e sem errata: um candidato, duas
     perguntas, o cliente falso e o banco vazio, em data/selecao/ensaio/.
@@ -196,8 +198,11 @@ def digest_do_gguf(nome: str, pasta: Path | None = None) -> str | None:
 
 
 def conferir_candidato(endereco: str, candidato: dict) -> str:
-    nomes = {m["name"] for m in _get(endereco, "/api/tags").get("models", [])}
-    if candidato["ollama"] not in nomes:
+    # PT: o Ollama pode guardar o nome hf.co em minúsculas; a comparação
+    #     ignora a caixa, como a busca do manifesto.
+    # EN: Ollama may lowercase hf.co names; compare ignoring case.
+    nomes = {m["name"].lower() for m in _get(endereco, "/api/tags").get("models", [])}
+    if candidato["ollama"].lower() not in nomes:
         raise SystemExit(f"ERRO o Ollama não tem {candidato['ollama']}: rode `ollama pull {candidato['ollama']}`")
     digest = digest_do_gguf(candidato["ollama"])
     if digest != candidato["sha256"]:
@@ -212,10 +217,17 @@ def descarregar_todos(endereco: str) -> None:
         _post(endereco, "/api/generate", {"model": m["name"], "keep_alive": 0})
 
 
-def vram(endereco: str, nome: str) -> dict | None:
-    """PT: o modelo carregado no /api/ps / EN: the loaded model in /api/ps"""
+def carregar_e_medir_vram(endereco: str, nome: str, num_ctx: int) -> dict | None:
+    """
+    PT: Carrega o modelo com o num_ctx do candidato, sem gerar nada (um
+        /api/generate sem prompt só carrega), e lê o /api/ps. Não depende de
+        nenhuma execução ter dado certo.
+    EN: Loads the model at the candidate's num_ctx without generating (an
+        empty /api/generate only loads) and reads /api/ps.
+    """
+    _post(endereco, "/api/generate", {"model": nome, "keep_alive": "30m", "options": {"num_ctx": num_ctx}})
     for m in _get(endereco, "/api/ps").get("models", []):
-        if m["name"] == nome:
+        if m["name"].lower() == nome.lower():
             return {k: m.get(k) for k in ("size", "size_vram", "context_length", "expires_at")}
     return None
 
@@ -234,7 +246,7 @@ def gravar_json(arquivo: Path, dados: dict) -> None:
 
 
 def rodar_candidato(candidato: dict, p: Parametros, por_id: dict[str, dict], pasta: Path, *,
-                    cliente_para, banco, modelo_de_prompt: dict, depois_da_primeira=None) -> int:
+                    cliente_para, banco, modelo_de_prompt: dict) -> int:
     """
     PT: As perguntas e seeds de um candidato, pulando as já gravadas.
         Devolve quantas rodaram agora.
@@ -254,8 +266,6 @@ def rodar_candidato(candidato: dict, p: Parametros, por_id: dict[str, dict], pas
             situacao = f"erro {registro['erro']['tipo']}" if registro["erro"] else \
                 ("abstenção" if registro["resposta"]["abstencao"] else "respondeu")
             print(f"  {candidato['nome']} {id_} seed {seed}: {situacao}, {registro['segundos']} s")
-            if depois_da_primeira and rodadas == 1:
-                depois_da_primeira()
     return rodadas
 
 
@@ -322,19 +332,16 @@ def main() -> None:
                          "variaveis": variaveis, "parametros": dataclasses.asdict(p)})
         ambiente.setdefault("inicio", datetime.datetime.now().astimezone().isoformat(timespec="seconds"))
 
-        def medir_vram(ambiente=ambiente, p=p):
-            ambiente["vram"] = vram(p.endereco, p.modelo)
-            gravar_json(arquivo_do_ambiente, ambiente)
-
+        if not (ambiente.get("vram") or {}).get("size_vram"):
+            ambiente["vram"] = carregar_e_medir_vram(p.endereco, p.modelo, p.num_ctx)
+            if not (ambiente["vram"] or {}).get("size_vram"):
+                print(f"  aviso: VRAM de {candidato['nome']} não medida; rode de novo para medir", file=sys.stderr)
         gravar_json(arquivo_do_ambiente, ambiente)
         cliente = ClienteOllama(p)
-        print(f"\n{candidato['nome']} ({candidato['ollama']}), num_ctx {p.num_ctx}")
+        print(f"\n{candidato['nome']} ({candidato['ollama']}), num_ctx {p.num_ctx}, "
+              f"VRAM {(ambiente['vram'] or {}).get('size_vram')}")
         rodadas = rodar_candidato(candidato, p, por_id, PASTA_DA_SELECAO, cliente_para=lambda id_, seed: cliente,
-                                  banco=banco, modelo_de_prompt=modelo_de_prompt,
-                                  depois_da_primeira=None if ambiente.get("vram") else medir_vram)
-        if not ambiente.get("vram"):
-            print(f"  aviso: VRAM de {candidato['nome']} não medida; apague o ambiente.json e rode uma "
-                  "execução para medir", file=sys.stderr)
+                                  banco=banco, modelo_de_prompt=modelo_de_prompt)
         ambiente["fim"] = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
         gravar_json(arquivo_do_ambiente, ambiente)
         print(f"  {rodadas} execuções agora")

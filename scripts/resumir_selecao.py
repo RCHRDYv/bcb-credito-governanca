@@ -44,6 +44,7 @@ from correcao.acerto import (
     a_julgar,
     acerto_da_pergunta,
     corrigir_todas,
+    execucoes_vigentes,
     ler_execucoes,
     ler_julgamentos,
     por_pergunta,
@@ -173,7 +174,8 @@ def pagina(resultado: dict, selecao: dict, ids: list[str]) -> str:
         "",
         "## Erros por motivo",
         "",
-        "Contagem de execuções erradas, de 205 por candidato. `valor`: os números não batem com nenhuma leitura; "
+        f"Contagem de execuções erradas, de {len(ids) * EXECUCOES_POR_PERGUNTA} por candidato. "
+        "`valor`: os números não batem com nenhuma leitura; "
         "`abstencao_indevida`: absteve-se numa pergunta com resposta; `sem_abstencao`: respondeu numa pergunta de "
         "abstenção; `sem_ressalva`: ressalva vazia numa pergunta de valor com ressalva; `erro_<tipo>`: a execução falhou (formato, sql, guarda, tempo, contexto, servidor); "
         "`julgamento_<aspecto>`: reprovada na correção às cegas.",
@@ -257,7 +259,7 @@ def main() -> None:
     _, por_id = perguntas(VIGENTE)
     ids = list(por_id)
     tipos = {i: p.get("tipo_de_acerto", "valor") for i, p in por_id.items()}
-    execucoes = ler_execucoes(args.pasta)
+    execucoes = execucoes_vigentes(ler_execucoes(args.pasta), [c["nome"] for c in selecao["candidatos"]], ids)
     julgamentos = ler_julgamentos(args.pasta)
     g = carregar_gabarito()
     corrigidas = corrigir_todas(execucoes, julgamentos, g)
@@ -265,7 +267,8 @@ def main() -> None:
     problemas = []
     for c in selecao["candidatos"]:
         feitas = {(r["id_pergunta"], r["seed"]) for r in execucoes if r["candidato"] == c["nome"]}
-        faltam = len(ids) * EXECUCOES_POR_PERGUNTA - len(feitas)
+        esperadas = {(i, s) for i in ids for s in range(1, EXECUCOES_POR_PERGUNTA + 1)}
+        faltam = len(esperadas - feitas)
         if faltam:
             problemas.append(f"{c['nome']}: faltam {faltam} execuções")
     if pendentes := a_julgar(corrigidas):

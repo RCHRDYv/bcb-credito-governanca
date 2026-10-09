@@ -52,20 +52,21 @@ Decisões que tomei em 2026-10-09, antes do código (comentário na #48).
      - o limite da segunda resposta.
    - O resultado no limite de linhas é medido pela linha com mais tokens entre as respostas do gabarito, repetida 100 vezes.
    - A razão de caracteres por token da estimativa sai da mesma medida.
-   - A VRAM do desempate é o `size_vram` do `/api/ps` com esse `num_ctx`.
+   - A VRAM do desempate é o `size_vram` do `/api/ps`, lido logo depois de carregar o modelo com esse `num_ctx` e antes das execuções.
    - Assim, o A da seleção é o A do experimento, e a VRAM medida é a que o experimento vai usar.
 5. **O corretor compara por valor, sem olhar o nome da coluna** (`correcao/corretor.py`). O modelo dá nomes livres às colunas, e pedir os nomes no prompt vazaria a forma do gabarito.
    - **Valor.** Uma conferência procura, na tabela da resposta, uma célula dentro da tolerância da coluna do gabarito. Quando a linha do gabarito tem um texto ou uma data que só ela tem, como o mês de uma série, a janela ou a medida, a busca fica nas linhas da resposta que o trazem. Um valor igual em todas as linhas do gabarito, como uma mediana, vale em qualquer linha.
    - **Lista.** O item casa pelo código ou pelo nome, lido de uma coluna só da resposta, a que identifica mais itens. Cada coluna de valores tem de bater numa mesma coluna da resposta, com a mesma escala, em todos os itens.
-   - **Ranking.** Os n primeiros do gabarito estão na resposta, com os valores certos, e nenhum outro item aparece com valor que o poria entre eles fora da tolerância. A ordem sai dos valores: com os valores certos, a ordem é a do gabarito, e a troca dentro da tolerância é aceita.
+   - **Ranking.** Os n primeiros do gabarito estão na resposta, com os valores certos, e nenhum outro item do gabarito aparece com valor que o poria entre eles fora da tolerância. Uma linha que não se identifica com item do gabarito, como um total ou o bloco de outra consulta na mesma tabela (Q28), não compete. A ordem sai dos valores: com os valores certos, a ordem é a do gabarito, e a troca dentro da tolerância é aceita.
    - **Conjunto.** Todos os itens, sem item a mais. Vale uma de três leituras:
      - os itens listados;
      - os marcados como verdadeiros numa coluna booleana;
+     - os de um bloco da tabela em formato longo, as linhas com o mesmo texto numa coluna que não é a do item, como "tipo | modalidade | ganho" com os dois conjuntos da Q21;
      - num conjunto por limiar, a tabela inteira com os valores do filtro certos, porque então os próprios números põem cada item do lado certo.
 
      Um item na zona de indiferença pode estar ou não. Uma linha que não se identifica com nenhum item, como um total, não conta como item a mais.
-   - **Escala.** Em reais e contagens, a resposta pode vir em mil, milhão, bilhão ou trilhão. Em percentual e pontos, pode vir como fração. O número é convertido antes da comparação (`comparacao.tolerancia.escala`). Também aceito texto em formato brasileiro, com R$, % e palavra de escala.
-   - **Classificação** (Q08). A classificação precisa estar nos valores, como coluna booleana ou como a palavra do nome da coluna ("acima", "abaixo"). Na zona de indiferença, qualquer uma vale.
+   - **Escala.** Em reais e contagens, a resposta pode vir em mil, milhão, bilhão ou trilhão. Em percentual e pontos, pode vir como fração. O número é convertido antes da comparação (`comparacao.tolerancia.escala`). Inteiro pequeno, abaixo de 10.000, não ganha escala: um ano ou uma posição, vezes 10^9, não é uma carteira. Também aceito texto em formato brasileiro, com R$, % e palavra de escala.
+   - **Classificação** (Q08). A classificação precisa estar nos valores, como texto: sim ou não, verdadeiro ou falso, ou a palavra do nome da coluna ("acima", "abaixo"). Número e marca de uma letra (0, 1, s, n) só contam numa coluna inteira de marcas, nunca numa célula solta. Na zona de indiferença, qualquer uma vale.
    - **Leitura e janela.** A resposta bate com uma leitura, numa janela, quando cumpre todas as conferências de todas as consultas dela.
 6. **Q28 e Q30: o WITH basta.** O fluxo registrado continua com um SQL só, e o modelo pode juntar as partes com WITH ou UNION. O corretor procura as conferências de todas as consultas da leitura na tabela única da resposta. Isso fecha a consequência que o ADR 0029 deixou para a #48.
 7. **A situação de cada execução** (`correcao/acerto.py`):
@@ -120,6 +121,7 @@ Entra depois da seleção, junto da segunda errata.
 
 **Negativas, e são reais.**
 - **O corretor por valor é mais leniente que o casamento por nome.** Um valor que repete outro dentro da tolerância passa por coincidência. O controle negativo mostra três casos: a mediana da Q14, que é o valor da UF da mediana, e a razão nacional da Q15, a menos de 1% da de uma UF. Fora deles, retirar o valor conferido faz a leitura deixar de bater.
+- **O corretor não lê o rótulo de um bloco.** Na tabela em formato longo, os blocos se separam pela coluna de texto, mas o corretor não sabe qual rótulo é de qual conjunto. Uma resposta da Q21 com os conjuntos certos e os rótulos "IP" e "fintech" trocados acerta, porque a correção às cegas da leitura declarada não olha os rótulos.
 - **A terceira leitura do conjunto aceita a tabela inteira.** Uma resposta que despeja todos os itens com os números certos, sem dizer quais passam no limiar, acerta. Os números certos põem cada item do lado certo, mas a resposta não destaca o conjunto.
 - **Os percentuais como fração e as palavras de escala ampliam a regra de escala do pré-registro.** O pré-registro fala em bilhões e trilhões de reais. A fração de um percentual é a mesma unidade em outra escala, e eu declaro isso junto do resultado.
 - **O `num_ctx` pelo pior caso é alto.** A linha mais longa do gabarito, de definições, repetida 100 vezes, soma perto de 10 mil tokens. Isso empurra o `num_ctx` para perto de 53 mil, e um candidato de 14B pode precisar de parte das camadas na CPU, mais lento. Ficar abaixo do pior caso faria execuções de D virarem erro de contexto, contra D.

@@ -77,8 +77,12 @@ PALAVRAS_DE_ESCALA = {
     "trilhao": Decimal(10) ** 12, "trilhoes": Decimal(10) ** 12, "tri": Decimal(10) ** 12,
 }
 
-VERDADEIROS = {"true", "sim", "verdadeiro", "yes", "s", "v", "1"}
-FALSOS = {"false", "nao", "falso", "no", "n", "f", "0"}
+VERDADEIROS = {"true", "sim", "verdadeiro", "yes"}
+FALSOS = {"false", "nao", "falso", "no"}
+# PT: só numa coluna inteira de marcas, nunca numa célula solta
+# EN: only in a whole flag column, never in a single cell
+VERDADEIROS_CURTOS = {"s", "v", "1"}
+FALSOS_CURTOS = {"n", "f", "0"}
 OPOSTOS = {"acima": "abaixo", "abaixo": "acima"}
 
 UFS = {
@@ -114,8 +118,8 @@ class Gabarito:
 
     def precisa_de_leitura_declarada(self, id_: str) -> bool:
         """
-        PT: Mais de uma leitura, ou janela em aberto: o Yuri confere, às
-            cegas, se a interpretação declarada é a que bateu.
+        PT: Mais de uma leitura, ou janela em aberto: confiro, às cegas, se
+            a interpretação declarada é a que bateu.
         EN: More than one reading, or an open window: declared reading is
             checked blind.
         """
@@ -213,17 +217,26 @@ def mes(celula) -> tuple[int, int] | None:
     return None
 
 
-def booleano(celula, coluna: str = "") -> bool | None:
+def booleano(celula, coluna: str = "", curto: bool = False) -> bool | None:
     """
     PT: A célula como verdadeiro ou falso, ou None. Além de sim e não, a
         primeira palavra do nome da coluna do gabarito vale verdadeiro, e o
-        oposto dela, falso (acima_da_media: "acima" e "abaixo").
-    EN: The cell as a boolean, or None; the key column's first word counts
-        as true and its opposite as false.
+        oposto dela, falso (acima_da_media: "acima" e "abaixo"). Número e
+        marca de uma letra (s, n, 0, 1) só valem com curto, que é para uma
+        coluna inteira de marcas: numa célula solta, um 0 qualquer passaria
+        por "falso".
+    EN: The cell as a boolean, or None. Numbers and one-letter marks only
+        count with curto, for a whole flag column.
     """
     if celula is None:
         return None
     texto = normalizar(celula)
+    if curto and texto in VERDADEIROS_CURTOS:
+        return True
+    if curto and texto in FALSOS_CURTOS:
+        return False
+    if isinstance(celula, (int, float)) or numero(celula) is not None:
+        return None
     if texto in VERDADEIROS:
         return True
     if texto in FALSOS:
@@ -277,6 +290,11 @@ def casa(classe: str, tipo: str, coluna: str, celula, esperado: str, fator: Deci
         return texto_casa(celula, esperado, coluna)
     obtido, alvo = numero(celula), numero(esperado)
     if obtido is None or alvo is None:
+        return False
+    if fator != 1 and obtido and obtido == obtido.to_integral_value() and abs(obtido) < 10000:
+        # PT: ano, posição, código e mês não ganham escala: 2025 vezes 10^9
+        #     não é uma carteira de R$ 2 trilhões.
+        # EN: years, positions, codes and months get no scale.
         return False
     return dentro_da_banda(classe, obtido * fator, alvo)
 
@@ -567,9 +585,15 @@ def conferir_ranking(item: dict, consulta: Consulta, tabela: Tabela) -> list[str
         return []
     decrescente = valores_do_topo[0] > valores_do_topo[-1]
     ultimo = valores_do_topo[-1]
+    # PT: competem só as linhas de itens que o gabarito conhece fora do topo.
+    #     Um total, ou o bloco de outra consulta na mesma tabela (Q28), não é
+    #     item do ranking.
+    # EN: only rows of key items outside the top compete; totals and other
+    #     blocks of the same table are not ranking items.
     do_topo = set().union(*(achadas[k] for k in topo))
-    for i in range(len(tabela.linhas)):
-        if i in do_topo or (v := numero(tabela.celula(i, j))) is None:
+    de_fora = set().union(*(ls for k, ls in achadas.items() if k not in topo)) - do_topo
+    for i in sorted(de_fora):
+        if (v := numero(tabela.celula(i, j))) is None:
             continue
         v *= f
         melhor = v > ultimo if decrescente else v < ultimo
@@ -588,10 +612,43 @@ def _booleanas(tabela: Tabela, linhas: set[int]) -> list[set[int]]:
     """
     marcadas = []
     for j in range(tabela.largura):
-        lidas = {i: booleano(tabela.celula(i, j)) for i in linhas}
+        lidas = {i: booleano(tabela.celula(i, j), curto=True) for i in linhas}
         if lidas and None not in lidas.values():
             marcadas.append({i for i, b in lidas.items() if b})
     return marcadas
+
+
+def _colunas_com_itens(tabela: Tabela, consulta: Consulta, chave: str) -> set[int]:
+    """PT: as colunas da resposta que trazem código ou nome de item / EN: item columns"""
+    colunas = _colunas_de_identidade(consulta, chave)
+    return {
+        j for j in range(tabela.largura)
+        if any(linha[c] is not None and texto_casa(tabela.celula(i, j), linha[c], c)
+               for i in range(len(tabela.linhas)) for linha in consulta.linhas for c in colunas)
+    }
+
+
+def _grupos(tabela: Tabela, linhas: set[int], excluir: set[int]) -> list[set[int]]:
+    """
+    PT: Os blocos de uma tabela em formato longo: para cada coluna de texto
+        que não é a do item, as linhas com o mesmo valor. Dois conjuntos da
+        mesma leitura numa tabela só ("tipo | modalidade | ganho", na Q21)
+        ficam em blocos separados.
+    EN: Blocks of a long-format table: for each non-item text column, rows
+        sharing a value, so two sets in one table stay apart.
+    """
+    blocos = []
+    for j in range(tabela.largura):
+        if j in excluir:
+            continue
+        por_valor: dict[str, set[int]] = {}
+        for i in linhas:
+            celula = tabela.celula(i, j)
+            if isinstance(celula, str) and numero(celula) is None and mes(celula) is None:
+                por_valor.setdefault(normalizar(celula), set()).add(i)
+        if 1 < len(por_valor) < len(linhas):
+            blocos += por_valor.values()
+    return blocos
 
 
 def _filtro_pelos_valores(item: dict, consulta: Consulta, tabela: Tabela, achadas: dict[int, set[int]],
@@ -641,7 +698,8 @@ def conferir_conjunto(item: dict, consulta: Consulta, tabela: Tabela) -> list[st
     todas = set().union(*achadas.values()) if achadas else set()
     if item.get("onde") and _filtro_pelos_valores(item, consulta, tabela, achadas, obrigatorios):
         return []
-    leituras = [todas, *_booleanas(tabela, todas)]
+    leituras = [todas, *_booleanas(tabela, todas),
+                *_grupos(tabela, todas, _colunas_com_itens(tabela, consulta, chave))]
     motivo = ""
     for linhas in leituras:
         apresentados = {k for k, ls in achadas.items() if ls & linhas}

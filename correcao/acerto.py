@@ -74,6 +74,15 @@ def ler_execucoes(pasta: Path = PASTA_DA_SELECAO) -> list[dict]:
     return [json.loads(a.read_text(encoding="utf-8")) for a in sorted((pasta / "execucoes").glob("*/Q*_seed*.json"))]
 
 
+def execucoes_vigentes(execucoes: list[dict], candidatos: list[str], ids: list[str]) -> list[dict]:
+    """
+    PT: Só as execuções de candidatos do selecao.yml e de perguntas do
+        conjunto vigente: um registro antigo não conta nem vai a julgamento.
+    EN: Only runs of current candidates and current questions.
+    """
+    return [r for r in execucoes if r["candidato"] in candidatos and r["id_pergunta"] in ids]
+
+
 def ler_julgamentos(pasta: Path = PASTA_DA_SELECAO) -> dict[str, dict]:
     arquivo = pasta / "julgamentos.json"
     return json.loads(arquivo.read_text(encoding="utf-8")) if arquivo.exists() else {}

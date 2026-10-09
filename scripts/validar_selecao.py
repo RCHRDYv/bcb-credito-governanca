@@ -52,6 +52,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import copy
+import functools
 import io
 import json
 import re
@@ -72,6 +73,7 @@ from scripts.validar_perguntas import VIGENTE, perguntas
 from scripts.validar_registro import HIPOTESES, REGISTRO, RAIZ, hashes_vigentes
 
 HASH = re.compile(r"^[0-9a-f]{64}$")
+_booleano_original = corretor.booleano
 
 
 # -----------------------------------------------------------------------------
@@ -336,18 +338,57 @@ def checar_casos_de_lista(g: Gabarito) -> list[str]:
             if not _bate(g, "Q29", "12_meses", "", disfarcar(g, "Q29", "12_meses", mutar=selecao_atipica)):
                 erros.append(f"corretor: a Q29 {'com' if com_ele else 'sem'} o item da zona de indiferença não bate")
 
-    # PT: ranking com um item de fora melhor que o primeiro (Q11), na mesma
-    #     coluna do valor do ranking.
-    # EN: ranking with an outsider better than the first, in the value column.
+    # PT: ranking em que a última UF do gabarito aparece com valor maior que
+    #     o da primeira (Q11): ela entraria no topo.
+    # EN: ranking where the key's last state shows a value above the first.
     tabela = disfarcar(g, "Q11", "unica")
     r11 = g.respostas["Q11.sql"]
     valor = dict(zip(r11["colunas"], r11["linhas"][0]))["carteira_pj_por_habitante"]
     j = next(j for j, v in enumerate(tabela["linhas"][0]) if v == valor)
-    intruso = [None] * len(tabela["colunas"])
-    intruso[j] = str(Decimal(valor) * 2)
-    linhas = [intruso, *tabela["linhas"]]
+    linhas = [list(l) for l in tabela["linhas"]]
+    linhas[-1][j] = str(Decimal(valor) * 2)
     if _bate(g, "Q11", "unica", "", {"colunas": tabela["colunas"], "linhas": linhas}):
         erros.append("corretor: aprovou o ranking da Q11 com um item de fora melhor que o primeiro")
+
+    # PT: um total na coluna do valor do ranking não é item do ranking (Q11).
+    # EN: a total in the ranking value column is not a ranking item.
+    total = [None] * len(tabela["colunas"])
+    total[j] = str(Decimal(valor) * 50)
+    total[next(k for k, v in enumerate(tabela["linhas"][0]) if v == r11["linhas"][0][r11["colunas"].index("uf")])] = "Total"
+    if not _bate(g, "Q11", "unica", "", {"colunas": tabela["colunas"], "linhas": [*tabela["linhas"], total]}):
+        erros.append("corretor: reprovou o ranking da Q11 por causa de uma linha de total")
+
+    # PT: Q21 em formato longo, "tipo | modalidade | ganho", com os dois
+    #     conjuntos certos na mesma tabela.
+    # EN: Q21 in long format with both correct sets in one table.
+    c21 = Consulta.de("Q21.sql", g.respostas["Q21.sql"], g.regra)
+    #     No recorte, um item do conjunto das fintechs fica fora do das IPs.
+    # EN: in the full window, a fintech item is outside the IP set.
+    onde = {"ip": [{"coluna": "ganho_ip_no_recorte_pp", "op": "maior_que", "valor": 0}],
+            "fintech": [{"coluna": "ganho_fintech_no_recorte_pp", "op": "maior_que", "valor": 0}]}
+    longa = [[tipo, l["codigo_modalidade"], l["modalidade"], l[f"ganho_{tipo}_no_recorte_pp"]]
+             for tipo, condicao in onde.items() for l in c21.linhas
+             if situacao_no_filtro(l, condicao, c21) == "dentro"]
+    if not _bate(g, "Q21", "unica", "recorte", {"colunas": ["tipo", "codigo", "nome", "ganho"], "linhas": longa}):
+        erros.append("corretor: reprovou a Q21 em formato longo, com os dois conjuntos certos")
+
+    # PT: a classificação errada da Q08 não passa por causa de um 0 solto.
+    # EN: a wrong Q08 classification does not pass on a stray 0.
+    r08 = dict(zip(g.respostas["Q08.sql"]["colunas"], g.respostas["Q08.sql"]["linhas"][0]))
+    errada = "acima" if r08["acima_da_media"] == "false" else "abaixo"
+    q08 = {"colunas": ["mes", "taxa", "media", "situacao", "variacao"],
+           "linhas": [[r08["mes"], r08["taxa_no_ultimo_mes_pct"], r08["media_das_taxas_mensais_pct"], errada, 0]]}
+    if _bate(g, "Q08", "unica", "", q08):
+        erros.append("corretor: aprovou a classificação errada da Q08 por causa de um 0")
+
+    # PT: um inteiro pequeno, como um ano, não ganha escala (Q01).
+    # EN: a small integer, like a year, gets no scale.
+    r01 = dict(zip(g.respostas["Q01.sql"]["colunas"], g.respostas["Q01.sql"]["linhas"][0]))
+    q01 = {"colunas": ["ano", "anterior", "variacao_pct"],
+           "linhas": [[str(round(Decimal(r01["carteira_ativa"]) / Decimal(10) ** 9)),
+                       r01["carteira_ativa_do_ano_anterior"], r01["variacao_pct"]]]}
+    if _bate(g, "Q01", "unica", "", q01):
+        erros.append("corretor: aprovou a Q01 com um inteiro pequeno escalado para a carteira")
     return erros
 
 
@@ -609,6 +650,10 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
                                                                              lambda classe, a, b: True), "aprovou"),
         ("corretor que não restringe o conjunto", lambda: d, mock.patch.object(corretor, "situacao_no_filtro",
                                                                                lambda *a: "opcional"), "item a mais"),
+        ("booleano que aceita qualquer 0 ou 1", lambda: d, mock.patch.object(
+            corretor, "booleano", functools.partial(_booleano_original, curto=True)), "classificação errada da Q08"),
+        ("conjunto sem os blocos do formato longo", lambda: d, mock.patch.object(corretor, "_grupos",
+                                                                                 lambda *a: []), "formato longo"),
         ("fila que julga pergunta decidida", lambda: d, mock.patch.object(acerto, "acerto_da_pergunta",
                                                                           lambda s, total=5: "pendente"), "fila de julgamento"),
         ("cegamento que deixa citação", lambda: d, mock.patch.object(as_cegas, "_CITACOES", []), "cegamento"),

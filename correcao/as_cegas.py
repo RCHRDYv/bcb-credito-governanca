@@ -2,8 +2,8 @@
 PT: A correção às cegas (evaluation/hipoteses.yml, comparacao.correcao),
     no terminal, um item por vez (decisão de 2026-10-09).
 
-    O Yuri julga só o que o script não decide e que ainda pode mudar o
-    acerto da pergunta (correcao.acerto.a_julgar):
+    Julgo só o que o script não decide e que ainda pode mudar o acerto da
+    pergunta (correcao.acerto.a_julgar):
 
     - ressalva: a ressalva declara o fato da ressalva obrigatória do
       gabarito, com paráfrase permitida;
@@ -42,7 +42,15 @@ import json
 import re
 from pathlib import Path
 
-from correcao.acerto import PASTA_DA_SELECAO, a_julgar, corrigir_todas, ler_execucoes, ler_julgamentos
+from correcao.acerto import (
+    PASTA_DA_SELECAO,
+    a_julgar,
+    acerto_da_execucao,
+    corrigir_todas,
+    execucoes_vigentes,
+    ler_execucoes,
+    ler_julgamentos,
+)
 from correcao.corretor import Gabarito, carregar_gabarito
 from scripts.validar_perguntas import VIGENTE, perguntas
 
@@ -144,14 +152,21 @@ def main() -> None:
 
     g = carregar_gabarito()
     _, por_id = perguntas(VIGENTE)
-    execucoes = ler_execucoes(args.pasta)
+    from scripts.selecionar_modelos import carregar_selecao
+
+    candidatos = [c["nome"] for c in carregar_selecao()["candidatos"]]
+    execucoes = execucoes_vigentes(ler_execucoes(args.pasta), candidatos, list(por_id))
     if not execucoes:
         raise SystemExit(f"ERRO nenhuma execução em {args.pasta / 'execucoes'}: rode scripts.selecionar_modelos")
     registros = {(r["candidato"], r["id_pergunta"], r["seed"]): r for r in execucoes}
     julgamentos = ler_julgamentos(args.pasta)
+    # PT: a correção do script não muda com o julgamento: roda uma vez, e só
+    #     a situação do item julgado é refeita.
+    # EN: script grading does not change with judgments: run it once.
+    corrigidas = corrigir_todas(execucoes, julgamentos, g)
 
     while True:
-        fila = sorted(a_julgar(corrigir_todas(execucoes, julgamentos, g)), key=lambda c: ordem_embaralhada(c["item"]))
+        fila = sorted(a_julgar(corrigidas), key=lambda c: ordem_embaralhada(c["item"]))
         if not fila:
             print("\nNada mais a julgar / nothing left to judge.")
             return
@@ -171,6 +186,8 @@ def main() -> None:
             julgamento["data"] = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
             julgamentos[c["item"]] = julgamento
             gravar(julgamentos, args.pasta)
+            c["julgamento"] = julgamento
+            c["situacao"] = acerto_da_execucao(c["correcao"], julgamento)
             if not resposta:
                 break
 
