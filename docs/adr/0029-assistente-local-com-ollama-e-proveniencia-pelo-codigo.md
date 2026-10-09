@@ -38,11 +38,26 @@ As decisões abaixo são convenções de implementação que seguem delas e fica
 
    Atrás da guarda, o banco tem o acesso a arquivo restrito à pasta do retrato e o acesso externo desligado, e a configuração travada por `lock_configuration`. Um SQL que escapasse da guarda continuaria sem ler outro arquivo.
 10. **Limites fora do SQL.** O tempo é cortado por `conexao.interrupt()` num timer. Para as linhas, o código busca N+1 e, só quando passa de N, conta o total com `count(*)` sobre o próprio comando, dentro do mesmo limite de tempo. Contar buscando as linhas no Python levava 104 s no `fct_carteira` inteiro (medido em 2026-10-08).
-11. **Falha é erro tipado, sem nova tentativa.** Saída fora do formato, tempo esgotado, recusa da guarda, erro de SQL e prompt maior que o `num_ctx` viram `erro` com o tipo e a etapa. O Ollama não recusa um prompt grande, ele o corta, e o `prompt_eval_count` pode deixar de fora o prefixo em cache. Por isso são duas conferências. Antes do envio, os tokens são estimados pelos caracteres, à razão provisória de 3,5 caracteres por token, a base da estimativa de 29 mil tokens. Depois da resposta, vale o `prompt_eval_count`. Se qualquer uma, somada ao limite de tokens da resposta, passa do `num_ctx`, a execução conta como erro de contexto. A chamada entra no registro antes da segunda conferência, para que o prompt grande demais fique medido. A estimativa não é exata: a #48 calibra a razão pelos caracteres e tokens que a fumaça registra. O JSON não é consertado: uma cerca de código em volta já é erro de formato.
+11. **Falha é erro tipado, sem nova tentativa.** Saída fora do formato, tempo esgotado, recusa da guarda, erro de SQL e prompt maior que o `num_ctx` viram `erro` com o tipo e a etapa. O Ollama não recusa um prompt grande, ele o corta, e o `prompt_eval_count` pode deixar de fora o prefixo em cache. Por isso são duas conferências. Antes do envio, os tokens são estimados pelos caracteres, à razão provisória de 3,0 caracteres por token, abaixo dos cerca de 3,1 medidos na fumaça, para errar estimando tokens a mais. Depois da resposta, vale o `prompt_eval_count`. Se qualquer uma, somada ao limite de tokens da resposta, passa do `num_ctx`, a execução conta como erro de contexto. A chamada entra no registro antes da segunda conferência, para que o prompt grande demais fique medido. A estimativa não é exata: a #48 calibra a razão pelos caracteres e tokens que a fumaça registra. O JSON não é consertado: uma cerca de código em volta já é erro de formato.
 12. **Abstenção na primeira chamada encerra a execução.** Não há SQL nem segunda chamada. A resposta sai com `sql` e `valores` vazios, e com a interpretação e a abstenção da primeira chamada.
 13. **Os trechos vêm de uma busca só,** feita por quem chama o assistente antes da geração, com o enunciado sem reescrita. Assim, C e D da mesma pergunta recebem os mesmos trechos. O modelo não chama a busca.
-14. **Parâmetros provisórios num arquivo só.** `assistente/parametros.yml` traz `provisorio: true`, o modelo `qwen3:8b` (só para a fumaça), `num_ctx` de 40.960, o limite de 2.048 tokens da resposta, a razão de caracteres por token da estimativa, `think: false` e os limites do SQL. `assistente/modelo_de_prompt.yml` é o rascunho do prompt, sem nenhum fato do domínio e sem ajuste nas perguntas registradas. A temperatura e as seeds são conferidas contra o pré-registro. A #48 troca os valores, tira o `provisorio` e congela os dois arquivos por errata no `registro.yml`.
+14. **Parâmetros provisórios num arquivo só.** `assistente/parametros.yml` traz `provisorio: true`, o modelo `qwen3:8b` (só para a fumaça), `num_ctx` de 45.056, o limite de 2.048 tokens da resposta, a razão de caracteres por token da estimativa, `think: false` e os limites do SQL. `assistente/modelo_de_prompt.yml` é o rascunho do prompt, sem nenhum fato do domínio e sem ajuste nas perguntas registradas. A temperatura e as seeds são conferidas contra o pré-registro. A #48 troca os valores, tira o `provisorio` e congela os dois arquivos por errata no `registro.yml`.
 15. **A verificação roda sem modelo, sem rede e sem dado.** `scripts/validar_assistente.py` usa um cliente falso, de respostas gravadas, tabelas vazias com o esquema estrela e trechos inventados, no workflow próprio `assistente.yml`. O `--autoteste` troca uma peça por vez por uma versão estragada e confere que cada uma reprova pelo motivo certo. A fumaça com o Ollama (`scripts/analises/fumaca_assistente.py`) usa três perguntas inventadas, e o validador confere que nenhuma repete uma das 41 registradas.
+
+## Resultado medido
+
+A fumaça de 2026-10-08 rodou na máquina do Yuri, com o `qwen3:8b` no Ollama, as 3 perguntas inventadas nas 4 condições e a seed 1, com os valores anteriores (`num_ctx` de 40.960 e razão de 3,5). Das 12 execuções, 9 terminaram com resposta ou abstenção. As outras 3 viraram erro tipado, sem nova tentativa:
+- 2 de SQL: o modelo escreveu um SQL que não roda;
+- 1 de contexto, na segunda chamada de D. O prompt de 38.923 tokens, mais os 2.048 da resposta, passou do `num_ctx` por 11 tokens. Quem pegou foi a conferência pelo `prompt_eval_count`, porque a estimativa de 3,5 caracteres por token dava cerca de 34 mil para o prompt de D, uns 11% abaixo do medido.
+
+| Condição | Maior prompt medido |
+|---|---|
+| A | 2.443 |
+| B | 36.878 |
+| C | 3.499 |
+| D | 38.923 |
+
+Por isso, o `num_ctx` provisório passou a 45.056, o próximo múltiplo de 4.096, e a razão passou a 3,0. Com 45 mil de contexto, o cache KV do `qwen3:8b` em 16 bits fica perto de 6,6 GB, e o total encosta nos 12 GB da placa. Quem fixa o definitivo é a #48, com o modelo do experimento.
 
 ## Alternativas descartadas
 
@@ -69,5 +84,5 @@ As decisões abaixo são convenções de implementação que seguem delas e fica
 - **A condição A não é só esquema.** As `dim_*` trazem colunas de definição, confiança, fonte e aviso, e o modelo pode lê-las por SQL. Isso puxa A para perto de B e reduz a diferença medida entre as duas, na mesma direção conservadora do viés do ADR 0026.
 - **Os avisos sem ligação com o dado não aparecem na proveniência.** Um aviso que não tem coluna nem código para casar com o SQL nunca é resolvido, por mais que se aplique à pergunta. Isso é consequência da decisão 2, não uma falha da resolução.
 - **A Q28 e a Q30 têm gabarito com várias consultas,** e o assistente aceita um comando só. O prompt diz que vale juntar etapas com WITH. A #48 decide se isso basta.
-- **O 14B quantizado em 4 bits com `num_ctx` perto de 40 mil aperta os 12 GB da placa.** Pode pedir cache KV em 8 bits ou parte do modelo na CPU. A fumaça mede o `prompt_eval_count` real de cada condição, para a #48 dimensionar o `num_ctx` por um número medido.
+- **O contexto de D aperta os 12 GB da placa.** O 8B com 45 mil já encosta no limite, e um 14B em 4 bits vai pedir cache KV em 8 bits ou parte do modelo na CPU. A fumaça mede o `prompt_eval_count` real de cada condição, para a #48 dimensionar o `num_ctx` por um número medido.
 - **A fumaça e a interface não rodam no CI.** Elas dependem do Ollama, do retrato local e do índice do RAG, e quem as roda é o Yuri, na máquina dele.

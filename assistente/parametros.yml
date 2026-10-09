@@ -39,22 +39,26 @@ geracao:
   temperatura: 0.2
   seeds: [1, 2, 3, 4, 5]
   # PT: provisórios. O num_ctx é o menor múltiplo de 4.096 que comporta a
-  #     segunda chamada de D (hipoteses.yml, execucao.contexto_do_modelo),
-  #     estimado em 2026-10-08 em cerca de 36 mil tokens com a ontologia
-  #     inteira. O think desliga o modo de raciocínio do Qwen3, que gasta
-  #     tokens da resposta e do contexto.
+  #     segunda chamada de D mais o limite da resposta (hipoteses.yml,
+  #     execucao.contexto_do_modelo). A fumaça de 2026-10-08, com o
+  #     qwen3:8b, mediu 38.923 tokens no maior prompt de D; com os 2.048 da
+  #     resposta, os 40.960 de antes estouravam por 11. O think desliga o
+  #     modo de raciocínio do Qwen3, que gasta tokens da resposta e do
+  #     contexto.
   # EN: provisional. num_ctx is the smallest multiple of 4,096 that fits D's
-  #     second call. think turns off Qwen3's reasoning mode.
-  num_ctx: 40960
+  #     second call plus the answer limit; the 2026-10-08 smoke test measured
+  #     38,923 tokens. think turns off Qwen3's reasoning mode.
+  num_ctx: 45056
   limite_de_tokens_da_resposta: 2048
   # PT: provisório. Base da estimativa de tokens feita antes do envio: o
   #     Ollama corta o prompt grande em vez de recusar, e o
-  #     prompt_eval_count pode deixar de fora o prefixo em cache. 3,5 é a
-  #     razão da estimativa de 2026-10-08 (cerca de 103 mil caracteres para
-  #     29 mil tokens). A #48 calibra pelo relatório da fumaça.
-  # EN: provisional. Basis of the pre-send token estimate; #48 calibrates it
-  #     from the smoke report.
-  caracteres_por_token_na_estimativa: 3.5
+  #     prompt_eval_count pode deixar de fora o prefixo em cache. A fumaça
+  #     de 2026-10-08 mediu cerca de 3,1 caracteres por token em D; 3,0
+  #     erra para o lado de estimar tokens a mais. A #48 calibra para o
+  #     modelo do experimento.
+  # EN: provisional. Basis of the pre-send token estimate; the smoke test
+  #     measured about 3.1; 3.0 errs toward more tokens. #48 calibrates it.
+  caracteres_por_token_na_estimativa: 3.0
   think: false
   esquema_json: true
 
