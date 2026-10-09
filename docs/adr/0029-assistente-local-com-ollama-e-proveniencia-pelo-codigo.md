@@ -11,11 +11,11 @@ O [ADR 0012](0012-assistente-de-dados-com-modelo-aberto-e-aplicacao-de-custo-zer
 - os cinco campos da resposta (`comparacao.formato_da_resposta`), a temperatura de 0,2 e as seeds de 1 a 5;
 - que o modelo, o prompt, o `num_ctx` e os limites do SQL se fixam antes da execução (`execucao.fixado_antes_da_execucao`), o que é trabalho da #48.
 
-O "pronto quando" original da #49, "responde às perguntas da v0.1 nas quatro condições", pedia rodar o modelo no conjunto de teste antes da #48. Isso contraria o [ADR 0026](0026-modelos-do-experimento-escolhidos-pela-condicao-a.md), que faz da #48 a primeira execução contra o gabarito, e não se verifica no CI. O Yuri o trocou em 2026-10-08 por testes com modelo e busca falsos (comentário na #49).
+O "pronto quando" original da #49, "responde às perguntas da v0.1 nas quatro condições", pedia rodar o modelo no conjunto de teste antes da #48. Isso contraria o [ADR 0026](0026-modelos-do-experimento-escolhidos-pela-condicao-a.md), que faz da #48 a primeira execução contra o gabarito, e não se verifica no CI. Troquei esse critério em 2026-10-08 por testes com modelo e busca falsos (comentário na #49).
 
 ## Decisões
 
-Decididas pelo Yuri em 2026-10-08, antes do código (comentário na #49). A decisão 1, a ordem entre a #49 e a #48, está no comentário e não se repete aqui.
+Decidi em 2026-10-08, antes do código (comentário na #49). A decisão 1, a ordem entre a #49 e a #48, está no comentário e não se repete aqui.
 
 2. **A proveniência é montada pelo código, não pelo modelo.** O modelo devolve só os cinco campos registrados. O assistente anexa:
    - o SQL executado e o resultado bruto, cortado no limite de linhas;
@@ -46,7 +46,7 @@ As decisões abaixo são convenções de implementação que seguem delas e fica
 
 ## Resultado medido
 
-A fumaça de 2026-10-08 rodou na máquina do Yuri, com o `qwen3:8b` no Ollama, as 3 perguntas inventadas nas 4 condições e a seed 1, com os valores anteriores (`num_ctx` de 40.960 e razão de 3,5). Das 12 execuções, 9 terminaram com resposta ou abstenção. As outras 3 viraram erro tipado, sem nova tentativa:
+Rodei a fumaça em 2026-10-08 na minha máquina, com o `qwen3:8b` no Ollama, as 3 perguntas inventadas nas 4 condições e a seed 1, com os valores anteriores (`num_ctx` de 40.960 e razão de 3,5). Das 12 execuções, 9 terminaram com resposta ou abstenção. As outras 3 viraram erro tipado, sem nova tentativa:
 - 2 de SQL: o modelo escreveu um SQL que não roda;
 - 1 de contexto, na segunda chamada de D. O prompt de 38.923 tokens, mais os 2.048 da resposta, passou do `num_ctx` por 11 tokens. Quem pegou foi a conferência pelo `prompt_eval_count`, porque a estimativa de 3,5 caracteres por token dava cerca de 34 mil para o prompt de D, uns 11% abaixo do medido.
 
@@ -85,4 +85,4 @@ Por isso, o `num_ctx` provisório passou a 45.056, o próximo múltiplo de 4.096
 - **Os avisos sem ligação com o dado não aparecem na proveniência.** Um aviso que não tem coluna nem código para casar com o SQL nunca é resolvido, por mais que se aplique à pergunta. Isso é consequência da decisão 2, não uma falha da resolução.
 - **A Q28 e a Q30 têm gabarito com várias consultas,** e o assistente aceita um comando só. O prompt diz que vale juntar etapas com WITH. A #48 decide se isso basta.
 - **O contexto de D aperta os 12 GB da placa.** O 8B com 45 mil já encosta no limite, e um 14B em 4 bits vai pedir cache KV em 8 bits ou parte do modelo na CPU. A fumaça mede o `prompt_eval_count` real de cada condição, para a #48 dimensionar o `num_ctx` por um número medido.
-- **A fumaça e a interface não rodam no CI.** Elas dependem do Ollama, do retrato local e do índice do RAG, e quem as roda é o Yuri, na máquina dele.
+- **A fumaça e a interface não rodam no CI.** Elas dependem do Ollama, do retrato local e do índice do RAG, e rodam na minha máquina.

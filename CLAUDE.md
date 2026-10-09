@@ -74,6 +74,7 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - Decisões do dashboard entram nas tabelas de `docs/dashboard/requisitos.md`.
 
 ## Convenções
+- IMPORTANT: o autor do projeto é o Yuri, e todo texto que vai para o repositório (ADR, docs, README, comentários, docstrings, commits, PR) é escrito na voz dele, em primeira pessoa ("decidi", "rodei na minha máquina") ou impessoal. Nunca "o Yuri decidiu", "decisão do Yuri" ou "na máquina do Yuri". Este CLAUDE.md é a exceção, porque fala com o Claude.
 - Comentários e docstrings bilíngues, um bloco PT seguido de um bloco EN, no estilo dos arquivos vizinhos.
 - Branch por issue (`feat/`, `ci/`, `chore/`), PR com `Closes #n`.
 - IMPORTANT: não mexa no `.github/workflows/ci.yml` numa PR que não é do site. Qualquer mudança nele dispara o job do site do dashboard (#105), que leva mais de 10 minutos. Job novo vai num workflow próprio em `.github/workflows/`, como o `esquema-estrela.yml`. Só mude o `ci.yml` se o Yuri pedir.

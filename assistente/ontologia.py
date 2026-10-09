@@ -7,7 +7,7 @@ PT: A ontologia como bloco de contexto e como fonte da proveniência.
     gabarito. O cabeçalho esquema de cada arquivo é metadado do arquivo e
     fica de fora.
 
-    Bloco de contexto das condições B e D (decisão do Yuri de 2026-10-08): os
+    Bloco de contexto das condições B e D (decisão de 2026-10-08): os
     itens inteiros, menos o rótulo em inglês e os metadados de acesso à
     fonte. As quebras saem como itens próprios, logo depois da dimensão a que
     pertencem, e não repetidas dentro dela.
