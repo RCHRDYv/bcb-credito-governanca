@@ -1,0 +1,60 @@
+# =============================================================================
+# PT: Parâmetros do assistente de dados (#49, ADR 0029). Os valores daqui são
+#     PROVISÓRIOS: servem ao teste de fumaça e ao uso interativo. O pré-
+#     registro (evaluation/hipoteses.yml, execucao.fixado_antes_da_execucao)
+#     manda a #48 fixar o modelo, o modelo de prompt, o num_ctx, o limite de
+#     tokens da resposta e os limites de linhas e de tempo antes da execução.
+#     A #48 troca os valores, apaga o provisorio e congela este arquivo e o
+#     assistente/modelo_de_prompt.yml por errata no evaluation/registro.yml.
+#
+#     A temperatura e as seeds já estão no pré-registro e são conferidas
+#     contra ele por assistente.parametros.conferir_pre_registro().
+#
+# EN: Data assistant parameters. Values here are PROVISIONAL, for the smoke
+#     test and interactive use. #48 fixes model, prompt template, num_ctx,
+#     answer token limit and SQL limits before the experiment, removes
+#     provisorio and freezes this file and the prompt template by errata.
+#     Temperature and seeds are already pre-registered and checked.
+# =============================================================================
+
+provisorio: true
+
+servidor:
+  # PT: API nativa do Ollama, que aceita num_ctx, seed e o esquema JSON por
+  #     requisição (decisão de 2026-10-08). A rota compatível com a OpenAI
+  #     não aceita num_ctx por requisição.
+  # EN: Ollama's native API, which takes num_ctx, seed and a JSON schema per
+  #     request. The OpenAI-compatible route does not take num_ctx.
+  endereco: "http://127.0.0.1:11434"
+  tempo_maximo_em_segundos: 600
+
+modelo:
+  # PT: modelo provisório, só para a fumaça. A #48 escolhe os do experimento
+  #     pelo gabarito, na condição A (ADR 0026).
+  # EN: provisional model, smoke test only. #48 picks the experiment models.
+  nome: "qwen3:8b"
+
+geracao:
+  # PT: do pré-registro / EN: pre-registered
+  temperatura: 0.2
+  seeds: [1, 2, 3, 4, 5]
+  # PT: provisórios. O num_ctx é o menor múltiplo de 4.096 que comporta a
+  #     segunda chamada de D (hipoteses.yml, execucao.contexto_do_modelo),
+  #     estimado em 2026-10-08 em cerca de 36 mil tokens com a ontologia
+  #     inteira. O think desliga o modo de raciocínio do Qwen3, que gasta
+  #     tokens da resposta e do contexto.
+  # EN: provisional. num_ctx is the smallest multiple of 4,096 that fits D's
+  #     second call. think turns off Qwen3's reasoning mode.
+  num_ctx: 40960
+  limite_de_tokens_da_resposta: 2048
+  think: false
+  esquema_json: true
+
+sql:
+  # PT: provisórios. A maior resposta do gabarito tem 64 linhas (Q23).
+  #     Passando do limite, o resultado é cortado e o modelo é avisado
+  #     (decisão de 2026-10-08).
+  # EN: provisional. The largest answer key result has 64 rows. Beyond the
+  #     limit the result is cut and the model is told.
+  limite_de_linhas: 100
+  limite_de_tempo_em_segundos: 30
