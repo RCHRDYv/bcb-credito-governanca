@@ -30,7 +30,6 @@ Uso / Usage:
 from __future__ import annotations
 
 import argparse
-import datetime
 import gzip
 import io
 import json
@@ -70,6 +69,20 @@ def motivo_do_erro(c: dict) -> str:
         return c["correcao"]["motivo"]
     negados = [a for a in c["correcao"]["julgar"] if (c["julgamento"] or {}).get(a) is False]
     return f"julgamento_{negados[0]}" if negados else ""
+
+
+def ler_publicado() -> tuple[list[dict], dict[str, dict], dict[str, dict]]:
+    """
+    PT: Os registros, os julgamentos e os ambientes já publicados no
+        repositório: refazem o resultado sem a pasta data/.
+    EN: The published records, judgments and environments, to rebuild the
+        result without data/.
+    """
+    with gzip.open(EXECUCOES, "rt", encoding="utf-8") as arquivo:
+        execucoes = [json.loads(linha) for linha in arquivo]
+    resultado = json.loads(RESULTADO.read_text(encoding="utf-8"))
+    ambientes = {p["nome"]: p["ambiente"] for p in resultado["candidatos"]}
+    return execucoes, resultado["julgamentos"], ambientes
 
 
 def placar(candidato: dict, corrigidas: list[dict], ids: list[str], tipos: dict[str, str],
@@ -128,7 +141,8 @@ def gravar_execucoes(execucoes: list[dict]) -> None:
     EXECUCOES.write_bytes(buffer.getvalue())
 
 
-def _gb(bytes_: int | None) -> str:
+def _gib(bytes_: int | None) -> str:
+    """PT: bytes em GiB, com vírgula / EN: bytes as GiB"""
     return "—" if bytes_ is None else f"{bytes_ / 1024 ** 3:.1f}".replace(".", ",")
 
 
@@ -158,18 +172,20 @@ def pagina(resultado: dict, selecao: dict, ids: list[str]) -> str:
         "",
         "## Placar",
         "",
-        "| Classe | Candidato | Quantização | Perguntas certas | Valor | Com ressalva | Abstenção | VRAM (GB) | num_ctx |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|",
+        "| Classe | Candidato | Quantização | Perguntas certas | Valor | Com ressalva | Abstenção | Na GPU (GiB) "
+        "| Total (GiB) | num_ctx |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for p in placares:
         nome = f"**{p['nome']}**" if p["nome"] in escolhidos else p["nome"]
         tipos = p["certas_por_tipo"]
         linhas.append(f"| {p['classe']} | {nome} | {p['quantizacao']} | {p['perguntas_certas']} de {len(ids)} | "
                       f"{tipos.get('valor', 0)} | {tipos.get('valor_com_ressalva', 0)} | {tipos.get('abstencao', 0)} | "
-                      f"{_gb(p['vram'])} | {p['num_ctx']} |")
+                      f"{_gib(p['vram'])} | {_gib((p['ambiente'].get('vram') or {}).get('size'))} | {p['num_ctx']} |")
     linhas += [
         "",
-        "Em negrito, os escolhidos. A versão exata de cada candidato (repositório, revisão e sha256 do GGUF) está "
+        "Em negrito, os escolhidos. \"Na GPU\" é o `size_vram` do `/api/ps`, que decide o empate; \"Total\" é o "
+        "`size`, e a diferença entre os dois ficou na CPU. A versão exata de cada candidato (repositório, revisão e sha256 do GGUF) está "
         "em `evaluation/selecao.yml` e em `evaluation/selecao/resultado.json`.",
         "",
         "## Erros por motivo",
@@ -217,12 +233,43 @@ def pagina(resultado: dict, selecao: dict, ids: list[str]) -> str:
     return "\n".join(linhas)
 
 
+CABECALHO_DOS_PARAMETROS = """\
+# =============================================================================
+# PT: Parâmetros do assistente de dados (#49, ADR 0029; #48, ADR 0030). O
+#     pré-registro (evaluation/hipoteses.yml, execucao.fixado_antes_da_execucao)
+#     manda fixar o modelo, o num_ctx, o limite de tokens da resposta e os
+#     limites de linhas e de tempo antes do experimento.
+#
+#     Os modelos são os dois escolhidos pela seleção da #48
+#     (evaluation/selecao/resultado.json), gravados por
+#     scripts.resumir_selecao. A geração e os limites do SQL repetem o
+#     evaluation/selecao.yml, com o qual a seleção rodou;
+#     scripts.validar_selecao confere que batem. O arquivo está congelado por
+#     errata no evaluation/registro.yml.
+#
+#     O num_ctx de cada modelo foi medido com o cache KV em 8 bits: o ollama
+#     serve precisa de OLLAMA_KV_CACHE_TYPE=q8_0 e OLLAMA_FLASH_ATTENTION=1
+#     (evaluation/selecao.yml, servidor), como na seleção.
+#
+#     A temperatura e as seeds já estão no pré-registro e são conferidas
+#     contra ele por assistente.parametros.conferir_pre_registro().
+#
+# EN: Data assistant parameters. The models are the two chosen by the #48
+#     selection; generation settings and SQL limits repeat
+#     evaluation/selecao.yml. Frozen by errata. num_ctx was measured with an
+#     8-bit KV cache: ollama serve needs OLLAMA_KV_CACHE_TYPE=q8_0 and
+#     OLLAMA_FLASH_ATTENTION=1. Temperature and seeds are pre-registered.
+# =============================================================================
+"""
+
+
 def atualizar_parametros(texto: str, selecao: dict, escolhidos: dict[str, str]) -> str:
     """
     PT: Troca a lista de modelos do parametros.yml pelos escolhidos, na
-        ordem das classes, e tira o provisorio.
-    EN: Replaces parametros.yml's model list with the chosen ones and drops
-        provisorio.
+        ordem das classes, tira o provisorio e reescreve o cabeçalho, que
+        deixa de falar em estado provisório.
+    EN: Replaces parametros.yml's model list with the chosen ones, drops
+        provisorio and rewrites the header.
     """
     por_nome = {c["nome"]: c for c in selecao["candidatos"]}
     blocos = []
@@ -246,21 +293,27 @@ def atualizar_parametros(texto: str, selecao: dict, escolhidos: dict[str, str]) 
             "  # EN: the experiment's two models, chosen by the #48 selection.\n"
             + "".join(blocos))
     texto = texto[:inicio] + novo + texto[fim:]
-    return re.sub(r"(?m)^provisorio: true\n\n?", "", texto)
+    texto = re.sub(r"(?m)^provisorio: true\n\n?", "", texto)
+    return CABECALHO_DOS_PARAMETROS + "\n" + texto[texto.index("servidor:\n"):]
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--parcial", action="store_true", help="placar parcial, sem gravar")
     parser.add_argument("--pasta", type=Path, default=PASTA_DA_SELECAO)
+    parser.add_argument("--do-publicado", action="store_true",
+                        help="refaz a partir do execucoes.jsonl.gz e do resultado.json publicados, sem data/")
     args = parser.parse_args()
 
     selecao = carregar_selecao()
     _, por_id = perguntas(VIGENTE)
     ids = list(por_id)
     tipos = {i: p.get("tipo_de_acerto", "valor") for i, p in por_id.items()}
-    execucoes = execucoes_vigentes(ler_execucoes(args.pasta), [c["nome"] for c in selecao["candidatos"]], ids)
-    julgamentos = ler_julgamentos(args.pasta)
+    if args.do_publicado:
+        execucoes_lidas, julgamentos, ambientes_publicados = ler_publicado()
+    else:
+        execucoes_lidas, julgamentos, ambientes_publicados = ler_execucoes(args.pasta), ler_julgamentos(args.pasta), None
+    execucoes = execucoes_vigentes(execucoes_lidas, [c["nome"] for c in selecao["candidatos"]], ids)
     g = carregar_gabarito()
     corrigidas = corrigir_todas(execucoes, julgamentos, g)
 
@@ -277,7 +330,10 @@ def main() -> None:
     ambientes = {}
     for c in selecao["candidatos"]:
         arquivo = args.pasta / "execucoes" / c["nome"] / "ambiente.json"
-        ambientes[c["nome"]] = json.loads(arquivo.read_text(encoding="utf-8")) if arquivo.exists() else {}
+        if ambientes_publicados is not None:
+            ambientes[c["nome"]] = ambientes_publicados.get(c["nome"], {})
+        else:
+            ambientes[c["nome"]] = json.loads(arquivo.read_text(encoding="utf-8")) if arquivo.exists() else {}
         if not args.parcial and not (ambientes[c["nome"]].get("vram") or {}).get("size_vram"):
             problemas.append(f"{c['nome']}: VRAM não medida")
 
@@ -285,7 +341,7 @@ def main() -> None:
     escolhidos = escolher(placares)
     for p in placares:
         marca = " <- escolhido" if p["nome"] in escolhidos.values() else ""
-        print(f"  {p['classe']} {p['nome']}: {p['perguntas_certas']} perguntas certas, VRAM {_gb(p['vram'])} GB{marca}")
+        print(f"  {p['classe']} {p['nome']}: {p['perguntas_certas']} perguntas certas, VRAM {_gib(p['vram'])} GiB{marca}")
     if args.parcial:
         print("\nParcial: nada gravado." + (f" Pendências: {problemas}" if problemas else ""))
         return
@@ -295,7 +351,10 @@ def main() -> None:
     mes = {r["mes_de_referencia"] for r in g.respostas.values()}
     resultado = {
         "metadata": {
-            "gerado_em": datetime.date.today().isoformat(),
+            # PT: a data da última execução, e não a de hoje: refazer o
+            #     resultado com os mesmos dados dá o mesmo arquivo.
+            # EN: the last run's date, not today's, so the output reproduces.
+            "gerado_em": max((a.get("fim") or "")[:10] for a in ambientes.values()) or None,
             "issue": 48,
             "selecao": SELECAO,
             "condicao": "A",
@@ -308,7 +367,8 @@ def main() -> None:
     }
     PASTA_DO_RESULTADO.mkdir(parents=True, exist_ok=True)
     RESULTADO.write_text(json.dumps(resultado, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    gravar_execucoes(execucoes)
+    if not args.do_publicado:
+        gravar_execucoes(execucoes)
     PAGINA.write_text(pagina(resultado, selecao, ids), encoding="utf-8", newline="\n")
     PARAMETROS.write_text(atualizar_parametros(PARAMETROS.read_text(encoding="utf-8"), selecao, escolhidos),
                           encoding="utf-8", newline="\n")

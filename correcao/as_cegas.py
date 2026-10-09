@@ -112,7 +112,7 @@ def tabela(valores: dict) -> str:
     if not colunas:
         return "  (sem valores)"
     texto = ["  " + " | ".join(sem_citacoes(str(c)) for c in colunas)]
-    texto += ["  " + " | ".join("" if v is None else str(v) for v in l) for l in linhas[:LIMITE_DE_LINHAS]]
+    texto += ["  " + " | ".join("" if v is None else sem_citacoes(str(v)) for v in l) for l in linhas[:LIMITE_DE_LINHAS]]
     if len(linhas) > LIMITE_DE_LINHAS:
         texto.append(f"  ... mais {len(linhas) - LIMITE_DE_LINHAS} linhas")
     return "\n".join(texto)

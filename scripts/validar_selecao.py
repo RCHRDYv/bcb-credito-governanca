@@ -381,14 +381,22 @@ def checar_casos_de_lista(g: Gabarito) -> list[str]:
     if _bate(g, "Q08", "unica", "", q08):
         erros.append("corretor: aprovou a classificação errada da Q08 por causa de um 0")
 
-    # PT: um inteiro pequeno, como um ano, não ganha escala (Q01).
-    # EN: a small integer, like a year, gets no scale.
-    r01 = dict(zip(g.respostas["Q01.sql"]["colunas"], g.respostas["Q01.sql"]["linhas"][0]))
-    q01 = {"colunas": ["ano", "anterior", "variacao_pct"],
-           "linhas": [[str(round(Decimal(r01["carteira_ativa"]) / Decimal(10) ** 9)),
-                       r01["carteira_ativa_do_ano_anterior"], r01["variacao_pct"]]]}
-    if _bate(g, "Q01", "unica", "", q01):
-        erros.append("corretor: aprovou a Q01 com um inteiro pequeno escalado para a carteira")
+    # PT: escala e leitura de número: ano e posição não ganham escala, mas
+    #     um inteiro numa coluna em bilhões ganha; o menos Unicode vale; e
+    #     "1.234" em texto lê como decimal e como milhar.
+    # EN: scale and number reading cases.
+    bi = Decimal(10) ** 9
+    casos = [
+        ("um ano escalado para uma carteira", corretor.casa("relativa", "DECIMAL", "x", 2025, "2025000000000", bi), False),
+        ("uma posição escalada para uma carteira", corretor.casa("relativa", "DECIMAL", "x", 7, "7000000000", bi), False),
+        ("523 numa coluna em bilhões", corretor.casa("relativa", "DECIMAL", "x", 523, "523000000000", bi), True),
+        ("o menos Unicode", corretor.numero("\u22125,2") == Decimal("-5.2"), True),
+        ("1.234 como milhar", corretor.casa("relativa", "DECIMAL", "x", "1.234", "1234"), True),
+        ("1.234 como decimal", corretor.casa("relativa", "DECIMAL", "x", "1.234", "1.234"), True),
+    ]
+    for descricao, obtido, esperado in casos:
+        if obtido != esperado:
+            erros.append(f"corretor: {descricao} deu {obtido}, esperado {esperado}")
     return erros
 
 
@@ -521,6 +529,38 @@ def checar_troca_de_parametros(selecao: dict) -> list[str]:
     return erros
 
 
+def checar_recorrecao(resultado: dict, g: Gabarito, selecao: dict, ids: list[str]) -> list[str]:
+    """
+    PT: Recorrige os registros publicados (execucoes.jsonl.gz) com os
+        julgamentos do resultado.json e confere, pergunta por pergunta, que
+        dá o mesmo resultado. Assim o resultado congelado fica preso aos
+        registros de que saiu.
+    EN: Regrades the published records with the result's judgments and
+        checks, question by question, that it yields the same result.
+    """
+    import gzip
+
+    if not resumir_selecao.EXECUCOES.exists():
+        return ["resultado: execucoes.jsonl.gz não publicado"]
+    with gzip.open(resumir_selecao.EXECUCOES, "rt", encoding="utf-8") as arquivo:
+        execucoes = acerto.execucoes_vigentes([json.loads(l) for l in arquivo],
+                                              [c["nome"] for c in selecao["candidatos"]], ids)
+    corrigidas = acerto.corrigir_todas(execucoes, resultado.get("julgamentos") or {}, g)
+    tipos = {i: p.get("tipo_de_acerto", "valor") for i, p in perguntas(VIGENTE)[1].items()}
+    erros = []
+    publicados = {p["nome"]: p for p in resultado["candidatos"]}
+    for c in selecao["candidatos"]:
+        refeito = resumir_selecao.placar(c, corrigidas, ids, tipos, publicados.get(c["nome"], {}).get("ambiente") or {})
+        publicado = publicados.get(c["nome"])
+        if publicado is None:
+            erros.append(f"resultado: {c['nome']} fora do resultado")
+            continue
+        diferentes = [i for i in ids if refeito["perguntas"][i] != publicado["perguntas"].get(i)]
+        if diferentes or refeito["perguntas_certas"] != publicado["perguntas_certas"]:
+            erros.append(f"resultado: {c['nome']} recorrigido difere do publicado em {diferentes[:5]}")
+    return erros
+
+
 def checar_resultado(resultado: dict, parametros_yml: dict, ids: list[str]) -> list[str]:
     erros = []
     placares = resultado["candidatos"]
@@ -532,6 +572,10 @@ def checar_resultado(resultado: dict, parametros_yml: dict, ids: list[str]) -> l
             erros.append(f"resultado: {p['nome']} sem as {len(ids)} perguntas com 5 execuções")
         if p["perguntas_certas"] != sum(q["acerto"] == "certo" for q in p["perguntas"].values()):
             erros.append(f"resultado: perguntas certas de {p['nome']} não batem com as perguntas")
+        fora_da_regra = [i for i, q in p["perguntas"].items() if q["acerto"] != acerto.acerto_da_pergunta(
+            ["pendente" if s == "nao_julgada" else s for s in q["execucoes"]])]
+        if fora_da_regra:
+            erros.append(f"resultado: acerto de {p['nome']} fora da regra de 3 em 5 em {fora_da_regra[:5]}")
     por_nome = {p["nome"]: p for p in placares}
     esperados = [(por_nome[n]["ollama"], por_nome[n]["num_ctx"]) for n in resultado["escolhidos"].values()]
     no_arquivo = [(m["nome"], m["num_ctx"]) for m in parametros_yml["modelos"]]
@@ -584,6 +628,8 @@ def validar(d: Dados, g: Gabarito, contagem: dict | None = None, corretor_tambem
     erros += checar_escolha() + checar_troca_de_parametros(d.selecao)
     if d.resultado is not None:
         erros += checar_resultado(d.resultado, d.parametros_yml, d.ids)
+        if corretor_tambem:
+            erros += checar_recorrecao(d.resultado, g, d.selecao, d.ids)
     if contagem is not None:
         contagem.update(disfarces=n_disfarces, estragos=n_estragos, registrado=registrado)
     return erros
@@ -636,6 +682,15 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
         copia.resultado = {"escolhidos": {"14b": placares[0]["nome"], "8b": placares[2]["nome"]}, "candidatos": placares}
         return copia
 
+    def resultado_adulterado():
+        copia = copy.deepcopy(d)
+        if copia.resultado is None:
+            return copia
+        pergunta = copia.resultado["candidatos"][0]["perguntas"][d.ids[1]]
+        pergunta["execucoes"] = ["certo" if s == "errado" else s for s in pergunta["execucoes"]][:1] + \
+            pergunta["execucoes"][1:]
+        return copia
+
     negativos = [
         ("temperatura fora do pré-registro", temperatura_errada, None, "temperatura ou seeds"),
         ("candidato abaixo da regra de entrada", candidato_curto, None, "abaixo da regra de entrada"),
@@ -643,6 +698,7 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
         ("selecao.yml congelado com campos nulos", congelado_com_nulos, None, "congelado com campos nulos"),
         ("limite do parametros.yml diferente do selecao.yml", limite_divergente, None, "limite_de_linhas"),
         ("resultado com escolhido fora da regra", resultado_errado, None, "não seguem a regra"),
+        ("resultado adulterado numa execução", resultado_adulterado, contextlib.nullcontext(), "recorrigido difere"),
         ("corretor sem conversão de escala", lambda: d, mock.patch.dict(corretor.FATORES, {
             "relativa": (Decimal(1),), "pontos": (Decimal(1),)}), "disfarçada (bilhoes)"),
         ("corretor sem zona de indiferença", lambda: d, mock.patch.object(corretor, "banda_da_zona",

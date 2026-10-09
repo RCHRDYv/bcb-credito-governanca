@@ -4,22 +4,25 @@
 #     manda fixar o modelo, o num_ctx, o limite de tokens da resposta e os
 #     limites de linhas e de tempo antes do experimento.
 #
-#     A geração e os limites do SQL repetem o evaluation/selecao.yml, com o
-#     qual a seleção dos modelos rodou; scripts.validar_selecao confere que
-#     batem. Enquanto houver provisorio: true, a lista de modelos é a da
-#     fumaça. O scripts.resumir_selecao troca a lista pelos dois modelos
-#     escolhidos, apaga o provisorio, e o arquivo congela por errata no
-#     evaluation/registro.yml.
+#     Os modelos são os dois escolhidos pela seleção da #48
+#     (evaluation/selecao/resultado.json), gravados por
+#     scripts.resumir_selecao. A geração e os limites do SQL repetem o
+#     evaluation/selecao.yml, com o qual a seleção rodou;
+#     scripts.validar_selecao confere que batem. O arquivo está congelado por
+#     errata no evaluation/registro.yml.
+#
+#     O num_ctx de cada modelo foi medido com o cache KV em 8 bits: o ollama
+#     serve precisa de OLLAMA_KV_CACHE_TYPE=q8_0 e OLLAMA_FLASH_ATTENTION=1
+#     (evaluation/selecao.yml, servidor), como na seleção.
 #
 #     A temperatura e as seeds já estão no pré-registro e são conferidas
 #     contra ele por assistente.parametros.conferir_pre_registro().
 #
-# EN: Data assistant parameters. Generation settings and SQL limits repeat
-#     evaluation/selecao.yml, checked by scripts.validar_selecao. While
-#     provisorio is true, the model list is the smoke test's;
-#     scripts.resumir_selecao swaps in the two chosen models, removes
-#     provisorio, and the file is frozen by errata. Temperature and seeds are
-#     pre-registered and checked.
+# EN: Data assistant parameters. The models are the two chosen by the #48
+#     selection; generation settings and SQL limits repeat
+#     evaluation/selecao.yml. Frozen by errata. num_ctx was measured with an
+#     8-bit KV cache: ollama serve needs OLLAMA_KV_CACHE_TYPE=q8_0 and
+#     OLLAMA_FLASH_ATTENTION=1. Temperature and seeds are pre-registered.
 # =============================================================================
 
 servidor:

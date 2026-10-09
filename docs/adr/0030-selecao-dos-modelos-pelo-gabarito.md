@@ -94,19 +94,21 @@ Decisões que tomei em 2026-10-09, antes do código (comentário na #48).
 
 Rodei a seleção em 2026-10-09 na minha máquina, com o Ollama 0.40.1, o cache KV em `q8_0` e o `num_ctx` de 53.248 em todos os candidatos. As 1.025 execuções levaram cerca de 5 horas. O Ministral 3 14B levou 3,5 horas sozinho, com mediana de 38 s por chamada, contra 2 a 6 s dos outros: parte das camadas dele ficou na CPU. Corrigi às cegas 27 execuções, as únicas que ainda mudavam o acerto de alguma pergunta. A página completa, gerada por script, está em [`docs/selecao-dos-modelos.md`](../selecao-dos-modelos.md).
 
-| Classe | Candidato | Perguntas certas | Quais | Abstenção indevida | VRAM |
-|---|---|---:|---|---:|---:|
-| ~14B | **Gemma 4 12B** | 3 de 41 | Q17, Q33, Q41 | 171 de 205 | 7,0 GB |
-| ~14B | Ministral 3 14B | 2 de 41 | Q33, Q41 | 87 de 205 | 8,8 GB |
-| ~7 a 8B | **Qwen3.5-9B** | 2 de 41 | Q17, Q41 | 194 de 205 | 6,2 GB |
-| ~7 a 8B | Granite 4.2 8B | 2 de 41 | Q17, Q41 | 129 de 205 | 9,4 GB |
-| ~7 a 8B | Ministral 3 8B | 1 de 41 | Q11 | 15 de 205 | 8,6 GB |
+| Classe | Candidato | Perguntas certas | Quais | Abstenções | Na GPU | Total |
+|---|---|---:|---|---:|---:|---:|
+| ~14B | **Gemma 4 12B** | 3 de 41 | Q17, Q33, Q41 | 181 de 205 | 7,0 GiB | 7,0 GiB |
+| ~14B | Ministral 3 14B | 2 de 41 | Q33, Q41 | 92 de 205 | 8,8 GiB | 12,6 GiB |
+| ~7 a 8B | **Qwen3.5-9B** | 2 de 41 | Q17, Q41 | 204 de 205 | 6,2 GiB | 6,2 GiB |
+| ~7 a 8B | Granite 4.2 8B | 2 de 41 | Q17, Q41 | 139 de 205 | 9,4 GiB | 9,4 GiB |
+| ~7 a 8B | Ministral 3 8B | 1 de 41 | Q11 | 16 de 205 | 8,6 GiB | 8,6 GiB |
 
-Ficam o **Gemma 4 12B** e o **Qwen3.5-9B**, pela regra congelada na primeira errata. O Qwen3.5-9B empatou com o Granite 4.2 8B em 2 perguntas, e o desempate foi a menor VRAM.
+As abstenções contam todas as execuções, com as 10 das duas perguntas de abstenção. "Na GPU" é o `size_vram` do `/api/ps`, que decide o empate; "Total" é o `size`, e a diferença ficou na CPU.
+
+Ficam o **Gemma 4 12B** e o **Qwen3.5-9B**, pela regra congelada na primeira errata. O Qwen3.5-9B empatou com o Granite 4.2 8B em 2 perguntas, e o desempate foi a menor VRAM. Os dois couberam inteiros na GPU, então o `size_vram` mediu o mesmo que o tamanho total.
 
 **O resultado tem efeito chão, e eu o aceito como registrado** (decisão de 2026-10-09). Na condição A, só com o esquema, os candidatos acertaram de 1 a 3 das 41 perguntas:
-- **A abstenção domina.** O Qwen3.5-9B se absteve em 194 das 205 execuções, e o Gemma 4 12B em 171. Os dois acertaram justamente as duas perguntas de abstenção (Q17 e Q41), e a escolha saiu sobretudo delas. A regra escolheu os modelos que mais se abstêm sem contexto.
-- **Quem tenta errar o número.** O Ministral 3 8B quase não se abstém (15), mas 75 das execuções dele terminaram em erro de SQL e 49 em valor errado. Ele foi o único com uma pergunta de valor certa (Q11).
+- **A abstenção domina.** O Qwen3.5-9B se absteve em 204 das 205 execuções, e o Gemma 4 12B em 181. Os dois acertaram justamente as duas perguntas de abstenção (Q17 e Q41), e a escolha saiu sobretudo delas. A regra escolheu os modelos que mais se abstêm sem contexto.
+- **Quem tenta errar o número.** O Ministral 3 8B quase não se abstém (16), mas 75 das execuções dele terminaram em erro de SQL e 48 em valor errado. Ele foi o único com uma pergunta de valor certa (Q11).
 - **Conferi que é o modelo, e não o corretor.** Nas respostas com número que reprovaram, o erro está na resposta: a Q01 com as duas carteiras certas e sem a variação, que o gabarito registrado exige; a Q22 somando o PIX sem o filtro da pergunta; e a Q06 com as modalidades antigas no lugar dos códigos.
 - **Não mudei a regra depois de ver o resultado.** Declarar a seleção inconclusiva com um critério novo, ou mexer no prompt para reduzir a abstenção, seria ajustar o método ao resultado no próprio conjunto de teste. O pré-registro existe para impedir isso.
 
@@ -114,6 +116,17 @@ Ficam o **Gemma 4 12B** e o **Qwen3.5-9B**, pela regra congelada na primeira err
 - O viés da seleção pela condição A é ainda mais conservador do que o ADR 0026 previa: os escolhidos se abstêm em quase tudo sem contexto. Se a ontologia (B) ou os trechos (C) reduzirem a abstenção, a diferença aparece contra uma linha de base perto de zero.
 - Com a condição A perto de zero, a H1 e a H2 podem dar certo por pouco que B e C acertem. Por isso, o tamanho de efeito com intervalo, que o pré-registro já exige, pesa mais que o p.
 - A abstenção indevida é um resultado em si, e entra na análise por tipo de acerto da #50.
+- O `num_ctx` de 53.248 foi medido com o cache KV em 8 bits. O experimento precisa do `ollama serve` com `OLLAMA_KV_CACHE_TYPE=q8_0` e `OLLAMA_FLASH_ATTENTION=1`, como a seleção (o cabeçalho do `assistente/parametros.yml` diz isso). Com o cache em 16 bits, o Gemma 4 12B passa a jogar camadas para a CPU, como o Ministral 3 14B jogou.
+
+**Errata 3, do mesmo dia.** Depois da segunda errata, a revisão de código achou defeitos no corretor:
+- a guarda de escala recusava qualquer inteiro abaixo de 10.000, e não só posição e ano;
+- o menos Unicode não era lido;
+- o "1.234" em texto não era lido como milhar;
+- no ranking, um `uma_de` quebrava a checagem.
+
+Corrigi, recorrigi as 1.025 execuções publicadas e regerei o resultado pelo `scripts.resumir_selecao --do-publicado`. Mudou uma execução só: a Q33 do Ministral 3 8B na seed 4 passou de errada para não julgada, porque a pergunta já estava decidida. Nenhuma pergunta mudou de acerto, e nenhum escolhido mudou. O `validar_selecao` agora recorrige os registros publicados e confere que dão o resultado congelado.
+
+**Limite da regra de desempate.** O `size_vram` não conta a parte que fica na CPU. Um candidato que não cabe na GPU pareceria mais barato que um que cabe. Aqui não pesou: o empate do 8B foi entre dois modelos inteiros na GPU. A regra está congelada assim e fica declarada.
 
 ## Alternativas descartadas
 

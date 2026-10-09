@@ -175,7 +175,7 @@ def numero(celula) -> Decimal | None:
             return Decimal(str(celula))
         except InvalidOperation:
             return None
-    texto = _sem_acento(celula).casefold().replace("r$", "").replace("p.p.", "").replace("%", "")
+    texto = _sem_acento(celula).casefold().replace("\u2212", "-").replace("\u2013", "-").replace("r$", "").replace("p.p.", "").replace("%", "")
     multiplicador = Decimal(1)
     palavras = texto.split()
     if len(palavras) > 1 and palavras[-1].rstrip(".") in PALAVRAS_DE_ESCALA:
@@ -291,12 +291,20 @@ def casa(classe: str, tipo: str, coluna: str, celula, esperado: str, fator: Deci
     obtido, alvo = numero(celula), numero(esperado)
     if obtido is None or alvo is None:
         return False
-    if fator != 1 and obtido and obtido == obtido.to_integral_value() and abs(obtido) < 10000:
-        # PT: ano, posição, código e mês não ganham escala: 2025 vezes 10^9
-        #     não é uma carteira de R$ 2 trilhões.
-        # EN: years, positions, codes and months get no scale.
+    if fator != 1 and obtido and obtido == obtido.to_integral_value() and \
+            (abs(obtido) < 100 or 1900 <= abs(obtido) <= 2100):
+        # PT: posição, mês e ano não ganham escala: 2025 vezes 10^9 não é uma
+        #     carteira de R$ 2 trilhões. Um 523 numa coluna em bilhões ganha.
+        # EN: positions, months and years get no scale; 523 in billions does.
         return False
-    return dentro_da_banda(classe, obtido * fator, alvo)
+    if dentro_da_banda(classe, obtido * fator, alvo):
+        return True
+    # PT: "1.234" em texto é ambíguo: milhar em português, decimal em inglês.
+    #     As duas leituras valem.
+    # EN: "1.234" as text is ambiguous; both readings count.
+    if isinstance(celula, str) and re.fullmatch(r"[+-]?\d{1,3}\.\d{3}", celula.strip()):
+        return dentro_da_banda(classe, Decimal(celula.strip().replace(".", "")) * fator, alvo)
+    return False
 
 
 # -----------------------------------------------------------------------------
@@ -575,9 +583,15 @@ def conferir_ranking(item: dict, consulta: Consulta, tabela: Tabela) -> list[str
     if falhas or n == len(ordenados):
         return falhas
 
-    # PT: nenhum outro item com valor que o poria entre os n primeiros.
-    # EN: no other item whose value would put it in the top n.
-    primeira = _alternativas(item.get("valores"))[0][0]
+    # PT: nenhum outro item com valor que o poria entre os n primeiros, pela
+    #     coluna que bateu no primeiro grupo de valores. Sem valores, não há
+    #     com o que comparar.
+    # EN: no other item whose value would put it in the top n, by the column
+    #     that matched the first value group; without values, nothing to do.
+    grupos = _alternativas(item.get("valores"))
+    if not grupos:
+        return []
+    primeira = next(c for c in grupos[0] if c in colunas)
     j, f = colunas[primeira]
     classe = consulta.classes[primeira]
     valores_do_topo = [numero(consulta.linhas[k][primeira]) for k in topo]

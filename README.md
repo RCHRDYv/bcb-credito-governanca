@@ -263,7 +263,9 @@ O gabarito de recuperação ([`evaluation/recuperacao.yml`](evaluation/recuperac
 O assistente responde em SQL sobre o retrato local do esquema estrela, com a ontologia e os trechos do RAG ligados ou desligados conforme a condição do experimento ([ADR 0029](docs/adr/0029-assistente-local-com-ollama-e-proveniencia-pelo-codigo.md)). O modelo roda no Ollama local. A resposta traz os cinco campos registrados, e o código anexa a proveniência: o SQL executado, o resultado, os conceitos da ontologia com confiança e fonte, e os trechos. Os parâmetros de [`assistente/parametros.yml`](assistente/parametros.yml) trazem os dois modelos escolhidos pela seleção, abaixo.
 
 ```bash
-ollama pull qwen3:8b
+ollama pull hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0
+ollama pull hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M
+OLLAMA_KV_CACHE_TYPE=q8_0 OLLAMA_FLASH_ATTENTION=1 ollama serve
 uv run python -m assistente "Qual a carteira ativa de PJ no Acre?" --condicao B
 uv run --group rag python -m scripts.analises.fumaca_assistente
 uv run --group assistente --group rag python -m assistente.interface

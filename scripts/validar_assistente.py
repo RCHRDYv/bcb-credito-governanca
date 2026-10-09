@@ -229,7 +229,9 @@ def checar_fluxo(pecas: Pecas, banco, p, modelo, formato: dict) -> list[str]:
     # PT: corte: um resultado acima do limite avisa N de M na segunda chamada.
     # EN: cut: a result above the limit tells N of M in the second call.
     total = p.limite_de_linhas + 50
-    sql = f"with recursive t(n) as (select 1 union all select n + 1 from t where n < {total}) select n from t"
+    # PT: com um comentário -- no fim, que a contagem do total não pode engolir.
+    # EN: with a trailing -- comment the total count must not swallow.
+    sql = f"with recursive t(n) as (select 1 union all select n + 1 from t where n < {total}) select n from t -- fim"
     registro, cliente = _rodar(pecas, banco, p, modelo, [primeira(sql), segunda()])
     aviso = f"cortado em {p.limite_de_linhas} de {total} linhas"
     if len(cliente.chamadas) < 2 or aviso not in cliente.chamadas[1]["mensagens"][-1]["content"]:

@@ -1,6 +1,6 @@
 # ADR 0029: O assistente roda no Ollama local, a proveniência é montada pelo código, e os parâmetros ficam provisórios até a #48
 
-**Status:** Aceito
+**Status:** Aceito. Em 2026-10-09, o ADR [0030](0030-selecao-dos-modelos-pelo-gabarito.md) fixou os parâmetros que este ADR deixava provisórios (decisão 14): os modelos Gemma 4 12B e Qwen3.5-9B, com `num_ctx` de 53.248 e cache KV em 8 bits, o modelo de prompt congelado e o WITH como resposta para a Q28 e a Q30.
 **Data:** 2026-10-09
 
 ## Contexto

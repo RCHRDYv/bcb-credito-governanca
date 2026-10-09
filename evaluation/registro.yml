@@ -134,3 +134,22 @@ erratas:
     julgamentos às cegas. Congelado antes de qualquer execução do
     experimento (#50).
   sha256: d509fcb14749e511916447c1ce82792bc04408579e05bfaa362ecba37b9aa784
+- data: '2026-10-09'
+  arquivo: assistente/parametros.yml
+  motivo: >-
+    Errata 3, da revisão de código da #48 (ADR 0030). O cabeçalho deixa de
+    descrever o estado provisório e passa a dizer que o num_ctx pressupõe o
+    cache KV em 8 bits (OLLAMA_KV_CACHE_TYPE=q8_0 e OLLAMA_FLASH_ATTENTION=1).
+    Os modelos e os valores não mudam.
+  sha256: ef820d9ade5c7603ceee0dc83c9fcc7400f14784f3fe3eaa05720ae8d9f96b3e
+- data: '2026-10-09'
+  arquivo: evaluation/selecao/resultado.json
+  motivo: >-
+    Errata 3, da revisão de código da #48 (ADR 0030). Corrigi defeitos do
+    corretor (guarda de escala larga demais, menos Unicode, "1.234" como
+    milhar, uma_de no ranking), recorrigi as 1.025 execuções publicadas e
+    regerei o resultado com scripts.resumir_selecao --do-publicado. Mudou
+    uma execução, a Q33 do Ministral 3 8B na seed 4, de errada para não
+    julgada, porque a pergunta já estava decidida. Nenhuma pergunta mudou
+    de acerto, e nenhum escolhido mudou.
+  sha256: 234ebeded7dd05f46f93387200287b54126b8136f01adde603bc3103fd0ecfd4

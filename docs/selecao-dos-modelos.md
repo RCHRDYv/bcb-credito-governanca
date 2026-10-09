@@ -10,15 +10,15 @@ Retrato do esquema estrela: `2026-07-31`. Ollama: `0.40.1`. Cache KV: `q8_0`.
 
 ## Placar
 
-| Classe | Candidato | Quantização | Perguntas certas | Valor | Com ressalva | Abstenção | VRAM (GB) | num_ctx |
-|---|---|---|---:|---:|---:|---:|---:|---:|
-| 14b | **gemma-4-12b** | Q4_0, treinado ciente da quantização (QAT) | 3 de 41 | 0 | 1 | 2 | 7,0 | 53248 |
-| 14b | ministral-3-14b | Q4_K_M | 2 de 41 | 0 | 1 | 1 | 8,8 | 53248 |
-| 8b | **qwen3.5-9b** | Q4_K_M | 2 de 41 | 0 | 0 | 2 | 6,2 | 53248 |
-| 8b | granite-4.2-8b | Q4_K_M | 2 de 41 | 0 | 0 | 2 | 9,4 | 53248 |
-| 8b | ministral-3-8b | Q4_K_M | 1 de 41 | 1 | 0 | 0 | 8,6 | 53248 |
+| Classe | Candidato | Quantização | Perguntas certas | Valor | Com ressalva | Abstenção | Na GPU (GiB) | Total (GiB) | num_ctx |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| 14b | **gemma-4-12b** | Q4_0, treinado ciente da quantização (QAT) | 3 de 41 | 0 | 1 | 2 | 7,0 | 7,0 | 53248 |
+| 14b | ministral-3-14b | Q4_K_M | 2 de 41 | 0 | 1 | 1 | 8,8 | 12,6 | 53248 |
+| 8b | **qwen3.5-9b** | Q4_K_M | 2 de 41 | 0 | 0 | 2 | 6,2 | 6,2 | 53248 |
+| 8b | granite-4.2-8b | Q4_K_M | 2 de 41 | 0 | 0 | 2 | 9,4 | 9,4 | 53248 |
+| 8b | ministral-3-8b | Q4_K_M | 1 de 41 | 1 | 0 | 0 | 8,6 | 8,6 | 53248 |
 
-Em negrito, os escolhidos. A versão exata de cada candidato (repositório, revisão e sha256 do GGUF) está em `evaluation/selecao.yml` e em `evaluation/selecao/resultado.json`.
+Em negrito, os escolhidos. "Na GPU" é o `size_vram` do `/api/ps`, que decide o empate; "Total" é o `size`, e a diferença entre os dois ficou na CPU. A versão exata de cada candidato (repositório, revisão e sha256 do GGUF) está em `evaluation/selecao.yml` e em `evaluation/selecao/resultado.json`.
 
 ## Erros por motivo
 
@@ -30,7 +30,7 @@ Contagem de execuções erradas, de 205 por candidato. `valor`: os números não
 | ministral-3-14b | 87 | 9 | 8 | 59 | 1 | 0 | 30 |
 | qwen3.5-9b | 194 | 1 | 0 | 0 | 0 | 0 | 0 |
 | granite-4.2-8b | 129 | 12 | 12 | 32 | 0 | 0 | 9 |
-| ministral-3-8b | 15 | 35 | 17 | 75 | 2 | 5 | 49 |
+| ministral-3-8b | 15 | 35 | 17 | 75 | 2 | 5 | 48 |
 
 ## Execuções certas por pergunta
 

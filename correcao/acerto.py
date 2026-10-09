@@ -38,6 +38,8 @@ def acerto_da_execucao(correcao: dict, julgamento: dict | None) -> str:
     if correcao["situacao"] != "pendente":
         return correcao["situacao"]
     julgamento = julgamento or {}
+    if not correcao["julgar"]:
+        return "pendente"
     if any(julgamento.get(a) is False for a in correcao["julgar"]):
         return "errado"
     if all(julgamento.get(a) is True for a in correcao["julgar"]):

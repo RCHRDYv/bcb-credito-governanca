@@ -2011,7 +2011,7 @@
         "erro_sql": 75,
         "erro_tempo": 2,
         "sem_abstencao": 5,
-        "valor": 49
+        "valor": 48
       },
       "vram": 9201977915,
       "ambiente": {
@@ -2388,7 +2388,7 @@
             "nao_julgada",
             "errado",
             "errado",
-            "errado",
+            "nao_julgada",
             "errado"
           ],
           "certas": 0,
