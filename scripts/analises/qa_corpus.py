@@ -77,7 +77,7 @@ TAMANHO_DO_NGRAMA = 8
 #     uma referência do texto da fonte: a Metodologia V2 diz "Somatório dos
 #     itens s e v", e a ontologia escreveu os nomes dos itens. A definição não
 #     está na fonte palavra por palavra. Achado em 2026-10-07, na #46; a
-#     correção da confiança na ontologia é decisão minha. O QA confere que
+#     correção da confiança na ontologia é decisão do Yuri. O QA confere que
 #     continuam abaixo do limite, para a lista não ficar velha.
 # EN: Concepts marked verbatim whose definition resolves a reference in the
 #     source text ("items s and v"); not verbatim in the source.

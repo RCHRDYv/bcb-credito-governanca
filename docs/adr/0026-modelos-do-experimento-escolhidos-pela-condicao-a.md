@@ -15,12 +15,12 @@ O ADR 0012 não diz em que condição a seleção roda, e a escolha não é neut
 
 ## Decisão
 
-Decidi em 2026-10-06, e registrei pela #47 junto das hipóteses (`evaluation/hipoteses.yml`):
+Decidido pelo Yuri em 2026-10-06, e registrado pela #47 junto das hipóteses (`evaluation/hipoteses.yml`):
 
 1. **A seleção roda na condição A,** só com o esquema, com as 41 perguntas do `questions_v3.yml`.
-2. **Fica, em cada classe, o candidato com mais perguntas certas,** pela regra de comparação registrada no `hipoteses.yml`: 5 execuções por pergunta, temperatura de 0,2, seeds de 1 a 5, e acerto quando 3 ou mais das 5 execuções acertam. Decidi em 2026-10-07.
-3. **Empate é o mesmo número de perguntas certas,** e o desempate é o menor uso de VRAM. Decidi em 2026-10-07.
-4. **A execução da seleção não entra no experimento.** A condição A roda de novo, com o modelo escolhido, junto de B, C e D. Decidi em 2026-10-07.
+2. **Fica, em cada classe, o candidato com mais perguntas certas,** pela regra de comparação registrada no `hipoteses.yml`: 5 execuções por pergunta, temperatura de 0,2, seeds de 1 a 5, e acerto quando 3 ou mais das 5 execuções acertam. Decidido pelo Yuri em 2026-10-07.
+3. **Empate é o mesmo número de perguntas certas,** e o desempate é o menor uso de VRAM. Decidido pelo Yuri em 2026-10-07.
+4. **A execução da seleção não entra no experimento.** A condição A roda de novo, com o modelo escolhido, junto de B, C e D. Decidido pelo Yuri em 2026-10-07.
 5. **O registro da escolha,** antes do experimento, traz:
    - a versão exata e a quantização de cada modelo;
    - os parâmetros de geração;

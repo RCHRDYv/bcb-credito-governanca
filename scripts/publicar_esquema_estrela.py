@@ -1,6 +1,6 @@
 """
 PT: Publica o retrato do esquema estrela no dataset público do Hugging Face
-    (#45, ADRs 0016 e 0027). Roda só na minha máquina, nunca no CI.
+    (#45, ADRs 0016 e 0027). Roda só na máquina do Yuri, nunca no CI.
 
     Antes, uma vez: criar pela web o dataset vidayuri/bcb-credito-governanca,
     público, e um token de escopo fino com escrita só nele.
@@ -22,7 +22,7 @@ PT: Publica o retrato do esquema estrela no dataset público do Hugging Face
        retrato fixado, e não o main, que muda.
 
 EN: Publishes the star schema snapshot to the public Hugging Face dataset.
-    Runs only on my machine, never in CI. The fine-grained token is read
+    Runs only on Yuri's machine, never in CI. The fine-grained token is read
     by getpass and lives only in this process's memory. One commit with an
     explicit file list (manifest Parquet files and the card); anything else
     in the dataset is deleted except .gitattributes. The new revision is

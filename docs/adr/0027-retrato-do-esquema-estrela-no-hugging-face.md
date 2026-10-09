@@ -14,7 +14,7 @@ Três fatos medidos em 2026-10-07 pesaram:
 
 ## Decisões
 
-Decidi em 2026-10-07, antes do código (#45).
+Decididas pelo Yuri em 2026-10-07, antes do código (#45).
 
 1. **Um Parquet por tabela `dim_*` e `fct_*`,** exportado em Arrow pelos links externos e gravado pelo polars, ordenado por todas as colunas e comprimido com zstd, para que o mesmo dado produza os mesmos bytes. O que pode sair é o `evaluation/gabarito/esquema_estrela.json`, que a exportação só lê. Tabela, coluna ou tipo diferente no Databricks para a exportação, e nenhum nome de coluna de dado pessoal passa.
 2. **O DuckDB vê as tabelas por views com os nomes do dbt,** em `esquema_estrela/views.sql`, sobre a variável `base`. A mesma view lê a pasta local ou o dataset. Não há arquivo `.duckdb`: ele seria binário, dependeria da versão do DuckDB e duplicaria os Parquets.
@@ -26,7 +26,7 @@ Decidi em 2026-10-07, antes do código (#45).
 
    Uma divergência é reportada e não ajustada: o SQL do gabarito só muda por errata.
 5. **O dataset é `vidayuri/bcb-credito-governanca`, sob a ODbL 1.0,** com o cartão versionado em `esquema_estrela/README.md`. Sobem só os Parquets e o cartão, numa lista explícita. Nada de `evaluation/`, e nada do bronze.
-6. **O token de escopo fino é pedido por `getpass` a cada publicação** e fica só na memória do processo. Ele não vai para arquivo, variável de ambiente, cofre ou CI. O token só escreve no dataset, e eu rodo a publicação da minha máquina. É a regra do [ADR 0001](0001-credenciais-e-dado-bruto-fora-do-repositorio.md), ampliada pelo ADR 0016, aplicada ao Hugging Face.
+6. **O token de escopo fino é pedido por `getpass` a cada publicação** e fica só na memória do processo. Ele não vai para arquivo, variável de ambiente, cofre ou CI. O token só escreve no dataset, e quem roda a publicação é o Yuri, da máquina dele. É a regra do [ADR 0001](0001-credenciais-e-dado-bruto-fora-do-repositorio.md), ampliada pelo ADR 0016, aplicada ao Hugging Face.
 7. **Um job do CI lê o dataset público na revisão fixada,** sem credencial. Ele confere o sha256 pela API do Hub, os arquivos publicados, os totais contra o manifesto e o gabarito contra as respostas versionadas. Se o Hugging Face sair do ar, só esse job reprova.
 
 ## Alternativas descartadas

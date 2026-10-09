@@ -15,7 +15,7 @@ O "pronto quando" original da #49, "responde às perguntas da v0.1 nas quatro co
 
 ## Decisões
 
-Decidi em 2026-10-08, antes do código (comentário na #49). A decisão 1, a ordem entre a #49 e a #48, está no comentário e não se repete aqui.
+Decisões que tomei em 2026-10-08, antes do código (comentário na #49). A decisão 1, a ordem entre a #49 e a #48, está no comentário e não se repete aqui.
 
 2. **A proveniência é montada pelo código, não pelo modelo.** O modelo devolve só os cinco campos registrados. O assistente anexa:
    - o SQL executado e o resultado bruto, cortado no limite de linhas;

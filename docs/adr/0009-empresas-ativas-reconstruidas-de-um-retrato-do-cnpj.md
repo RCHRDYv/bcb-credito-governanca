@@ -8,7 +8,7 @@
 A issue #25 traz os denominadores por UF que o SCR não tem. Eles servem às perguntas Q11, Q12 e Q14, à tela 1 do dashboard e ao indicador de espaço da camada de decisão, que é "carteira PJ por empresa ativa, comparada à mediana nacional".
 
 - **População:** vem do IBGE, pela tabela 6579 do SIDRA, e não teve decisão difícil. É uma estimativa por ano, com referência em 1º de julho, e cabe numa chamada de API.
-- **Empresas ativas:** exigiram quatro decisões, que tomei em 2026-09-24.
+- **Empresas ativas:** exigiram quatro decisões, tomadas com o Yuri em 2026-09-24.
 
 ## Decisões
 
@@ -72,7 +72,7 @@ O espelho é só o meio de transporte, e isso é verificado duas vezes:
 
 ### 5. O bronze guarda o dado inteiro, e o staging só o que é usado
 
-Decidi que as tabelas da Receita entram no bronze como publicadas, no padrão do ADR 0004. Elas trazem nome fantasia, endereço, telefone e e-mail, que no caso do MEI são dados de uma pessoa. O staging seleciona só as colunas usadas, então esses campos param no bronze e não chegam a nenhuma tabela consultada. O acesso ao bronze do CNPJ fica restrito ao dono do workspace, e ele não é compartilhado com quem consome os marts, mesmo sendo dado público na origem. A tabela de Sócios, com nome e CPF parcial, não é ingerida: nenhuma pergunta a usa.
+Decidido com o Yuri: as tabelas da Receita entram no bronze como publicadas, no padrão do ADR 0004. Elas trazem nome fantasia, endereço, telefone e e-mail, que no caso do MEI são dados de uma pessoa. O staging seleciona só as colunas usadas, então esses campos param no bronze e não chegam a nenhuma tabela consultada. O acesso ao bronze do CNPJ fica restrito ao dono do workspace, e ele não é compartilhado com quem consome os marts, mesmo sendo dado público na origem. A tabela de Sócios, com nome e CPF parcial, não é ingerida: nenhuma pergunta a usa.
 
 ## Alternativas descartadas
 

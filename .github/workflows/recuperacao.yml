@@ -5,8 +5,8 @@
 #     produz a partir da ontologia, que a forma dele está certa, com o
 #     controle negativo, e que o rag/manifesto.json e o rag/avaliacao.json
 #     são coerentes entre si e com a ingestão. O índice em si não roda aqui:
-#     ele precisa dos documentos e dos modelos, e é reconstruído na minha
-#     máquina por rag.construir.
+#     ele precisa dos documentos e dos modelos, e é reconstruído na máquina
+#     do Yuri por rag.construir.
 #
 #     Fica num workflow próprio, e não no ci.yml, porque mudar o ci.yml
 #     dispara o job do site (#105), que leva mais de 10 minutos.

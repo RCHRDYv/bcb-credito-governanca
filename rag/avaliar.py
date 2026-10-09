@@ -2,7 +2,7 @@
 PT: Mede a recuperação de cada candidato no gabarito de recuperação
     (evaluation/recuperacao.yml) e escolhe o modelo de embeddings do
     experimento (evaluation/hipoteses.yml, rag.modelo_de_embeddings),
-    pela regra decidida em 2026-10-07:
+    pela regra decidida pelo Yuri em 2026-10-07:
 
     - métrica de escolha: acerto@5, a parcela dos conceitos em que algum
       dos 5 trechos trazidos cai no lugar citado pela ontologia;

@@ -23,7 +23,7 @@ Uma resposta só por pergunta mediria se o modelo adivinhou a intenção de quem
 
 ### 1. Leituras aceitas, registradas antes da execução
 
-Decidi em 2026-09-25. Cada pergunta tem de 1 a 3 leituras aceitas, e cada leitura tem o próprio SQL. A resposta acerta se bater com uma delas e disser qual usou. As leituras ficam em `evaluation/gabarito.yml`, versionadas antes de qualquer execução, do mesmo jeito que as perguntas.
+Decidido pelo Yuri em 2026-09-25. Cada pergunta tem de 1 a 3 leituras aceitas, e cada leitura tem o próprio SQL. A resposta acerta se bater com uma delas e disser qual usou. As leituras ficam em `evaluation/gabarito.yml`, versionadas antes de qualquer execução, do mesmo jeito que as perguntas.
 
 São 47 leituras nas 38 perguntas respondíveis da v0.1. As que têm mais de uma:
 
@@ -48,7 +48,7 @@ Quando a pergunta não diz o período, como na Q04, na Q10, na Q19 e na Q21, a m
 
 ### 3. Período maior que o recorte: conjunto v3 das perguntas, com a janela ajustada
 
-Decidi em 2026-09-25, na revisão da PR #57: as perguntas podem ser revistas para caber no dado que o projeto tem e nas escolhas de desenho feitas para caber nos recursos disponíveis, sem mudar a lógica de nenhuma pergunta, só a janela de tempo. É o que a nota de método do v2 prevê para mudança antes da primeira execução: um conjunto novo e declarado, com o anterior intacto.
+Decidido pelo Yuri em 2026-09-25, na revisão da PR #57: as perguntas podem ser revistas para caber no dado que o projeto tem e nas escolhas de desenho feitas para caber nos recursos disponíveis, sem mudar a lógica de nenhuma pergunta, só a janela de tempo. É o que a nota de método do v2 prevê para mudança antes da primeira execução: um conjunto novo e declarado, com o anterior intacto.
 
 O [`questions_v3.yml`](../../evaluation/questions_v3.yml) repete as 41 perguntas do v2 e muda só três enunciados. A janela escolhida é de dois anos, a mesma que a Q03 e a Q22 já usam, e que cabe no recorte com folga:
 
@@ -94,11 +94,11 @@ Como comparar o número da IA com o do gabarito, com que tolerância, e quantos 
 
 **Garantia na Q17.** A consulta que prova a ausência procura "garant" nas definições das modalidades e devolve três linhas, e não uma. A do home equity (0211) declara garantia real. As de capital de giro (0215 e 0216) citam "garantias" como item do contrato, sem dizer qual. O aviso `garantia_nao_declarada` da ontologia dizia que as demais "não mencionam garantia", e foi corrigido. A errata da Q17 no v2 tem a mesma imprecisão, e o v2 não muda; o v3 corrige no campo `errata_v3`.
 
-Na revisão, pedi o tipo de garantia, se ele já existe no documento 3040. Existe: o bloco de garantias do 3040 traz, por operação, tipo e subtipo (14 tipos no Anexo 12 do leiaute), valor original, reavaliação e compartilhamento, reorganizado pela IN BCB 659, de set/2025. É informação individual, e o SCR.data não publica nenhum desses campos. A lista de tipos entrou na ontologia, e a resposta de abstenção da Q17 diz exatamente o que faltaria.
+Na revisão, o Yuri pediu o tipo de garantia, se ele já existe no documento 3040. Existe: o bloco de garantias do 3040 traz, por operação, tipo e subtipo (14 tipos no Anexo 12 do leiaute), valor original, reavaliação e compartilhamento, reorganizado pela IN BCB 659, de set/2025. É informação individual, e o SCR.data não publica nenhum desses campos. A lista de tipos entrou na ontologia, e a resposta de abstenção da Q17 diz exatamente o que faltaria.
 
-**Novo modelo de crédito imobiliário.** Na revisão, trouxe a nota do BCB de 2025-10-10 e as Resoluções CMN 5.254 e 5.255 e BCB 512. Elas tratam de crédito imobiliário, e uma delas muda uma fronteira do dado dentro do recorte: o teto do imóvel financiado no SFH passou de R$ 1,5 milhão para R$ 2,25 milhões na publicação da CMN 5.255. Financiamentos novos nessa faixa podem ter passado da 0902 (fora do SFH) para a 0901 (SFH). O efeito não foi medido. Entrou na cadeia normativa, na ontologia (mod_09) e na observação da Q34.
+**Novo modelo de crédito imobiliário.** Na revisão, o Yuri trouxe a nota do BCB de 2025-10-10 e as Resoluções CMN 5.254 e 5.255 e BCB 512. Elas tratam de crédito imobiliário, e uma delas muda uma fronteira do dado dentro do recorte: o teto do imóvel financiado no SFH passou de R$ 1,5 milhão para R$ 2,25 milhões na publicação da CMN 5.255. Financiamentos novos nessa faixa podem ter passado da 0902 (fora do SFH) para a 0901 (SFH). O efeito não foi medido. Entrou na cadeia normativa, na ontologia (mod_09) e na observação da Q34.
 
-**Financiamentos de títulos e valores mobiliários.** O meu comentário estava na linha da TVM, e as normas citadas não tratam dela. O dado mostra outra história, medida em 2026-09-25: a submodalidade 1001 existe em todos os meses do recorte. A carteira dos bancos, que chegou a R$ 4,0 bi em abr/2024, zerou em abr/2025. Uma fintech passou a operar em ago/2025, e chegou a R$ 99 mi em jul/2026. Essa troca de operador produz o +77,8% em 12 meses da Q02, a participação de fintechs de 56% na Q21 e a retração no recorte da Q23. Entrou como aviso na ontologia (sub_1001) e como observação nessas perguntas e na Q07.
+**Financiamentos de títulos e valores mobiliários.** O comentário do Yuri estava na linha da TVM, e as normas citadas não tratam dela. O dado mostra outra história, medida em 2026-09-25: a submodalidade 1001 existe em todos os meses do recorte. A carteira dos bancos, que chegou a R$ 4,0 bi em abr/2024, zerou em abr/2025. Uma fintech passou a operar em ago/2025, e chegou a R$ 99 mi em jul/2026. Essa troca de operador produz o +77,8% em 12 meses da Q02, a participação de fintechs de 56% na Q21 e a retração no recorte da Q23. Entrou como aviso na ontologia (sub_1001) e como observação nessas perguntas e na Q07.
 
 ## Alternativas descartadas
 

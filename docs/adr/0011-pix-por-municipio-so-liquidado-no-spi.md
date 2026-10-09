@@ -5,7 +5,7 @@
 
 ## Contexto
 
-As perguntas Q22, Q23 e Q24 dependem do volume financeiro de PIX, que o SCR não traz (issue #36). Em 2026-09-24 antecipei esta fonte para a v0.1.
+As perguntas Q22, Q23 e Q24 dependem do volume financeiro de PIX, que o SCR não traz (issue #36). Em 2026-09-24 o Yuri antecipou esta fonte para a v0.1.
 
 O BCB publica o PIX por município no recurso `TransacoesPixPorMunicipio`, do serviço OData `Pix_DadosAbertos`: por mês e município, valor, quantidade e pessoas, separados por pagador e recebedor e por PF e PJ, com o código IBGE da UF. A investigação da API, registrada na #36, achou quatro características que decidem o desenho.
 

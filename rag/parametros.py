@@ -3,12 +3,12 @@ PT: Parâmetros do RAG. Os do trecho e da busca repetem o bloco rag do
     evaluation/hipoteses.yml, congelado no pré-registro (#47), e
     conferir_pre_registro() para a construção se os dois divergirem. Os
     candidatos a modelo de embeddings e a regra de escolha foram decididos
-    em 2026-10-07 (issue #46, ADR 0028).
+    pelo Yuri em 2026-10-07 (issue #46, ADR 0028).
 
 EN: RAG parameters. Chunk and search values repeat the frozen rag block of
     evaluation/hipoteses.yml, and conferir_pre_registro() stops the build if
     they diverge. The embedding candidates and the selection rule were
-    decided on 2026-10-07.
+    decided by Yuri on 2026-10-07.
 """
 
 from __future__ import annotations

@@ -5,13 +5,13 @@
 
 ## Contexto
 
-A especificação previa uma camada de IA na v0.3, rodando no Hugging Face Spaces, e um dashboard estático, sem consulta ao banco, porque credencial em JavaScript é pública. Em 2026-09-24 trouxe três ideias que mudam o desenho:
+A especificação previa uma camada de IA na v0.3, rodando no Hugging Face Spaces, e um dashboard estático, sem consulta ao banco, porque credencial em JavaScript é pública. Em 2026-09-24 o Yuri trouxe três ideias que mudam o desenho:
 
 1. O que se constrói é uma **ferramenta de texto para pessoas de negócio** consultarem os dados. A ontologia é o pilar, e os documentos do BCB podem ser outra fonte de consulta.
 2. O modelo deve ser **aberto e rodar localmente,** na máquina dele: RTX 5070 com 12 GB de VRAM, Ryzen 7 5700X e 32 GB de RAM.
 3. O dashboard deve ter uma **caixa de pergunta aberta,** respondida pelo modelo.
 
-E duas restrições continuam valendo: nenhuma credencial do Databricks sai da minha máquina (ADR 0001), e a solução pública precisa ter **custo zero**.
+E duas restrições continuam valendo: nenhuma credencial do Databricks sai da máquina do Yuri (ADR 0001), e a solução pública precisa ter **custo zero**.
 
 ## Decisões
 
@@ -57,18 +57,18 @@ Os nomes se escolhem no momento da execução, porque modelos abertos mudam ráp
 O dashboard, o esquema estrela e a caixa de pergunta formam **uma aplicação só,** no plano gratuito de CPU do Hugging Face Spaces:
 
 - o esquema estrela da gold é exportado em Parquet para dentro do próprio repositório do Space, e consultado por DuckDB. Não há banco, conexão nem credencial;
-- os fatos exportados são agregados e públicos. O bronze do CNPJ, com dado pessoal, nunca sai da minha máquina;
+- os fatos exportados são agregados e públicos. O bronze do CNPJ, com dado pessoal, nunca sai da máquina do Yuri;
 - é o mesmo princípio da exportação estática que a especificação já adotava: o dado sai da gold uma vez, e a aplicação não consulta o Databricks.
 
 A #17, o dashboard da v0.1, é construída já como essa aplicação, lendo os arquivos exportados. A caixa de pergunta entra na v0.3. Assim não se constrói um dashboard estático para depois refazê-lo.
 
 ## Alternativas descartadas
 
-**Caixa de pergunta ligada ao modelo local.** A demonstração só funcionaria com a minha máquina ligada.
+**Caixa de pergunta ligada ao modelo local.** A demonstração só funcionaria com a máquina do Yuri ligada.
 
 **Hardware com GPU no Hugging Face, ou API paga de modelo.** Tem custo, e a decisão é custo zero.
 
-**Aplicação consultando o Databricks.** Exigiria credencial fora da minha máquina, e o Databricks Free Edition não serve aplicação pública.
+**Aplicação consultando o Databricks.** Exigiria credencial fora da máquina do Yuri, e o Databricks Free Edition não serve aplicação pública.
 
 **RAG sobre todos os documentos do BCB.** Mais texto não é mais resposta. O corpus citado pela ontologia tem fonte conferida e dá gabarito de recuperação.
 
