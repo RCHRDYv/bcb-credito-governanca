@@ -616,6 +616,7 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
     def congelado_com_nulos():
         copia = copy.deepcopy(d)
         copia.registro["erratas"] = [*copia.registro.get("erratas", []), {"arquivo": SELECAO, "sha256": "0" * 64}]
+        copia.selecao["candidatos"][0]["num_ctx"] = None
         return copia
 
     def limite_divergente():

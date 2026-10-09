@@ -114,15 +114,15 @@ def main() -> None:
         arquivo = next((s for s in info.siblings if s.rfilename == c["arquivo"]), None)
         if arquivo is None or arquivo.lfs is None:
             raise SystemExit(f"ERRO {c['repositorio']} não tem {c['arquivo']} no LFS")
-        revisao_do_tokenizador = api.model_info(c["tokenizador"]).sha
+        revisao_do_modelo_base = api.model_info(c["tokenizador"]).sha
         config = json.loads(Path(hf_hub_download(c["tokenizador"], "config.json",
-                                                 revision=revisao_do_tokenizador)).read_text(encoding="utf-8"))
+                                                 revision=revisao_do_modelo_base)).read_text(encoding="utf-8"))
         publicado = contexto_publicado(config)
         if publicado < int(regras["contexto_minimo"]) or publicado != int(c["contexto_publicado"]):
             raise SystemExit(f"ERRO {c['nome']}: contexto publicado {publicado}, no selecao.yml "
                              f"{c['contexto_publicado']}, mínimo {regras['contexto_minimo']}")
         tokenizador = Tokenizer.from_file(hf_hub_download(c["tokenizador"], "tokenizer.json",
-                                                          revision=revisao_do_tokenizador))
+                                                          revision=revisao_do_modelo_base))
 
         tokens = {id_: contar(tokenizador, m, por_mensagem) for id_, m in prompts.items()}
         caracteres = {id_: sum(len(x["content"]) for x in m) for id_, m in prompts.items()}
@@ -136,7 +136,7 @@ def main() -> None:
         razao = float(Decimal(str(razao)).quantize(Decimal("0.1"), rounding=ROUND_FLOOR))
 
         texto = preencher(texto, c["nome"], {
-            "revisao": info.sha, "sha256": arquivo.lfs.sha256, "revisao_do_tokenizador": revisao_do_tokenizador,
+            "revisao": info.sha, "sha256": arquivo.lfs.sha256, "revisao_do_modelo_base": revisao_do_modelo_base,
             "num_ctx": num_ctx, "caracteres_por_token": razao,
         })
         medidas[c["nome"]] = {

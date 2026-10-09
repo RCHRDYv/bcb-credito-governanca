@@ -70,7 +70,12 @@ from scripts.validar_registro import REGISTRO, RAIZ, hashes_vigentes, ler_respos
 SELECAO = "evaluation/selecao.yml"
 MODELO_DE_PROMPT = "assistente/modelo_de_prompt.yml"
 CONGELADOS_ANTES_DA_SELECAO = (SELECAO, MODELO_DE_PROMPT)
-CAMPOS_MEDIDOS = ("revisao", "sha256", "revisao_do_tokenizador", "num_ctx", "caracteres_por_token")
+# PT: revisao_do_modelo_base é a revisão do repositório de onde vêm o
+#     tokenizer.json e o config.json. O nome não leva "token": o gitleaks
+#     toma um hash de commit ao lado dessa palavra por chave de API.
+# EN: revision of the repo holding tokenizer.json and config.json; the name
+#     avoids "token", which makes gitleaks flag the commit hash as a key.
+CAMPOS_MEDIDOS = ("revisao", "sha256", "revisao_do_modelo_base", "num_ctx", "caracteres_por_token")
 CONDICAO = "A"
 
 

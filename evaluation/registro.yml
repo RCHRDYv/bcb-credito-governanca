@@ -93,3 +93,24 @@ erratas:
     hipoteses.yml#execucao.fixado_antes_da_execucao pede. Congelado antes de
     qualquer execução de C ou D, por decisão do Yuri em 2026-10-07.
   sha256: 3fe38f06ac5a58766eb687145cabffc9055c2d2516a4451075ac81e3bfa0918c
+- data: '2026-10-09'
+  arquivo: evaluation/selecao.yml
+  motivo: >-
+    Arquivo novo, da #48 (ADR 0030). Fixa, antes de qualquer execução contra
+    o gabarito, a regra de entrada, a regra de escolha e o desempate, os
+    cinco candidatos com a revisão e o sha256 do GGUF, a configuração do
+    servidor e da geração, os limites do SQL e o num_ctx e a razão de
+    caracteres por token de cada candidato, medidos pelo tokenizador
+    (evaluation/selecao/dimensionamento.json), como
+    hipoteses.yml#execucao.fixado_antes_da_execucao pede. Decidi em
+    2026-10-09.
+  sha256: e3f856600c02e723245ca52b74996fec1e299d7a77367f20affae5b589a246f5
+- data: '2026-10-09'
+  arquivo: assistente/modelo_de_prompt.yml
+  motivo: >-
+    Arquivo novo, da #49 (ADR 0029), congelado pela #48 (ADR 0030, decisão
+    9) como está, antes de qualquer execução contra o gabarito, como
+    hipoteses.yml#execucao.fixado_antes_da_execucao pede. O texto não foi
+    afinado nas perguntas registradas: a fumaça usou só perguntas
+    inventadas. Decidi em 2026-10-09.
+  sha256: 4f03fd590c22427addf69c6040613cbd4da380f4a8add8b9be26364cfbff49da
