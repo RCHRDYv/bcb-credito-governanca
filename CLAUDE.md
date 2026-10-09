@@ -36,6 +36,8 @@ uv run python -m scripts.validar_gabarito
 uv run python -m scripts.validar_registro
 uv run python -m scripts.validar_registro --autoteste
 uv run python -m scripts.validar_dados_do_dashboard
+uv run python -m scripts.validar_assistente
+uv run python -m scripts.validar_assistente --autoteste
 ```
 Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'` precisa sair limpo. O CI também roda `dbt parse` com `uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9`.
 
@@ -59,6 +61,11 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - QA por outro caminho: `uv run --group rag python -m scripts.analises.qa_corpus`.
 - `evaluation/recuperacao.yml` e `rag/manifesto.json` estão congelados pelo registro: reconstruir ou regerar que mude um deles pede errata.
 
+## Assistente (#49, ADR 0029)
+- Pacote `assistente/`: `uv run python -m assistente "pergunta" --condicao B`. C e D pedem `--group rag`, e a interface Gradio pede `--group assistente --group rag` (`python -m assistente.interface`).
+- `assistente/parametros.yml` e `assistente/modelo_de_prompt.yml` são provisórios. A #48 fixa os valores e congela os dois por errata. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
+- A fumaça com o Ollama (`scripts.analises.fumaca_assistente`) usa só perguntas inventadas, e quem a roda é o Yuri. O `validar_assistente` e o `--autoteste` rodam sem modelo no workflow `assistente.yml`.
+
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).
 - Textos em `src/textos/pt-BR.js`: `t()` lança erro se faltar a chave.
@@ -67,6 +74,8 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - Decisões do dashboard entram nas tabelas de `docs/dashboard/requisitos.md`.
 
 ## Convenções
+- IMPORTANT: o autor do projeto é o Yuri, e todo texto que vai para o repositório (ADR, docs, README, comentários, docstrings, commits, PR) é escrito na voz dele, em primeira pessoa ("decidi", "rodei na minha máquina") ou impessoal. Nunca "o Yuri decidiu", "decisão do Yuri" ou "na máquina do Yuri". Este CLAUDE.md é a exceção, porque fala com o Claude.
+- Sem marcadores do Claude Code no projeto: commit sem `Co-Authored-By` nem `Claude-Session`, PR sem "Generated with Claude Code" nem link de sessão.
 - Comentários e docstrings bilíngues, um bloco PT seguido de um bloco EN, no estilo dos arquivos vizinhos.
 - Branch por issue (`feat/`, `ci/`, `chore/`), PR com `Closes #n`.
 - IMPORTANT: não mexa no `.github/workflows/ci.yml` numa PR que não é do site. Qualquer mudança nele dispara o job do site do dashboard (#105), que leva mais de 10 minutos. Job novo vai num workflow próprio em `.github/workflows/`, como o `esquema-estrela.yml`. Só mude o `ci.yml` se o Yuri pedir.

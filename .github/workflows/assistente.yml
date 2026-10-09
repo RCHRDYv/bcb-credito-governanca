@@ -1,0 +1,51 @@
+# =============================================================================
+# PT: O assistente de dados (#49, ADR 0029). Confere, sem rede, sem modelo e
+#     sem dado, a montagem do prompt por condição, a guarda do SQL, os
+#     limites de linhas e de tempo, o fluxo de duas chamadas sem nova
+#     tentativa e a proveniência montada pelo código. O modelo é falso, de
+#     respostas gravadas, e o banco são tabelas vazias com o esquema estrela.
+#     O controle negativo estraga uma peça por vez.
+#
+#     Fica num workflow próprio, e não no ci.yml, porque mudar o ci.yml
+#     dispara o job do site (#105), que leva mais de 10 minutos.
+# EN: The data assistant. Checks prompt assembly per condition, the SQL
+#     guard, row and time limits, the two-call flow without retry and the
+#     code-built provenance, with no network, model or data. Its own
+#     workflow, not ci.yml, which would trigger the 10-minute site job.
+# =============================================================================
+
+name: Assistente de dados
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# PT: Permissão mínima. O workflow só precisa ler o código.
+# EN: Least privilege. The workflow only needs to read the code.
+permissions:
+  contents: read
+
+jobs:
+  assistente:
+    name: Assistente de dados
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --frozen
+
+      - name: Montagem, guarda, limites, fluxo e proveniência
+        run: uv run python -m scripts.validar_assistente
+
+      - name: Controle negativo
+        run: uv run python -m scripts.validar_assistente --autoteste
