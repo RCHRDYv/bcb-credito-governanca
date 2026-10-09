@@ -3,9 +3,21 @@
 Projeto de portfólio sobre o crédito PJ do SCR.data do Banco Central: ingestão no Databricks Free Edition, camada semântica em dbt, ontologia SKOS, dashboard estático no GitHub Pages e o experimento ontologia contra RAG (ADR 0013). Repositório público. Visão geral em `README.md`, decisões em `docs/adr/`.
 
 ## Ambiente
-- Windows com Git Bash. `python` não está no PATH: use sempre `uv run python -m <módulo>`.
+- Windows. O Yuri roda os comandos no **PowerShell**, na pasta `C:\Users\viday\claude_projects\bcb-credito-governanca`. `python` não está no PATH: use sempre `uv run python -m <módulo>`.
 - Databricks por OAuth do CLI (perfil em `~/.databrickscfg`). Nunca peça nem grave token. Nada de Databricks roda no CI (ADR 0001).
 - `data/` (bruto e landing) é ignorado pelo git. Capturas e páginas de revisão ficam fora do repositório, em `../revisao-*`.
+
+## Como passar instruções para o Yuri executar
+IMPORTANT: quando o Yuri tiver de rodar algo na máquina dele, siga todas estas regras, sem exceção:
+- **PowerShell, não Git Bash.** Variável de ambiente é `$env:NOME="valor"`, nunca `export`. Caminho com `\`.
+- **Comece pelo `cd` com o caminho completo**: `cd C:\Users\viday\claude_projects\bcb-credito-governanca`. Nunca suponha que ele já está na pasta.
+- **Passos numerados, cada um com quatro partes:** onde rodar, o comando, como saber que deu certo e o que fazer se der errado (em geral: "cole a saída inteira aqui").
+- **Um comando por bloco de código**, na ordem exata. Diga quando é preciso esperar um terminar antes do próximo.
+- **Nada sem explicação.** Se precisar de uma segunda janela, diga como abrir ("tecla Windows, digite PowerShell, Enter") e qual não fechar. Não use nome que você não definiu, como "janela 2".
+- **Confira antes de mandar.** Branch, pasta, o que já está rodando (o Ollama da bandeja ocupa a porta 11434), o que o comando pressupõe. Se não der para conferir daqui, mande primeiro um comando de verificação.
+- **Avise dos tropeços conhecidos antes que aconteçam:** o pre-commit (gitleaks, final de linha) pode reprovar o commit; o app do Ollama na bandeja precisa ser encerrado com `Get-Process -Name "ollama*" | Stop-Process -Force`.
+- **Separe o que é dele do que é seu.** Em cada passo, deixe claro se ele roda ou se ele só te avisa com uma frase exata para colar.
+- **Seja curto.** Sem teoria antes dos comandos. A explicação vem em uma linha, depois do comando, se for preciso.
 
 ## Ingestão (ADR 0004)
 Etapas idempotentes, nesta ordem:
@@ -38,6 +50,8 @@ uv run python -m scripts.validar_registro --autoteste
 uv run python -m scripts.validar_dados_do_dashboard
 uv run python -m scripts.validar_assistente
 uv run python -m scripts.validar_assistente --autoteste
+uv run python -m scripts.validar_selecao
+uv run python -m scripts.validar_selecao --autoteste
 ```
 Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'` precisa sair limpo. O CI também roda `dbt parse` com `uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9`.
 
@@ -63,8 +77,14 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 
 ## Assistente (#49, ADR 0029)
 - Pacote `assistente/`: `uv run python -m assistente "pergunta" --condicao B`. C e D pedem `--group rag`, e a interface Gradio pede `--group assistente --group rag` (`python -m assistente.interface`).
-- `assistente/parametros.yml` e `assistente/modelo_de_prompt.yml` são provisórios. A #48 fixa os valores e congela os dois por errata. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
+- `assistente/parametros.yml` (os dois modelos escolhidos pela #48) e `assistente/modelo_de_prompt.yml` estão congelados por errata. Nunca afine o prompt nas perguntas do `questions_v3.yml`.
 - A fumaça com o Ollama (`scripts.analises.fumaca_assistente`) usa só perguntas inventadas, e quem a roda é o Yuri. O `validar_assistente` e o `--autoteste` rodam sem modelo no workflow `assistente.yml`.
+
+## Seleção dos modelos (#48, ADR 0030)
+- Candidatos, regras e configuração em `evaluation/selecao.yml`. Os campos medidos (revisão, sha256, `num_ctx`, razão) saem de `uv run --group rag python -m scripts.dimensionar_contexto`, que o Yuri roda.
+- Errata 1 (antes de rodar): `evaluation/selecao.yml` e `assistente/modelo_de_prompt.yml`. O `scripts.selecionar_modelos` se recusa a rodar sem ela. Errata 2 (depois): `assistente/parametros.yml` e `evaluation/selecao/resultado.json`.
+- A execução (`scripts.selecionar_modelos`) e a correção às cegas (`correcao.as_cegas`) são do Yuri, na máquina dele, com o Ollama. `scripts.resumir_selecao` gera o resultado, a página `docs/selecao-dos-modelos.md` e os modelos do `parametros.yml`.
+- O corretor (`correcao/`) compara por valor e é o da #50. O `validar_selecao` e o `--autoteste` rodam sem modelo no workflow `selecao.yml`; o `--ensaio` do executor também.
 
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).

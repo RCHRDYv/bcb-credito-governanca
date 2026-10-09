@@ -1,23 +1,29 @@
 # =============================================================================
-# PT: Parâmetros do assistente de dados (#49, ADR 0029). Os valores daqui são
-#     PROVISÓRIOS: servem ao teste de fumaça e ao uso interativo. O pré-
-#     registro (evaluation/hipoteses.yml, execucao.fixado_antes_da_execucao)
-#     manda a #48 fixar o modelo, o modelo de prompt, o num_ctx, o limite de
-#     tokens da resposta e os limites de linhas e de tempo antes da execução.
-#     A #48 troca os valores, apaga o provisorio e congela este arquivo e o
-#     assistente/modelo_de_prompt.yml por errata no evaluation/registro.yml.
+# PT: Parâmetros do assistente de dados (#49, ADR 0029; #48, ADR 0030). O
+#     pré-registro (evaluation/hipoteses.yml, execucao.fixado_antes_da_execucao)
+#     manda fixar o modelo, o num_ctx, o limite de tokens da resposta e os
+#     limites de linhas e de tempo antes do experimento.
+#
+#     Os modelos são os dois escolhidos pela seleção da #48
+#     (evaluation/selecao/resultado.json), gravados por
+#     scripts.resumir_selecao. A geração e os limites do SQL repetem o
+#     evaluation/selecao.yml, com o qual a seleção rodou;
+#     scripts.validar_selecao confere que batem. O arquivo está congelado por
+#     errata no evaluation/registro.yml.
+#
+#     O num_ctx de cada modelo foi medido com o cache KV em 8 bits: o ollama
+#     serve precisa de OLLAMA_KV_CACHE_TYPE=q8_0 e OLLAMA_FLASH_ATTENTION=1
+#     (evaluation/selecao.yml, servidor), como na seleção.
 #
 #     A temperatura e as seeds já estão no pré-registro e são conferidas
 #     contra ele por assistente.parametros.conferir_pre_registro().
 #
-# EN: Data assistant parameters. Values here are PROVISIONAL, for the smoke
-#     test and interactive use. #48 fixes model, prompt template, num_ctx,
-#     answer token limit and SQL limits before the experiment, removes
-#     provisorio and freezes this file and the prompt template by errata.
-#     Temperature and seeds are already pre-registered and checked.
+# EN: Data assistant parameters. The models are the two chosen by the #48
+#     selection; generation settings and SQL limits repeat
+#     evaluation/selecao.yml. Frozen by errata. num_ctx was measured with an
+#     8-bit KV cache: ollama serve needs OLLAMA_KV_CACHE_TYPE=q8_0 and
+#     OLLAMA_FLASH_ATTENTION=1. Temperature and seeds are pre-registered.
 # =============================================================================
-
-provisorio: true
 
 servidor:
   # PT: API nativa do Ollama, que aceita num_ctx, seed e o esquema JSON por
@@ -28,45 +34,42 @@ servidor:
   endereco: "http://127.0.0.1:11434"
   tempo_maximo_em_segundos: 600
 
-modelo:
-  # PT: modelo provisório, só para a fumaça. A #48 escolhe os do experimento
-  #     pelo gabarito, na condição A (ADR 0026).
-  # EN: provisional model, smoke test only. #48 picks the experiment models.
-  nome: "qwen3:8b"
+modelos:
+  # PT: os dois modelos do experimento, escolhidos pela seleção da #48
+  #     (evaluation/selecao/resultado.json), gravados por
+  #     scripts.resumir_selecao. O primeiro é o padrão.
+  # EN: the experiment's two models, chosen by the #48 selection.
+  - nome: "hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0"
+    classe: "14b"
+    repositorio: "google/gemma-4-12B-it-qat-q4_0-gguf"
+    revisao: "29d097773436b69ff9feafd636ab4cf873786537"
+    sha256: "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b"
+    num_ctx: 53248
+    caracteres_por_token_na_estimativa: 2.9
+  - nome: "hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M"
+    classe: "8b"
+    repositorio: "unsloth/Qwen3.5-9B-GGUF"
+    revisao: "3885219b6810b007914f3a7950a8d1b469d598a5"
+    sha256: "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8"
+    num_ctx: 53248
+    caracteres_por_token_na_estimativa: 3.0
 
 geracao:
   # PT: do pré-registro / EN: pre-registered
   temperatura: 0.2
   seeds: [1, 2, 3, 4, 5]
-  # PT: provisórios. O num_ctx é o menor múltiplo de 4.096 que comporta a
-  #     segunda chamada de D mais o limite da resposta (hipoteses.yml,
-  #     execucao.contexto_do_modelo). A fumaça de 2026-10-08, com o
-  #     qwen3:8b, mediu 38.923 tokens no maior prompt de D; com os 2.048 da
-  #     resposta, os 40.960 de antes estouravam por 11. O think desliga o
-  #     modo de raciocínio do Qwen3, que gasta tokens da resposta e do
-  #     contexto.
-  # EN: provisional. num_ctx is the smallest multiple of 4,096 that fits D's
-  #     second call plus the answer limit; the 2026-10-08 smoke test measured
-  #     38,923 tokens. think turns off Qwen3's reasoning mode.
-  num_ctx: 45056
+  # PT: os do evaluation/selecao.yml (#48). O think desliga o modo de
+  #     raciocínio, que gasta tokens da resposta e do contexto.
+  # EN: those of evaluation/selecao.yml. think turns off reasoning mode.
   limite_de_tokens_da_resposta: 2048
-  # PT: provisório. Base da estimativa de tokens feita antes do envio: o
-  #     Ollama corta o prompt grande em vez de recusar, e o
-  #     prompt_eval_count pode deixar de fora o prefixo em cache. A fumaça
-  #     de 2026-10-08 mediu cerca de 3,1 caracteres por token em D; 3,0
-  #     erra para o lado de estimar tokens a mais. A #48 calibra para o
-  #     modelo do experimento.
-  # EN: provisional. Basis of the pre-send token estimate; the smoke test
-  #     measured about 3.1; 3.0 errs toward more tokens. #48 calibrates it.
-  caracteres_por_token_na_estimativa: 3.0
   think: false
   esquema_json: true
 
 sql:
-  # PT: provisórios. A maior resposta do gabarito tem 64 linhas (Q23).
-  #     Passando do limite, o resultado é cortado e o modelo é avisado
-  #     (decisão de 2026-10-08).
-  # EN: provisional. The largest answer key result has 64 rows. Beyond the
-  #     limit the result is cut and the model is told.
+  # PT: os do evaluation/selecao.yml (#48). A maior resposta do gabarito
+  #     tem 64 linhas (Q23). Passando do limite, o resultado é cortado e o
+  #     modelo é avisado (decisão de 2026-10-08).
+  # EN: those of evaluation/selecao.yml. The largest answer key result has
+  #     64 rows. Beyond the limit the result is cut and the model is told.
   limite_de_linhas: 100
   limite_de_tempo_em_segundos: 30

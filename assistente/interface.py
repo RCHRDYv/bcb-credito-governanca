@@ -21,6 +21,7 @@ Uso / Usage:
 
 from __future__ import annotations
 
+import argparse
 import sys
 from typing import Callable
 
@@ -129,7 +130,10 @@ def montar(perguntar: Callable[[str, str, int], dict], seeds: tuple[int, ...]) -
 
 
 def main() -> None:
-    p = parametros.carregar()
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--modelo", choices=parametros.modelos(), default=None,
+                        help="padrão: o primeiro do assistente/parametros.yml")
+    p = parametros.carregar(modelo=parser.parse_args().modelo)
     parametros.conferir_pre_registro(p)
     if p.provisorio:
         print("Aviso: parâmetros provisórios, até a #48 / provisional parameters, until #48", file=sys.stderr)

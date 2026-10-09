@@ -59,6 +59,7 @@ from decimal import Decimal, InvalidOperation
 
 import duckdb
 
+from correcao.tolerancia import banda
 from ingestion.baixar import sha256
 from scripts.esquema_estrela_duckdb import (
     CARTAO,
@@ -76,22 +77,6 @@ from scripts.validar_gabarito import tipo_no_duckdb
 from scripts.validar_registro import HIPOTESES, RAIZ, classe_de_tolerancia, ler_respostas
 
 API_DO_HUB = "https://huggingface.co/api/datasets"
-
-# PT: as faixas numéricas de hipoteses.yml#comparacao.tolerancia, que lá
-#     estão escritas por extenso. As colunas de cada classe vêm do arquivo.
-# EN: the numeric bands of the pre-registered tolerance, written out in prose
-#     there; each class's columns come from the file.
-#
-# PT: relativa: 1% do valor do gabarito. pontos: 0,1 p.p. ou 10% do valor, o
-#     que for menor. adimensional: 0,01 ou 1% do valor, o que for maior.
-# EN: relative: 1% of the key's value. points: 0.1 p.p. or 10% of the value,
-#     whichever is smaller. dimensionless: 0.01 or 1% of the value,
-#     whichever is larger.
-RELATIVA = Decimal("0.01")
-PONTOS_ABSOLUTO = Decimal("0.1")
-PONTOS_RELATIVO = Decimal("0.1")
-ADIMENSIONAL_ABSOLUTO = Decimal("0.01")
-ADIMENSIONAL_RELATIVO = Decimal("0.01")
 
 
 class Conferencia:
@@ -252,13 +237,9 @@ def dentro(classe: str, obtido: str | None, esperado: str | None) -> tuple[bool,
         return obtido == esperado, Decimal(0)
     diferenca = abs(a - b)
     relativa = diferenca / abs(b) if b else diferenca
-    if classe == "exata":
-        return diferenca == 0, relativa
-    if classe == "pontos":
-        return diferenca <= min(PONTOS_ABSOLUTO, PONTOS_RELATIVO * abs(b)), relativa
-    if classe == "adimensional":
-        return diferenca <= max(ADIMENSIONAL_ABSOLUTO, ADIMENSIONAL_RELATIVO * abs(b)), relativa
-    return diferenca <= RELATIVA * abs(b), relativa
+    # PT: as faixas do pré-registro, as mesmas do corretor (correcao.tolerancia).
+    # EN: the pre-registered bands, shared with the grader.
+    return diferenca <= banda(classe, b), relativa
 
 
 def comparar_resultado(consulta: str, obtido: dict, esperado: dict, regra: dict) -> tuple[list[str], Decimal, str]:

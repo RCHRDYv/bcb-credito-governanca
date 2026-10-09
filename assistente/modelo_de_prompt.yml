@@ -1,6 +1,7 @@
 # =============================================================================
-# PT: Modelo de prompt do assistente (#49, ADR 0029). RASCUNHO: a #48 revisa
-#     e congela por errata (evaluation/hipoteses.yml,
+# PT: Modelo de prompt do assistente (#49, ADR 0029). Congelado como está,
+#     por errata no evaluation/registro.yml, antes da seleção dos modelos
+#     (#48, ADR 0030, decisão 9; evaluation/hipoteses.yml,
 #     execucao.fixado_antes_da_execucao). O texto é o mesmo nas quatro
 #     condições do ADR 0013; só os blocos de contexto entram ou saem, sempre
 #     nesta ordem: esquema, ontologia, trechos. Assim D é exatamente o prompt
@@ -13,10 +14,11 @@
 #     Marcadores: {esquema}, {ontologia}, {trechos}, {pergunta}, {resultado}
 #     e {aviso_do_resultado}.
 #
-# EN: Assistant prompt template. DRAFT: #48 reviews and freezes it. Same text
-#     in all four conditions; only the context blocks go in or out, always in
-#     this order, so D is exactly B's prompt plus C's excerpts block. Not
-#     tuned on the registered questions and states no domain fact.
+# EN: Assistant prompt template, frozen as is by errata before the model
+#     selection. Same text in all four conditions; only the context blocks
+#     go in or out, always in this order, so D is exactly B's prompt plus C's
+#     excerpts block. Not tuned on the registered questions and states no
+#     domain fact.
 # =============================================================================
 
 instrucoes: |-

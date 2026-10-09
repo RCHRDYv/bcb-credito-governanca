@@ -260,10 +260,12 @@ O gabarito de recuperação ([`evaluation/recuperacao.yml`](evaluation/recuperac
 
 ### Como usar o assistente de dados
 
-O assistente responde em SQL sobre o retrato local do esquema estrela, com a ontologia e os trechos do RAG ligados ou desligados conforme a condição do experimento ([ADR 0029](docs/adr/0029-assistente-local-com-ollama-e-proveniencia-pelo-codigo.md)). O modelo roda no Ollama local. A resposta traz os cinco campos registrados, e o código anexa a proveniência: o SQL executado, o resultado, os conceitos da ontologia com confiança e fonte, e os trechos. Os parâmetros de [`assistente/parametros.yml`](assistente/parametros.yml) são provisórios até a #48.
+O assistente responde em SQL sobre o retrato local do esquema estrela, com a ontologia e os trechos do RAG ligados ou desligados conforme a condição do experimento ([ADR 0029](docs/adr/0029-assistente-local-com-ollama-e-proveniencia-pelo-codigo.md)). O modelo roda no Ollama local. A resposta traz os cinco campos registrados, e o código anexa a proveniência: o SQL executado, o resultado, os conceitos da ontologia com confiança e fonte, e os trechos. Os parâmetros de [`assistente/parametros.yml`](assistente/parametros.yml) trazem os dois modelos escolhidos pela seleção, abaixo.
 
 ```bash
-ollama pull qwen3:8b
+ollama pull hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0
+ollama pull hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M
+OLLAMA_KV_CACHE_TYPE=q8_0 OLLAMA_FLASH_ATTENTION=1 ollama serve
 uv run python -m assistente "Qual a carteira ativa de PJ no Acre?" --condicao B
 uv run --group rag python -m scripts.analises.fumaca_assistente
 uv run --group assistente --group rag python -m assistente.interface
@@ -271,6 +273,23 @@ uv run python -m scripts.validar_assistente --autoteste
 ```
 
 O validador roda no CI sem modelo, sem rede e sem dado, com um modelo falso e tabelas vazias.
+
+### Como selecionar os modelos do experimento
+
+Os dois modelos do experimento, um de ~14B e um de ~7 a 8B em 4 bits, saem do próprio gabarito: as 41 perguntas na condição A, 5 execuções cada, e fica em cada classe o candidato com mais perguntas certas ([ADR 0026](docs/adr/0026-modelos-do-experimento-escolhidos-pela-condicao-a.md), [ADR 0030](docs/adr/0030-selecao-dos-modelos-pelo-gabarito.md)). Os candidatos, a versão exata de cada um e a configuração ficam em [`evaluation/selecao.yml`](evaluation/selecao.yml), congelado por errata antes de rodar. O corretor compara a resposta com o gabarito pelo valor, e a ressalva, a abstenção e a leitura declarada eu corrijo às cegas, só onde ainda mudam o acerto.
+
+```bash
+uv run --group rag python -m scripts.dimensionar_contexto
+# errata no evaluation/registro.yml: selecao.yml e modelo de prompt
+ollama pull hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0   # e os outros candidatos
+OLLAMA_KV_CACHE_TYPE=q8_0 OLLAMA_FLASH_ATTENTION=1 ollama serve
+OLLAMA_KV_CACHE_TYPE=q8_0 OLLAMA_FLASH_ATTENTION=1 uv run python -m scripts.selecionar_modelos
+uv run python -m correcao.as_cegas
+uv run python -m scripts.resumir_selecao
+uv run python -m scripts.validar_selecao --autoteste
+```
+
+O resultado está em [`docs/selecao-dos-modelos.md`](docs/selecao-dos-modelos.md), gerado por script: ficaram o Gemma 4 12B e o Qwen3.5-9B, com efeito chão declarado no ADR 0030. O validador roda no CI sem modelo: confere o corretor nas próprias respostas do gabarito, disfarçadas e estragadas.
 
 ### Documentação
 

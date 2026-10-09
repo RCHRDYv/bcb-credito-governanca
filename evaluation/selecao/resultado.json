@@ -1,0 +1,2598 @@
+{
+  "metadata": {
+    "gerado_em": "2026-10-09",
+    "issue": 48,
+    "selecao": "evaluation/selecao.yml",
+    "condicao": "A",
+    "mes_de_referencia": "2026-07-31",
+    "regras": {
+      "entrada": "Contexto publicado de pelo menos 65.536 tokens: o max_position_embeddings do config.json da revisão fixada, sem mudar o RoPE. O mesmo modelo roda as quatro condições, e o prompt de D passa de 38 mil tokens. GGUF em 4 bits, publicado pelo autor do modelo ou por quantizador conhecido.\n",
+      "contexto_minimo": 65536,
+      "escolha": "Em cada classe, fica o candidato com mais perguntas certas nas 41, na condição A, pela regra do hipoteses.yml: 5 execuções por pergunta e acerto quando 3 ou mais acertam (ADR 0026, decisão 2).\n",
+      "desempate": "O mesmo número de perguntas certas é empate. Desempata a menor VRAM, o size_vram do /api/ps do Ollama com o num_ctx do candidato (ADR 0026, decisão 3). Persistindo o empate, fica o primeiro da classe nesta lista.\n",
+      "medida_de_vram": "size_vram do /api/ps, em bytes, com o modelo carregado no num_ctx do candidato"
+    }
+  },
+  "escolhidos": {
+    "14b": "gemma-4-12b",
+    "8b": "qwen3.5-9b"
+  },
+  "candidatos": [
+    {
+      "nome": "gemma-4-12b",
+      "classe": "14b",
+      "ollama": "hf.co/google/gemma-4-12B-it-qat-q4_0-gguf:Q4_0",
+      "repositorio": "google/gemma-4-12B-it-qat-q4_0-gguf",
+      "revisao": "29d097773436b69ff9feafd636ab4cf873786537",
+      "arquivo": "gemma-4-12b-it-qat-q4_0.gguf",
+      "sha256": "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b",
+      "quantizacao": "Q4_0, treinado ciente da quantização (QAT)",
+      "num_ctx": 53248,
+      "caracteres_por_token": 2.9,
+      "perguntas_certas": 3,
+      "certas_por_tipo": {
+        "abstencao": 2,
+        "valor_com_ressalva": 1
+      },
+      "erros_por_motivo": {
+        "abstencao_indevida": 171,
+        "erro_formato": 5,
+        "erro_sql": 2,
+        "valor": 14
+      },
+      "vram": 7504742316,
+      "ambiente": {
+        "ollama": "0.40.1",
+        "digest_do_gguf": "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b",
+        "variaveis": {
+          "OLLAMA_KV_CACHE_TYPE": "q8_0",
+          "OLLAMA_FLASH_ATTENTION": "1"
+        },
+        "vram": {
+          "size": 7504742316,
+          "size_vram": 7504742316,
+          "context_length": 53248,
+          "expires_at": "2026-10-09T01:21:56.3601269-03:00"
+        },
+        "inicio": "2026-10-09T00:51:32-03:00",
+        "fim": "2026-10-09T01:06:00-03:00"
+      },
+      "perguntas": {
+        "Q01": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q02": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q03": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q04": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q05": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q06": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q07": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q08": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q09": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q10": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q11": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q12": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q13": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q14": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q15": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q16": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q17": {
+          "execucoes": [
+            "certo",
+            "certo",
+            "nao_julgada",
+            "nao_julgada",
+            "certo"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        },
+        "Q18": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q19": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q20": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q21": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q22": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q23": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q24": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q25": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q26": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q27": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q28": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q29": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q30": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q31": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q32": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q33": {
+          "execucoes": [
+            "certo",
+            "certo",
+            "errado",
+            "errado",
+            "certo"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        },
+        "Q34": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q35": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q36": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q37": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q38": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q39": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q40": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q41": {
+          "execucoes": [
+            "certo",
+            "nao_julgada",
+            "certo",
+            "certo",
+            "nao_julgada"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        }
+      }
+    },
+    {
+      "nome": "ministral-3-14b",
+      "classe": "14b",
+      "ollama": "hf.co/mistralai/Ministral-3-14B-Instruct-2512-GGUF:Q4_K_M",
+      "repositorio": "mistralai/Ministral-3-14B-Instruct-2512-GGUF",
+      "revisao": "74fac473c43357d7fb2671713608183cc72496d0",
+      "arquivo": "Ministral-3-14B-Instruct-2512-Q4_K_M.gguf",
+      "sha256": "824e0f3373e69b84f2cae46fdcb9bd1ebc6ab3bfc7acc125d818b7b8178cc613",
+      "quantizacao": "Q4_K_M",
+      "num_ctx": 53248,
+      "caracteres_por_token": 2.9,
+      "perguntas_certas": 2,
+      "certas_por_tipo": {
+        "abstencao": 1,
+        "valor_com_ressalva": 1
+      },
+      "erros_por_motivo": {
+        "abstencao_indevida": 87,
+        "erro_formato": 9,
+        "erro_guarda": 8,
+        "erro_sql": 59,
+        "erro_tempo": 1,
+        "valor": 30
+      },
+      "vram": 9447868989,
+      "ambiente": {
+        "ollama": "0.40.1",
+        "digest_do_gguf": "824e0f3373e69b84f2cae46fdcb9bd1ebc6ab3bfc7acc125d818b7b8178cc613",
+        "variaveis": {
+          "OLLAMA_KV_CACHE_TYPE": "q8_0",
+          "OLLAMA_FLASH_ATTENTION": "1"
+        },
+        "vram": {
+          "size": 13514204773,
+          "size_vram": 9447868989,
+          "context_length": 53248,
+          "expires_at": "2026-10-09T01:36:10.6350784-03:00"
+        },
+        "inicio": "2026-10-09T01:06:00-03:00",
+        "fim": "2026-10-09T04:38:19-03:00"
+      },
+      "perguntas": {
+        "Q01": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "certo"
+          ],
+          "certas": 1,
+          "acerto": "errado"
+        },
+        "Q02": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q03": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q04": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q05": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q06": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q07": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q08": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q09": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q10": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q11": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q12": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q13": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q14": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q15": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q16": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q17": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q18": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q19": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q20": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q21": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q22": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q23": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q24": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q25": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q26": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q27": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q28": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q29": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q30": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q31": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q32": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q33": {
+          "execucoes": [
+            "errado",
+            "certo",
+            "certo",
+            "certo",
+            "errado"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        },
+        "Q34": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q35": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q36": {
+          "execucoes": [
+            "nao_julgada",
+            "errado",
+            "errado",
+            "nao_julgada",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q37": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q38": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q39": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q40": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q41": {
+          "execucoes": [
+            "certo",
+            "nao_julgada",
+            "certo",
+            "nao_julgada",
+            "certo"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        }
+      }
+    },
+    {
+      "nome": "qwen3.5-9b",
+      "classe": "8b",
+      "ollama": "hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M",
+      "repositorio": "unsloth/Qwen3.5-9B-GGUF",
+      "revisao": "3885219b6810b007914f3a7950a8d1b469d598a5",
+      "arquivo": "Qwen3.5-9B-Q4_K_M.gguf",
+      "sha256": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8",
+      "quantizacao": "Q4_K_M",
+      "num_ctx": 53248,
+      "caracteres_por_token": 3.0,
+      "perguntas_certas": 2,
+      "certas_por_tipo": {
+        "abstencao": 2
+      },
+      "erros_por_motivo": {
+        "abstencao_indevida": 194,
+        "erro_formato": 1
+      },
+      "vram": 6668848987,
+      "ambiente": {
+        "ollama": "0.40.1",
+        "digest_do_gguf": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8",
+        "variaveis": {
+          "OLLAMA_KV_CACHE_TYPE": "q8_0",
+          "OLLAMA_FLASH_ATTENTION": "1"
+        },
+        "vram": {
+          "size": 6668848987,
+          "size_vram": 6668848987,
+          "context_length": 53248,
+          "expires_at": "2026-10-09T05:08:31.114487-03:00"
+        },
+        "inicio": "2026-10-09T04:38:20-03:00",
+        "fim": "2026-10-09T04:48:45-03:00"
+      },
+      "perguntas": {
+        "Q01": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q02": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q03": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q04": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q05": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q06": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q07": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q08": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q09": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q10": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q11": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q12": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q13": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q14": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q15": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q16": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q17": {
+          "execucoes": [
+            "nao_julgada",
+            "certo",
+            "certo",
+            "certo",
+            "nao_julgada"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        },
+        "Q18": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q19": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q20": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q21": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q22": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q23": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q24": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q25": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q26": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q27": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q28": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q29": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q30": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q31": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q32": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q33": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q34": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q35": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q36": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q37": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q38": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q39": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q40": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q41": {
+          "execucoes": [
+            "nao_julgada",
+            "certo",
+            "certo",
+            "certo",
+            "nao_julgada"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        }
+      }
+    },
+    {
+      "nome": "granite-4.2-8b",
+      "classe": "8b",
+      "ollama": "hf.co/ibm-granite/granite-4.2-8b-GGUF:Q4_K_M",
+      "repositorio": "ibm-granite/granite-4.2-8b-GGUF",
+      "revisao": "93f3f6a8938ee922b784cf4e5b4203cd3428df8f",
+      "arquivo": "granite-4.2-8b-Q4_K_M.gguf",
+      "sha256": "16a9369d0805f80b7377d25d87f937a90c05dc04ad79173a52001e42c9aab311",
+      "quantizacao": "Q4_K_M",
+      "num_ctx": 53248,
+      "caracteres_por_token": 2.7,
+      "perguntas_certas": 2,
+      "certas_por_tipo": {
+        "abstencao": 2
+      },
+      "erros_por_motivo": {
+        "abstencao_indevida": 129,
+        "erro_formato": 12,
+        "erro_guarda": 12,
+        "erro_sql": 32,
+        "valor": 9
+      },
+      "vram": 10054124174,
+      "ambiente": {
+        "ollama": "0.40.1",
+        "digest_do_gguf": "16a9369d0805f80b7377d25d87f937a90c05dc04ad79173a52001e42c9aab311",
+        "variaveis": {
+          "OLLAMA_KV_CACHE_TYPE": "q8_0",
+          "OLLAMA_FLASH_ATTENTION": "1"
+        },
+        "vram": {
+          "size": 10054124174,
+          "size_vram": 10054124174,
+          "context_length": 53248,
+          "expires_at": "2026-10-09T05:18:49.6917863-03:00"
+        },
+        "inicio": "2026-10-09T04:48:45-03:00",
+        "fim": "2026-10-09T05:11:36-03:00"
+      },
+      "perguntas": {
+        "Q01": {
+          "execucoes": [
+            "certo",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 1,
+          "acerto": "errado"
+        },
+        "Q02": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q03": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q04": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q05": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q06": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q07": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q08": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q09": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q10": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q11": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q12": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q13": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q14": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q15": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q16": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q17": {
+          "execucoes": [
+            "certo",
+            "certo",
+            "nao_julgada",
+            "nao_julgada",
+            "certo"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        },
+        "Q18": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q19": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q20": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q21": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q22": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q23": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q24": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q25": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q26": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q27": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q28": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q29": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q30": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q31": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q32": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q33": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q34": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q35": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q36": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q37": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q38": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q39": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q40": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q41": {
+          "execucoes": [
+            "certo",
+            "certo",
+            "certo",
+            "nao_julgada",
+            "nao_julgada"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        }
+      }
+    },
+    {
+      "nome": "ministral-3-8b",
+      "classe": "8b",
+      "ollama": "hf.co/mistralai/Ministral-3-8B-Instruct-2512-GGUF:Q4_K_M",
+      "repositorio": "mistralai/Ministral-3-8B-Instruct-2512-GGUF",
+      "revisao": "0102285ad796bd99af90f58de616092e5630e970",
+      "arquivo": "Ministral-3-8B-Instruct-2512-Q4_K_M.gguf",
+      "sha256": "33e7a72cf5e6e2cfc2f2847075acc013d68bba023e35310cef86b5cf8fdca761",
+      "quantizacao": "Q4_K_M",
+      "num_ctx": 53248,
+      "caracteres_por_token": 2.9,
+      "perguntas_certas": 1,
+      "certas_por_tipo": {
+        "valor": 1
+      },
+      "erros_por_motivo": {
+        "abstencao_indevida": 15,
+        "erro_formato": 35,
+        "erro_guarda": 17,
+        "erro_sql": 75,
+        "erro_tempo": 2,
+        "sem_abstencao": 5,
+        "valor": 48
+      },
+      "vram": 9201977915,
+      "ambiente": {
+        "ollama": "0.40.1",
+        "digest_do_gguf": "33e7a72cf5e6e2cfc2f2847075acc013d68bba023e35310cef86b5cf8fdca761",
+        "variaveis": {
+          "OLLAMA_KV_CACHE_TYPE": "q8_0",
+          "OLLAMA_FLASH_ATTENTION": "1"
+        },
+        "vram": {
+          "size": 9201977915,
+          "size_vram": 9201977915,
+          "context_length": 53248,
+          "expires_at": "2026-10-09T05:41:42.757147-03:00"
+        },
+        "inicio": "2026-10-09T05:11:36-03:00",
+        "fim": "2026-10-09T05:46:00-03:00"
+      },
+      "perguntas": {
+        "Q01": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "certo",
+            "errado"
+          ],
+          "certas": 1,
+          "acerto": "errado"
+        },
+        "Q02": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q03": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q04": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q05": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q06": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q07": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q08": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q09": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q10": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q11": {
+          "execucoes": [
+            "certo",
+            "errado",
+            "errado",
+            "certo",
+            "certo"
+          ],
+          "certas": 3,
+          "acerto": "certo"
+        },
+        "Q12": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q13": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q14": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q15": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q16": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q17": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "nao_julgada",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q18": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q19": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q20": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q21": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q22": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q23": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q24": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q25": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q26": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q27": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q28": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q29": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q30": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q31": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q32": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q33": {
+          "execucoes": [
+            "nao_julgada",
+            "errado",
+            "errado",
+            "nao_julgada",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q34": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q35": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q36": {
+          "execucoes": [
+            "errado",
+            "nao_julgada",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q37": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q38": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q39": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q40": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        },
+        "Q41": {
+          "execucoes": [
+            "errado",
+            "errado",
+            "errado",
+            "errado",
+            "errado"
+          ],
+          "certas": 0,
+          "acerto": "errado"
+        }
+      }
+    }
+  ],
+  "julgamentos": {
+    "03f66020f5c4bb2e": {
+      "abstencao": true,
+      "data": "2026-10-09T09:38:54-03:00"
+    },
+    "14e2e947ded915a8": {
+      "abstencao": true,
+      "data": "2026-10-09T09:46:52-03:00"
+    },
+    "16075e773ae9cbb1": {
+      "abstencao": true,
+      "data": "2026-10-09T09:47:02-03:00"
+    },
+    "1ea57e2cbd4291c9": {
+      "abstencao": true,
+      "data": "2026-10-09T09:47:18-03:00"
+    },
+    "21bc897280d1dc10": {
+      "abstencao": true,
+      "data": "2026-10-09T09:41:29-03:00"
+    },
+    "2db56e891c049f70": {
+      "data": "2026-10-09T09:43:31-03:00",
+      "ressalva": true
+    },
+    "378a45c4b4c1bd52": {
+      "abstencao": true,
+      "data": "2026-10-09T09:46:10-03:00"
+    },
+    "39fcebe037fe6747": {
+      "abstencao": true,
+      "data": "2026-10-09T09:40:45-03:00"
+    },
+    "48c425bd3830ba08": {
+      "abstencao": true,
+      "data": "2026-10-09T09:42:50-03:00"
+    },
+    "5938a76039d922fa": {
+      "abstencao": true,
+      "data": "2026-10-09T09:47:15-03:00"
+    },
+    "602080e316d9db0e": {
+      "data": "2026-10-09T09:47:22-03:00",
+      "ressalva": true
+    },
+    "645dcd99fcb465c1": {
+      "abstencao": true,
+      "data": "2026-10-09T09:39:20-03:00"
+    },
+    "64f57bfe4108640f": {
+      "abstencao": true,
+      "data": "2026-10-09T09:45:30-03:00"
+    },
+    "6d53690a56934d13": {
+      "abstencao": true,
+      "data": "2026-10-09T09:46:42-03:00"
+    },
+    "896e7c3ac3a2b8a4": {
+      "data": "2026-10-09T09:46:17-03:00",
+      "ressalva": true
+    },
+    "8d2b6b9621459623": {
+      "data": "2026-10-09T09:45:16-03:00",
+      "ressalva": true
+    },
+    "901b22f9ab0e0a24": {
+      "abstencao": true,
+      "data": "2026-10-09T09:44:43-03:00"
+    },
+    "9785bbd975745532": {
+      "abstencao": true,
+      "data": "2026-10-09T09:43:48-03:00"
+    },
+    "ad6a45f8897ccd53": {
+      "abstencao": true,
+      "data": "2026-10-09T09:45:42-03:00"
+    },
+    "b2f2d900e0fa537e": {
+      "abstencao": true,
+      "data": "2026-10-09T09:47:08-03:00"
+    },
+    "b7b3c6095752c4f7": {
+      "abstencao": true,
+      "data": "2026-10-09T09:46:46-03:00"
+    },
+    "c5883dd9c4d81cbd": {
+      "abstencao": true,
+      "data": "2026-10-09T09:45:04-03:00"
+    },
+    "cc6a69cb4507c154": {
+      "abstencao": true,
+      "data": "2026-10-09T09:46:05-03:00"
+    },
+    "d781db26bb5109ee": {
+      "abstencao": true,
+      "data": "2026-10-09T09:44:57-03:00"
+    },
+    "e14a95a0002b5eb2": {
+      "abstencao": true,
+      "data": "2026-10-09T09:45:25-03:00"
+    },
+    "ec3af6246f183bdd": {
+      "data": "2026-10-09T09:40:25-03:00",
+      "ressalva": true
+    },
+    "f04212289a6fac21": {
+      "data": "2026-10-09T09:44:31-03:00",
+      "ressalva": true
+    }
+  }
+}

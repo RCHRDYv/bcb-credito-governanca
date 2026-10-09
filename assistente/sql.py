@@ -230,7 +230,11 @@ def executar(banco: duckdb.DuckDBPyConnection, sql: str, limite_de_linhas: int, 
             total = len(linhas)
             if total > limite_de_linhas:
                 linhas = linhas[:limite_de_linhas]
-                total = banco.execute(f"select count(*) from ({comando}) as resultado").fetchone()[0]
+                # PT: quebra de linha antes do parêntese: um comentário -- no
+                #     fim do comando não engole o fechamento.
+                # EN: newline before the parenthesis, so a trailing -- comment
+                #     does not swallow it.
+                total = banco.execute(f"select count(*) from (\n{comando}\n) as resultado").fetchone()[0]
         except duckdb.Error as erro:
             # PT: interrompida no meio da busca, a consulta não levanta
             #     InterruptException; a marca do relógio é que diz.
@@ -241,6 +245,12 @@ def executar(banco: duckdb.DuckDBPyConnection, sql: str, limite_de_linhas: int, 
             raise ErroDeSQL("sql", str(erro).splitlines()[0]) from None
         finally:
             relogio.cancel()
+        # PT: interrompida sem erro, a busca pode ter devolvido linhas pela
+        #     metade; o tempo esgotado vale do mesmo jeito.
+        # EN: interrupted without an error, the fetch may be partial; still
+        #     a timeout.
+        if estourou.is_set():
+            raise ErroDeSQL("tempo", f"passou de {limite_de_tempo:g} s")
         segundos = round(time.perf_counter() - inicio, 3)
     return {
         "colunas": colunas,

@@ -1,6 +1,6 @@
 # ADR 0029: O assistente roda no Ollama local, a proveniência é montada pelo código, e os parâmetros ficam provisórios até a #48
 
-**Status:** Aceito
+**Status:** Aceito. Em 2026-10-09, o ADR [0030](0030-selecao-dos-modelos-pelo-gabarito.md) fixou os parâmetros que este ADR deixava provisórios (decisão 14): os modelos Gemma 4 12B e Qwen3.5-9B, com `num_ctx` de 53.248 e cache KV em 8 bits, o modelo de prompt congelado e o WITH como resposta para a Q28 e a Q30.
 **Data:** 2026-10-09
 
 ## Contexto
@@ -83,6 +83,6 @@ Por isso, o `num_ctx` provisório passou a 45.056, o próximo múltiplo de 4.096
 **Negativas, e são reais.**
 - **A condição A não é só esquema.** As `dim_*` trazem colunas de definição, confiança, fonte e aviso, e o modelo pode lê-las por SQL. Isso puxa A para perto de B e reduz a diferença medida entre as duas, na mesma direção conservadora do viés do ADR 0026.
 - **Os avisos sem ligação com o dado não aparecem na proveniência.** Um aviso que não tem coluna nem código para casar com o SQL nunca é resolvido, por mais que se aplique à pergunta. Isso é consequência da decisão 2, não uma falha da resolução.
-- **A Q28 e a Q30 têm gabarito com várias consultas,** e o assistente aceita um comando só. O prompt diz que vale juntar etapas com WITH. A #48 decide se isso basta.
+- **A Q28 e a Q30 têm gabarito com várias consultas,** e o assistente aceita um comando só. O prompt diz que vale juntar etapas com WITH. A #48 decide se isso basta. Decidi que basta, no [ADR 0030](0030-selecao-dos-modelos-pelo-gabarito.md), decisão 6.
 - **O contexto de D aperta os 12 GB da placa.** O 8B com 45 mil já encosta no limite, e um 14B em 4 bits vai pedir cache KV em 8 bits ou parte do modelo na CPU. A fumaça mede o `prompt_eval_count` real de cada condição, para a #48 dimensionar o `num_ctx` por um número medido.
 - **A fumaça e a interface não rodam no CI.** Elas dependem do Ollama, do retrato local e do índice do RAG, e rodam na minha máquina.
