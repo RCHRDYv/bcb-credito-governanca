@@ -22,15 +22,25 @@ PT: A correção às cegas (evaluation/hipoteses.yml, comparacao.correcao),
     comando retoma de onde parou. Depois de cada julgamento, uma pergunta
     que ficou decidida sai da fila.
 
+    Com --experimento (#50, ADR 0031), lê data/experimento/ e julga todas
+    as execuções pendentes, decididas ou não, para a contagem de 0 a 5 sair
+    exata (decisão 1 de 2026-10-14). Execuções com a mesma visão cega (o que
+    o item mostra, mais os aspectos a julgar e as leituras que bateram)
+    viram um item só, e o julgamento vale para todas elas. A visão não tem
+    modelo nem condição, e os itens vêm embaralhados por ela.
+
 EN: Blind grading in the terminal, one item at a time. Only what the script
     cannot decide and can still change a question's result is judged:
     caveat, abstention and declared reading. Items show the question, the
     rubric and the answer fields, never the model, condition, SQL or
     excerpts; citations are stripped; items are shuffled under opaque ids.
     Each judgment is saved at once and the command resumes where it stopped.
+    --experimento judges every pending run of the experiment, merging runs
+    with the same blind view into one item.
 
 Uso / Usage:
     uv run python -m correcao.as_cegas
+    uv run python -m correcao.as_cegas --experimento
 """
 
 from __future__ import annotations
@@ -43,7 +53,10 @@ import re
 from pathlib import Path
 
 from correcao.acerto import (
+    PADRAO_DA_SELECAO,
+    PADRAO_DO_EXPERIMENTO,
     PASTA_DA_SELECAO,
+    PASTA_DO_EXPERIMENTO,
     a_julgar,
     acerto_da_execucao,
     corrigir_todas,
@@ -75,10 +88,38 @@ _CITACOES = [
 ]
 
 
+# PT: referências à fonte do contexto, que também entregam a condição ("a
+#     ontologia indica", "o documento de metodologia menciona", "nos trechos
+#     recuperados"). Viram "o contexto", com a contração do artigo original;
+#     o conteúdo da frase fica (decisão 11 de 2026-10-14, ADR 0031).
+# EN: references to the context source, which also reveal the condition;
+#     replaced by "o contexto", keeping the article's contraction.
+_FONTES = re.compile(
+    r"\b(o|a|os|as|no|na|nos|nas|do|da|dos|das|pelo|pela|pelos|pelas)\s+"
+    r"(?:ontologia(?:\s+do\s+projeto)?|documenta[cç][aã]o|"
+    r"documentos?(?:\s+(?:de|da|do)\s+metodologia)?(?:\s+\d{3,4})?|"
+    r"trechos?(?:\s+(?:recuperados?|fornecidos?|de\s+documentos?))?)\b",
+    re.IGNORECASE,
+)
+_CONTRACAO = {"o": "o", "a": "o", "os": "o", "as": "o", "no": "no", "na": "no", "nos": "no", "nas": "no",
+              "do": "do", "da": "do", "dos": "do", "das": "do", "pelo": "pelo", "pela": "pelo", "pelos": "pelo",
+              "pelas": "pelo"}
+
+
+def _contexto(achado: re.Match) -> str:
+    artigo = achado.group(1)
+    troca = f"{_CONTRACAO[artigo.lower()]} contexto"
+    return troca[0].upper() + troca[1:] if artigo[0].isupper() else troca
+
+
 def sem_citacoes(texto: str) -> str:
-    """PT: o texto sem as citações / EN: text without citations"""
+    """
+    PT: O texto sem as citações e com a fonte do contexto neutralizada.
+    EN: Text without citations, with the context source neutralized.
+    """
     for padrao in _CITACOES:
         texto = padrao.sub("", texto)
+    texto = _FONTES.sub(_contexto, texto)
     return re.sub(r"[ \t]{2,}", " ", texto).strip()
 
 
@@ -118,6 +159,32 @@ def tabela(valores: dict) -> str:
     return "\n".join(texto)
 
 
+def visao_cega(c: dict, registro: dict) -> str:
+    """
+    PT: Identificador da visão cega de uma execução: o que o item mostra
+        (pergunta, interpretação, valores, ressalva e abstenção, sem
+        citações e com o mesmo corte de linhas), os aspectos a julgar e as
+        leituras que bateram, que formam a rubrica. Duas execuções com a
+        mesma visão recebem o mesmo julgamento. Nada do modelo, da condição,
+        do SQL ou dos trechos entra.
+    EN: Id of a run's blind view: what the item shows plus the aspects to
+        judge and the matching readings; never model, condition, SQL or
+        excerpts.
+    """
+    resposta = registro.get("resposta") or {}
+    visao = {
+        "pergunta": c["pergunta"],
+        "julgar": c["correcao"]["julgar"],
+        "leituras_que_batem": c["correcao"]["leituras_que_batem"],
+        "interpretacao": sem_citacoes(resposta.get("interpretacao") or ""),
+        "valores": tabela(resposta.get("valores") or {}),
+        "ressalva": sem_citacoes(resposta.get("ressalva") or ""),
+        "abstencao": sem_citacoes(resposta.get("abstencao") or ""),
+    }
+    texto = json.dumps(visao, ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(f"visao|{texto}".encode("utf-8")).hexdigest()[:16]
+
+
 def mostrar(c: dict, registro: dict, enunciado: str, g: Gabarito, faltam: int) -> None:
     resposta = registro.get("resposta") or {}
     print("\n" + "=" * 78)
@@ -147,47 +214,89 @@ def gravar(julgamentos: dict, pasta: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--pasta", type=Path, default=PASTA_DA_SELECAO)
+    parser.add_argument("--experimento", action="store_true",
+                        help="julga as execuções do experimento (#50), todas as pendentes")
+    parser.add_argument("--pasta", type=Path, default=None)
     args = parser.parse_args()
 
     g = carregar_gabarito()
     _, por_id = perguntas(VIGENTE)
-    from scripts.selecionar_modelos import carregar_selecao
+    if args.experimento:
+        from scripts.executar_experimento import modelos_do_experimento
 
-    candidatos = [c["nome"] for c in carregar_selecao()["candidatos"]]
-    execucoes = execucoes_vigentes(ler_execucoes(args.pasta), candidatos, list(por_id))
+        pasta = args.pasta or PASTA_DO_EXPERIMENTO
+        candidatos = [m["nome"] for m in modelos_do_experimento()]
+        lidas, comando = ler_execucoes(pasta, PADRAO_DO_EXPERIMENTO), "scripts.executar_experimento"
+    else:
+        from scripts.selecionar_modelos import carregar_selecao
+
+        pasta = args.pasta or PASTA_DA_SELECAO
+        candidatos = [c["nome"] for c in carregar_selecao()["candidatos"]]
+        lidas, comando = ler_execucoes(pasta, PADRAO_DA_SELECAO), "scripts.selecionar_modelos"
+    execucoes = execucoes_vigentes(lidas, candidatos, list(por_id))
     if not execucoes:
-        raise SystemExit(f"ERRO nenhuma execução em {args.pasta / 'execucoes'}: rode scripts.selecionar_modelos")
-    registros = {(r["candidato"], r["id_pergunta"], r["seed"]): r for r in execucoes}
-    julgamentos = ler_julgamentos(args.pasta)
+        raise SystemExit(f"ERRO nenhuma execução em {pasta / 'execucoes'}: rode {comando}")
+
+    def chave(candidato: str, condicao: str | None, pergunta: str, seed: int) -> tuple:
+        return (candidato, condicao if args.experimento else None, pergunta, seed)
+
+    registros = {chave(r["candidato"], r.get("condicao"), r["id_pergunta"], r["seed"]): r for r in execucoes}
+    julgamentos = ler_julgamentos(pasta)
     # PT: a correção do script não muda com o julgamento: roda uma vez, e só
-    #     a situação do item julgado é refeita.
+    #     a situação dos itens julgados é refeita.
     # EN: script grading does not change with judgments: run it once.
-    corrigidas = corrigir_todas(execucoes, julgamentos, g)
+    corrigidas = corrigir_todas(execucoes, julgamentos, g, com_condicao=args.experimento)
+
+    def registro_de(c: dict) -> dict:
+        return registros[chave(c["candidato"], c.get("condicao"), c["pergunta"], c["seed"])]
+
+    # PT: a visão de uma execução não muda com os julgamentos: calcula uma
+    #     vez por item.
+    # EN: a run's blind view never changes: computed once per item.
+    visoes: dict[str, str] = {}
+
+    def visao_de(c: dict) -> str:
+        if c["item"] not in visoes:
+            visoes[c["item"]] = visao_cega(c, registro_de(c))
+        return visoes[c["item"]]
 
     while True:
-        fila = sorted(a_julgar(corrigidas), key=lambda c: ordem_embaralhada(c["item"]))
+        fila = a_julgar(corrigidas, todas=args.experimento)
         if not fila:
             print("\nNada mais a julgar / nothing left to judge.")
             return
-        c = fila[0]
-        registro = registros[(c["candidato"], c["pergunta"], c["seed"])]
-        mostrar(c, registro, por_id[c["pergunta"]]["pergunta"], g, len(fila))
-        julgamento = dict(julgamentos.get(c["item"]) or {})
+        if args.experimento:
+            # PT: um item por visão cega; o julgamento vale para o grupo.
+            # EN: one item per blind view; the judgment applies to the group.
+            grupos: dict[str, list[dict]] = {}
+            for c in fila:
+                grupos.setdefault(visao_de(c), []).append(c)
+            rotulo = min(grupos, key=ordem_embaralhada)
+            itens, faltam = grupos[rotulo], len(grupos)
+        else:
+            primeiro = min(fila, key=lambda c: ordem_embaralhada(c["item"]))
+            rotulo, itens, faltam = primeiro["item"], [primeiro], len(fila)
+        c = itens[0]
+        mostrar({**c, "item": rotulo}, registro_de(c), por_id[c["pergunta"]]["pergunta"], g, faltam)
         for aspecto in c["correcao"]["julgar"]:
-            if aspecto in julgamento:
+            if all(aspecto in (julgamentos.get(i["item"]) or {}) for i in itens):
                 continue
             print("\n" + rubrica(aspecto, c["pergunta"], c["correcao"], g))
             resposta = perguntar(PERGUNTAS_DO_ASPECTO[aspecto])
             if resposta is None:
                 print("Parado. Os julgamentos feitos estão gravados / stopped; judgments saved.")
                 return
-            julgamento[aspecto] = resposta
-            julgamento["data"] = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
-            julgamentos[c["item"]] = julgamento
-            gravar(julgamentos, args.pasta)
-            c["julgamento"] = julgamento
-            c["situacao"] = acerto_da_execucao(c["correcao"], julgamento)
+            agora = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
+            for i in itens:
+                julgamento = dict(julgamentos.get(i["item"]) or {})
+                julgamento[aspecto] = resposta
+                julgamento["data"] = agora
+                if args.experimento:
+                    julgamento["visao"] = rotulo
+                julgamentos[i["item"]] = julgamento
+                i["julgamento"] = julgamento
+                i["situacao"] = acerto_da_execucao(i["correcao"], julgamento)
+            gravar(julgamentos, pasta)
             if not resposta:
                 break
 

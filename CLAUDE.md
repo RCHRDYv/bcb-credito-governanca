@@ -52,6 +52,8 @@ uv run python -m scripts.validar_assistente
 uv run python -m scripts.validar_assistente --autoteste
 uv run python -m scripts.validar_selecao
 uv run python -m scripts.validar_selecao --autoteste
+uv run python -m scripts.validar_experimento
+uv run python -m scripts.validar_experimento --autoteste
 ```
 Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'` precisa sair limpo. O CI também roda `dbt parse` com `uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9`.
 
@@ -85,6 +87,14 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - Errata 1 (antes de rodar): `evaluation/selecao.yml` e `assistente/modelo_de_prompt.yml`. O `scripts.selecionar_modelos` se recusa a rodar sem ela. Errata 2 (depois): `assistente/parametros.yml` e `evaluation/selecao/resultado.json`.
 - A execução (`scripts.selecionar_modelos`) e a correção às cegas (`correcao.as_cegas`) são do Yuri, na máquina dele, com o Ollama. `scripts.resumir_selecao` gera o resultado, a página `docs/selecao-dos-modelos.md` e os modelos do `parametros.yml`.
 - O corretor (`correcao/`) compara por valor e é o da #50. O `validar_selecao` e o `--autoteste` rodam sem modelo no workflow `selecao.yml`; o `--ensaio` do executor também.
+
+## Experimento (#50, ADR 0031)
+- Estatística em `experimento/estatistica.py`, funções puras usadas pelo resumo, pelo validador e pelo notebook. O Newcombe é o método 10 do artigo de 1998, conferido contra a Tabela III.
+- Ordem antes de rodar: `/code-review`, a fumaça nos dois modelos (`fumaca_assistente --modelo`, perguntas inventadas) para medir o tempo e conferir o corte de citações em B, C e D, e só então a errata de congelamento.
+- A errata congela o executor, o `experimento/`, o `correcao/`, o `assistente/` (sem a interface e o `__main__`), o `rag/indice.py`, o `scripts/selecionar_modelos.py` e o `scripts/validar_registro.py` (lista em `CONGELADOS_ANTES_DO_EXPERIMENTO`). Depois dela, mudar um desses arquivos pede errata nova.
+- A execução (`uv run --group rag python -m scripts.executar_experimento --modelo <nome>`) e a correção às cegas (`correcao.as_cegas --experimento`) são do Yuri, na máquina dele. Erro de servidor não grava a execução e para: basta rodar de novo.
+- `scripts.resumir_experimento` gera `evaluation/experimento/resultado.json`, `execucoes.jsonl.gz` e `docs/experimento.md`; `--do-publicado` refaz sem `data/`. O notebook `notebooks/experimento.ipynb` lê só o publicado, e o PDF sai por `uv run --group notebook quarto render`.
+- QA por outro caminho: `uv run python -m scripts.analises.qa_experimento`. Tudo isso roda sem modelo no workflow `experimento.yml`, junto do `--ensaio`.
 
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).

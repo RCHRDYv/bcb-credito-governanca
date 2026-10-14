@@ -153,3 +153,219 @@ erratas:
     julgada, porque a pergunta já estava decidida. Nenhuma pergunta mudou
     de acerto, e nenhum escolhido mudou.
   sha256: 234ebeded7dd05f46f93387200287b54126b8136f01adde603bc3103fd0ecfd4
+- data: '2026-10-14'
+  arquivo: scripts/executar_experimento.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O executor: ordem das condições,
+    trechos por pergunta, erro de servidor e conferências.
+  sha256: 76112d6c7f8e28e7c42d64e5cebd80d491c7444fe2b544470d628437b4c0bf40
+- data: '2026-10-14'
+  arquivo: experimento/__init__.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. A contagem de 0 a 5 e a
+    estatística registrada (McNemar, Newcombe método 10, não
+    inferioridade, permutação, Holm, Cochran).
+  sha256: e2d2db2dbeede304262b0e3e007334a132e6247d0a153175671be054c7e8ba17
+- data: '2026-10-14'
+  arquivo: experimento/contagem.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. A contagem de 0 a 5 e a
+    estatística registrada (McNemar, Newcombe método 10, não
+    inferioridade, permutação, Holm, Cochran).
+  sha256: 56f4c66aec0474c21c3bd5f4d64cdc13533919110ddc6bffb5c252be3ee9ab75
+- data: '2026-10-14'
+  arquivo: experimento/estatistica.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. A contagem de 0 a 5 e a
+    estatística registrada (McNemar, Newcombe método 10, não
+    inferioridade, permutação, Holm, Cochran).
+  sha256: 03f9036c31e13a59311a7d317d2956077cd2cb1c1630a2879f21fbf55b922c2c
+- data: '2026-10-14'
+  arquivo: correcao/__init__.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O corretor por valor, o acerto de
+    3 em 5 e a correção às cegas, com a neutralização da fonte do
+    contexto.
+  sha256: 4d8fc7c4dde4122194473821a07deabf225f74a4288c343ee49ebeaffa002dcd
+- data: '2026-10-14'
+  arquivo: correcao/acerto.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O corretor por valor, o acerto de
+    3 em 5 e a correção às cegas, com a neutralização da fonte do
+    contexto.
+  sha256: b13ae9d52b3f1797479464eee43ced5cc368c31667c3de08d3d14e1b822719c1
+- data: '2026-10-14'
+  arquivo: correcao/as_cegas.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O corretor por valor, o acerto de
+    3 em 5 e a correção às cegas, com a neutralização da fonte do
+    contexto.
+  sha256: 3f94df1ae0f813720ae909f86157606abee733e5d1a2656732128d413e6654ea
+- data: '2026-10-14'
+  arquivo: correcao/corretor.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O corretor por valor, o acerto de
+    3 em 5 e a correção às cegas, com a neutralização da fonte do
+    contexto.
+  sha256: 8c3b66fdf24037668fa6fdbce2e57e410226a1f705136833a8c61657f5d8b993
+- data: '2026-10-14'
+  arquivo: correcao/tolerancia.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O corretor por valor, o acerto de
+    3 em 5 e a correção às cegas, com a neutralização da fonte do
+    contexto.
+  sha256: 37cd8c1b6df63a959658de4042602acb44aac829b17239989f5ac5f2c4668ca6
+- data: '2026-10-14'
+  arquivo: assistente/__init__.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O código do assistente que monta o
+    prompt, roda a guarda do SQL e chama o Ollama.
+  sha256: 67fa7c3fd8cd774110795846babef8bd2ec6b0c5de33d300833ee95b6e9f8bb0
+- data: '2026-10-14'
+  arquivo: assistente/cliente.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O código do assistente que monta o
+    prompt, roda a guarda do SQL e chama o Ollama.
+  sha256: 1eb0dbdba221836b0ecd774487bfd4ca2eddb4573d0dd54de4c02b383905120d
+- data: '2026-10-14'
+  arquivo: assistente/contexto.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O código do assistente que monta o
+    prompt, roda a guarda do SQL e chama o Ollama.
+  sha256: 6eef3420733a2fc42e67d1312aa523f1be707d10ab7f04e9b321c85c9afdf8bf
+- data: '2026-10-14'
+  arquivo: assistente/ontologia.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O código do assistente que monta o
+    prompt, roda a guarda do SQL e chama o Ollama.
+  sha256: 36610b471d78e526f8b0e01e89f905dc3c823f1d6137daaa2864b149723688d3
+- data: '2026-10-14'
+  arquivo: assistente/parametros.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O código do assistente que monta o
+    prompt, roda a guarda do SQL e chama o Ollama.
+  sha256: 91ac1e3d4b8e61fe3d44403577b5e640d832b9a7796e10698ae5b2605bdf66d6
+- data: '2026-10-14'
+  arquivo: assistente/responder.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O código do assistente que monta o
+    prompt, roda a guarda do SQL e chama o Ollama.
+  sha256: 6f7f3d5310199faac53bee4e67beab3e2db5979f12777158d48c846b88c22646
+- data: '2026-10-14'
+  arquivo: assistente/sql.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O código do assistente que monta o
+    prompt, roda a guarda do SQL e chama o Ollama.
+  sha256: 79b5d7fa2bfd17ca908411dfad9561df636b8743223e7a24140a6ac56cdc37c6
+- data: '2026-10-14'
+  arquivo: rag/indice.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. A busca do RAG que dá os trechos
+    de C e D.
+  sha256: 47edd14bbf8f4b8419009908bfabd891fe8bc5a84ee20416dc1762bf0e6f5591
+- data: '2026-10-14'
+  arquivo: scripts/selecionar_modelos.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. As conferências antes de rodar
+    (retrato, variáveis do Ollama, digest do GGUF, congelamento).
+  sha256: d10aa11fe2c68fd0f3c99a2103282691fb29256b4e85f5b02fa9823fb38c7044
+- data: '2026-10-14'
+  arquivo: scripts/validar_registro.py
+  motivo: >-
+    Errata 4, da #50 (ADR 0031, decisões 4 e 9). Congela, antes da
+    primeira execução do experimento contra o gabarito, todo o caminho do
+    dado até o número; o scripts.executar_experimento se recusa a rodar
+    sem ela. A fumaça com os dois modelos escolhidos, só com perguntas
+    inventadas, rodou antes, e o corte de citações foi ajustado com ela
+    (decisão 11). Decidi em 2026-10-14. O hash que o congelamento confere.
+  sha256: 72862d659a2db3141597e456b815c3b976e091e3ed7df0f22c1288d6ee2fc48b

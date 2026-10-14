@@ -17,19 +17,26 @@ PT: Teste de fumaça do assistente (#49, ADR 0029) com o Ollama local.
     assistente/parametros.yml, do retrato local do esquema estrela
     (scripts.exportar_esquema_estrela) e do índice do RAG (grupo rag).
 
+    Com --modelo, roda com outro modelo do parametros.yml, pelo nome do
+    Ollama; sem ele, com o primeiro. A #50 usa a fumaça nos dois modelos
+    escolhidos para medir o tempo de B e D antes de rodar o experimento.
+
 EN: Assistant smoke test against local Ollama. Runs the invented questions
     below in all four conditions with the first registered seed and writes
     the report to data/assistente/. The questions are not among the 41
     registered ones (checked by scripts.validar_assistente). The report has
     the measured prompt_eval_count of each call, so #48 can size num_ctx.
     Outside CI: needs Ollama, the local snapshot and the RAG index.
+    --modelo picks another model from parametros.yml by its Ollama name.
 
 Uso / Usage:
     uv run --group rag python -m scripts.analises.fumaca_assistente
+    uv run --group rag python -m scripts.analises.fumaca_assistente --modelo "hf.co/unsloth/Qwen3.5-9B-GGUF:Q4_K_M"
 """
 
 from __future__ import annotations
 
+import argparse
 import datetime
 import json
 import sys
@@ -64,6 +71,10 @@ def conferir_servidor(endereco: str, modelo: str) -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--modelo", help="nome do Ollama de um modelo do parametros.yml; sem ele, o primeiro")
+    args = parser.parse_args()
+
     from assistente import parametros
     from assistente.__main__ import gravar
     from assistente.cliente import ClienteOllama
@@ -73,7 +84,7 @@ def main() -> None:
     from assistente.sql import abrir_banco
     from ingestion.fontes import RAIZ
 
-    p = parametros.carregar()
+    p = parametros.carregar(modelo=args.modelo)
     parametros.conferir_pre_registro(p)
     conferir_servidor(p.endereco, p.modelo)
     banco, modelo, cliente = abrir_banco(), parametros.modelo_de_prompt(), ClienteOllama(p)

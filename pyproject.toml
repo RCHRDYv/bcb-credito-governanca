@@ -55,3 +55,14 @@ rag = [
 assistente = [
     "gradio>=5",
 ]
+# PT: notebook e relatório do experimento (#50, ADR 0031). O notebook lê só
+#     o resultado publicado, e o Quarto, com o Typst embutido, gera o PDF em
+#     docs/ a partir dele. Fica fora do CI, como os outros grupos.
+#     Uso: uv run --group notebook quarto render notebooks/experimento.ipynb
+# EN: experiment notebook and report. The notebook reads only the published
+#     result; Quarto with its bundled Typst renders the PDF. Outside CI.
+notebook = [
+    "jupyter>=1.1",
+    "matplotlib>=3.9",
+    "quarto-cli>=1.6",
+]
