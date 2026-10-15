@@ -1,0 +1,198 @@
+# =============================================================================
+# PT: Os valores do evaluation/hipoteses.yml que mudam com a variação do
+#     instrumento escolhida na triagem (#118, ADR 0032). Foram escritos e
+#     congelados pela errata 5, antes de qualquer triagem: a errata 6 só
+#     copia para o hipoteses.yml os valores da variação que venceu, sem
+#     escrever nada novo depois de ver o resultado.
+#
+#     Cada chave é o caminho no hipoteses.yml, com ponto entre os níveis.
+#     O bloco comum vale para todas as variações da V0 em diante; o bloco de
+#     cada variação vale só para ela e, se repetir um caminho do comum,
+#     prevalece. A V−1 é o instrumento da execução 1 e não muda nada.
+#
+#     resto_sha256 é o sha256 do hipoteses.yml sem esses caminhos, em JSON
+#     canônico: fora deles, a errata 6 não muda nada.
+#
+#     declaracoes são as ressalvas de cada variação, escritas antes da
+#     triagem, que saem com o resultado da execução 2 sem mudar uma palavra.
+#
+#     experimento/hipoteses_por_variacao.py confere tudo isso, no CI (pelo
+#     scripts/validar_variacoes.py) e no executor, antes da execução 2.
+#
+# EN: The hipoteses.yml values that change with the instrument variant chosen
+#     in screening, written and frozen by errata 5 before any screening.
+#     Errata 6 only copies the winning variant's values. Keys are dotted
+#     paths; resto_sha256 locks everything else; declaracoes are the
+#     per-variant caveats published with run 2 verbatim.
+# =============================================================================
+
+metadata:
+  issue: 118
+  decidido_em: "2026-10-15"
+  adr: "0032"
+
+comum:
+  metadata.adrs: ["0012", "0013", "0015", "0026", "0032"]
+  execucao.modelos: >-
+    dois, de classes diferentes (~14B e ~7 a 8B, em 4 bits), escolhidos de
+    novo no conjunto de desenvolvimento (evaluation/desenvolvimento/), só na
+    condição A, entre os candidatos que passam o portão com a variação
+    escolhida: em cada classe, o de mais perguntas certas, com desempate pela
+    menor VRAM (evaluation/portao.yml, ADR 0032)
+  execucao.fixado_antes_da_execucao:
+    - "nome, versão exata e quantização de cada modelo, escolhidos de novo no conjunto de desenvolvimento (#118, ADR 0032)"
+    - "modelo de prompt, com os blocos de contexto (#48), e a variação do instrumento escolhida na triagem (#118, ADR 0032)"
+    - "num_ctx de cada modelo na variação escolhida (#118, ADR 0032); limite de tokens da resposta, limite de linhas e de tempo do SQL (#48)"
+    - "modelo de embeddings e índice do corpus (#46)"
+    - "retrato do esquema estrela no DuckDB, com o mes_de_referencia (#45)"
+    - "conjunto de desenvolvimento, portão, triagem e regra de parada (#118, ADR 0032)"
+
+variacoes:
+  V0:
+    execucao.fluxo: >
+      O modelo recebe o prompt e escreve um SQL, ou se abstém, num objeto
+      JSON com as chaves numa ordem fixa: a interpretação, o SQL, a
+      abstenção e o motivo. Com SQL não vazio, o SQL roda, mesmo com a
+      abstenção marcada. O SQL roda uma vez, só leitura, com limite de
+      linhas e de tempo. O resultado volta ao modelo, que escreve a resposta
+      no formato registrado em comparacao.formato_da_resposta. O modelo é
+      recarregado antes de cada execução, que parte sempre do mesmo estado.
+    execucao.falhas: >
+      Saída fora do formato (inclusive chaves fora da ordem), tempo
+      esgotado, erro de SQL e prompt maior que o num_ctx contam como erro,
+      sem nova tentativa. Com a abstenção marcada, um SQL que falha deixa a
+      abstenção valer.
+    condicoes.contexto_do_modelo: &contexto_sem_nova_tentativa >
+      O mesmo num_ctx nas quatro condições, por modelo: o menor múltiplo de
+      4.096 tokens que comporta, no pior caso, a segunda chamada de D,
+      contada pelo tokenizador do modelo, e também a estimativa em
+      caracteres que o cliente confere antes do envio
+      (evaluation/desenvolvimento/dimensionamento.json). Um prompt que
+      passaria do limite não é cortado em silêncio: a execução daquela
+      pergunta conta como erro, como as outras falhas.
+    estatistica.limite_declarado: >
+      São 41 perguntas, e o grupo de ressalva e abstenção tem 12. A conclusão
+      vale para este domínio e este conjunto, com tamanho de efeito, e não
+      como lei geral (ADR 0013). A execução 1 falhou no controle de
+      qualidade e saiu como registrada; esta é a execução 2, com o
+      instrumento escolhido num conjunto de desenvolvimento separado das 41
+      (ADR 0032). A re-seleção dos modelos pela condição A puxa contra a H1
+      e a H2, e esse viés é declarado junto do resultado (ADR 0026 e 0032).
+  V1:
+    execucao.fluxo: >
+      O modelo recebe o prompt e escreve um SQL, ou se abstém, num objeto
+      JSON com as chaves numa ordem fixa: a interpretação, o SQL, a
+      abstenção e o motivo. A mensagem do usuário traz, depois da pergunta,
+      o critério de abstenção e dois exemplos num esquema de brinquedo
+      (assistente/variacoes.yml), iguais nas quatro condições. Com SQL não
+      vazio, o SQL roda, mesmo com a abstenção marcada. O SQL roda uma vez,
+      só leitura, com limite de linhas e de tempo. O resultado volta ao
+      modelo, que escreve a resposta no formato registrado em
+      comparacao.formato_da_resposta. O modelo é recarregado antes de cada
+      execução, que parte sempre do mesmo estado.
+    execucao.falhas: >
+      Saída fora do formato (inclusive chaves fora da ordem), tempo
+      esgotado, erro de SQL e prompt maior que o num_ctx contam como erro,
+      sem nova tentativa. Com a abstenção marcada, um SQL que falha deixa a
+      abstenção valer.
+    condicoes.contexto_do_modelo: *contexto_sem_nova_tentativa
+    estatistica.limite_declarado: &limite_com_criterio >
+      São 41 perguntas, e o grupo de ressalva e abstenção tem 12. A conclusão
+      vale para este domínio e este conjunto, com tamanho de efeito, e não
+      como lei geral (ADR 0013). A execução 1 falhou no controle de
+      qualidade e saiu como registrada; esta é a execução 2, com o
+      instrumento escolhido num conjunto de desenvolvimento separado das 41
+      (ADR 0032). As regras do critério de abstenção saíram da leitura das
+      saídas da execução 1 no teste, por mim, e não dos modelos. A
+      re-seleção dos modelos pela condição A puxa contra a H1 e a H2, e esse
+      viés é declarado junto do resultado (ADR 0026 e 0032).
+  V2:
+    execucao.fluxo: >
+      O modelo recebe o prompt e escreve um SQL, ou se abstém, num objeto
+      JSON com as chaves numa ordem fixa: a interpretação, um plano curto do
+      SQL, o SQL, a abstenção e o motivo. A mensagem do usuário traz, depois
+      da pergunta, o critério de abstenção e dois exemplos num esquema de
+      brinquedo (assistente/variacoes.yml), iguais nas quatro condições. Com
+      SQL não vazio, o SQL roda, mesmo com a abstenção marcada. O SQL roda
+      uma vez, só leitura, com limite de linhas e de tempo. O resultado volta
+      ao modelo, que escreve a resposta no formato registrado em
+      comparacao.formato_da_resposta. O modelo é recarregado antes de cada
+      execução, que parte sempre do mesmo estado.
+    execucao.falhas: >
+      Saída fora do formato (inclusive chaves fora da ordem), tempo
+      esgotado, erro de SQL e prompt maior que o num_ctx contam como erro,
+      sem nova tentativa. Com a abstenção marcada, um SQL que falha deixa a
+      abstenção valer.
+    condicoes.contexto_do_modelo: *contexto_sem_nova_tentativa
+    estatistica.limite_declarado: *limite_com_criterio
+  V3:
+    execucao.fluxo: &fluxo_com_nova_tentativa >
+      O modelo recebe o prompt e escreve um SQL, ou se abstém, num objeto
+      JSON com as chaves numa ordem fixa: a interpretação, um plano curto do
+      SQL, o SQL, a abstenção e o motivo. A mensagem do usuário traz, depois
+      da pergunta, o critério de abstenção e dois exemplos num esquema de
+      brinquedo (assistente/variacoes.yml), iguais nas quatro condições. Com
+      SQL não vazio, o SQL roda, mesmo com a abstenção marcada, só leitura,
+      com limite de linhas e de tempo. Quando ele dá erro de SQL ou para na
+      guarda, ou volta vazio ou só com nulos, o modelo recebe o problema e
+      escreve a resposta de novo, uma vez só; a nova resposta substitui a
+      anterior. O resultado da tentativa que vale (a nova, quando houve),
+      mesmo vazio, volta ao modelo, que escreve a resposta no formato
+      registrado em comparacao.formato_da_resposta. O modelo é recarregado
+      antes de cada execução, que parte sempre do mesmo estado.
+    execucao.falhas: &falhas_com_nova_tentativa >
+      Saída fora do formato (inclusive chaves fora da ordem), tempo
+      esgotado, erro de SQL e prompt maior que o num_ctx contam como erro.
+      O erro de SQL, a guarda e o resultado vazio têm uma nova tentativa; o
+      tempo esgotado não. Com a abstenção marcada, um SQL que falha deixa a
+      abstenção valer: depois da nova tentativa, quando o erro é de SQL ou
+      da guarda, e já na primeira, quando é tempo esgotado.
+    condicoes.contexto_do_modelo: &contexto_com_nova_tentativa >
+      O mesmo num_ctx nas quatro condições, por modelo: o menor múltiplo de
+      4.096 tokens que comporta, no pior caso, a segunda chamada de D e a
+      chamada da nova tentativa, contadas pelo tokenizador do modelo, e
+      também a estimativa em caracteres que o cliente confere antes do
+      envio (evaluation/desenvolvimento/dimensionamento.json). Um prompt que
+      passaria do limite não é cortado em silêncio: a execução daquela
+      pergunta conta como erro, como as outras falhas.
+    estatistica.limite_declarado: *limite_com_criterio
+  V4:
+    execucao.fluxo: *fluxo_com_nova_tentativa
+    execucao.falhas: *falhas_com_nova_tentativa
+    condicoes.contexto_do_modelo: *contexto_com_nova_tentativa
+    estatistica.limite_declarado: *limite_com_criterio
+    condicoes.comum: >
+      As quatro condições usam o mesmo modelo de prompt, com o mesmo
+      enunciado, as mesmas instruções e o mesmo formato de resposta. Só os
+      blocos de contexto mudam, e eles se ligam e desligam (ADR 0012). Todas
+      consultam o esquema estrela, e só ele (ADR 0007), no DuckDB, sobre o
+      retrato exportado pela #45. O bloco do esquema traz também, nas quatro
+      condições, as colunas que ligam cada fato às dimensões (ADR 0032); em
+      A, o esquema continua sem descrição. A descrição de cada condição é a
+      da docs/especificacao.md, palavra por palavra.
+
+# PT: as ressalvas que saem com o resultado da execução 2: as comuns e as da
+#     variação que vencer, nesta ordem.
+# EN: caveats published with run 2: common ones, then the winning variant's.
+declaracoes:
+  comum:
+    - "O instrumento foi escolhido num conjunto de desenvolvimento de 30 perguntas inventadas, mais simples que o teste na estrutura do SQL: nas mistas, junção em 5 de 15, CTE em 10 de 15 e comparação no tempo em 8 de 15, contra 51, 49 e 34 de 56 consultas do teste."
+    - "A re-seleção na condição A conta, na prática, 19 das 30 perguntas: com pendente contando como errado, as de abstenção e de ressalva nunca saem certas pelo script. Quem cobre a abstenção é a métrica Z do portão."
+    - "A condição B recebe a ontologia inteira, e não só os itens da pergunta: a H1 testa a ontologia inteira no contexto."
+    - "O Ministral 3 14B ficou fora da triagem por não caber inteiro na GPU de 12 GB, e a classe 14b ficou só com o Gemma 4 12B."
+    - "A decisão 2 do ADR 0031 (rodar de novo dá o mesmo) não valia para o Gemma na execução 1, que rodou sem recarregar o modelo. A execução 2 recarrega o modelo antes de cada execução."
+  V0: []
+  V1: &declaracoes_do_criterio
+    - "O critério de abstenção é o mesmo texto nas quatro condições, mas a cláusula sobre o contexto só encontra a que se referir em B, C e D: o efeito dele pode ser diferente por condição, e o portão somado não detecta isso."
+  V2: *declaracoes_do_criterio
+  V3:
+    - "O critério de abstenção é o mesmo texto nas quatro condições, mas a cláusula sobre o contexto só encontra a que se referir em B, C e D: o efeito dele pode ser diferente por condição, e o portão somado não detecta isso."
+    - "A instrução de sistema, congelada desde a #48, diz que o SQL roda uma vez; com a nova tentativa, isso não vale, e o pedido de nova tentativa é explícito."
+    - "A nova tentativa vale para erro de SQL, guarda e resultado vazio, e não para tempo esgotado."
+  V4:
+    - "O critério de abstenção é o mesmo texto nas quatro condições, mas a cláusula sobre o contexto só encontra a que se referir em B, C e D: o efeito dele pode ser diferente por condição, e o portão somado não detecta isso."
+    - "A instrução de sistema, congelada desde a #48, diz que o SQL roda uma vez; com a nova tentativa, isso não vale, e o pedido de nova tentativa é explícito."
+    - "A nova tentativa vale para erro de SQL, guarda e resultado vazio, e não para tempo esgotado."
+    - "As junções do bloco do esquema ligam só fato com dimensão, pela primeira coluna da dimensão; não há junção de fato com fato nem por ano."
+
+resto_sha256: "35508e22a55976aa07ecf851eb5467eaf3d014b392d9fe9e2f1357bf3d0514c2"

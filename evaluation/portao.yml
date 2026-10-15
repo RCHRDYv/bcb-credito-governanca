@@ -1,0 +1,73 @@
+# =============================================================================
+# PT: O portão do instrumento (#118, ADR 0032), decidido em 2026-10-15 e
+#     congelado por errata antes da triagem. Diz quando uma variação do
+#     instrumento funciona, em que ordem as variações são testadas, como a
+#     variação e os modelos são escolhidos e quando a emenda para.
+#     scripts/medir_portao.py aplica estas regras às execuções do conjunto de
+#     desenvolvimento (evaluation/desenvolvimento/).
+#
+# EN: The instrument gate, decided on 2026-10-15 and frozen before
+#     screening: when a variant works, the screening order, how the variant
+#     and models are chosen and when the amendment stops.
+# =============================================================================
+
+metadata:
+  issue: 118
+  decidido_em: "2026-10-15"
+  conjunto: "evaluation/desenvolvimento/perguntas.yml"
+
+# PT: por modelo, com as 5 seeds e o acerto da maioria de 3 em 5, nas quatro
+#     condições somadas. No script, pendente conta como errado. Fora o G0,
+#     nenhuma métrica aparece por condição durante a triagem.
+# EN: per model, 5 seeds, 3-of-5 majority, four conditions pooled.
+metricas:
+  G0:
+    descricao: "Erro de formato (com o corte por limite de tokens) ou de contexto, em cada condição, sobre todas as execuções; e o modelo inteiro na GPU (size_vram igual a size)."
+    maximo_por_condicao: 0.05
+  X:
+    descricao: "Execuções que terminam com valores (sem erro, sem abstenção, com pelo menos uma linha), nas perguntas respondíveis: controles positivos e mistas de valor ou de valor com ressalva."
+    minimo: 0.70
+  Y1:
+    descricao: "Controles positivos certos pela maioria de 3 em 5, somados nas quatro condições."
+    minimo: 0.50
+  Y2:
+    descricao: "Mistas de valor certas pela maioria de 3 em 5, somadas nas quatro condições."
+    minimo: 0.25
+  Z:
+    descricao: "Execuções que se abstêm nos controles negativos, somadas nas quatro condições."
+    minimo: 0.70
+
+sanidade:
+  teto:
+    descricao: "Mistas de valor certas pela maioria, somadas, na variação que venceu, em cada um dos modelos da primeira etapa (aprovados ou não; os candidatos da re-seleção não contam, decisão de 2026-10-15). Acima disso, o conjunto de desenvolvimento está fácil demais."
+    maximo: 0.85
+  v_menos_1:
+    descricao: "O instrumento da execução 1 (V-1) tem de reprovar no portão. Se passar, o conjunto está fácil demais."
+  se_falhar: "A triagem para, o conjunto de desenvolvimento é revisto por errata nova e a triagem recomeça pela V-1."
+  # PT: decidido em 2026-10-15: uma revisão só. Se a sanidade falhar de
+  #     novo, vale a execução 1 e a emenda se encerra.
+  # EN: one revision only; a second sanity failure ends the amendment.
+  # PT: a versão fica no metadata.versao do perguntas.yml; o executor, o
+  #     medir_portao e o validar_desenvolvimento recusam versão acima de
+  #     1 + revisoes_permitidas.
+  # EN: enforced on metadata.versao of perguntas.yml.
+  revisoes_permitidas: 1
+  se_falhar_de_novo: "Vale a execução 1 e a emenda se encerra, como na regra de parada."
+
+triagem:
+  ordem: ["V-1", "V0", "V1", "V2", "V3", "V4"]
+  regra: "Vence a primeira variação, nesta ordem, que passa o portão com pelo menos um candidato de cada classe. Nenhuma variação entra depois que a triagem começa."
+  etapas: "Cada variação roda primeiro nos dois modelos registrados. Se um deles reprova, os outros candidatos da classe dele rodam a mesma variação antes de ela ser descartada. Escolhida a variação, os candidatos que faltam rodam só ela, para a re-seleção."
+  # PT: os modelos registrados na execução 1, fixados aqui para que a
+  #     errata 6, que troca o parametros.yml, não mude a regra.
+  # EN: run 1's registered models, fixed here so errata 6 cannot move them.
+  modelos_da_primeira_etapa: ["gemma-4-12b", "qwen3.5-9b"]
+  candidatos_fora: ["ministral-3-14b"]
+  motivo_dos_candidatos_fora: "Não cabe inteiro na GPU de 12 GB com o num_ctx do experimento: na seleção, parte dele rodou na CPU. A classe 14b fica só com o Gemma 4 12B."
+
+reselecao:
+  regra: "Entre os candidatos que passam o portão com a variação escolhida, fica em cada classe o de mais perguntas certas no conjunto de desenvolvimento, só na condição A, pela maioria de 3 em 5 e com pendente contando como errado; o empate se resolve pela menor VRAM."
+
+parada:
+  regra: "A execução 2 é a última. Se nenhuma variação passar o portão, ou se uma classe ficar sem modelo aprovado, vale a execução 1 e a emenda se encerra."
+  resultado_confirmatorio: "As afirmações confirmatórias são da execução 2. A execução 1 sai como registrada, e nenhuma das duas é escolhida depois de ver o resultado."

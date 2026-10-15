@@ -170,6 +170,22 @@ def travar(banco: duckdb.DuckDBPyConnection, pasta_permitida: str | None) -> duc
     return banco
 
 
+def uma_thread(banco: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyConnection:
+    """
+    PT: Uma thread só (decisão de 2026-10-15, #118). Com várias threads, o
+        DuckDB pode mudar entre duas rodadas a ordem das linhas sem order by
+        e os últimos dígitos de agregações em ponto flutuante, e o modelo
+        leria um resultado diferente com a mesma seed. A documentação do
+        DuckDB recomenda set threads = 1 para isso (operations manual,
+        non-deterministic behavior).
+    EN: Single thread: with several, DuckDB may change row order without
+        order by and float aggregate digits between runs; its docs recommend
+        set threads = 1.
+    """
+    banco.execute("set threads = 1")
+    return banco
+
+
 def abrir_banco() -> duckdb.DuckDBPyConnection:
     """
     PT: O retrato local do esquema estrela (data/esquema_estrela/), travado.
@@ -177,7 +193,7 @@ def abrir_banco() -> duckdb.DuckDBPyConnection:
     """
     if not (LOCAL / "data").exists():
         raise SystemExit("ERRO retrato local ausente: rode scripts.exportar_esquema_estrela / snapshot missing")
-    return travar(conectar("local"), LOCAL.as_posix() + "/")
+    return travar(uma_thread(conectar("local")), LOCAL.as_posix() + "/")
 
 
 def banco_vazio() -> duckdb.DuckDBPyConnection:
@@ -187,7 +203,7 @@ def banco_vazio() -> duckdb.DuckDBPyConnection:
     EN: Empty tables with the star schema columns and types, locked; the CI
         test database, which has no data.
     """
-    banco = duckdb.connect()
+    banco = uma_thread(duckdb.connect())
     for tabela, colunas in esquema_esperado().items():
         definicao = ", ".join(f"{nome} {tipo_no_duckdb(tipo)}" for nome, tipo in colunas)
         banco.execute(f"create table {tabela} ({definicao})")

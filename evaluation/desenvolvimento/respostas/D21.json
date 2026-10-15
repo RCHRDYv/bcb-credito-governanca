@@ -1,0 +1,21 @@
+{
+  "consulta": "D21.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "taxa_julho_2025_pct",
+    "taxa_julho_2026_pct",
+    "variacao_pp"
+  ],
+  "tipos": [
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "5.818786492",
+      "7.581867421",
+      "1.76308093"
+    ]
+  ]
+}

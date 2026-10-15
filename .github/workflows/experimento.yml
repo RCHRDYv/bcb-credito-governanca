@@ -60,11 +60,27 @@ jobs:
       - name: Controle negativo
         run: uv run python -m scripts.validar_experimento --autoteste
 
+      - name: Conjunto de desenvolvimento (#118)
+        run: |
+          uv run python -m scripts.validar_desenvolvimento
+          uv run python -m scripts.validar_desenvolvimento --autoteste
+
+      - name: Variações do instrumento e portão (#118)
+        run: |
+          uv run python -m scripts.validar_variacoes
+          uv run python -m scripts.validar_variacoes --autoteste
+          uv run python -m scripts.medir_portao --autoteste
+          uv run python -m scripts.executar_experimento --ensaio --perguntas desenvolvimento --variacao V0
+          uv run python -m scripts.executar_experimento --ensaio --perguntas desenvolvimento --variacao V4
+
       - name: Estatística por outro caminho
         run: uv run python -m scripts.analises.qa_experimento
 
+      - name: Correção do corretor sem efeito no que já foi corrigido (#118)
+        run: uv run python -m scripts.analises.qa_corretor
+
       - name: Ensaio do executor, sem modelo
-        run: uv run python -m scripts.executar_experimento --ensaio
+        run: uv run python -m scripts.executar_experimento --perguntas teste --ensaio
 
       - name: A seleção não mudou com o corretor estendido
         run: |

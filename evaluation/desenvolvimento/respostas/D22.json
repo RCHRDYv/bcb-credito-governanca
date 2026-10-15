@@ -1,0 +1,81 @@
+{
+  "consulta": "D22.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "codigo_modalidade",
+    "modalidade",
+    "ativo_problematico"
+  ],
+  "tipos": [
+    "STRING",
+    "STRING",
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "02",
+      "Empréstimos",
+      "101095773129.05"
+    ],
+    [
+      "04",
+      "Financiamentos",
+      "37037175131.63"
+    ],
+    [
+      "13",
+      "Outros créditos",
+      "12441619613.98"
+    ],
+    [
+      "05",
+      "Financiamentos à exportação",
+      "6884146137.56"
+    ],
+    [
+      "11",
+      "Financiamentos de infraestrutura e desenvolvimento",
+      "5985279551.65"
+    ],
+    [
+      "03",
+      "Direitos creditórios descontados",
+      "3809736219.36"
+    ],
+    [
+      "07",
+      "Financiamentos com interveniência",
+      "2578886827.55"
+    ],
+    [
+      "09",
+      "Financiamentos imobiliários",
+      "1600454213.83"
+    ],
+    [
+      "08",
+      "Financiamentos rurais  (ex-financiamentos rurais e agroindustriais)",
+      "1468868352.56"
+    ],
+    [
+      "12",
+      "Operações de arrendamento",
+      "682125546.10"
+    ],
+    [
+      "01",
+      "Adiantamentos a depositantes",
+      "655710596.19"
+    ],
+    [
+      "06",
+      "Financiamentos à importação",
+      "18325177.41"
+    ],
+    [
+      "10",
+      "Financiamentos de títulos e valores mobiliários",
+      "0.00"
+    ]
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "consulta": "D03.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "ano_da_populacao",
+    "populacao"
+  ],
+  "tipos": [
+    "INT",
+    "LONG"
+  ],
+  "linhas": [
+    [
+      "2025",
+      "9562007"
+    ]
+  ]
+}

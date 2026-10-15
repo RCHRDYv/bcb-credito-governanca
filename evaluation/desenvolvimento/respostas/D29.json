@@ -1,0 +1,26 @@
+{
+  "consulta": "D29.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "recortes",
+    "carteira_ativa"
+  ],
+  "tipos": [
+    "DATE",
+    "LONG",
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "2025-06-30",
+      "322852",
+      "6923398553597.15"
+    ],
+    [
+      "2025-07-31",
+      "308209",
+      "6940997076181.43"
+    ]
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "consulta": "D19.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "carteira_julho_2025",
+    "carteira_julho_2026",
+    "crescimento_pct"
+  ],
+  "tipos": [
+    "DECIMAL",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "310360290028.58",
+      "303639010044.38",
+      "-2.165637873"
+    ]
+  ]
+}

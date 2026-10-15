@@ -1,0 +1,21 @@
+{
+  "consulta": "D24.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "massa_2025",
+    "massa_2026",
+    "crescimento_pct"
+  ],
+  "tipos": [
+    "DECIMAL",
+    "DECIMAL",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "351189000000.00",
+      "380309000000.00",
+      "8.291831464"
+    ]
+  ]
+}

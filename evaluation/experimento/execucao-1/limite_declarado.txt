@@ -1,0 +1,1 @@
+São 41 perguntas, e o grupo de ressalva e abstenção tem 12. A conclusão vale para este domínio e este conjunto, com tamanho de efeito, e não como lei geral (ADR 0013). A seleção dos modelos pela condição A puxa contra a H1 e a H2, e esse viés é declarado junto do resultado (ADR 0026).

@@ -27,7 +27,10 @@ PT: A correção às cegas (evaluation/hipoteses.yml, comparacao.correcao),
     exata (decisão 1 de 2026-10-14). Execuções com a mesma visão cega (o que
     o item mostra, mais os aspectos a julgar e as leituras que bateram)
     viram um item só, e o julgamento vale para todas elas. A visão não tem
-    modelo nem condição, e os itens vêm embaralhados por ela.
+    modelo nem condição, e os itens vêm embaralhados por ela. O --execucao
+    escolhe a pasta (1: data/experimento; 2: data/experimento/execucao-2,
+    #118), e os modelos saem do ambiente.json de cada modelo nela, não do
+    parametros.yml, que muda entre as duas execuções.
 
 EN: Blind grading in the terminal, one item at a time. Only what the script
     cannot decide and can still change a question's result is judged:
@@ -36,11 +39,12 @@ EN: Blind grading in the terminal, one item at a time. Only what the script
     excerpts; citations are stripped; items are shuffled under opaque ids.
     Each judgment is saved at once and the command resumes where it stopped.
     --experimento judges every pending run of the experiment, merging runs
-    with the same blind view into one item.
+    with the same blind view into one item; --execucao picks the folder, and
+    the models come from its ambiente.json files.
 
 Uso / Usage:
     uv run python -m correcao.as_cegas
-    uv run python -m correcao.as_cegas --experimento
+    uv run python -m correcao.as_cegas --experimento --execucao 1
 """
 
 from __future__ import annotations
@@ -216,16 +220,21 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--experimento", action="store_true",
                         help="julga as execuções do experimento (#50), todas as pendentes")
+    parser.add_argument("--execucao", type=int, choices=[1, 2], help="com --experimento: qual execução (#118)")
     parser.add_argument("--pasta", type=Path, default=None)
     args = parser.parse_args()
+    if args.experimento and not args.execucao:
+        parser.error("--experimento pede --execucao 1 ou 2")
 
     g = carregar_gabarito()
     _, por_id = perguntas(VIGENTE)
     if args.experimento:
-        from scripts.executar_experimento import modelos_do_experimento
+        from scripts.executar_experimento import PASTA_DA_EXECUCAO_2
 
-        pasta = args.pasta or PASTA_DO_EXPERIMENTO
-        candidatos = [m["nome"] for m in modelos_do_experimento()]
+        pasta = args.pasta or (PASTA_DO_EXPERIMENTO if args.execucao == 1 else PASTA_DA_EXECUCAO_2)
+        # PT: os modelos que rodaram nesta pasta, pelo ambiente de cada um.
+        # EN: the models that ran in this folder, by their environment file.
+        candidatos = sorted(a.parent.name for a in (pasta / "execucoes").glob("*/ambiente.json"))
         lidas, comando = ler_execucoes(pasta, PADRAO_DO_EXPERIMENTO), "scripts.executar_experimento"
     else:
         from scripts.selecionar_modelos import carregar_selecao

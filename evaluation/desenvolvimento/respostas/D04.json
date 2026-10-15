@@ -1,0 +1,18 @@
+{
+  "consulta": "D04.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "carteira_a_vencer"
+  ],
+  "tipos": [
+    "DATE",
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "2026-07-31",
+      "325848663027.96"
+    ]
+  ]
+}

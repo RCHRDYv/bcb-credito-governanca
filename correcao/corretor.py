@@ -506,15 +506,29 @@ def _identificar(tabela: Tabela, consulta: Consulta, chave: str) -> dict[int, se
             return numero(celula) is not None and numero(celula) == numero(linha[chave])
         return any(linha[c] is not None and texto_casa(celula, linha[c], c) for c in colunas)
 
+    def exata(celula, linha: dict) -> bool:
+        # PT: a célula igual ao texto do gabarito, sem tirar zeros à esquerda.
+        # EN: the cell equal to the key text, leading zeros kept.
+        return celula is not None and any(linha[c] is not None and normalizar(celula) == normalizar(linha[c])
+                                          for c in colunas)
+
+    # PT: no empate em itens achados, vence a coluna com mais células iguais
+    #     ao texto do gabarito: a posição 2 não ganha do código "02"
+    #     (correção de 2026-10-15, #118). Persistindo o empate, a primeira.
+    # EN: on a tie, the column with more exact matches wins, so position 2
+    #     does not beat code "02"; then the first column.
     melhor: dict[int, set[int]] = {}
+    melhor_exatas = -1
     for j in range(tabela.largura):
         achadas: dict[int, set[int]] = {}
+        exatas = 0
         for k, linha in enumerate(consulta.linhas):
             linhas = {i for i in range(len(tabela.linhas)) if bate(tabela.celula(i, j), linha)}
             if linhas:
                 achadas[k] = linhas
-        if len(achadas) > len(melhor):
-            melhor = achadas
+                exatas += any(exata(tabela.celula(i, j), linha) for i in linhas) if not numerica else 0
+        if (len(achadas), exatas) > (len(melhor), melhor_exatas):
+            melhor, melhor_exatas = achadas, exatas
     return melhor
 
 

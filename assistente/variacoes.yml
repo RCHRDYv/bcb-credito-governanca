@@ -1,0 +1,93 @@
+# =============================================================================
+# PT: Textos das variações do instrumento (#118, ADR 0032). O
+#     assistente/modelo_de_prompt.yml continua congelado e é o da V−1, o
+#     instrumento da execução 1. As variações de V0 a V4 trocam só as
+#     mensagens do usuário (o formato da resposta, o critério e os exemplos)
+#     e, na V4, acrescentam as chaves de junção ao bloco do esquema. A
+#     mensagem de sistema, com as instruções e os blocos de contexto, é a
+#     mesma da V−1 nas quatro condições.
+#
+#     Os nomes dos campos levam prefixo de letra porque a gramática do Ollama
+#     gera as chaves em ordem alfabética: sem o prefixo, "abstencao" vinha
+#     antes da interpretação e do SQL. O código devolve os nomes registrados
+#     logo depois de ler o JSON.
+#
+#     Nenhum texto foi escrito ou afinado nas 41 perguntas registradas. Os
+#     exemplos usam um esquema de brinquedo, sem fato do domínio.
+#
+# EN: Texts of the instrument variants. The frozen modelo_de_prompt.yml is
+#     V−1's. V0–V4 only change the user messages (answer format, criterion
+#     and examples) and, in V4, add join keys to the schema block. Field
+#     names carry letter prefixes because Ollama's grammar emits keys in
+#     alphabetical order. Not written or tuned on the registered questions.
+# =============================================================================
+
+campos_da_primeira:
+  interpretacao: "como você entendeu a pergunta, com a janela de tempo, a unidade e o método"
+  plano: "os passos do SQL em poucas linhas: tabelas, colunas, filtros, junções e cálculos"
+  sql: "o comando SQL que responde à pergunta, ou \"\" se você se abstém"
+  abstem: "true se o dado não permite responder, false se você escreveu o SQL"
+  motivo: "\"\" se você escreveu o SQL, ou o motivo de não dar para responder e o que faltaria"
+
+campos_da_segunda:
+  interpretacao: "a janela de tempo, a unidade e o método que a resposta usou"
+  valores: "os números e os itens da resposta final, como {\"colunas\": [...], \"linhas\": [[...], ...]}"
+  ressalva: "o limite que torna o número interpretável, ou \"\" se não houver"
+  abstem: "false se você respondeu, true se o dado não permite responder"
+  motivo: "\"\" se você respondeu, ou o motivo de não dar para responder e o que faltaria"
+
+primeira_chamada: |-
+  Pergunta: {pergunta}
+
+  Responda só com um objeto JSON com estes campos, nesta ordem:
+  {campos}
+
+segunda_chamada: |-
+  Resultado do SQL, em JSON com colunas e linhas{aviso_do_resultado}:
+
+  {resultado}
+
+  Responda só com um objeto JSON com estes campos, nesta ordem:
+  {campos}
+
+criterio: |-
+  Critério para se abster: abstenha-se só quando o dado que responde à pergunta, como ela foi feita, não existe no esquema, ou quando o contexto diz que ele não vale para esse uso. Agregar, juntar tabelas, filtrar ou calcular uma variação nunca é motivo para se abster: escreva o SQL. Responda todas as partes da pergunta, com um valor para cada número pedido.
+
+  Exemplos, num esquema de brinquedo que não é o desta base: vendas(data DATE, loja VARCHAR, valor DECIMAL) e lojas(loja VARCHAR, cidade VARCHAR).
+  {exemplos}
+
+# PT: o fecho da mensagem da V1 em diante, depois dos exemplos: a última
+#     coisa que o modelo lê é a pergunta.
+# EN: closing line from V1 on, so the question is the last thing read.
+fecho: "Agora responda à pergunta: {pergunta}"
+
+# PT: exemplos no esquema de brinquedo, o de abstenção primeiro, para a
+#     mensagem não terminar nele (decisão de 2026-10-15). O código monta o
+#     JSON de cada um com os campos e os prefixos da variação.
+# EN: toy-schema examples, the abstention first so the message does not end
+#     on it; rendered per variant.
+exemplos:
+  - pergunta: "Qual foi o lucro das lojas em fevereiro de 2025?"
+    interpretacao: "Lucro das lojas em fevereiro de 2025, em reais."
+    plano: "O esquema só tem o valor das vendas; não há custo nem lucro."
+    sql: ""
+    abstem: true
+    motivo: "O esquema traz só o valor das vendas. Para o lucro, faltariam os custos das lojas."
+  - pergunta: "Quanto as vendas das lojas de Recife cresceram, em percentual, de janeiro para fevereiro de 2025?"
+    interpretacao: "Vendas das lojas de Recife em janeiro e em fevereiro de 2025, em reais; crescimento percentual de um mês para o outro."
+    plano: "Juntar vendas e lojas pela loja, filtrar Recife e os dois meses, somar por mês e dividir fevereiro por janeiro."
+    sql: "with por_mes as (select extract(month from v.data) as mes, sum(v.valor) as total from vendas v join lojas l on l.loja = v.loja where l.cidade = 'Recife' and extract(year from v.data) = 2025 and extract(month from v.data) in (1, 2) group by 1) select max(case when mes = 1 then total end) as janeiro, max(case when mes = 2 then total end) as fevereiro, 100 * (max(case when mes = 2 then total end) / max(case when mes = 1 then total end) - 1) as crescimento_pct from por_mes"
+    abstem: false
+    motivo: ""
+
+nova_tentativa: |-
+  {problema}
+
+  Corrija o SQL e responda de novo, só com o objeto JSON no mesmo formato. Se o dado não permite responder, abstenha-se.
+
+problema_de_erro: "O SQL não rodou: {erro}"
+problema_de_vazio: "O SQL rodou e não trouxe nenhuma linha, ou só valores nulos."
+
+bloco_juncoes: |-
+  Colunas que ligam as tabelas, para as junções:
+  {juncoes}

@@ -369,3 +369,1153 @@ erratas:
     inventadas, rodou antes, e o corte de citações foi ajustado com ela
     (decisão 11). Decidi em 2026-10-14. O hash que o congelamento confere.
   sha256: 72862d659a2db3141597e456b815c3b976e091e3ed7df0f22c1288d6ee2fc48b
+- data: '2026-10-15'
+  arquivo: scripts/executar_experimento.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O executor,
+    agora com as variações, o conjunto de desenvolvimento, a recarga do
+    modelo antes de cada execução e a execução 2 ligada à triagem.
+  sha256: 61cc4147a976cd01c4f51b0b18cb7bc947948e8120b65b290b8b8d74bc1f5f8e
+- data: '2026-10-15'
+  arquivo: correcao/as_cegas.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. A correção às
+    cegas, que recebe a execução e lê os modelos do ambiente.json da
+    pasta.
+  sha256: 90a3d7355cb47b06b7afeba6bc4dfc6d86737ba33426a74f33d2385ad1ec767a
+- data: '2026-10-15'
+  arquivo: correcao/corretor.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O corretor,
+    com o desempate entre a coluna de posição e a do código (ADR 0032,
+    decisão 17). Mudou depois de a execução 1 rodar e antes de ela ser
+    corrigida; o scripts.analises.qa_corretor mostra que nenhuma
+    correção da seleção nem da execução 1 muda.
+  sha256: 66785642c401c08a214e9bacfa4f3aef2d8c674411e8d11c6c2f9be7322a2ee4
+- data: '2026-10-15'
+  arquivo: assistente/responder.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O fluxo das
+    variações, com a leitura das chaves prefixadas, a nova tentativa e a
+    abstenção quando o SQL falha.
+  sha256: 71213891f0deb50566e18a55967388f06ef30efc582d9a930e02af36cc7c229f
+- data: '2026-10-15'
+  arquivo: assistente/sql.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O banco com
+    uma thread só (ADR 0032, decisão 12).
+  sha256: 0bfe12894ca10f3fd1c607559617a85a1fe2990651d8861910894cbc9099bf08
+- data: '2026-10-15'
+  arquivo: assistente/variacoes.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. As variações
+    do instrumento, da V-1 à V4.
+  sha256: 83b2488ee02b04757c1d3a394c79a00e4af3b08d2fadd1fc36528b4f4f663d33
+- data: '2026-10-15'
+  arquivo: assistente/variacoes.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Os textos das
+    variações: formato, critério, exemplos e nova tentativa.
+  sha256: fe6027fc20e603cf31c2d1f2c48096115706759934a397a6bcf9300d1b523050
+- data: '2026-10-15'
+  arquivo: experimento/desenvolvimento.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. A leitura do
+    conjunto de desenvolvimento, com a versão conferida.
+  sha256: e26449cf5d7769f513a78fbfec07baf948e01ca8d51112645379da6720402413
+- data: '2026-10-15'
+  arquivo: evaluation/portao.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O portão, a
+    triagem, a re-seleção e a regra de parada.
+  sha256: 13277197b6e55deb397fefed484ca1a6f49aef019fe97e6f51a9422e559d4bfc
+- data: '2026-10-15'
+  arquivo: evaluation/hipoteses_por_variacao.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Os textos do
+    hipoteses.yml por variação, escritos antes da triagem; a errata 6 só
+    copia os da variação que vencer.
+  sha256: 936c771f89e4992f8dbc70cb7e24e00d5b50ca5a65ab2a80d7cff2377510482e
+- data: '2026-10-15'
+  arquivo: experimento/hipoteses_por_variacao.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. A conferência
+    de que a errata 6 só copia os valores prontos do hipoteses.yml.
+  sha256: 28e03090316f24f75a4863509779be072ca17f152e5ab27868bcb776386b677e
+- data: '2026-10-15'
+  arquivo: esquema_estrela/views.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. As views do
+    retrato do esquema estrela que o SQL lê.
+  sha256: be2771f8dffbba0afe59ccbb32b4ec1f7ebfb14a624182c6f87e5790c6c8afc7
+- data: '2026-10-15'
+  arquivo: esquema_estrela/manifesto.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O manifesto
+    do retrato, com o mês e o sha256 de cada Parquet, que o executor e o
+    medir_portao conferem.
+  sha256: 875d4ea1c2843f5e8b1d6912a2612dbfdb4c0159b6d50ec149a8b602dc404fc7
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/perguntas.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. As 30
+    perguntas do conjunto de desenvolvimento, versão 1.
+  sha256: 792dbc78312aed99d1da067b51b35f6c077801c9c6254d1308f65fd318b93997
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/gabarito.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O gabarito do
+    conjunto de desenvolvimento.
+  sha256: 7e9c52c9d2dfbf3eda87e4e19c6952837a9f1f9a1bf553ee2e4e3a8362b6f73c
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/comparacao.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. A regra de
+    comparação do conjunto de desenvolvimento.
+  sha256: 6d9b9d6734906c9e809b3fc85f094b96eb65c1ced794e6fdcdac370ec1ab5d1b
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/dimensionamento.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O num_ctx de
+    cada candidato em cada variação.
+  sha256: b07bc4ca875e53874f583ef1e1e90700e05b23e3d5fa1117c1c6c64a8ec81213
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D01.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: bf15f2b4c6d3e8ece73ec93f96ebae1538bf88eeecbab24f6c3a2043d9e32868
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D02.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 6c68fd6d8a426cdfcd2e46906165385527e1bd97481a8e11036010830033f509
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D03.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 552dd8703d6140804142530536b4a65315e073f69a7c30e08ad9165c8b98655a
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D04.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: ee08f7a445aeea049e4b97c15242b010722c2f980de90de9d21c521183d95ba0
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D05.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 8ac4ede55717defc9f0720ad32aeabbf50775804025756fabf13dd3764bb3887
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D06.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: b90c8104bf32284054e18a8db3a826e52d282b4a46762b6d041feb9a309c19d4
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D07.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 3fd520eadbef11eea1e7ff35f5d79bc6e1cfe286ba1695f397549c309a396c35
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D08.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 6ff59974fa02d24dbd66571e7eb0070caf243b7dbd8b5e3f00734e06c8d7ebec
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D15.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 9f606466517350828e070a3f3b83a2a370ac449e5437c198c22b7ed591083547
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D16.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: be18bb781cd495e4f0687c4b65e15ee32b917dbd9c2325ef5c2bc0a28e30c26a
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D17.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 0ffc9c5350b0d2c6dfec0d1078e3e5997e782bb975b0bdef118cbcfb7e01d301
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D18.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 19b7a12b3099c79a3d3115990199dcc7c51e10700ebeb56defbb416db42138e1
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D19.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 5e6c0491212e29e3bd4a1ac90131e38c28e82e29142b1904d7b3c8f674185377
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D20.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 6eac0f4f832ea7e5be61a0b1cbbd5cf2f1a8787bb245cc8312a5d3f2af8edd42
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D21.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 6c21b0ed713536ff0a74ec85a18063b22772154219ded0841d53089bf5b9ea7d
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D22.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 2ed50734bcdfd4d731f6cbec44e38898f1a0de02d6fba35f782d52ac9652d210
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D23.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: e9f58adce6bb7ce478f4d4e7e2d293dd3b858217b4f0a8cc69722980275e389e
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D24.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: cbab792911fc566a0a961bf5be459b4157a56cbc84bf77238c52dcdf0819741c
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D25.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 6466eb88d7440db9f09b39d63fbee676601ecac8d6cdc8d9e8343729ad45f73b
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D26.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 517de386b04c1dd891a43ea902f30687163cec238e772f80aa2fca273bd21308
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D27.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: 35c5dc4a3575648c5fda4df8aed03ee19230b242861331b5bf0ed0b89b98b223
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D28.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: d921996602962484878fb2186bd2d5429eb51dd5c83f7f2e79926c0951aba965
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/sql/D29.sql
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um SQL do
+    gabarito de desenvolvimento.
+  sha256: ce2d64bc3a42cff12677ee085575b55de2fcd5e6aa750f68ef0a9819d080e99b
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D01.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 0e0ff4e6dc76075270514ae1af666a0120ae28ab23361c197e2f63c6ec483c67
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D02.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 9d3602de54884ad4d92395c05e29234bb99d8912cb4b3211d8e633d66b6be144
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D03.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 0be193f226e087d844309bbdd64dd84478cfd7ffe1a927ab45a8461dcb2b1c44
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D04.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: b4c8bc582f6e74f40e281ae5fa0bd16217227cff0efc2930e8aa97e595114970
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D05.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 1ab797502104455f2df89da1e5f66de279e33d8d497cf1d41b3cbe0aa5b36498
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D06.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 47895e43b1c26031c4bcb18997e82142ddb3d1808d1a9dddf0077533e4306382
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D07.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: e71c4deea9d8ee627392f7c8839f4881b1ddd5dc46573784c25189e60487e8bc
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D08.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 35c5bcfe1aa81016368d4a1da580ec175284c1f5852601c222246d257d98f9ba
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D15.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 9743d4f0f0eba31adea6ebb239075295613723b5f6f755cddbb7da30eaeb396f
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D16.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: dc8156d90049d0bf3b3e5d61153ffb40dad0c8cf0eacfa9f8de98542dde74576
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D17.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 0a5a08351cdc0588721a2abc94f03ddd18f7ad7f6128923c6719108091e9c4ee
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D18.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 1c8babc16abd1e87c3b48189bb7b3be655546a23f9a8bf25efb2d68ff76637db
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D19.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 247bc5061f9bfc71dfb0c4c1f4fdb5e3214925631a0b9733a07b2b197e3d713c
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D20.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 102115e56d59ee05010487f15155a83df539e2dd0e8265bb562efaafda16fe93
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D21.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 0ac0770e8f5db3dd654ccdb53bfc078be9c4e480da63fffd386b160178b35ba6
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D22.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: fecbcca86dd3b91754ebbd513e396d089b1980dd8d7cc3320f97ef3e3932f9cd
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D23.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 97946d1e7381c59f30c5c8a712a00c7a1c91bf4d75fa1829816b6987fbdd652e
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D24.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 2a503d4c73f1bcc4d24ed94cae4a4f48f6014ee5156e6e2ca104ae41fc579b60
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D25.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 487cc518c8e6c768f2f40b31713b74577b900284f235e5fc311569aef90d12a1
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D26.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 233b2c7f4cd63e5d9bb81cf0130056ad46536fa5a7ed11fda29ddc214ea4e86e
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D27.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 1a9c18963da27de06b6d305f1844be4409f16450895b277eabcf2cc824243d86
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D28.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: bd59f751c65671ad4ed4b5ce3c4f38ac172eb91bef8d669b80c554b2544e8005
+- data: '2026-10-15'
+  arquivo: evaluation/desenvolvimento/respostas/D29.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Uma resposta
+    do gabarito de desenvolvimento, no retrato de 2026-07-31.
+  sha256: 47f5643ab4fc7cbb112d40c5dc8d0f78cf3f47a5cb97f95a48965bf4a486a5f1
+- data: '2026-10-15'
+  arquivo: scripts/medir_portao.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. A medida do
+    portão e a regra de escolha.
+  sha256: 339cde8acb1e5bb4806105d473d64c7790f33a86e5eb057c0768a884598151f6
+- data: '2026-10-15'
+  arquivo: evaluation/gabarito/esquema_estrela.json
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O esquema que
+    forma o bloco do esquema no prompt.
+  sha256: 341c1c5804930d5f29012e2810b3171689d561581fc5012e331e09e9870462d8
+- data: '2026-10-15'
+  arquivo: ontology/dimensoes.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um arquivo da
+    ontologia, que forma o bloco da ontologia no prompt.
+  sha256: 8d77e224b94c06ba8fa64a2d492c6d5d93fa999a85428cf2ca6e87ec00f1b5b3
+- data: '2026-10-15'
+  arquivo: ontology/fontes_externas.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um arquivo da
+    ontologia, que forma o bloco da ontologia no prompt.
+  sha256: 743bccc7ec16a1852cd9ef183752bf65af4e150df467e4076ed4e67293bd4657
+- data: '2026-10-15'
+  arquivo: ontology/metricas.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um arquivo da
+    ontologia, que forma o bloco da ontologia no prompt.
+  sha256: cb394f6ec13920e29931c3cc29f1e6a462a0d1d5fa9bacfba3b30ebbe554b49d
+- data: '2026-10-15'
+  arquivo: ontology/modalidades.yml
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Um arquivo da
+    ontologia, que forma o bloco da ontologia no prompt.
+  sha256: b2ae72ed7a0a8f256655770b1dd827f7c2064cb1924c0a0ea5eaa9e1b164e7e7
+- data: '2026-10-15'
+  arquivo: scripts/esquema_estrela_duckdb.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. As views do
+    esquema estrela no DuckDB.
+  sha256: 988d724935635b2193d91ce9b474a58f50f69ff5aa76cd3107798e299bfef9ed
+- data: '2026-10-15'
+  arquivo: scripts/validar_gabarito.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Os tipos do
+    DuckDB que o gerador usa.
+  sha256: 4ed337d5bc49221f388676e09f087d93774e54eadadcc4de5d36d7f770a5173e
+- data: '2026-10-15'
+  arquivo: scripts/analises/qa_esquema_estrela.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. A forma de
+    texto das respostas do gabarito.
+  sha256: 004ad8591975d056b743061265ab8c6961b446dd4c560aeaf2301df8a3a11024
+- data: '2026-10-15'
+  arquivo: rag/parametros.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. Os parâmetros
+    da busca do RAG.
+  sha256: ef593d7bc998a874b63604eb3b79d4c7bfae62386ee02caf8649a77fc12ce277
+- data: '2026-10-15'
+  arquivo: scripts/validar_perguntas.py
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. A leitura das
+    perguntas, que o conjunto de desenvolvimento usa.
+  sha256: 28a1a6d68b50cefed7cab20e3e211b5183b0a602f0d79d09732ab3976cbc24c7
+- data: '2026-10-15'
+  arquivo: evaluation/experimento/execucao-1/limite_declarado.txt
+  motivo: >-
+    Errata 5, da #118 (ADR 0032). A execução 1 do experimento falhou no
+    controle de qualidade: a gramática do Ollama gera as chaves do JSON
+    em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. A
+    emenda escolhe o instrumento num conjunto de desenvolvimento
+    separado das 41 perguntas, por um portão e um cardápio de variações,
+    com regra de parada. Esta errata congela tudo isso antes da primeira
+    execução da triagem; o scripts.executar_experimento se recusa a
+    rodar sem ela. A fumaça ao vivo da V4 e da V-1 nos dois modelos
+    rodou antes, e o modelo passou a ser recarregado antes de cada
+    execução (ADR 0032, decisão 14). Decidi em 2026-10-15. O limite
+    declarado da execução 1, no texto em que foi registrado.
+  sha256: 27c505b11aab0928beed5e72ceac1e81d5d612192338e2ca63fe00d4ec021e97
+- data: '2026-10-15'
+  arquivo: evaluation/experimento/execucao-1/resultado.json
+  motivo: >-
+    Arquivo novo, da #50 e da #118 (ADR 0031 e 0032). O resultado da
+    execução 1 do experimento, com o instrumento da V-1: as contagens de
+    0 a 5 por pergunta, condição e modelo, a análise das hipóteses, os
+    95 julgamentos às cegas e o limite declarado no texto registrado.
+    Gerado por scripts.resumir_experimento --execucao 1 com o código
+    congelado na errata 5. É o resultado registrado, com instrumento
+    falho: a execução 1 falhou no controle de qualidade (ADR 0032), e
+    nenhuma hipótese foi sustentada. Congelo antes de qualquer execução
+    da triagem, para ficar provado que a execução 1 foi fechada antes de
+    qualquer resultado do conjunto de desenvolvimento. Os registros
+    completos ficam em execucoes.jsonl.gz, ao lado; o
+    scripts.validar_experimento os recorrige e exige este mesmo
+    resultado. Decidi em 2026-10-15.
+  sha256: 0dba3e03db8e766f5f53705ddc69043e93d63a1760f8d1ad4fa27ddce594e3a4

@@ -53,17 +53,54 @@ from correcao.acerto import (
     ler_julgamentos,
 )
 from correcao.corretor import carregar_gabarito
+from experimento import hipoteses_por_variacao
 from experimento.contagem import contar
 from experimento.estatistica import MAIORIA, MARGEM_DE_NAO_INFERIORIDADE, analisar
-from scripts.executar_experimento import REPETICOES, SEED_DA_ORDEM, modelos_do_experimento
+from scripts.executar_experimento import REPETICOES, SEED_DA_ORDEM
 from scripts.resumir_selecao import gravar_execucoes as gravar_jsonl_gz
 from scripts.validar_perguntas import VIGENTE, perguntas
 from scripts.validar_registro import HIPOTESES, RAIZ
 
 PASTA_DO_RESULTADO = RAIZ / "evaluation" / "experimento"
-RESULTADO = PASTA_DO_RESULTADO / "resultado.json"
-EXECUCOES = PASTA_DO_RESULTADO / "execucoes.jsonl.gz"
 PAGINA = RAIZ / "docs" / "experimento.md"
+EXECUCOES_DO_EXPERIMENTO = (1, 2)
+# PT: onde cada execução foi rodada (data/, fora do git) e o que ela diz de
+#     si na página. A execução 1 falhou no controle de qualidade do
+#     instrumento (#118, ADR 0032) e sai como foi registrada.
+# EN: where each run's records live and how the page labels it.
+PASTA_LOCAL = {1: PASTA_DO_EXPERIMENTO, 2: PASTA_DO_EXPERIMENTO / "execucao-2"}
+TITULO = {1: "Execução 1: resultado registrado, com instrumento falho",
+          2: "Execução 2: resultado confirmatório"}
+
+
+def pasta_publicada(execucao: int) -> Path:
+    return PASTA_DO_RESULTADO / f"execucao-{execucao}"
+
+
+def resultado_de(execucao: int) -> Path:
+    return pasta_publicada(execucao) / "resultado.json"
+
+
+def execucoes_de(execucao: int) -> Path:
+    return pasta_publicada(execucao) / "execucoes.jsonl.gz"
+
+
+def limite_declarado(execucao: int, hipoteses: dict) -> str:
+    """
+    PT: O limite declarado de uma execução: o da execução 1 fica guardado no
+        texto em que foi registrado, e o da 2 vem do hipoteses.yml vigente.
+    EN: A run's declared limit: run 1 keeps its registered text.
+    """
+    guardado = pasta_publicada(execucao) / "limite_declarado.txt"
+    if execucao == 1:
+        if not guardado.exists():
+            raise SystemExit(f"ERRO falta {guardado.relative_to(RAIZ).as_posix()}, o limite registrado da execução 1")
+        texto = guardado.read_text(encoding="utf-8")
+    else:
+        texto = hipoteses["estatistica"]["limite_declarado"]
+    return " ".join(texto.split())
+
+
 RELATORIO = "experimento.pdf"
 NOTEBOOK = "../notebooks/experimento.ipynb"
 
@@ -87,16 +124,18 @@ def problemas_de_completude(execucoes: list[dict], corrigidas: list[dict], model
 
 
 def montar(execucoes: list[dict], julgamentos: dict, ambientes: dict, repeticoes: list[dict],
-           hipoteses: dict) -> tuple[dict, list[str]]:
+           hipoteses: dict, execucao: int = 1) -> tuple[dict, list[str]]:
     """
-    PT: O resultado inteiro e as pendências. Sem pendência, a análise roda
-        em cada modelo.
-    EN: The full result and what is missing; analysis runs when complete.
+    PT: O resultado inteiro de uma execução e as pendências. Sem pendência,
+        a análise roda em cada modelo. Os modelos são os da execução, pelos
+        ambientes dela, e não os do parametros.yml vigente.
+    EN: A run's full result and what is missing; models come from the run's
+        own environments.
     """
     _, por_id = perguntas(VIGENTE)
     ids = list(por_id)
     tipos = {i: p.get("tipo_de_acerto", "valor") for i, p in por_id.items()}
-    modelos = [m["nome"] for m in modelos_do_experimento()]
+    modelos = sorted(ambientes)
     execucoes = execucoes_vigentes(execucoes, modelos, ids)
     g = carregar_gabarito()
     corrigidas = corrigir_todas(execucoes, julgamentos, g, com_condicao=True)
@@ -107,7 +146,7 @@ def montar(execucoes: list[dict], julgamentos: dict, ambientes: dict, repeticoes
         situacoes, certas, erros = contar(corrigidas, m, ids)
         por_modelo[m] = {
             "ambiente": {k: (ambientes.get(m) or {}).get(k) for k in ("ollama", "digest_do_gguf", "variaveis",
-                                                                       "inicio", "fim")},
+                                                                       "variacao", "inicio", "fim")},
             "erros_por_motivo": erros,
             "certas": certas,
             "execucoes": situacoes,
@@ -122,6 +161,8 @@ def montar(execucoes: list[dict], julgamentos: dict, ambientes: dict, repeticoes
             # EN: the last run's date, so the output reproduces.
             "gerado_em": max(fins, default="") or None,
             "issue": 50,
+            "execucao": execucao,
+            "variacao": sorted({(a.get("variacao") or "V-1") for a in ambientes.values()}),
             "hipoteses": HIPOTESES,
             "mes_de_referencia": mes.pop() if len(mes) == 1 else sorted(mes),
             "perguntas": len(ids),
@@ -134,7 +175,7 @@ def montar(execucoes: list[dict], julgamentos: dict, ambientes: dict, repeticoes
             "numpy": np.__version__,
             "tipos_de_acerto": dict(sorted(Counter(tipos.values()).items())),
         },
-        "limite_declarado": " ".join(hipoteses["estatistica"]["limite_declarado"].split()),
+        "limite_declarado": limite_declarado(execucao, hipoteses),
         "repeticoes_por_servidor": sorted(repeticoes, key=lambda r: (r["candidato"], r["inicio"])),
         "modelos": por_modelo,
         "julgamentos": dict(sorted(julgamentos.items())),
@@ -146,38 +187,37 @@ def montar(execucoes: list[dict], julgamentos: dict, ambientes: dict, repeticoes
 # PT: Leitura e gravação / EN: reading and writing
 # -----------------------------------------------------------------------------
 
-def ler_publicado() -> tuple[list[dict], dict, dict, list[dict]]:
+def ler_publicado(execucao: int = 1) -> tuple[list[dict], dict, dict, list[dict]]:
     """
     PT: Os registros, os julgamentos, os ambientes e as repetições já
-        publicados: refazem o resultado sem a pasta data/.
-    EN: The published records, judgments, environments and repetitions.
+        publicados de uma execução: refazem o resultado sem a pasta data/.
+    EN: A run's published records, judgments, environments and repetitions.
     """
-    with gzip.open(EXECUCOES, "rt", encoding="utf-8") as arquivo:
+    with gzip.open(execucoes_de(execucao), "rt", encoding="utf-8") as arquivo:
         execucoes = [json.loads(linha) for linha in arquivo]
-    resultado = json.loads(RESULTADO.read_text(encoding="utf-8"))
+    resultado = json.loads(resultado_de(execucao).read_text(encoding="utf-8"))
     ambientes = {m: p["ambiente"] for m, p in resultado["modelos"].items()}
     return execucoes, resultado["julgamentos"], ambientes, resultado["repeticoes_por_servidor"]
 
 
 def ler_local(pasta: Path) -> tuple[list[dict], dict, dict, list[dict]]:
     """PT: o mesmo, da pasta data/experimento / EN: the same, from data/"""
-    ambientes = {}
-    for m in modelos_do_experimento():
-        arquivo = pasta / "execucoes" / m["nome"] / "ambiente.json"
-        ambientes[m["nome"]] = json.loads(arquivo.read_text(encoding="utf-8")) if arquivo.exists() else {}
+    ambientes = {a.parent.name: json.loads(a.read_text(encoding="utf-8"))
+                 for a in sorted((pasta / "execucoes").glob("*/ambiente.json"))}
     arquivo = pasta / REPETICOES
     repeticoes = json.loads(arquivo.read_text(encoding="utf-8")) if arquivo.exists() else []
     return ler_execucoes(pasta, PADRAO_DO_EXPERIMENTO), ler_julgamentos(pasta), ambientes, repeticoes
 
 
-def gravar_execucoes(execucoes: list[dict]) -> None:
+def gravar_execucoes(execucoes: list[dict], execucao: int = 1) -> None:
     """
     PT: Os registros num JSONL comprimido e determinístico, pelo mesmo
         gravador da seleção, com a condição na chave de ordenação.
     EN: Deterministic gzipped JSONL via the selection's writer, condition
         included in the sort key.
     """
-    gravar_jsonl_gz(execucoes, EXECUCOES, chave=lambda r: (r["candidato"], r["condicao"], r["id_pergunta"], r["seed"]))
+    gravar_jsonl_gz(execucoes, execucoes_de(execucao),
+                    chave=lambda r: (r["candidato"], r["condicao"], r["id_pergunta"], r["seed"]))
 
 
 # -----------------------------------------------------------------------------
@@ -226,47 +266,57 @@ def linhas_das_hipoteses(analise: dict, hipoteses: dict) -> list[str]:
     return linhas
 
 
-def pagina(resultado: dict, hipoteses: dict) -> str:
-    """PT: docs/experimento.md / EN: the generated docs page"""
+def declaracoes_da_variacao(variacao: str) -> list[str]:
+    """
+    PT: As ressalvas escritas antes da triagem (#118, ADR 0032): as comuns e
+        as da variação, como estão no evaluation/hipoteses_por_variacao.yml.
+    EN: The caveats written before screening: common plus the variant's.
+    """
+    textos = hipoteses_por_variacao.carregar()["declaracoes"]
+    return [*textos["comum"], *textos[variacao]]
+
+
+def secao_da_execucao(resultado: dict, hipoteses: dict) -> list[str]:
+    """PT: a seção de uma execução / EN: one run's section"""
     meta, modelos = resultado["metadata"], resultado["modelos"]
+    execucao = meta["execucao"]
     linhas = [
-        "# Experimento 2x2: ontologia contra documentos",
+        f"## {TITULO[execucao]}",
         "",
-        "<!-- PT: gerado por scripts/resumir_experimento.py; não edite à mão. "
-        "EN: generated by scripts/resumir_experimento.py; do not edit by hand. -->",
+        f"Variação do instrumento: {', '.join(meta['variacao'])}. Retrato do esquema estrela: "
+        f"`{meta['mes_de_referencia']}`. Dados em `evaluation/experimento/execucao-{execucao}/`.",
         "",
-        f"PT: O resultado do experimento registrado em `{meta['hipoteses']}` "
-        "([ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md), "
-        "[ADR 0031](adr/0031-execucao-e-analise-do-experimento.md)). As "
-        f"{meta['perguntas']} perguntas do `evaluation/questions_v3.yml` rodaram nas quatro condições (A só o "
-        "esquema, B com a ontologia, C com os trechos dos documentos, D com os dois), nos dois modelos locais, "
-        f"{meta['execucoes_por_pergunta']} vezes cada. Uma pergunta acerta numa condição quando {meta['maioria']} "
-        "ou mais das 5 execuções acertam. O efeito é a diferença pareada de proporções, em pontos percentuais, com "
-        "o intervalo de Newcombe de 95% (método 10).",
-        "",
-        "EN: Result of the pre-registered 2x2 experiment: 41 questions, four conditions, two local models, "
-        "5 runs each; a question is right when 3 or more runs are right. Effects are paired differences in "
-        "percentage points with Newcombe's 95% interval.",
-        "",
-        f"O relatório completo, com os gráficos e a memória de cálculo, está em [{RELATORIO}]({RELATORIO}), e o "
-        f"notebook que o gera em [`notebooks/experimento.ipynb`]({NOTEBOOK}). Retrato do esquema estrela: "
-        f"`{meta['mes_de_referencia']}`.",
-        "",
-        "## Limites",
+    ]
+    if execucao == 1:
+        linhas += [
+            "Esta execução falhou no controle de qualidade do instrumento: a gramática do Ollama gerava as chaves "
+            "do JSON em ordem alfabética, e o modelo escrevia o motivo da abstenção antes de interpretar a pergunta "
+            "e antes do SQL. O Gemma se absteve em 713 das 820 execuções e o Qwen em 817, quase igual nas quatro "
+            "condições, e quase não há par discordante. "
+            "O resultado sai como foi registrado e não informa sobre as hipóteses "
+            "([ADR 0032](adr/0032-emenda-do-instrumento-do-experimento.md)).",
+            "",
+        ]
+    linhas += [
+        "### Limites",
         "",
         f"- {resultado['limite_declarado']}",
         "- A H5 é exploratória: fica fora do Holm, e o grupo de ressalva e abstenção tem "
         f"{meta['tipos_de_acerto'].get('valor_com_ressalva', 0) + meta['tipos_de_acerto'].get('abstencao', 0)} "
         "perguntas.",
-        "- A seleção dos modelos ficou no piso na condição A (ADR 0030). Por isso o tamanho de efeito com o "
-        "intervalo pesa mais que o p.",
+        *(["- A seleção dos modelos ficou no piso na condição A (ADR 0030). Por isso o tamanho de efeito com o "
+           "intervalo pesa mais que o p."] if execucao == 1 else []),
         f"- Execuções repetidas por erro de servidor: {len(resultado['repeticoes_por_servidor'])} (ADR 0031).",
         "",
     ]
+    if execucao == 2:
+        if len(set(meta["variacao"])) != 1:
+            raise SystemExit(f"ERRO a execução 2 tem mais de uma variação: {meta['variacao']}")
+        linhas += ["### Ressalvas escritas antes da triagem", "",
+                   *(f"- {d}" for d in declaracoes_da_variacao(meta["variacao"][0])), ""]
     for nome, m in modelos.items():
         a = m["analise"]
-        linhas += [f"## {nome}", "", *linhas_das_hipoteses(a, hipoteses), ""]
-        condicoes = a["condicoes"]
+        linhas += [f"### {nome}", "", *linhas_das_hipoteses(a, hipoteses), ""]
         linhas += [
             "Perguntas certas por condição, de " + str(a["perguntas"]) + ":",
             "",
@@ -274,7 +324,7 @@ def pagina(resultado: dict, hipoteses: dict) -> str:
             "| Abstenções indevidas (execuções) |",
             "|---|---:|---:|---:|---:|---:|---:|",
         ]
-        for c, r in condicoes.items():
+        for c, r in a["condicoes"].items():
             t = r["por_tipo"]
             concordam = a["variancia"][c]["parcela_em_que_as_5_concordam"]
             indevidas = m["erros_por_motivo"][c].get("abstencao_indevida", 0)
@@ -284,6 +334,39 @@ def pagina(resultado: dict, hipoteses: dict) -> str:
         linhas += ["", "Q de Cochran nas quatro condições (descritivo): "
                    + (f"Q = {_n(q['q'], 2)}, {q['graus_de_liberdade']} graus de liberdade, p {_p(q['p'])}."
                       if q["q"] is not None else "não se define, sem variação dentro das perguntas."), ""]
+    return linhas
+
+
+def pagina(resultados: dict[int, dict], hipoteses: dict) -> str:
+    """
+    PT: docs/experimento.md, com uma seção por execução publicada.
+    EN: The docs page, one section per published run.
+    """
+    linhas = [
+        "# Experimento 2x2: ontologia contra documentos",
+        "",
+        "<!-- PT: gerado por scripts/resumir_experimento.py; não edite à mão. "
+        "EN: generated by scripts/resumir_experimento.py; do not edit by hand. -->",
+        "",
+        f"PT: O resultado do experimento registrado em `{HIPOTESES}` "
+        "([ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md), "
+        "[ADR 0031](adr/0031-execucao-e-analise-do-experimento.md), "
+        "[ADR 0032](adr/0032-emenda-do-instrumento-do-experimento.md)). As 41 perguntas do "
+        "`evaluation/questions_v3.yml` rodam nas quatro condições (A só o esquema, B com a ontologia, C com os "
+        "trechos dos documentos, D com os dois), nos dois modelos locais, 5 vezes cada. Uma pergunta acerta numa "
+        "condição quando 3 ou mais das 5 execuções acertam. O efeito é a diferença pareada de proporções, em "
+        "pontos percentuais, com o intervalo de Newcombe de 95% (método 10). As afirmações confirmatórias são da "
+        "execução 2; a execução 1 sai como foi registrada.",
+        "",
+        "EN: Result of the pre-registered 2x2 experiment: 41 questions, four conditions, two local models, "
+        "5 runs each. Confirmatory claims come from run 2; run 1 is reported as registered.",
+        "",
+        f"O relatório completo, com os gráficos e a memória de cálculo, está em [{RELATORIO}]({RELATORIO}), e o "
+        f"notebook que o gera em [`notebooks/experimento.ipynb`]({NOTEBOOK}).",
+        "",
+    ]
+    for execucao in sorted(resultados, reverse=True):
+        linhas += secao_da_execucao(resultados[execucao], hipoteses)
     linhas += [
         "## Como ler",
         "",
@@ -292,24 +375,37 @@ def pagina(resultado: dict, hipoteses: dict) -> str:
         "p dela é o maior dos dois.",
         "- \"Não sustentada\" quer dizer que o dado não mostrou o efeito com o alfa de 0,05 depois do Holm. "
         "Não prova o contrário: o intervalo mostra o tamanho que o efeito pode ter.",
-        "- Os números por pergunta, as tabelas pareadas e cada passo do Holm estão em "
-        "`evaluation/experimento/resultado.json` e no relatório.",
+        "- Com 41 pares e o Holm, o efeito mínimo detectável com 80% de poder fica entre 25 e 35 pontos, conforme a parcela de pares discordantes (ADR 0032).",
+        "- Os números por pergunta, as tabelas pareadas e cada passo do Holm estão no `resultado.json` de cada "
+        "execução e no relatório.",
         "",
     ]
     return "\n".join(linhas)
 
 
+def resultados_publicados(alem: dict[int, dict] | None = None) -> dict[int, dict]:
+    """PT: os resultados publicados, mais os passados / EN: published results"""
+    saida = {n: json.loads(resultado_de(n).read_text(encoding="utf-8"))
+             for n in EXECUCOES_DO_EXPERIMENTO if resultado_de(n).exists()}
+    return {**saida, **(alem or {})}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--execucao", type=int, choices=EXECUCOES_DO_EXPERIMENTO, required=True)
     parser.add_argument("--parcial", action="store_true", help="placar parcial, sem gravar")
-    parser.add_argument("--pasta", type=Path, default=PASTA_DO_EXPERIMENTO)
+    parser.add_argument("--pasta", type=Path, help="só com --parcial; sem ela, a pasta local da execução")
     parser.add_argument("--do-publicado", action="store_true",
                         help="refaz a partir do execucoes.jsonl.gz e do resultado.json publicados, sem data/")
     args = parser.parse_args()
+    # PT: o que se publica sai sempre da pasta fixa da execução.
+    # EN: published results always come from the run's fixed folder.
+    if args.pasta and not args.parcial:
+        parser.error("--pasta só vale com --parcial: o resultado publicado sai da pasta fixa da execução")
 
     hipoteses = yaml.safe_load((RAIZ / HIPOTESES).read_text(encoding="utf-8"))
-    lidos = ler_publicado() if args.do_publicado else ler_local(args.pasta)
-    resultado, problemas = montar(*lidos, hipoteses)
+    lidos = ler_publicado(args.execucao) if args.do_publicado else ler_local(args.pasta or PASTA_LOCAL[args.execucao])
+    resultado, problemas = montar(*lidos, hipoteses, execucao=args.execucao)
     for nome, m in resultado["modelos"].items():
         certas = {c: sum(n >= MAIORIA for n in por.values()) for c, por in m["certas"].items()}
         print(f"  {nome}: perguntas certas por condição {certas}")
@@ -319,13 +415,16 @@ def main() -> None:
     if problemas:
         raise SystemExit("ERRO resultado incompleto: " + "; ".join(problemas))
 
-    PASTA_DO_RESULTADO.mkdir(parents=True, exist_ok=True)
-    RESULTADO.write_text(json.dumps(resultado, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    pasta_publicada(args.execucao).mkdir(parents=True, exist_ok=True)
+    resultado_de(args.execucao).write_text(json.dumps(resultado, ensure_ascii=False, indent=2) + "\n",
+                                           encoding="utf-8", newline="\n")
     if not args.do_publicado:
-        gravar_execucoes(execucoes_vigentes(lidos[0], list(resultado["modelos"]), list(perguntas(VIGENTE)[1])))
-    PAGINA.write_text(pagina(resultado, hipoteses), encoding="utf-8", newline="\n")
-    print(f"\nGravados {RESULTADO.relative_to(RAIZ).as_posix()}, {EXECUCOES.relative_to(RAIZ).as_posix()} e "
-          f"{PAGINA.relative_to(RAIZ).as_posix()}.")
+        gravar_execucoes(execucoes_vigentes(lidos[0], list(resultado["modelos"]), list(perguntas(VIGENTE)[1])),
+                         args.execucao)
+    PAGINA.write_text(pagina(resultados_publicados({args.execucao: resultado}), hipoteses),
+                      encoding="utf-8", newline="\n")
+    print(f"\nGravados {resultado_de(args.execucao).relative_to(RAIZ).as_posix()}, "
+          f"{execucoes_de(args.execucao).relative_to(RAIZ).as_posix()} e {PAGINA.relative_to(RAIZ).as_posix()}.")
     print("Próximo passo: o notebook, o relatório e a errata do resultado no evaluation/registro.yml.")
 
 

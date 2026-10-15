@@ -1,0 +1,15 @@
+{
+  "consulta": "D07.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "meses_com_dado"
+  ],
+  "tipos": [
+    "LONG"
+  ],
+  "linhas": [
+    [
+      "31"
+    ]
+  ]
+}

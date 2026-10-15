@@ -1,0 +1,18 @@
+{
+  "consulta": "D02.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "empresas_ativas"
+  ],
+  "tipos": [
+    "DATE",
+    "LONG"
+  ],
+  "linhas": [
+    [
+      "2026-07-31",
+      "713307"
+    ]
+  ]
+}

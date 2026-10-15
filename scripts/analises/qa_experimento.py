@@ -172,10 +172,16 @@ def contra_enumeracao(conf: Conferencia) -> None:
 # -----------------------------------------------------------------------------
 
 def contra_o_publicado(conf: Conferencia) -> bool:
-    if not resumir_experimento.RESULTADO.exists():
-        return False
-    resultado = json.loads(resumir_experimento.RESULTADO.read_text(encoding="utf-8"))
-    with gzip.open(resumir_experimento.EXECUCOES, "rt", encoding="utf-8") as arquivo:
+    """PT: cada execução publicada / EN: each published run"""
+    publicadas = [n for n in resumir_experimento.EXECUCOES_DO_EXPERIMENTO if resumir_experimento.resultado_de(n).exists()]
+    for execucao in publicadas:
+        contra_uma_execucao(conf, execucao)
+    return bool(publicadas)
+
+
+def contra_uma_execucao(conf: Conferencia, execucao: int) -> None:
+    resultado = json.loads(resumir_experimento.resultado_de(execucao).read_text(encoding="utf-8"))
+    with gzip.open(resumir_experimento.execucoes_de(execucao), "rt", encoding="utf-8") as arquivo:
         registros = [json.loads(linha) for linha in arquivo]
     por_celula = Counter((r["candidato"], r["condicao"], r["id_pergunta"]) for r in registros)
     tipos = {i: p.get("tipo_de_acerto", "valor") for i, p in perguntas(VIGENTE)[1].items()}
@@ -191,8 +197,7 @@ def contra_o_publicado(conf: Conferencia) -> bool:
             a_favor = sum(m["certas"][x][i] >= 3 and m["certas"][y][i] < 3 for i in sub)
             contra = sum(m["certas"][x][i] < 3 and m["certas"][y][i] >= 3 for i in sub)
             esperado = binomtest(a_favor, a_favor + contra, 0.5, alternative="greater").pvalue if a_favor + contra else 1
-            conf.perto(f"{nome} {h} p pelo scipy", r["p"], esperado, 1e-6)
-    return True
+            conf.perto(f"execução {execucao} {nome} {h} p pelo scipy", r["p"], esperado, 1e-6)
 
 
 def main() -> None:

@@ -1,0 +1,36 @@
+{
+  "consulta": "D16.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "posicao",
+    "segmento",
+    "carteira_ativa"
+  ],
+  "tipos": [
+    "LONG",
+    "STRING",
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "1",
+      "Banco",
+      "691465882775.34"
+    ],
+    [
+      "2",
+      "Cooperativa",
+      "121353668320.51"
+    ],
+    [
+      "3",
+      "Desenvolvimento/Fomento",
+      "27254533666.77"
+    ],
+    [
+      "4",
+      "Financeira",
+      "1083279675.32"
+    ]
+  ]
+}

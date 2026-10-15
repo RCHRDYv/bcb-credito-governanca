@@ -1,0 +1,18 @@
+{
+  "consulta": "D01.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "meta_selic_pct"
+  ],
+  "tipos": [
+    "DATE",
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "2026-07-31",
+      "14.2500"
+    ]
+  ]
+}
