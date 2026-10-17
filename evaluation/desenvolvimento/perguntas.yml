@@ -1,9 +1,9 @@
 # =============================================================================
 # PT: Conjunto de desenvolvimento do instrumento do experimento (#118, ADR
 #     0032). São 30 perguntas inventadas, fora das 41 registradas no
-#     evaluation/questions_v3.yml, usadas só para medir o portão das variações
-#     do instrumento e para refazer a seleção dos modelos. Nenhum ajuste do
-#     instrumento se mede nas 41.
+#     evaluation/questions_v3.yml, usadas para medir as variações do
+#     instrumento sem tocar nas 41. A medida parcial (V−1 a V1) está no ADR
+#     0032.
 #
 #     papel:
 #       controle_positivo  respondível só pelo esquema, sem rótulo de

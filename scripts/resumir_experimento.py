@@ -53,7 +53,6 @@ from correcao.acerto import (
     ler_julgamentos,
 )
 from correcao.corretor import carregar_gabarito
-from experimento import hipoteses_por_variacao
 from experimento.contagem import contar
 from experimento.estatistica import MAIORIA, MARGEM_DE_NAO_INFERIORIDADE, analisar
 from scripts.executar_experimento import REPETICOES, SEED_DA_ORDEM
@@ -110,16 +109,21 @@ NOTEBOOK = "../notebooks/experimento.ipynb"
 # -----------------------------------------------------------------------------
 
 def problemas_de_completude(execucoes: list[dict], corrigidas: list[dict], modelos: list[str],
-                            ids: list[str]) -> list[str]:
-    """PT: execuções ou julgamentos que faltam / EN: missing runs or judgments"""
+                            ids: list[str], execucao: int = 1) -> list[str]:
+    """
+    PT: Execuções ou julgamentos que faltam. Na execução 1, todo julgamento
+        pendente falta; na 2, só o que ainda decide a maioria (ADR 0032).
+    EN: Missing runs or judgments; run 2 only needs the deciding ones.
+    """
     problemas = []
     esperadas = {(c, i, s) for c in CONDICOES for i in ids for s in range(1, EXECUCOES_POR_PERGUNTA + 1)}
     for m in modelos:
         feitas = {(r["condicao"], r["id_pergunta"], r["seed"]) for r in execucoes if r["candidato"] == m}
         if faltam := len(esperadas - feitas):
             problemas.append(f"{m}: faltam {faltam} execuções")
-    if pendentes := a_julgar(corrigidas, todas=True):
-        problemas.append(f"faltam {len(pendentes)} julgamentos às cegas (correcao.as_cegas --experimento)")
+    if pendentes := a_julgar(corrigidas, todas=execucao == 1):
+        problemas.append(f"faltam {len(pendentes)} julgamentos às cegas "
+                         f"(correcao.as_cegas --experimento --execucao {execucao})")
     return problemas
 
 
@@ -139,7 +143,7 @@ def montar(execucoes: list[dict], julgamentos: dict, ambientes: dict, repeticoes
     execucoes = execucoes_vigentes(execucoes, modelos, ids)
     g = carregar_gabarito()
     corrigidas = corrigir_todas(execucoes, julgamentos, g, com_condicao=True)
-    problemas = problemas_de_completude(execucoes, corrigidas, modelos, ids)
+    problemas = problemas_de_completude(execucoes, corrigidas, modelos, ids, execucao)
 
     por_modelo = {}
     for m in modelos:
@@ -266,16 +270,6 @@ def linhas_das_hipoteses(analise: dict, hipoteses: dict) -> list[str]:
     return linhas
 
 
-def declaracoes_da_variacao(variacao: str) -> list[str]:
-    """
-    PT: As ressalvas escritas antes da triagem (#118, ADR 0032): as comuns e
-        as da variação, como estão no evaluation/hipoteses_por_variacao.yml.
-    EN: The caveats written before screening: common plus the variant's.
-    """
-    textos = hipoteses_por_variacao.carregar()["declaracoes"]
-    return [*textos["comum"], *textos[variacao]]
-
-
 def secao_da_execucao(resultado: dict, hipoteses: dict) -> list[str]:
     """PT: a seção de uma execução / EN: one run's section"""
     meta, modelos = resultado["metadata"], resultado["modelos"]
@@ -310,10 +304,11 @@ def secao_da_execucao(resultado: dict, hipoteses: dict) -> list[str]:
         "",
     ]
     if execucao == 2:
-        if len(set(meta["variacao"])) != 1:
-            raise SystemExit(f"ERRO a execução 2 tem mais de uma variação: {meta['variacao']}")
-        linhas += ["### Ressalvas escritas antes da triagem", "",
-                   *(f"- {d}" for d in declaracoes_da_variacao(meta["variacao"][0])), ""]
+        # PT: a correção da execução 2 julgou só o que decide (ADR 0032).
+        # EN: run 2 grading judged only what decides the majority.
+        linhas[-1:-1] = ["- A correção às cegas julgou só o que decide a maioria de 3 em 5: nas perguntas já "
+                         "decididas, as execuções não julgadas contam como não certas, então a contagem de 0 a 5 e a "
+                         "parcela em que as 5 concordam são mínimas. O acerto de cada pergunta não muda."]
     for nome, m in modelos.items():
         a = m["analise"]
         linhas += [f"### {nome}", "", *linhas_das_hipoteses(a, hipoteses), ""]

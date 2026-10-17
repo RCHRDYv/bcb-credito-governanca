@@ -6,9 +6,9 @@ PT: A execução do experimento 2x2 (#50, ADRs 0013, 0029 e 0031). Roda as 41
 
     Antes de rodar, para se faltar alguma coisa:
 
-    - a errata que congela este executor, a contagem, a estatística, o
-      corretor, o assistente, a busca do RAG e as conferências (decisões 4
-      e 9 de 2026-10-14): nada roda contra o gabarito antes dela;
+    - no conjunto de teste, o código sem mudança fora de commit: o commit
+      vai para o ambiente.json de cada modelo (ADR 0032, que trocou o
+      congelamento por errata do ADR 0031 por isso);
     - a temperatura e as seeds iguais às do pré-registro;
     - o retrato local do esquema estrela no mesmo mês das respostas do
       gabarito;
@@ -40,33 +40,27 @@ PT: A execução do experimento 2x2 (#50, ADRs 0013, 0029 e 0031). Roda as 41
     vazio, em data/experimento/ensaio/. Com --ordem, só mostra a ordem.
 
 EN: Runs the 41 registered questions in the four conditions, with the 5
-    registered seeds, on both models, through assistente.responder. Refuses
-    to run unless this runner, the statistics and the grader are frozen by
-    errata, parameters match the pre-registration, the local snapshot and
-    RAG index match what was registered, and Ollama runs with the KV cache
-    settings and the registered GGUF. One model at a time; per question,
-    one RAG search, then the four conditions (5 seeds each) in an order
-    drawn per question and model by a hash. Server errors are not recorded:
-    they are logged and the run stops, to be resumed. --ensaio runs offline;
-    --ordem prints the order.
+    registered seeds, on both models, through assistente.responder. On the
+    test set it refuses uncommitted code and records the commit; it also
+    checks parameters against the pre-registration, the local snapshot and
+    RAG index, and Ollama's KV cache settings and registered GGUF. One model
+    at a time; per question, one RAG search, then the four conditions (5
+    seeds each) in an order drawn per question and model by a hash. Server
+    errors are not recorded: they are logged and the run stops, to be
+    resumed. --ensaio runs offline; --ordem prints the order.
 
-    Para a emenda do instrumento (#118, ADR 0032), roda também o conjunto de
-    desenvolvimento (--perguntas desenvolvimento), com uma variação do
-    instrumento (--variacao, assistente/variacoes.py) e qualquer candidato
-    da seleção (--candidato). Fora da V−1 e dos modelos registrados, o
-    num_ctx de cada variação e candidato vem de
-    evaluation/desenvolvimento/dimensionamento.json. A VRAM entra no
-    ambiente, e a versão do Ollama é conferida. Sem --pasta, o
-    desenvolvimento grava em data/desenvolvimento/<variação>/, com os
-    trechos em data/desenvolvimento/trechos/.
+    A variação do instrumento (#118, ADR 0032, assistente/variacoes.py) é a
+    do assistente/parametros.yml: a execução 1 rodou na V−1, em
+    data/experimento/, e a execução 2 roda na V4, em
+    data/experimento/execucao-2/. O conjunto de desenvolvimento
+    (--perguntas desenvolvimento) roda qualquer variação nos modelos
+    registrados, em data/desenvolvimento/<variação>/.
 
 Uso / Usage:
-    uv run --group rag python -m scripts.executar_experimento --perguntas teste --modelo gemma-4-12b
-    uv run --group rag python -m scripts.executar_experimento --perguntas teste --modelo qwen3.5-9b
+    uv run --group rag python -m scripts.executar_experimento --perguntas teste
     uv run python -m scripts.executar_experimento --perguntas teste --ensaio
     uv run python -m scripts.executar_experimento --perguntas teste --ordem
-    uv run --group rag python -m scripts.executar_experimento --perguntas desenvolvimento --variacao V0 --candidato gemma-4-12b
-    uv run python -m scripts.executar_experimento --ensaio --perguntas desenvolvimento --variacao V3
+    uv run --group rag python -m scripts.executar_experimento --perguntas desenvolvimento --variacao V4
 """
 
 from __future__ import annotations
@@ -77,7 +71,7 @@ import datetime
 import hashlib
 import json
 import shutil
-import time
+import subprocess
 from pathlib import Path
 
 import duckdb
@@ -86,105 +80,35 @@ import yaml
 
 from assistente import parametros, variacoes
 from assistente.cliente import ClienteFalso, ClienteOllama
-from experimento import desenvolvimento, hipoteses_por_variacao
 from assistente.parametros import CONDICOES, PARAMETROS, Parametros
 from assistente.responder import responder
 from assistente.sql import abrir_banco, banco_vazio
 from correcao.acerto import PASTA_DO_EXPERIMENTO
+from experimento import desenvolvimento
+from scripts.esquema_estrela_duckdb import esquema_esperado
 from scripts.selecionar_modelos import (
     _get,
     carregar_e_medir_vram,
     carregar_selecao,
     conferir_candidato,
-    descarregar_todos,
-    conferir_congelamento,
     conferir_retrato,
     conferir_variaveis,
+    descarregar_todos,
     gravar_json,
-    parametros_do_candidato,
     respostas_de_ensaio,
 )
-from scripts.esquema_estrela_duckdb import LOCAL, carregar_manifesto, esquema_esperado
 from scripts.validar_perguntas import VIGENTE, perguntas
-from scripts.validar_registro import REGISTRO, RAIZ, hashes_vigentes
-from scripts.validar_registro import sha256 as sha256_do_registro
+from scripts.validar_registro import RAIZ
 
-# PT: o que a errata congela antes da primeira execução (decisão 4 de
-#     2026-10-14): o executor, a contagem, a estatística e o corretor; e,
-#     pela decisão 9 do mesmo dia, todo o código que muda o que o modelo vê
-#     (o assistente e a busca do RAG) ou se as conferências rodam.
-# EN: what the errata freezes before the first run: runner, counting,
-#     statistics and grader, plus every module that shapes what the model
-#     sees (assistant, RAG search) or runs the pre-run checks.
-CONGELADOS_ANTES_DO_EXPERIMENTO = (
-    "scripts/executar_experimento.py",
-    "experimento/__init__.py",
-    "experimento/contagem.py",
-    "experimento/estatistica.py",
-    "correcao/__init__.py",
-    "correcao/acerto.py",
-    "correcao/as_cegas.py",
-    "correcao/corretor.py",
-    "correcao/tolerancia.py",
-    "assistente/__init__.py",
-    "assistente/cliente.py",
-    "assistente/contexto.py",
-    "assistente/ontologia.py",
-    "assistente/parametros.py",
-    "assistente/responder.py",
-    "assistente/sql.py",
-    "rag/indice.py",
-    "scripts/selecionar_modelos.py",
-    "scripts/validar_registro.py",
-    # PT: a emenda do instrumento (#118, ADR 0032, errata 5): só o núcleo,
-    #     o que muda o resultado. As variações, o conjunto de
-    #     desenvolvimento, o portão, o medir_portao, o retrato e tudo o que
-    #     forma o prompt. Os validadores e os scripts que geram ou
-    #     dimensionam ficam fora (decisão de 2026-10-15): o CI os confere, e
-    #     consertá-los não muda o que o modelo vê nem como a resposta conta.
-    # EN: the amendment freezes only the core, what changes the result;
-    #     validators and generating or sizing scripts stay out.
-    "assistente/variacoes.py",
-    "assistente/variacoes.yml",
-    "experimento/desenvolvimento.py",
-    "evaluation/portao.yml",
-    "evaluation/hipoteses_por_variacao.yml",
-    "experimento/hipoteses_por_variacao.py",
-    "esquema_estrela/views.sql",
-    "esquema_estrela/manifesto.json",
-    "evaluation/desenvolvimento/perguntas.yml",
-    "evaluation/desenvolvimento/gabarito.yml",
-    "evaluation/desenvolvimento/comparacao.yml",
-    "evaluation/desenvolvimento/dimensionamento.json",
-    *sorted(a.relative_to(RAIZ).as_posix() for a in (RAIZ / "evaluation" / "desenvolvimento").glob("sql/D*.sql")),
-    *sorted(a.relative_to(RAIZ).as_posix() for a in (RAIZ / "evaluation" / "desenvolvimento").glob("respostas/D*.json")),
-    "scripts/medir_portao.py",
-    "evaluation/gabarito/esquema_estrela.json",
-    *sorted(a.relative_to(RAIZ).as_posix() for a in (RAIZ / "ontology").glob("*.yml")),
-    "scripts/esquema_estrela_duckdb.py",
-    "scripts/validar_gabarito.py",
-    "scripts/analises/qa_esquema_estrela.py",
-    "rag/parametros.py",
-    "assistente/modelo_de_prompt.yml",
-    "assistente/parametros.yml",
-    "evaluation/selecao.yml",
-    "scripts/validar_perguntas.py",
-    "evaluation/experimento/execucao-1/limite_declarado.txt",
-)
-# PT: o Ollama com que a execução 1 rodou; outra versão pode mudar a
+# PT: o Ollama com que as execuções rodaram; outra versão pode mudar a
 #     gramática e a geração (ADR 0032).
-# EN: the Ollama version run 1 used.
+# EN: the Ollama version the runs used.
 VERSAO_DO_OLLAMA = "0.40.4"
 PASTA_DO_DESENVOLVIMENTO = RAIZ / "data" / "desenvolvimento"
 # PT: a execução 1 roda na V−1, em data/experimento; a execução 2, na
-#     variação registrada no parametros.yml pela errata 6, numa pasta própria.
+#     variação do parametros.yml, numa pasta própria.
 # EN: run 1 (V−1) lives in data/experimento; run 2 in its own folder.
 PASTA_DA_EXECUCAO_2 = PASTA_DO_EXPERIMENTO / "execucao-2"
-# PT: o resultado da triagem, gravado pelo medir_portao; a execução 2 só roda
-#     com a variação e os modelos que ele escolheu.
-# EN: the screening result; run 2 only runs what it chose.
-TRIAGEM = RAIZ / "evaluation" / "desenvolvimento" / "triagem.json"
-DIMENSIONAMENTO = RAIZ / "evaluation" / "desenvolvimento" / "dimensionamento.json"
 # PT: a seed do sorteio da ordem das condições, registrada com o código.
 # EN: seed of the condition order draw, frozen with the code.
 SEED_DA_ORDEM = 50
@@ -211,49 +135,19 @@ def modelos_do_experimento(arquivo: Path = PARAMETROS) -> list[dict]:
              "repositorio": m["repositorio"], "revisao": m["revisao"]} for m in modelos]
 
 
-def candidatos_da_selecao() -> list[dict]:
-    """
-    PT: Os candidatos do evaluation/selecao.yml, no formato de
-        modelos_do_experimento, para a triagem e a re-seleção.
-    EN: The selection candidates, in modelos_do_experimento's shape.
-    """
-    return [{"nome": c["nome"], "ollama": c["ollama"], "classe": c["classe"], "sha256": c["sha256"],
-             "repositorio": c["repositorio"], "revisao": c["revisao"], "candidato": c}
-            for c in carregar_selecao()["candidatos"]]
-
-
 def variacao_registrada(arquivo: Path = PARAMETROS) -> str:
     """PT: a variação do parametros.yml, ou V−1 / EN: the registered variant"""
     return yaml.safe_load(arquivo.read_text(encoding="utf-8")).get("variacao", "V-1")
 
 
-def parametros_da_execucao(m: dict, variacao: str, registrados: set[str]) -> Parametros:
+def parametros_da_execucao(m: dict) -> Parametros:
     """
-    PT: Os parâmetros de um modelo numa variação. Um modelo registrado na V−1
-        usa o parametros.yml; fora disso, o num_ctx e a razão vêm do
-        dimensionamento da variação.
-    EN: A model's parameters in a variant: parametros.yml for a registered
-        model in V−1, else num_ctx and ratio from the variant's sizing.
+    PT: Os parâmetros de um modelo registrado, do assistente/parametros.yml.
+        O num_ctx de 53.248 serve da V−1 à V4: o pior caso medido da V4 no
+        Gemma é de 53.043 tokens (ADR 0032).
+    EN: A registered model's parameters, from parametros.yml.
     """
-    if m["nome"] in registrados:
-        p = parametros.carregar(modelo=m["ollama"])
-    else:
-        p = parametros_do_candidato(parametros.carregar(), carregar_selecao(), m["candidato"])
-    if variacao == "V-1" and m["nome"] in registrados:
-        return p
-    medidas = json.loads(DIMENSIONAMENTO.read_text(encoding="utf-8")) if DIMENSIONAMENTO.exists() else {}
-    medida = medidas.get("variacoes", {}).get(variacao, {}).get(m["nome"])
-    if medida is None:
-        raise SystemExit(f"ERRO sem dimensionamento de {m['nome']} na {variacao}: rode "
-                         "uv run --group rag python -m scripts.dimensionar_variacoes")
-    # PT: o modelo registrado na variação registrada (depois da errata 6) usa
-    #     o parametros.yml, que tem de bater com o dimensionamento.
-    # EN: after errata 6, parametros.yml must match the sizing.
-    if m["nome"] in registrados and variacao == variacao_registrada() and p.num_ctx != int(medida["num_ctx"]):
-        raise SystemExit(f"ERRO num_ctx de {m['nome']}: {p.num_ctx} no parametros.yml e {medida['num_ctx']} no "
-                         "dimensionamento da variação; as duas fontes têm de bater")
-    return dataclasses.replace(p, num_ctx=int(medida["num_ctx"]),
-                               caracteres_por_token_na_estimativa=float(medida["caracteres_por_token"]))
+    return parametros.carregar(modelo=m["ollama"])
 
 
 # -----------------------------------------------------------------------------
@@ -262,46 +156,29 @@ def parametros_da_execucao(m: dict, variacao: str, registrados: set[str]) -> Par
 
 def conferir_teste(args, variacao: str) -> None:
     """
-    PT: No conjunto de teste, só roda a variação registrada no parametros.yml,
-        com os modelos registrados: candidato e variação de triagem ficam no
-        conjunto de desenvolvimento.
-    EN: On the test set only the registered variant and models may run.
+    PT: No conjunto de teste, só roda a variação registrada no
+        parametros.yml, na pasta fixa da execução.
+    EN: On the test set only the registered variant runs, in its fixed folder.
     """
-    if args.candidato:
-        raise SystemExit("ERRO --candidato só vale com --perguntas desenvolvimento")
     if variacao != variacao_registrada():
         raise SystemExit(f"ERRO a {variacao} não é a variação registrada ({variacao_registrada()}): no teste só roda "
-                         "a variação que a errata registrou no parametros.yml")
+                         "a variação do parametros.yml")
     if args.pasta:
         raise SystemExit("ERRO --pasta não vale no teste: cada execução tem a sua pasta fixa")
-    if variacao == "V-1":
-        return
-    # PT: a execução 2 só roda o que a triagem escolheu, e só quando ela
-    #     terminou em escolha (nem pendente, nem sanidade, nem parada).
-    # EN: run 2 only runs what the finished screening chose.
-    if not TRIAGEM.exists():
-        raise SystemExit(f"ERRO falta {TRIAGEM.relative_to(RAIZ).as_posix()}: rode scripts.medir_portao --resumo --gravar")
-    triagem = json.loads(TRIAGEM.read_text(encoding="utf-8"))
-    if triagem.get("situacao") != "escolhida":
-        raise SystemExit(f"ERRO a triagem terminou em {triagem.get('situacao')}: a execução 2 não roda")
-    if triagem.get("variacao_escolhida") != variacao:
-        raise SystemExit(f"ERRO a triagem escolheu a {triagem.get('variacao_escolhida')}, e o parametros.yml registra "
-                         f"a {variacao}")
-    escolhidos = sorted(m["modelo"] for m in triagem.get("modelos", {}).values())
-    registrados = sorted(m["nome"] for m in modelos_do_experimento())
-    if escolhidos != registrados:
-        raise SystemExit(f"ERRO a triagem escolheu {escolhidos}, e o parametros.yml registra {registrados}")
-    # PT: a errata 6 inteira: o triagem.json e o hipoteses.yml congelados
-    #     como estão, e o hipoteses.yml com os valores prontos da variação.
-    # EN: the whole errata 6: triage and hipoteses frozen as they are, and
-    #     hipoteses holding the variant's prepared values.
-    vigentes = hashes_vigentes(carregar_registro())
-    for arquivo in (TRIAGEM, RAIZ / "evaluation" / "hipoteses.yml"):
-        caminho = arquivo.relative_to(RAIZ).as_posix()
-        if vigentes.get(caminho) != sha256_do_registro(arquivo.read_text(encoding="utf-8")):
-            raise SystemExit(f"ERRO {caminho} sem errata vigente: a errata 6 congela o que a execução 2 usa")
-    if problemas := hipoteses_por_variacao.conferir(registrada=variacao):
-        raise SystemExit(f"ERRO {problemas[0]}")
+
+
+def commit_do_codigo() -> dict:
+    """
+    PT: O commit do código e se há mudança fora dele. Substitui o
+        congelamento por errata (ADR 0032): o ambiente.json de cada modelo
+        diz com que código a execução rodou.
+    EN: The code commit and whether anything is uncommitted; replaces the
+        errata freeze.
+    """
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], cwd=RAIZ, capture_output=True, text=True, check=True).stdout.strip()
+
+    return {"commit": git("rev-parse", "HEAD"), "mudancas_sem_commit": bool(git("status", "--porcelain"))}
 
 
 def assinatura_dos_enunciados(por_id: dict[str, dict]) -> str:
@@ -348,78 +225,6 @@ def faltam_execucoes(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta
     """PT: quantas execuções ainda não estão gravadas / EN: runs still missing"""
     return sum(not arquivo_da_execucao(pasta, modelo["nome"], c, id_, s).exists()
                for id_ in por_id for c in CONDICOES for s in p.seeds)
-
-
-def descarregar_e_esperar(endereco: str, limite: float = 60.0) -> None:
-    """
-    PT: Tira os modelos da memória e espera o /api/ps ficar vazio. O executor
-        chama antes de cada execução (decisão de 2026-10-15, #118): na
-        fumaça, o Gemma só repetiu a resposta com a mesma seed partindo do
-        modelo recém-carregado, e qualquer chamada anterior mudava a saída.
-    EN: Unloads all models and waits until /api/ps is empty; called before
-        every run, since Gemma only reproduced from a fresh load.
-    """
-    descarregar_todos(endereco)
-    fim = time.monotonic() + limite
-    while _get(endereco, "/api/ps").get("models"):
-        if time.monotonic() > fim:
-            raise SystemExit(f"ERRO o Ollama não descarregou o modelo em {limite:g} s")
-        time.sleep(0.2)
-
-
-def conferir_retrato_local() -> None:
-    """
-    PT: Os Parquets de data/esquema_estrela/ são os do manifesto congelado
-        (sha256 de cada um), e as respostas do conjunto de desenvolvimento
-        são do mesmo mês do retrato. Um retrato regerado num mês novo, sem
-        errata, para tudo.
-    EN: Local Parquets match the frozen manifest, and development answers
-        are from the snapshot's month.
-    """
-    manifesto = carregar_manifesto()
-    for tabela, dados in sorted(manifesto.get("tabelas", {}).items()):
-        arquivo = LOCAL / dados["arquivo"]
-        if not arquivo.exists() or hashlib.sha256(arquivo.read_bytes()).hexdigest() != dados["sha256"]:
-            raise SystemExit(f"ERRO {arquivo} não é o do esquema_estrela/manifesto.json ({tabela}): o retrato "
-                             "local mudou sem errata")
-    meses = {r["mes_de_referencia"] for r in desenvolvimento.ler_respostas().values()}
-    if meses != {manifesto.get("mes_de_referencia")}:
-        raise SystemExit(f"ERRO respostas do desenvolvimento de {sorted(meses)} e retrato de "
-                         f"{manifesto.get('mes_de_referencia')}")
-
-
-def carregar_registro() -> dict:
-    """PT: o evaluation/registro.yml / EN: the registry"""
-    return yaml.safe_load((RAIZ / REGISTRO).read_text(encoding="utf-8"))
-
-
-def conferir_congelado() -> None:
-    """
-    PT: Tudo o que a errata 5 congela, antes de rodar ou de decidir: os
-        hashes da lista, o retrato local e os arquivos lidos por glob. O
-        executor e o medir_portao chamam esta mesma função.
-    EN: Everything errata 5 freezes; shared by the runner and the gate.
-    """
-    conferir_congelamento(CONGELADOS_ANTES_DO_EXPERIMENTO)
-    conferir_retrato_local()
-    if sumiram := conferir_globs(carregar_registro()):
-        raise SystemExit(f"ERRO arquivos congelados que sumiram: {sumiram}")
-
-
-PASTAS_POR_GLOB = ("evaluation/desenvolvimento/sql/", "evaluation/desenvolvimento/respostas/", "ontology/")
-
-
-def conferir_globs(registro: dict, congelados: tuple[str, ...] = CONGELADOS_ANTES_DO_EXPERIMENTO) -> list[str]:
-    """
-    PT: Nas pastas que a lista lê por glob, um arquivo congelado que sumiu
-        não entra no glob e passaria sem aviso. Ele aparece aqui: está no
-        registro e não está na lista. Tirar um arquivo pede errata com
-        sha256 nulo.
-    EN: In globbed folders, a frozen file that disappeared would pass
-        silently; it shows up here as registered but not listed.
-    """
-    vigentes = hashes_vigentes(registro)
-    return sorted(c for c in vigentes if c.startswith(PASTAS_POR_GLOB) and c not in congelados)
 
 
 def conferir_versao_do_ollama(endereco: str) -> str:
@@ -511,17 +316,14 @@ def registrar_repeticao(pasta: Path, registro: dict) -> None:
 
 def rodar_modelo(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta: Path, *,
                  cliente_para, banco, modelo_de_prompt: dict, buscar, indice: dict[str, str],
-                 variacao: str = "V-1", pasta_dos_trechos: Path | None = None, cego: bool = False,
-                 antes_de_cada=None) -> int:
+                 variacao: str = "V-1", pasta_dos_trechos: Path | None = None, cego: bool = False) -> int:
     """
     PT: As perguntas de um modelo, na ordem registrada, pulando as execuções
         já gravadas. Devolve quantas rodaram agora. Um erro de servidor é
         anotado e para tudo, sem gravar a execução.
-        Com cego (a triagem), o progresso sai só como contagem, sem a
+        Com cego (o conjunto de desenvolvimento), o progresso sai só como contagem, sem a
         condição, o desfecho nem o tempo de cada execução: fora o G0, nada
-        aparece por condição durante a triagem.
-        antes_de_cada roda antes de cada execução (o executor recarrega o
-        modelo, para a execução partir sempre do mesmo estado).
+        aparece por condição.
     EN: One model's questions in the registered order, skipping recorded
         runs. A server error is logged and stops the run unrecorded. With
         cego, progress shows neither condition nor outcome.
@@ -537,8 +339,6 @@ def rodar_modelo(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta: Pa
             continue
         trechos = trechos_da_pergunta(pasta_dos_trechos or pasta, id_, pergunta["pergunta"], buscar, indice)
         for condicao, seed in faltam:
-            if antes_de_cada:
-                antes_de_cada()
             registro = responder(pergunta["pergunta"], condicao, seed, cliente=cliente_para(id_, seed), banco=banco,
                                  p=p, modelo=modelo_de_prompt,
                                  trechos=trechos if "trechos" in CONDICOES[condicao] else None,
@@ -617,14 +417,10 @@ def ensaio(por_id: dict[str, dict], pasta: Path = PASTA_DO_EXPERIMENTO / "ensaio
     modelo = modelos_do_experimento()[0]
     p = dataclasses.replace(parametros.carregar(modelo=modelo["ollama"]), seeds=(1,))
     duas = dict(list(por_id.items())[:2])
-    recargas = []
-    rodadas = rodar_modelo(modelo, p, duas, pasta,
-                           cliente_para=lambda id_, seed: ClienteFalso(respostas_de_ensaio_da_variacao(variacao, id_)),
-                           banco=banco_vazio(), modelo_de_prompt=parametros.modelo_de_prompt(),
-                           buscar=lambda pergunta: TRECHOS_DE_ENSAIO, indice=INDICE_DE_ENSAIO, variacao=variacao,
-                           antes_de_cada=lambda: recargas.append(1))
-    if len(recargas) != rodadas:
-        raise SystemExit(f"ERRO o ensaio recarregou {len(recargas)} vezes em {rodadas} execuções")
+    rodar_modelo(modelo, p, duas, pasta,
+                 cliente_para=lambda id_, seed: ClienteFalso(respostas_de_ensaio_da_variacao(variacao, id_)),
+                 banco=banco_vazio(), modelo_de_prompt=parametros.modelo_de_prompt(),
+                 buscar=lambda pergunta: TRECHOS_DE_ENSAIO, indice=INDICE_DE_ENSAIO, variacao=variacao)
     if variacao != "V-1" and variacoes.VARIACOES[variacao].nova_tentativa:
         # PT: a pergunta com SQL tem de ter passado pela nova tentativa.
         # EN: the SQL question must have gone through the retry.
@@ -640,11 +436,10 @@ def ensaio(por_id: dict[str, dict], pasta: Path = PASTA_DO_EXPERIMENTO / "ensaio
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--modelo", action="append", help="só estes modelos registrados, pelo nome curto (repetível)")
-    parser.add_argument("--candidato", action="append", help="candidatos da seleção, pelo nome (repetível)")
     parser.add_argument("--perguntas", choices=["teste", "desenvolvimento"], required=True)
     parser.add_argument("--variacao", choices=variacoes.ORDEM, help="sem ela, a do parametros.yml (ou V-1)")
     parser.add_argument("--pasta", type=Path, help="pasta de saída")
-    parser.add_argument("--ensaio", action="store_true", help="sem Ollama, sem dado, sem RAG e sem errata")
+    parser.add_argument("--ensaio", action="store_true", help="sem Ollama, sem dado e sem RAG")
     parser.add_argument("--ordem", action="store_true", help="só mostra a ordem das condições")
     args = parser.parse_args()
 
@@ -652,15 +447,9 @@ def main() -> None:
     teste = args.perguntas == "teste"
     meta, por_id = perguntas(VIGENTE) if teste else desenvolvimento.perguntas()
     registrados = {m["nome"] for m in modelos_do_experimento()}
-    if args.candidato:
-        todos = {m["nome"]: m for m in candidatos_da_selecao()}
-        if desconhecidos := [n for n in args.candidato if n not in todos]:
-            raise SystemExit(f"ERRO candidato desconhecido {desconhecidos}: {sorted(todos)}")
-        modelos = [todos[n] for n in args.candidato]
-    else:
-        modelos = [m for m in modelos_do_experimento() if not args.modelo or m["nome"] in args.modelo]
-        if args.modelo and len(modelos) != len(set(args.modelo)):
-            raise SystemExit(f"ERRO modelo desconhecido em {args.modelo}: {sorted(registrados)}")
+    modelos = [m for m in modelos_do_experimento() if not args.modelo or m["nome"] in args.modelo]
+    if args.modelo and len(modelos) != len(set(args.modelo)):
+        raise SystemExit(f"ERRO modelo desconhecido em {args.modelo}: {sorted(registrados)}")
 
     if teste and not args.ensaio and not args.ordem:
         conferir_teste(args, variacao)
@@ -676,18 +465,20 @@ def main() -> None:
                 print(f"  {id_}: {' '.join(ordem_das_condicoes(m['nome'], id_))}")
         return
 
+    codigo = commit_do_codigo()
     if teste:
-        pasta = args.pasta or (PASTA_DO_EXPERIMENTO if variacao == "V-1" else PASTA_DA_EXECUCAO_2)
+        # PT: o resultado do teste tem de corresponder a um commit.
+        # EN: test results must map to a commit.
+        if codigo["mudancas_sem_commit"]:
+            raise SystemExit("ERRO há mudanças sem commit: faça o commit antes de rodar o teste, para o resultado "
+                             "corresponder a um código conhecido")
+        pasta = PASTA_DO_EXPERIMENTO if variacao == "V-1" else PASTA_DA_EXECUCAO_2
         # PT: a execução 2 recebe os mesmos trechos da execução 1.
         # EN: run 2 reuses run 1's excerpts.
         pasta_dos_trechos = PASTA_DO_EXPERIMENTO
     else:
         pasta = args.pasta or PASTA_DO_DESENVOLVIMENTO / variacao
-        # PT: os trechos ficam ao lado das pastas das variações, e uma
-        #     revisão do conjunto, numa pasta nova, ganha os seus.
-        # EN: excerpts sit next to the variant folders; a revision gets its own.
         pasta_dos_trechos = pasta.parent
-    conferir_congelado()
     conferir_retrato()
     indice = conferir_indice()
     variaveis = conferir_variaveis(carregar_selecao())
@@ -697,7 +488,7 @@ def main() -> None:
     banco, modelo_de_prompt = abrir_banco(), parametros.modelo_de_prompt()
     assinatura = assinatura_dos_enunciados(por_id)
     for m in modelos:
-        p = parametros_da_execucao(m, variacao, registrados)
+        p = parametros_da_execucao(m)
         parametros.conferir_pre_registro(p)
         if p.provisorio:
             raise SystemExit("ERRO assistente/parametros.yml ainda provisório")
@@ -710,18 +501,12 @@ def main() -> None:
         ambiente = json.loads(arquivo_do_ambiente.read_text(encoding="utf-8")) if arquivo_do_ambiente.exists() else {}
         ambiente.update({"candidato": m["nome"], "ollama": versao, "digest_do_gguf": digest, "variaveis": variaveis,
                          "variacao": variacao, "perguntas": args.perguntas, "enunciados": assinatura,
-                         "versao_do_conjunto": None if teste else meta["versao"],
-                         "duckdb": duckdb.__version__, "recarrega_a_cada_execucao": True,
-                         "parametros": dataclasses.asdict(p)})
+                         "codigo": codigo, "duckdb": duckdb.__version__, "parametros": dataclasses.asdict(p)})
+        ambiente.setdefault("codigo_no_inicio", codigo)
         ambiente.setdefault("inicio", datetime.datetime.now().astimezone().isoformat(timespec="seconds"))
         if not (ambiente.get("vram") or {}).get("size_vram"):
-            # PT: a VRAM com o num_ctx da variação, antes das execuções; o
-            #     portão exige o modelo inteiro na GPU.
-            # EN: VRAM at the variant's num_ctx; the gate needs a full fit.
-            #     A carga da medida não serve à primeira execução: a recarga
-            #     antes de cada uma a refaz, e custa só uma carga a mais por
-            #     modelo e variação.
-            # EN: the measuring load is discarded by the per-run reload.
+            # PT: a VRAM com o num_ctx do modelo, antes das execuções.
+            # EN: VRAM at the model's num_ctx, before the runs.
             descarregar_todos(p.endereco)
             ambiente["vram"] = carregar_e_medir_vram(p.endereco, p.modelo, p.num_ctx)
         gravar_json(arquivo_do_ambiente, ambiente)
@@ -732,8 +517,7 @@ def main() -> None:
         try:
             rodadas = rodar_modelo(m, p, por_id, pasta, cliente_para=lambda id_, seed: cliente, banco=banco,
                                    modelo_de_prompt=modelo_de_prompt, buscar=buscar_trechos, indice=indice,
-                                   variacao=variacao, pasta_dos_trechos=pasta_dos_trechos, cego=not teste,
-                                   antes_de_cada=lambda: descarregar_e_esperar(p.endereco))
+                                   variacao=variacao, pasta_dos_trechos=pasta_dos_trechos, cego=not teste)
         except ParadaPorServidor as erro:
             raise SystemExit(f"ERRO de servidor em {erro}. A execução não foi gravada e entrou no "
                              f"{(pasta / REPETICOES).relative_to(RAIZ).as_posix()}. Confira o ollama serve e "
@@ -741,9 +525,9 @@ def main() -> None:
         ambiente["fim"] = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
         gravar_json(arquivo_do_ambiente, ambiente)
         print(f"  {rodadas} execuções agora")
-    proximo = f"uv run python -m correcao.as_cegas --experimento --execucao {1 if variacao == 'V-1' else 2}" if teste else \
-        f"uv run python -m scripts.medir_portao --variacao {variacao}"
-    print(f"\nRodado. Próximo passo: {proximo}")
+    if teste:
+        print(f"\nRodado. Próximo passo: uv run python -m correcao.as_cegas --experimento --execucao "
+              f"{1 if variacao == 'V-1' else 2}")
 
 
 if __name__ == "__main__":

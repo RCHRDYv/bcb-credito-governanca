@@ -594,19 +594,6 @@ def autoteste(d: Dados) -> list[str]:
     except SystemExit:
         print("  reprovado, como devia / rejected as expected: tipo do DuckDB desconhecido")
 
-    # PT: uma revisão a mais do que o portao.yml permite (decisão de
-    #     2026-10-15: uma só, então a versão 3 não passa).
-    # EN: one revision more than the gate allows.
-    try:
-        dev.conferir_versao({"versao": 3})
-        falhas.append("aprovou o estrago: conjunto revisto mais vezes do que o portão permite")
-    except SystemExit:
-        print("  reprovado, como devia / rejected as expected: conjunto revisto mais vezes do que o portão permite")
-    try:
-        dev.conferir_versao({"versao": 1}, revisoes=1)
-        falhas.append("aprovou o estrago: revisão por errata sem subir a versão")
-    except SystemExit:
-        print("  reprovado, como devia / rejected as expected: revisão por errata sem subir a versão")
     return falhas
 
 

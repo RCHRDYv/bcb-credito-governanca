@@ -22,9 +22,10 @@ PT: A correção às cegas (evaluation/hipoteses.yml, comparacao.correcao),
     comando retoma de onde parou. Depois de cada julgamento, uma pergunta
     que ficou decidida sai da fila.
 
-    Com --experimento (#50, ADR 0031), lê data/experimento/ e julga todas
-    as execuções pendentes, decididas ou não, para a contagem de 0 a 5 sair
-    exata (decisão 1 de 2026-10-14). Execuções com a mesma visão cega (o que
+    Com --experimento (#50, ADR 0031), lê a pasta da execução. Na execução
+    1, julga todas as pendentes, decididas ou não, para a contagem de 0 a 5
+    sair exata; na execução 2, só as que ainda decidem a maioria, como na
+    seleção (ADR 0032). Execuções com a mesma visão cega (o que
     o item mostra, mais os aspectos a julgar e as leituras que bateram)
     viram um item só, e o julgamento vale para todas elas. A visão não tem
     modelo nem condição, e os itens vêm embaralhados por ela. O --execucao
@@ -38,13 +39,13 @@ EN: Blind grading in the terminal, one item at a time. Only what the script
     rubric and the answer fields, never the model, condition, SQL or
     excerpts; citations are stripped; items are shuffled under opaque ids.
     Each judgment is saved at once and the command resumes where it stopped.
-    --experimento judges every pending run of the experiment, merging runs
-    with the same blind view into one item; --execucao picks the folder, and
+    --experimento judges every pending run in run 1 and only deciding runs
+    in run 2, merging runs with the same blind view into one item; --execucao picks the folder, and
     the models come from its ambiente.json files.
 
 Uso / Usage:
     uv run python -m correcao.as_cegas
-    uv run python -m correcao.as_cegas --experimento --execucao 1
+    uv run python -m correcao.as_cegas --experimento --execucao 2
 """
 
 from __future__ import annotations
@@ -270,7 +271,10 @@ def main() -> None:
         return visoes[c["item"]]
 
     while True:
-        fila = a_julgar(corrigidas, todas=args.experimento)
+        # PT: a execução 1 foi julgada inteira; a 2 julga só o que decide a
+        #     maioria (ADR 0032, decisão de 2026-10-17).
+        # EN: run 1 was fully judged; run 2 judges only what decides.
+        fila = a_julgar(corrigidas, todas=args.experimento and args.execucao == 1)
         if not fila:
             print("\nNada mais a julgar / nothing left to judge.")
             return

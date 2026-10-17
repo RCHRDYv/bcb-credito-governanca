@@ -1,6 +1,6 @@
 # ADR 0031: O experimento roda com a pergunta por fora, julga tudo às cegas e congela o código da análise antes de rodar
 
-**Status:** Aceito
+**Status:** Aceito; as decisões 1, 2, 4, 6 e 9 foram revistas pelo [ADR 0032](0032-emenda-do-instrumento-do-experimento.md)
 **Data:** 2026-10-14
 
 ## Contexto

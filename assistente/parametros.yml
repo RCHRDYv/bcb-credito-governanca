@@ -34,6 +34,12 @@ servidor:
   endereco: "http://127.0.0.1:11434"
   tempo_maximo_em_segundos: 600
 
+# PT: a variação do instrumento (assistente/variacoes.py). A execução 1
+#     rodou na V−1; a execução 2 roda na V4, escolhida por custo-benefício
+#     (ADR 0032, decisão de 2026-10-17).
+# EN: the instrument variant; run 1 used V−1, run 2 uses V4 (ADR 0032).
+variacao: "V4"
+
 modelos:
   # PT: os dois modelos do experimento, escolhidos pela seleção da #48
   #     (evaluation/selecao/resultado.json), gravados por

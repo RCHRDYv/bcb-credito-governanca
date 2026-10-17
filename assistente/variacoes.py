@@ -1,6 +1,6 @@
 """
-PT: As variações do instrumento (#118, ADR 0032), cumulativas e congeladas
-    antes da triagem. A V−1 é o instrumento da execução 1, intocado. Da V0 em
+PT: As variações do instrumento (#118, ADR 0032), cumulativas. A V−1 é o
+    instrumento da execução 1, intocado, e a V4, o da execução 2. Da V0 em
     diante:
 
     - V0: chaves com prefixo de letra, para a gramática do Ollama gerar a
@@ -18,8 +18,8 @@ PT: As variações do instrumento (#118, ADR 0032), cumulativas e congeladas
     final mantém os cinco campos registrados em
     comparacao.formato_da_resposta.
 
-EN: The cumulative instrument variants, frozen before screening. V−1 is run
-    1's instrument; V0 prefixes keys so Ollama's grammar emits
+EN: The cumulative instrument variants. V−1 is run 1's instrument and V4
+    run 2's; V0 prefixes keys so Ollama's grammar emits
     interpretation and SQL before abstaining, with a boolean abstention and
     SQL taking precedence; V1 adds the criterion and toy examples after the
     question; V2 a plan field; V3 one retry on SQL error, guard or empty

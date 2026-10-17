@@ -42,7 +42,7 @@ metadata:
   gabarito: "evaluation/gabarito.yml"
   comparacao: "evaluation/comparacao.yml"
   registro: "evaluation/registro.yml"
-  adrs: ["0012", "0013", "0015", "0026"]
+  adrs: ["0012", "0013", "0015", "0026", "0031", "0032"]
 
 # -----------------------------------------------------------------------------
 # PT: Condições. A e B não mudam (ADR 0013); C e D são a extensão.
@@ -117,20 +117,31 @@ execucao:
   temperatura: 0.2
   seeds: [1, 2, 3, 4, 5]
   fluxo: >
-    O modelo recebe o prompt e escreve um SQL, ou se abstém. O SQL roda uma
-    vez, só leitura, com limite de linhas e de tempo. O resultado volta ao
-    modelo, que escreve a resposta no formato registrado em
-    comparacao.formato_da_resposta.
+    O modelo recebe o prompt e escreve um SQL, ou se abstém, num objeto JSON
+    com as chaves numa ordem fixa: a interpretação, um plano curto, o SQL, a
+    abstenção e o motivo. A mensagem do usuário traz o critério de abstenção
+    e dois exemplos num esquema de brinquedo, e o bloco do esquema traz as
+    colunas que ligam os fatos às dimensões, iguais nas quatro condições.
+    Com SQL não vazio, o SQL roda, só leitura, com limite de linhas e de
+    tempo. Se ele dá erro ou volta vazio, o modelo recebe o problema e
+    escreve de novo, uma vez só. O resultado volta ao modelo, que escreve a
+    resposta no formato registrado em comparacao.formato_da_resposta. É a
+    variação V4 do instrumento (assistente/variacoes.py, ADR 0032); a
+    execução 1 rodou com o fluxo original, a V−1.
   falhas: >
     Saída fora do formato, tempo esgotado, erro de SQL e prompt maior que o
-    num_ctx contam como erro, sem nova tentativa.
+    num_ctx contam como erro. O erro de SQL, a guarda e o resultado vazio
+    têm uma nova tentativa; o tempo esgotado não. Com a abstenção marcada,
+    um SQL que falha deixa a abstenção valer.
   acerto_binario: >
     Uma pergunta acerta numa condição e num modelo se 3 ou mais das 5
     execuções acertam.
   variancia: >
     Por pergunta, condição e modelo, o número de execuções certas, de 0 a 5,
     é publicado, com a distribuição por condição e a parcela de perguntas em
-    que as 5 execuções concordam.
+    que as 5 execuções concordam. Na execução 2, a correção às cegas julgou
+    só o que decide a maioria (ADR 0032): nas perguntas já decididas, a
+    contagem é mínima.
   fixado_antes_da_execucao:
     - "nome, versão exata e quantização de cada modelo (#48, ADR 0026)"
     - "modelo de prompt, com os blocos de contexto (#48)"
@@ -232,7 +243,11 @@ estatistica:
     São 41 perguntas, e o grupo de ressalva e abstenção tem 12. A conclusão
     vale para este domínio e este conjunto, com tamanho de efeito, e não como
     lei geral (ADR 0013). A seleção dos modelos pela condição A puxa contra a
-    H1 e a H2, e esse viés é declarado junto do resultado (ADR 0026).
+    H1 e a H2, e esse viés é declarado junto do resultado (ADR 0026). A
+    execução 1 falhou no controle de qualidade do instrumento e saiu como
+    registrada; a execução 2 usa a V4, escolhida por custo-benefício depois
+    de uma medida parcial num conjunto de 30 perguntas inventadas (ADR
+    0032).
 
 # -----------------------------------------------------------------------------
 # PT: Regra de comparação com o gabarito (ADR 0015, decisão 7)

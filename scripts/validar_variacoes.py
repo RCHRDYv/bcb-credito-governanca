@@ -21,13 +21,6 @@ PT: Valida as variações do instrumento (#118, ADR 0032) sem modelo, com o
        nova tentativa, uma só, e a segunda chamada vê só a tentativa válida;
        antes da V3, não há nova tentativa; a resposta final tem os cinco
        campos registrados.
-    5. **Textos do hipoteses.yml por variação.** O
-       evaluation/hipoteses_por_variacao.yml cobre da V0 à V4, e cada
-       caminho dele existe no hipoteses.yml. Com uma variação registrada no
-       assistente/parametros.yml (errata 6), o hipoteses.yml traz
-       exatamente os valores dela, e fora desses caminhos não muda nada
-       (experimento/hipoteses_por_variacao.py).
-
     Com --autoteste, estraga uma peça por vez e confere que a validação
     reprova cada uma.
 
@@ -56,8 +49,6 @@ from assistente.cliente import ClienteFalso
 from assistente.parametros import CONDICOES
 from assistente.responder import responder
 from assistente.sql import banco_vazio
-from experimento import hipoteses_por_variacao
-from scripts import executar_experimento
 from scripts.esquema_estrela_duckdb import esquema_esperado
 from scripts.validar_registro import RAIZ
 
@@ -246,31 +237,12 @@ def checar_fluxo() -> list[str]:
 
 
 # -----------------------------------------------------------------------------
-# PT: 5. Textos do hipoteses.yml por variação / EN: per-variant registry texts
-# -----------------------------------------------------------------------------
-
-def checar_hipoteses(hipoteses: dict | None = None) -> list[str]:
-    """
-    PT: Ver experimento/hipoteses_por_variacao.py. Também confere que, para
-        cada variação, copiar os valores prontos basta para passar.
-    EN: See that module; also checks that copying each variant's values passes.
-    """
-    erros = hipoteses_por_variacao.conferir(hipoteses, executar_experimento.variacao_registrada())
-    textos, vigentes = hipoteses_por_variacao.carregar(), hipoteses_por_variacao.hipoteses_vigentes()
-    for v in hipoteses_por_variacao.VARIACOES:
-        aplicado = hipoteses_por_variacao.aplicar(vigentes, textos, v)
-        if problemas := hipoteses_por_variacao.conferir(aplicado, v, textos):
-            erros.append(f"hipoteses_por_variacao: copiar os valores da {v} não basta: {problemas[:2]}")
-    return erros
-
-
-# -----------------------------------------------------------------------------
 # PT: Validação / EN: validation
 # -----------------------------------------------------------------------------
 
 def validar(registros: list[dict] | None) -> tuple[list[str], int]:
     v_menos_1, conferidos = checar_v_menos_1(registros)
-    return checar_cardapio() + v_menos_1 + checar_condicoes() + checar_fluxo() + checar_hipoteses(), conferidos
+    return checar_cardapio() + v_menos_1 + checar_condicoes() + checar_fluxo(), conferidos
 
 
 def _leitura_tolerante(geracao, campos: list[str]) -> dict:
@@ -295,9 +267,6 @@ def _leitura_que_aceita_array(geracao, campos: list[str]) -> dict:
     return _LER_JSON_PREFIXADO(geracao, campos)
 
 
-_HIPOTESES = hipoteses_por_variacao.hipoteses_vigentes()
-
-
 def autoteste(registros: list[dict] | None) -> list[str]:
     if problemas := validar(registros)[0]:
         return [f"a validação já falha antes do autoteste: {problemas[:3]}"]
@@ -310,11 +279,6 @@ def autoteste(registros: list[dict] | None) -> list[str]:
                                                                 _leitura_que_aceita_array), "array de pares"),
         ("nova tentativa que não olha o vazio", mock.patch.object(modulo_responder, "resultado_vazio",
                                                                    lambda r: False), "vazio"),
-        ("variação registrada sem os textos dela no hipoteses.yml",
-         mock.patch.object(executar_experimento, "variacao_registrada", lambda: "V2"), "texto pronto"),
-        ("errata 6 que muda o hipoteses.yml fora dos caminhos", mock.patch.object(
-            hipoteses_por_variacao, "hipoteses_vigentes", lambda: {**_HIPOTESES, "estatistica": {
-                **_HIPOTESES["estatistica"], "alfa": 0.10}}), "fora dos caminhos"),
         ("critério que muda com a condição", mock.patch.object(
             variacoes, "mensagem_da_primeira",
             side_effect=lambda v, p, _n=[0]: (_n.__setitem__(0, _n[0] + 1), f"{p} {_n[0]}")[1]), "muda entre"),

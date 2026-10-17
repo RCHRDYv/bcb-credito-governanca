@@ -88,24 +88,16 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - A execução (`scripts.selecionar_modelos`) e a correção às cegas (`correcao.as_cegas`) são do Yuri, na máquina dele, com o Ollama. `scripts.resumir_selecao` gera o resultado, a página `docs/selecao-dos-modelos.md` e os modelos do `parametros.yml`.
 - O corretor (`correcao/`) compara por valor e é o da #50. O `validar_selecao` e o `--autoteste` rodam sem modelo no workflow `selecao.yml`; o `--ensaio` do executor também.
 
-## Experimento (#50, ADR 0031)
+## Experimento (#50, ADR 0031 e 0032)
+- Custo-benefício antes de rigor: este projeto simula um case de negócios. Antes de qualquer escolha de método, traga a opção simples e a rigorosa, com o custo de cada uma em tempo, e recomende pensando no case. Não congele ferramenta.
 - Estatística em `experimento/estatistica.py`, funções puras usadas pelo resumo, pelo validador e pelo notebook. O Newcombe é o método 10 do artigo de 1998, conferido contra a Tabela III.
-- Ordem antes de rodar: `/code-review`, a fumaça nos dois modelos (`fumaca_assistente --modelo`, perguntas inventadas) para medir o tempo e conferir o corte de citações em B, C e D, e só então a errata de congelamento.
-- A errata congela o executor, o `experimento/`, o `correcao/`, o `assistente/` (sem a interface e o `__main__`), o `rag/indice.py`, o `scripts/selecionar_modelos.py` e o `scripts/validar_registro.py` (errata 4). A errata 5 da #118 ampliou a lista para tudo o que forma o prompt, a triagem e o retrato do esquema estrela (lista em `CONGELADOS_ANTES_DO_EXPERIMENTO`). Depois dela, mudar um desses arquivos pede errata nova.
-- A execução (`uv run --group rag python -m scripts.executar_experimento --perguntas teste --modelo <nome>`) e a correção às cegas (`correcao.as_cegas --experimento --execucao <n>`) são do Yuri, na máquina dele. Erro de servidor não grava a execução e para: basta rodar de novo.
-- `scripts.resumir_experimento` gera `evaluation/experimento/resultado.json`, `execucoes.jsonl.gz` e `docs/experimento.md`; `--do-publicado` refaz sem `data/`. O notebook `notebooks/experimento.ipynb` lê só o publicado, e o PDF sai por `uv run --group notebook quarto render`.
-- QA por outro caminho: `uv run python -m scripts.analises.qa_experimento`. Tudo isso roda sem modelo no workflow `experimento.yml`, junto do `--ensaio`.
-
-## Emenda do instrumento (#118, ADR 0032)
-- A execução 1 falhou no controle de qualidade: a gramática do Ollama gera as chaves do JSON em ordem alfabética, e o modelo escrevia a abstenção antes do SQL. Ela sai como registrada; as afirmações confirmatórias são da execução 2.
-- Conjunto de desenvolvimento em `evaluation/desenvolvimento/` (30 perguntas inventadas, D01 a D30). Gabarito no DuckDB: `uv run python -m scripts.gerar_gabarito_de_desenvolvimento` (`--conferir-mapa` confere os tipos nos SQL do teste). Validador: `scripts.validar_desenvolvimento` (+ `--autoteste`; `--embeddings` com o grupo rag). Nenhum ajuste se mede nas 41.
-- Variações V−1 a V4 em `assistente/variacoes.py` e `variacoes.yml`; o `responder` recebe `variacao`, e a V−1 é a execução 1 intocada. `scripts.validar_variacoes` (+ `--autoteste`) confere a V−1 contra os registros da execução 1.
-- Portão e regras em `evaluation/portao.yml`, medidos por `scripts.medir_portao` (`--variacao`, `--resumo`, `--gravar`, `--autoteste`). Dimensionamento por variação: `uv run --group rag python -m scripts.dimensionar_variacoes`.
-- Triagem: `uv run --group rag python -m scripts.executar_experimento --perguntas desenvolvimento --variacao <V> --candidato <nome>`, gravando em `data/desenvolvimento/<V>/`. Fumaça ao vivo das chaves e da seed: `scripts.analises.fumaca_variacoes`. O desempate do corretor (posição contra código) se confere em `scripts.analises.qa_corretor`.
-- O resumo e o validador do experimento recebem `--execucao 1` ou `2`; a saída vai para `evaluation/experimento/execucao-N/`. A correção às cegas também: `correcao.as_cegas --experimento --execucao <n>`.
-- O executor recarrega o modelo antes de cada execução (o Gemma só repete a seed partindo frio) e roda o DuckDB com uma thread. No teste, só roda a variação registrada, sem `--pasta` nem `--candidato`, e a execução 2 exige o `evaluation/desenvolvimento/triagem.json` em "escolhida".
-- Os textos do `hipoteses.yml` de cada variação estão prontos em `evaluation/hipoteses_por_variacao.yml`; a errata 6 só os copia, e o `validar_variacoes` confere. Replay da V−1 contra a execução 1: `scripts.analises.replay_v_menos_1` (precisa de `data/`).
-- Errata 5 congela a emenda antes da triagem (lista em `CONGELADOS_ANTES_DO_EXPERIMENTO`, com o retrato do esquema estrela); a errata 6 registra a variação, os modelos, o `num_ctx`, o `triagem.json`, o `hipoteses.yml` copiado e o `resumir_experimento.py`. O conjunto de desenvolvimento pode ser revisto uma vez só (`metadata.versao` = 1 + as erratas do `perguntas.yml` marcadas com `revisao_do_conjunto: true`, até 2).
+- A variação do instrumento é a do `assistente/parametros.yml` (`assistente/variacoes.py`): a execução 1 rodou na V−1, em `data/experimento/`; a execução 2 roda na V4, em `data/experimento/execucao-2/`. A V4 corrige a ordem das chaves do JSON, que fazia o modelo se abster antes de pensar no SQL.
+- Execução: `uv run --group rag python -m scripts.executar_experimento --perguntas teste`, com o `ollama serve` aberto com `OLLAMA_KV_CACHE_TYPE=q8_0` e `OLLAMA_FLASH_ATTENTION=1`. O executor grava o commit no `ambiente.json` e recusa o teste com mudança sem commit. Erro de servidor não grava a execução e para: basta rodar de novo.
+- Correção às cegas: `uv run python -m correcao.as_cegas --experimento --execucao <n>`. Na execução 2, só o que decide a maioria.
+- `scripts.resumir_experimento --execucao <n>` gera `evaluation/experimento/execucao-<n>/` (resultado e registros) e `docs/experimento.md`; `--do-publicado` refaz sem `data/`. O notebook `notebooks/experimento.ipynb` lê só o publicado.
+- O registro (`evaluation/registro.yml`) guarda só o pré-registro da #47, os arquivos da #46, da #48 e da #49 e os resultados das execuções. Código não se congela por errata.
+- QA por outro caminho: `scripts.analises.qa_experimento`, `qa_corretor` e `replay_v_menos_1` (este precisa de `data/`). O workflow `experimento.yml` roda os validadores e o `--ensaio` sem modelo.
+- Conjunto de desenvolvimento em `evaluation/desenvolvimento/` (30 perguntas inventadas), com `scripts.gerar_gabarito_de_desenvolvimento` e `scripts.validar_desenvolvimento`; roda com `--perguntas desenvolvimento --variacao <V>`. A medida parcial das variações está no ADR 0032.
 
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).

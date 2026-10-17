@@ -72,9 +72,9 @@ from correcao import acerto, as_cegas
 from correcao.corretor import Gabarito, carregar_gabarito
 from experimento import estatistica
 from experimento.estatistica import Tabela
-from scripts import executar_experimento, medir_portao, resumir_experimento, validar_registro
+from scripts import executar_experimento, resumir_experimento
 from scripts.validar_perguntas import VIGENTE, perguntas
-from scripts.validar_registro import HIPOTESES, REGISTRO, RAIZ, hashes_vigentes
+from scripts.validar_registro import HIPOTESES, REGISTRO, RAIZ
 
 # PT: o método 10 na Tabela III de Newcombe (1998): (e, f, g, h) e os
 #     limites do intervalo de 95%, com 4 casas.
@@ -255,69 +255,6 @@ class _ClienteQueFalha(ClienteFalso):
         raise ErroDeGeracao(self.tipo, f"falha de {self.tipo} do ensaio")
 
 
-def checar_ligacao_com_a_triagem() -> list[str]:
-    """
-    PT: A execução 2 (#118) só roda o que a triagem escolheu, com a errata 6
-        inteira: sem triagem.json, com a triagem pendente ou parada, com
-        outra variação ou outros modelos, sem errata do triagem.json ou do
-        hipoteses.yml, ou com o hipoteses.yml sem os valores prontos, o
-        executor se recusa; com tudo certo, passa. Simulado numa pasta
-        temporária, com uma variação registrada V2.
-    EN: Run 2 only runs what screening chose, with the whole errata 6;
-        simulated in a temporary folder with V2 registered.
-    """
-    erros = []
-    args = argparse.Namespace(candidato=None, pasta=None)
-    modelos = [{"nome": "gemma-4-12b"}, {"nome": "qwen3.5-9b"}]
-    certa = {"situacao": "escolhida", "variacao_escolhida": "V2",
-             "modelos": {"14b": {"modelo": "gemma-4-12b"}, "8b": {"modelo": "qwen3.5-9b"}}}
-    # PT: (descrição, triagem, triagem com errata, hipoteses com errata, problemas do hipoteses, passa)
-    casos = [
-        ("sem triagem", None, True, True, [], False),
-        ("triagem pendente", {"situacao": "pendente"}, True, True, [], False),
-        ("triagem que parou na sanidade", {**certa, "situacao": "sanidade"}, True, True, [], False),
-        ("outra variação", {**certa, "variacao_escolhida": "V1"}, True, True, [], False),
-        ("outros modelos", {**certa, "modelos": {"14b": {"modelo": "gemma-4-12b"}, "8b": {"modelo": "outro"}}},
-         True, True, [], False),
-        ("triagem sem errata", certa, False, True, [], False),
-        ("hipoteses.yml sem errata", certa, True, False, [], False),
-        ("hipoteses.yml sem os valores prontos", certa, True, True, ["sem o texto pronto"], False),
-        ("errata 6 inteira", certa, True, True, [], True),
-    ]
-    with tempfile.TemporaryDirectory() as d:
-        raiz = Path(d)
-        (raiz / "evaluation").mkdir()
-        arquivo, hipoteses = raiz / "triagem.json", raiz / "evaluation" / "hipoteses.yml"
-        hipoteses.write_text("x: 1\n", encoding="utf-8")
-        for descricao, triagem, com_errata, hipoteses_com_errata, problemas, passa in casos:
-            arquivo.unlink(missing_ok=True)
-            if triagem is not None:
-                arquivo.write_text(json.dumps(triagem), encoding="utf-8")
-            erratas = []
-            if com_errata and triagem is not None:
-                erratas.append({"arquivo": "triagem.json", "sha256": validar_registro.sha256(
-                    arquivo.read_text(encoding="utf-8"))})
-            if hipoteses_com_errata:
-                erratas.append({"arquivo": "evaluation/hipoteses.yml", "sha256": validar_registro.sha256(
-                    hipoteses.read_text(encoding="utf-8"))})
-            (raiz / "evaluation" / "registro.yml").write_text(yaml.safe_dump({"arquivos": {}, "erratas": erratas}),
-                                                              encoding="utf-8")
-            with mock.patch.object(executar_experimento, "TRIAGEM", arquivo), \
-                 mock.patch.object(executar_experimento, "RAIZ", raiz), \
-                 mock.patch.object(executar_experimento, "variacao_registrada", lambda: "V2"), \
-                 mock.patch.object(executar_experimento, "modelos_do_experimento", lambda: modelos), \
-                 mock.patch.object(executar_experimento.hipoteses_por_variacao, "conferir",
-                                   lambda registrada, _p=problemas: list(_p)):
-                try:
-                    executar_experimento.conferir_teste(args, "V2")
-                    passou = True
-                except SystemExit:
-                    passou = False
-            if passou != passa:
-                erros.append(f"executor: execução 2 com {descricao} {'recusada' if passa else 'aceita'}")
-    return erros
-
-
 def checar_executor(por_id: dict[str, dict]) -> list[str]:
     erros = []
     modelos = executar_experimento.modelos_do_experimento()
@@ -442,14 +379,9 @@ def checar_sintetico(hipoteses: dict, tipos: dict[str, str]) -> list[str]:
 def checar_resultado(resultado: dict, hipoteses: dict, tipos: dict[str, str]) -> list[str]:
     erros = []
     execucao = resultado["metadata"].get("execucao")
-    # PT: a execução 2 roda com os modelos do parametros.yml vigente; a 1,
-    #     com os dois registrados antes da emenda, fixados no portao.yml.
-    # EN: run 2 uses the current parametros.yml models; run 1 the two fixed
-    #     in portao.yml.
-    if execucao == 2:
-        esperados = sorted(m["nome"] for m in executar_experimento.modelos_do_experimento())
-    else:
-        esperados = sorted(medir_portao.carregar_portao()["triagem"]["modelos_da_primeira_etapa"])
+    # PT: as duas execuções rodam com os modelos do parametros.yml (ADR 0032).
+    # EN: both runs use the parametros.yml models.
+    esperados = sorted(m["nome"] for m in executar_experimento.modelos_do_experimento())
     if sorted(resultado["modelos"]) != esperados:
         erros.append(f"resultado: modelos {list(resultado['modelos'])} na execução {execucao}, esperado {esperados}")
     if resultado["metadata"].get("numpy") != np.__version__:
@@ -457,8 +389,14 @@ def checar_resultado(resultado: dict, hipoteses: dict, tipos: dict[str, str]) ->
                      f"{np.__version__}; a simulação da H5 só se refaz no mesmo numpy (Python fixado no workflow)")
     for nome, m in resultado["modelos"].items():
         for c, por in m["execucoes"].items():
-            if any(len(s) != acerto.EXECUCOES_POR_PERGUNTA or "pendente" in s for s in por.values()):
-                erros.append(f"resultado: {nome} {c} com pergunta sem 5 execuções julgadas")
+            # PT: na execução 1, tudo julgado; na 2, pendente só em
+            #     pergunta já decidida pela maioria (ADR 0032).
+            # EN: run 1 fully judged; run 2 pending only in decided questions.
+            if any(len(s) != acerto.EXECUCOES_POR_PERGUNTA for s in por.values()):
+                erros.append(f"resultado: {nome} {c} com pergunta sem 5 execuções")
+            if any("pendente" in s and (execucao == 1 or acerto.acerto_da_pergunta(s) == "pendente")
+                   for s in por.values()):
+                erros.append(f"resultado: {nome} {c} com pergunta sem julgamento que decide")
             if any(m["certas"][c][i] != s.count("certo") for i, s in por.items()):
                 erros.append(f"resultado: {nome} {c} com contagem diferente das execuções")
         if m["analise"] is None:
@@ -491,19 +429,7 @@ def checar_recorrecao(resultados: dict[int, dict], hipoteses: dict) -> list[str]
     pagina = resumir_experimento.PAGINA
     if not pagina.exists() or pagina.read_text(encoding="utf-8") != resumir_experimento.pagina(resultados, hipoteses):
         erros.append("página: docs/experimento.md difere da regenerada")
-    elif 2 in resultados:
-        erros += checar_declaracoes(pagina.read_text(encoding="utf-8"), resultados[2]["metadata"]["variacao"][0])
     return erros
-
-
-def checar_declaracoes(texto: str, variacao: str) -> list[str]:
-    """
-    PT: A página da execução 2 traz, palavra por palavra, as ressalvas
-        escritas antes da triagem para a variação que venceu.
-    EN: Run 2's page carries the pre-written caveats verbatim.
-    """
-    return [f"página: falta a ressalva escrita antes da triagem: {d[:60]}..."
-            for d in resumir_experimento.declaracoes_da_variacao(variacao) if d not in texto]
 
 
 # -----------------------------------------------------------------------------
@@ -532,7 +458,7 @@ def ler() -> Dados:
 
 def validar(d: Dados, g: Gabarito, recorrigir: bool = True) -> list[str]:
     erros = checar_pre_registro(d.hipoteses, d.tipos) + checar_estatistica() + checar_cegamento(g)
-    erros += checar_executor(d.por_id) + checar_ligacao_com_a_triagem() + checar_sintetico(d.hipoteses, d.tipos)
+    erros += checar_executor(d.por_id) + checar_sintetico(d.hipoteses, d.tipos)
     for resultado in d.resultados.values():
         erros += checar_resultado(resultado, d.hipoteses, d.tipos)
     if d.resultados and recorrigir:
@@ -615,16 +541,6 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
             falhas.append(f"reprovou '{descricao}' pelo motivo errado: {problemas[:3]}")
         else:
             print(f"  reprovado, como devia / rejected as expected: {descricao}")
-    # PT: as ressalvas da execução 2: com todas, passa; sem uma, reprova.
-    # EN: run 2 caveats: all present passes, one missing fails.
-    declaracoes = resumir_experimento.declaracoes_da_variacao("V4")
-    completa = "\n".join(f"- {x}" for x in declaracoes)
-    if checar_declaracoes(completa, "V4"):
-        falhas.append("a página com todas as ressalvas da V4 foi recusada")
-    if not checar_declaracoes(completa.replace(declaracoes[-1], ""), "V4"):
-        falhas.append("aprovou o estrago: página da execução 2 sem uma ressalva escrita antes da triagem")
-    else:
-        print("  reprovado, como devia / rejected as expected: página da execução 2 sem uma ressalva")
     return falhas
 
 
@@ -638,9 +554,8 @@ def main() -> None:
         falhas = autoteste(d, g)
     else:
         falhas = validar(d, g)
-        congelado = all(c in hashes_vigentes(d.registro) for c in executar_experimento.CONGELADOS_ANTES_DO_EXPERIMENTO)
         print(f"  estatística: {len(TABELA_III)} casos da Tabela III de Newcombe; executor, cegamento e análise "
-              f"sintética conferidos; código {'congelado' if congelado else 'ainda sem errata'}; resultado "
+              f"sintética conferidos; resultado "
               f"{f'conferido nas execuções {sorted(d.resultados)}' if d.resultados else 'ainda não gerado'}")
     for falha in falhas:
         print(f"ERRO {falha}")
