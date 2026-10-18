@@ -59,6 +59,6 @@ O que fica da emenda: as variações, o conjunto de desenvolvimento com o gerado
 
 ## Consequências
 
-- A execução 2 roda as 1.640 execuções em `data/experimento/execucao-2/`, com os trechos da execução 1, em umas 6 a 7 h.
+- A execução 2 rodou as 1.640 execuções em `data/experimento/execucao-2/`, com os trechos da execução 1, em 2026-10-18. Levou umas 10 h, com até 32 s por execução nas perguntas mais pesadas, e não teve repetição por erro de servidor. Ela travou uma vez: na Q29, condição D, seed 5 do Gemma, o processo ficou 27 minutos parado, sem uso de CPU nem de GPU, dentro do SQL que passou do limite de 30 s. Parei o processo e retomei, e o executor refez só essa execução, que dessa vez passou. A interrupção do SQL no DuckDB fica para a issue de correção.
 - Mudar o código depois não pede errata; o commit gravado diz com que código cada execução rodou.
 - O resultado da execução 2 entra no registro por errata, como o da execução 1.
