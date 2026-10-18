@@ -1,0 +1,15 @@
+{
+  "consulta": "D05.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "rendimento_medio"
+  ],
+  "tipos": [
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "2861.00"
+    ]
+  ]
+}

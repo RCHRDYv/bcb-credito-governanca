@@ -1,0 +1,86 @@
+# =============================================================================
+# PT: O experimento 2x2 (#50, ADR 0031). Confere, sem rede, sem modelo e sem
+#     dado, a estatística contra a Tabela III de Newcombe (1998) e contra
+#     implementações independentes, o cegamento da correção, a ordem e a
+#     regra do erro de servidor do executor e, quando existe, o resultado
+#     publicado, refeito dos registros. O ensaio roda o executor com o
+#     cliente falso e o banco vazio. A seleção da #48 é conferida de novo,
+#     porque o corretor que ela usa foi estendido para o experimento.
+#
+#     Fica num workflow próprio, e não no ci.yml, porque mudar o ci.yml
+#     dispara o job do site (#105), que leva mais de 10 minutos.
+# EN: The 2x2 experiment. Checks, with no network, model or data, the
+#     statistics against Newcombe's Table III and independent
+#     implementations, blinding, the runner's order and server-error rule
+#     and, when present, the published result rebuilt from the records. The
+#     dry run exercises the runner offline. The #48 selection is checked
+#     again because its grader was extended. Its own workflow, not ci.yml,
+#     which would trigger the 10-minute site job.
+# =============================================================================
+
+name: Experimento
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# PT: Permissão mínima. O workflow só precisa ler o código.
+# EN: Least privilege. The workflow only needs to read the code.
+permissions:
+  contents: read
+
+jobs:
+  experimento:
+    name: Experimento 2x2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # PT: o Python fixado decide o numpy do uv.lock, e o fluxo do gerador
+      #     da H5 depende da versão do numpy: o resultado só se refaz igual
+      #     no mesmo Python em que foi gerado.
+      # EN: the pinned Python picks numpy from uv.lock, and the H5 generator
+      #     stream depends on the numpy version.
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.14"
+
+      - name: Instalar dependências
+        run: uv sync --frozen
+
+      - name: Pré-registro, estatística, cegamento, executor e resultado
+        run: uv run python -m scripts.validar_experimento
+
+      - name: Controle negativo
+        run: uv run python -m scripts.validar_experimento --autoteste
+
+      - name: Conjunto de desenvolvimento (#118)
+        run: |
+          uv run python -m scripts.validar_desenvolvimento
+          uv run python -m scripts.validar_desenvolvimento --autoteste
+
+      - name: Variações do instrumento (#118)
+        run: |
+          uv run python -m scripts.validar_variacoes
+          uv run python -m scripts.validar_variacoes --autoteste
+
+      - name: Estatística por outro caminho
+        run: uv run python -m scripts.analises.qa_experimento
+
+      - name: Correção do corretor sem efeito no que já foi corrigido (#118)
+        run: uv run python -m scripts.analises.qa_corretor
+
+      - name: Ensaio do executor, sem modelo
+        run: uv run python -m scripts.executar_experimento --perguntas teste --ensaio
+
+      - name: A seleção não mudou com o corretor estendido
+        run: |
+          uv run python -m scripts.validar_selecao
+          uv run python -m scripts.resumir_selecao --do-publicado
+          git diff --exit-code -- evaluation/selecao docs/selecao-dos-modelos.md assistente/parametros.yml

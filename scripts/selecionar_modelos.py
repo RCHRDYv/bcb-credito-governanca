@@ -121,21 +121,23 @@ def parametros_do_candidato(base: Parametros, selecao: dict, candidato: dict) ->
 # PT: Conferências antes de rodar / EN: pre-run checks
 # -----------------------------------------------------------------------------
 
-def nao_congelados(registro: dict, textos: dict[str, str]) -> list[str]:
+def nao_congelados(registro: dict, textos: dict[str, str],
+                   congelados: tuple[str, ...] = CONGELADOS_ANTES_DA_SELECAO) -> list[str]:
     """
-    PT: Os arquivos que deviam estar congelados por errata antes da seleção
-        e não estão, ou mudaram depois.
-    EN: Files that should be frozen by errata before selection and are not,
-        or changed since.
+    PT: Os arquivos que deviam estar congelados por errata antes de rodar e
+        não estão, ou mudaram depois. Sem a lista, os da seleção; o
+        experimento (#50) passa a dele.
+    EN: Files that should be frozen by errata before running and are not,
+        or changed since; the selection's list by default.
     """
     vigentes = hashes_vigentes(registro)
-    return [c for c in CONGELADOS_ANTES_DA_SELECAO if vigentes.get(c) != sha256(textos[c])]
+    return [c for c in congelados if vigentes.get(c) != sha256(textos[c])]
 
 
-def conferir_congelamento() -> None:
+def conferir_congelamento(congelados: tuple[str, ...] = CONGELADOS_ANTES_DA_SELECAO) -> None:
     registro = yaml.safe_load((RAIZ / REGISTRO).read_text(encoding="utf-8"))
-    textos = {c: (RAIZ / c).read_text(encoding="utf-8") for c in CONGELADOS_ANTES_DA_SELECAO}
-    if faltam := nao_congelados(registro, textos):
+    textos = {c: (RAIZ / c).read_text(encoding="utf-8") for c in congelados}
+    if faltam := nao_congelados(registro, textos, congelados):
         raise SystemExit(f"ERRO sem errata vigente no {REGISTRO} para {faltam}: congele antes de rodar "
                          "contra o gabarito / freeze by errata first")
 

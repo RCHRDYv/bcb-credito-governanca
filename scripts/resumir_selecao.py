@@ -46,6 +46,7 @@ from correcao.acerto import (
     execucoes_vigentes,
     ler_execucoes,
     ler_julgamentos,
+    motivo_do_erro,
     por_pergunta,
 )
 from correcao.corretor import carregar_gabarito
@@ -63,13 +64,6 @@ PARAMETROS = RAIZ / "assistente" / "parametros.yml"
 # -----------------------------------------------------------------------------
 # PT: Placar e escolha / EN: score and choice
 # -----------------------------------------------------------------------------
-
-def motivo_do_erro(c: dict) -> str:
-    if c["correcao"]["situacao"] == "errado":
-        return c["correcao"]["motivo"]
-    negados = [a for a in c["correcao"]["julgar"] if (c["julgamento"] or {}).get(a) is False]
-    return f"julgamento_{negados[0]}" if negados else ""
-
 
 def ler_publicado() -> tuple[list[dict], dict[str, dict], dict[str, dict]]:
     """
@@ -131,14 +125,20 @@ def escolher(placares: list[dict]) -> dict[str, str]:
 # PT: Gravação / EN: writing
 # -----------------------------------------------------------------------------
 
-def gravar_execucoes(execucoes: list[dict]) -> None:
-    """PT: JSONL comprimido, determinístico / EN: deterministic gzipped JSONL"""
-    ordenadas = sorted(execucoes, key=lambda r: (r["candidato"], r["id_pergunta"], r["seed"]))
+def gravar_execucoes(execucoes: list[dict], destino: Path = EXECUCOES,
+                     chave=lambda r: (r["candidato"], r["id_pergunta"], r["seed"])) -> None:
+    """
+    PT: JSONL comprimido, determinístico: registros ordenados pela chave,
+        chaves ordenadas e gzip sem data. O experimento (#50) passa o
+        destino dele e a chave com a condição.
+    EN: Deterministic gzipped JSONL; #50 passes its own path and key.
+    """
+    ordenadas = sorted(execucoes, key=chave)
     texto = "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in ordenadas)
     buffer = io.BytesIO()
     with gzip.GzipFile(fileobj=buffer, mode="wb", mtime=0) as arquivo:
         arquivo.write(texto.encode("utf-8"))
-    EXECUCOES.write_bytes(buffer.getvalue())
+    destino.write_bytes(buffer.getvalue())
 
 
 def _gib(bytes_: int | None) -> str:

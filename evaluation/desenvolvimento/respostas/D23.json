@@ -1,0 +1,72 @@
+{
+  "consulta": "D23.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "posicao",
+    "uf",
+    "nome_da_uf",
+    "crescimento_pct"
+  ],
+  "tipos": [
+    "LONG",
+    "STRING",
+    "STRING",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "1",
+      "CE",
+      "Ceará",
+      "13.93791324"
+    ],
+    [
+      "2",
+      "PE",
+      "Pernambuco",
+      "11.00732832"
+    ],
+    [
+      "3",
+      "PB",
+      "Paraíba",
+      "10.83775711"
+    ],
+    [
+      "4",
+      "PI",
+      "Piauí",
+      "10.80463405"
+    ],
+    [
+      "5",
+      "RN",
+      "Rio Grande do Norte",
+      "10.22565372"
+    ],
+    [
+      "6",
+      "BA",
+      "Bahia",
+      "9.995126209"
+    ],
+    [
+      "7",
+      "AL",
+      "Alagoas",
+      "8.710938285"
+    ],
+    [
+      "8",
+      "MA",
+      "Maranhão",
+      "7.510342223"
+    ],
+    [
+      "9",
+      "SE",
+      "Sergipe",
+      "0.7365535534"
+    ]
+  ]
+}

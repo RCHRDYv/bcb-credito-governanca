@@ -55,3 +55,11 @@ rag = [
 assistente = [
     "gradio>=5",
 ]
+# PT: notebook do experimento (#50, ADR 0031 e 0032). Lê só o resultado
+#     publicado. Fica fora do CI, como os outros grupos.
+#     Uso: uv run --group notebook jupyter nbconvert --to notebook --execute --inplace notebooks/experimento.ipynb
+# EN: experiment notebook; reads only the published result. Outside CI.
+notebook = [
+    "jupyter>=1.1",
+    "matplotlib>=3.9",
+]

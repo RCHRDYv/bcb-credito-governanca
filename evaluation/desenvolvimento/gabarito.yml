@@ -1,0 +1,240 @@
+# =============================================================================
+# PT: Gabarito do conjunto de desenvolvimento (#118, ADR 0032), no mesmo
+#     formato do evaluation/gabarito.yml. Diz como cada pergunta de
+#     evaluation/desenvolvimento/perguntas.yml é respondida: a leitura, o SQL,
+#     a ressalva obrigatória e a fonte da definição. Os números saem dos SQL
+#     em evaluation/desenvolvimento/sql/, rodados no DuckDB local por
+#     scripts/gerar_gabarito_de_desenvolvimento.py, e ficam em
+#     evaluation/desenvolvimento/respostas/. Nenhum número é digitado à mão.
+#
+#     Toda pergunta tem uma leitura só, e toda pergunta com número diz o
+#     período, para que o corretor por script decida sem leitura declarada.
+#     As ressalvas foram conferidas na fonte citada em 2026-10-15.
+#
+# EN: Answer key for the development set, in the same format as
+#     evaluation/gabarito.yml: one reading per question, explicit periods,
+#     numbers generated from the SQL on the local DuckDB, never typed.
+# =============================================================================
+
+metadata:
+  versao: 1
+  conjunto_de_perguntas: "evaluation/desenvolvimento/perguntas.yml"
+  leituras_aceitas_decididas_em: "2026-10-15"
+
+perguntas:
+
+  # ---------------------------------------------------------------------------
+  # PT: Controles positivos / EN: positive controls
+  # ---------------------------------------------------------------------------
+  D01:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.selic_meta]
+    leituras:
+      - id: unica
+        descricao: "A meta da Selic no último mês da tabela fct_selic."
+        consultas: [D01.sql]
+  D02:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.empresa_ativa, fontes_externas.mei]
+    leituras:
+      - id: unica
+        descricao: "Soma das empresas ativas do Ceará, com os MEI, no último mês."
+        consultas: [D02.sql]
+  D03:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.populacao_residente_estimada]
+    leituras:
+      - id: unica
+        descricao: "A população estimada de Pernambuco no ano de 2025."
+        consultas: [D03.sql]
+  D04:
+    tipo_de_acerto: valor
+    fonte: [metricas.carteira_a_vencer]
+    leituras:
+      - id: unica
+        descricao: "Soma da carteira a vencer de Goiás no último mês da tabela fct_carteira."
+        consultas: [D04.sql]
+  D05:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.rendimento_medio_do_trabalho]
+    leituras:
+      - id: unica
+        descricao: "O rendimento médio do trabalho do Rio Grande do Norte no 2º trimestre de 2026."
+        consultas: [D05.sql]
+  D06:
+    tipo_de_acerto: valor
+    fonte: [metricas.carteira_vencida]
+    leituras:
+      - id: unica
+        descricao: "Soma da carteira vencida do país no último mês da tabela fct_carteira."
+        consultas: [D06.sql]
+  D07:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_data_base]
+    leituras:
+      - id: unica
+        descricao: "Número de datas-base distintas na tabela de carteira."
+        consultas: [D07.sql]
+  D08:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.selic_meta]
+    leituras:
+      - id: unica
+        descricao: "O maior valor da meta da Selic na tabela fct_selic."
+        consultas: [D08.sql]
+
+  # ---------------------------------------------------------------------------
+  # PT: Controles negativos / EN: negative controls
+  # ---------------------------------------------------------------------------
+  D09:
+    tipo_de_acerto: abstencao
+    fonte: [evaluation/gabarito/esquema_estrela.json]
+    explicacao: "A base publica saldos de carteira, e nenhuma tabela traz taxa de juros."
+    o_que_faltaria: "A taxa de juros das operações, por modalidade."
+  D10:
+    tipo_de_acerto: abstencao
+    fonte: [evaluation/gabarito/esquema_estrela.json, dimensoes.dim_cliente]
+    explicacao: "A base é agregada por recorte e só separa pessoa física de jurídica. Não há identificador de cliente."
+    o_que_faltaria: "Um identificador do cliente (CPF) por operação."
+  D11:
+    tipo_de_acerto: abstencao
+    fonte: [evaluation/gabarito/esquema_estrela.json, dimensoes.dim_segmento]
+    explicacao: "A base agrega as instituições por segmento e não identifica a instituição."
+    o_que_faltaria: "A carteira por instituição financeira."
+  D12:
+    tipo_de_acerto: abstencao
+    fonte: [evaluation/gabarito/esquema_estrela.json]
+    explicacao: "A base publica saldos por recorte, sem prazo das operações."
+    o_que_faltaria: "O prazo das operações, ou a distribuição da carteira por prazo."
+  D13:
+    tipo_de_acerto: abstencao
+    fonte: [dimensoes.uf_e_domicilio_ou_sede]
+    explicacao: "A carteira de crédito vai só até a UF, sem município."
+    o_que_faltaria: "A carteira por município."
+  D14:
+    tipo_de_acerto: abstencao
+    fonte: [evaluation/gabarito/esquema_estrela.json, dimensoes.dim_porte]
+    explicacao: "A base não tem a idade do cliente. Para pessoa física, só há a faixa de renda e a ocupação."
+    o_que_faltaria: "A idade, ou a data de nascimento, dos clientes."
+
+  # ---------------------------------------------------------------------------
+  # PT: Mistas / EN: mixed
+  # ---------------------------------------------------------------------------
+  D15:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_indexador, metricas.carteira_ativa]
+    leituras:
+      - id: unica
+        descricao: "Carteira PJ com indexador pós-fixado sobre a carteira PJ total, em julho de 2026."
+        consultas: [D15.sql]
+  D16:
+    tipo_de_acerto: valor
+    fonte: [modalidades.mod_08, dimensoes.dim_segmento]
+    leituras:
+      - id: unica
+        descricao: "Os três segmentos com maior carteira na modalidade 08 (financiamentos rurais), em julho de 2026."
+        consultas: [D16.sql]
+  D17:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.volume_de_pix, fontes_externas.pix_por_uf_depende_do_lado]
+    leituras:
+      - id: unica
+        descricao: "O mês de 2025 com a maior soma do valor (ou da quantidade) de PIX do lado recebedor, cliente PF."
+        consultas: [D17.sql]
+  D18:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.empresa_ativa, fontes_externas.populacao_residente_estimada]
+    leituras:
+      - id: unica
+        descricao: "As três UFs com a maior razão entre empresas ativas, MEI incluídos, em dezembro de 2025 e a população de 2025."
+        consultas: [D18.sql]
+  D19:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_cnae_ocupacao]
+    leituras:
+      - id: unica
+        descricao: "Variação percentual da carteira com ocupação 'Aposentado/pensionista', de julho de 2025 a julho de 2026."
+        consultas: [D19.sql]
+  D20:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_origem]
+    leituras:
+      - id: unica
+        descricao: "Carteira com origem 'Com destinação específica' sobre a carteira total, em cada mês de janeiro a junho de 2026."
+        consultas: [D20.sql]
+  D21:
+    tipo_de_acerto: valor
+    fonte: [metricas.indicador_inadimplencia, dimensoes.dim_porte]
+    leituras:
+      - id: unica
+        descricao: "Diferença, em pontos percentuais, entre a taxa de inadimplência das microempresas em julho de 2026 e em julho de 2025."
+        consultas: [D21.sql]
+  D22:
+    tipo_de_acerto: valor
+    fonte: [metricas.ativo_problematico, modalidades.mod_02]
+    leituras:
+      - id: unica
+        descricao: "A modalidade (código de dois dígitos) com o maior ativo problemático na carteira PJ em dezembro de 2025."
+        consultas: [D22.sql]
+  D23:
+    tipo_de_acerto: valor
+    fonte: [dimensoes.dim_uf, metricas.carteira_ativa]
+    leituras:
+      - id: unica
+        descricao: "A UF do Nordeste com a maior variação percentual da carteira ativa de julho de 2025 a julho de 2026."
+        consultas: [D23.sql]
+  D24:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.massa_de_rendimento_do_trabalho]
+    leituras:
+      - id: unica
+        descricao: "Variação percentual da soma da massa de rendimento das UFs, do 2º trimestre de 2025 ao de 2026."
+        consultas: [D24.sql]
+  D25:
+    tipo_de_acerto: valor
+    fonte: [fontes_externas.volume_de_pix]
+    leituras:
+      - id: unica
+        descricao: "Variação percentual do valor sobre a quantidade de PIX do lado pagador, cliente PF, de julho de 2025 a julho de 2026."
+        consultas: [D25.sql]
+  D26:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [fontes_externas.rendimento_medio_do_trabalho, fontes_externas.renda_imprecisa_nas_ufs_pequenas]
+    leituras:
+      - id: unica
+        descricao: "O rendimento médio do trabalho de Roraima no 2º trimestre de 2026."
+        consultas: [D26.sql]
+    ressalva_obrigatoria:
+      - "É estimativa amostral da PNAD Contínua, e em Roraima a precisão é das menores entre as UFs (coeficiente de variação alto)."
+  D27:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [dimensoes.dim_porte, dimensoes.colunas_polimorficas]
+    leituras:
+      - id: unica
+        descricao: "Carteira PF na faixa de renda 'Indisponível' sobre a carteira PF total, em julho de 2026."
+        consultas: [D27.sql]
+    ressalva_obrigatoria:
+      - "'Indisponível' é a renda não informada (Instruções do documento 3040, porte 0), e não a ausência de renda: 'Sem rendimento' é outra faixa e fica fora da conta."
+  D28:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [fontes_externas.selic_meta]
+    leituras:
+      - id: unica
+        descricao: "A meta da Selic nas datas-base de março, junho, setembro e dezembro de 2025."
+        consultas: [D28.sql]
+    ressalva_obrigatoria:
+      - "É a meta definida pelo Copom vigente no último dia do mês, e não a taxa Selic efetiva nem a média do período."
+  D29:
+    tipo_de_acerto: valor_com_ressalva
+    fonte: [dimensoes.granularidade_encolhe_em_julho_de_2025]
+    leituras:
+      - id: unica
+        descricao: "Número de linhas da tabela de carteira em junho e em julho de 2025."
+        consultas: [D29.sql]
+    ressalva_obrigatoria:
+      - "A queda vem da mudança de publicação em julho de 2025, com menos recortes para a mesma carteira, e não de mudança no mercado."
+  D30:
+    tipo_de_acerto: abstencao
+    fonte: [metricas.carteira_ativa, fontes_externas.massa_de_rendimento_do_trabalho]
+    explicacao: "A base publica o saldo da carteira no fim de cada mês, que é estoque, e não o valor concedido no mês, que é fluxo."
+    o_que_faltaria: "Uma série de concessões de crédito no mês."

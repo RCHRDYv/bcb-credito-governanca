@@ -1,0 +1,21 @@
+{
+  "consulta": "D17.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "mes",
+    "volume",
+    "quantidade"
+  ],
+  "tipos": [
+    "DATE",
+    "DECIMAL",
+    "LONG"
+  ],
+  "linhas": [
+    [
+      "2025-12-31",
+      "1219856777930.66",
+      "3660542114"
+    ]
+  ]
+}

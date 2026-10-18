@@ -1,0 +1,18 @@
+{
+  "consulta": "D26.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "rendimento_medio",
+    "cv_rendimento_medio"
+  ],
+  "tipos": [
+    "DECIMAL",
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "3568.00",
+      "6.80"
+    ]
+  ]
+}

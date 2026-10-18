@@ -1,0 +1,243 @@
+# =============================================================================
+# PT: Conjunto de desenvolvimento do instrumento do experimento (#118, ADR
+#     0032). São 30 perguntas inventadas, fora das 41 registradas no
+#     evaluation/questions_v3.yml, usadas para medir as variações do
+#     instrumento sem tocar nas 41. A medida parcial (V−1 a V1) está no ADR
+#     0032.
+#
+#     papel:
+#       controle_positivo  respondível só pelo esquema, sem rótulo de
+#                          categoria nem data fixa: o período é sempre o
+#                          último mês ou um ano. Os únicos literais
+#                          admitidos no SQL são ano, trimestre e sigla de
+#                          UF, uma convenção que aceitei em 2026-10-15: a
+#                          pergunta dá o nome do estado, e a dim_uf traz o
+#                          nome ao lado da sigla, então o SQL chega à sigla
+#                          pelo esquema. Valor, dependência baixa, uma
+#                          leitura, sem janela.
+#       controle_negativo  abstenção evidente: o dado não existe na base.
+#       mista              espelha o teste em tipo de acerto, dependência
+#                          semântica e estrutura do SQL.
+#
+#     modelos são as tabelas que o SQL do gabarito pode ler, como a
+#     cobertura.yml do teste. Aprovei as perguntas em 2026-10-15.
+#     scripts/validar_desenvolvimento.py confere a forma e que nenhuma repete
+#     as 41, pelo enunciado, por embeddings e pelo SQL.
+#
+# EN: Development set for the experiment's instrument: 30 invented questions,
+#     outside the 41 registered ones, used only to gate the instrument
+#     variants and to redo model selection. Roles: positive controls
+#     (answerable from the schema alone, no category labels), negative
+#     controls (evident abstention) and mixed questions mirroring the test.
+# =============================================================================
+
+metadata:
+  versao: 1
+  issue: 118
+  aprovadas_em: "2026-10-15"
+  total: 30
+  # PT: perguntas acima do limite de cosseno dos embeddings, revisadas à mão.
+  # EN: questions above the embedding cosine threshold, reviewed by hand.
+  revisadas_por_embeddings:
+    D06: "Mede a carteira vencida do país, sem comparação com outro mês. A Q01 mede a carteira ativa e a compara com o mesmo mês do ano anterior."
+
+blocos:
+  - nome: "Controles positivos"
+    perguntas:
+      - id: D01
+        papel: controle_positivo
+        pergunta: "Qual era a meta da taxa Selic registrada no último mês disponível na base?"
+        question: "What was the Selic policy rate target recorded in the latest month available in the data?"
+        dependencia_semantica: baixa
+        modelos: [fct_selic]
+      - id: D02
+        papel: controle_positivo
+        pergunta: "Quantas empresas ativas, incluindo os MEI, havia no Ceará no último mês disponível?"
+        question: "How many active companies, including individual microentrepreneurs (MEI), were there in Ceará in the latest month available?"
+        dependencia_semantica: baixa
+        modelos: [fct_empresas_ativas]
+      - id: D03
+        papel: controle_positivo
+        pergunta: "Qual era a população de Pernambuco em 2025, segundo a base?"
+        question: "What was the population of Pernambuco in 2025, according to the data?"
+        dependencia_semantica: baixa
+        modelos: [fct_populacao]
+      - id: D04
+        papel: controle_positivo
+        pergunta: "Qual era a carteira a vencer total de Goiás no último mês disponível?"
+        question: "What was the total current (not yet due) portfolio of Goiás in the latest month available?"
+        dependencia_semantica: baixa
+        modelos: [fct_carteira]
+      - id: D05
+        papel: controle_positivo
+        pergunta: "Qual era o rendimento médio do trabalho no Rio Grande do Norte no segundo trimestre de 2026?"
+        question: "What was the average labor income in Rio Grande do Norte in the second quarter of 2026?"
+        dependencia_semantica: baixa
+        modelos: [fct_renda_do_trabalho]
+      - id: D06
+        papel: controle_positivo
+        pergunta: "Qual era o saldo total da carteira vencida no Brasil no último mês disponível?"
+        question: "What was the total balance of the overdue portfolio in Brazil in the latest month available?"
+        dependencia_semantica: baixa
+        modelos: [fct_carteira]
+      - id: D07
+        papel: controle_positivo
+        pergunta: "Quantos meses distintos de dados de carteira de crédito existem na base?"
+        question: "How many distinct months of credit portfolio data are there in the data?"
+        dependencia_semantica: baixa
+        modelos: [fct_carteira]
+      - id: D08
+        papel: controle_positivo
+        pergunta: "Qual foi a maior meta da Selic registrada na base?"
+        question: "What was the highest Selic policy rate target recorded in the data?"
+        dependencia_semantica: baixa
+        modelos: [fct_selic]
+
+  - nome: "Controles negativos"
+    perguntas:
+      - id: D09
+        papel: controle_negativo
+        pergunta: "Qual é a taxa de juros média cobrada no financiamento de veículos?"
+        question: "What is the average interest rate charged on vehicle financing?"
+        dependencia_semantica: baixa
+        tipo_de_acerto: abstencao
+        modelos: []
+      - id: D10
+        papel: controle_negativo
+        pergunta: "Quantos CPFs diferentes têm operação de crédito ativa em Sergipe?"
+        question: "How many distinct individual taxpayer IDs (CPF) have an active credit operation in Sergipe?"
+        dependencia_semantica: baixa
+        tipo_de_acerto: abstencao
+        modelos: []
+      - id: D11
+        papel: controle_negativo
+        pergunta: "Qual banco tem a maior carteira de crédito do país?"
+        question: "Which bank has the largest credit portfolio in the country?"
+        dependencia_semantica: baixa
+        tipo_de_acerto: abstencao
+        modelos: []
+      - id: D12
+        papel: controle_negativo
+        pergunta: "Qual é o prazo médio, em meses, das operações de financiamento imobiliário?"
+        question: "What is the average term, in months, of real estate financing operations?"
+        dependencia_semantica: baixa
+        tipo_de_acerto: abstencao
+        modelos: []
+      - id: D13
+        papel: controle_negativo
+        pergunta: "Qual era a carteira de crédito do município de Campinas em julho de 2026?"
+        question: "What was the credit portfolio of the municipality of Campinas in July 2026?"
+        dependencia_semantica: baixa
+        tipo_de_acerto: abstencao
+        modelos: []
+      - id: D14
+        papel: controle_negativo
+        pergunta: "Qual é a idade média dos clientes pessoa física com crédito ativo?"
+        question: "What is the average age of individual clients with active credit?"
+        dependencia_semantica: baixa
+        tipo_de_acerto: abstencao
+        modelos: []
+
+  - nome: "Mistas"
+    perguntas:
+      - id: D15
+        papel: mista
+        pergunta: "Qual a participação das operações com indexador pós-fixado na carteira de pessoa jurídica em julho de 2026?"
+        question: "What was the share of operations with a post-fixed index in the corporate credit portfolio in July 2026?"
+        dependencia_semantica: media
+        modelos: [fct_carteira]
+      - id: D16
+        papel: mista
+        pergunta: "Quais os três segmentos de instituição com maior carteira de crédito rural em julho de 2026?"
+        question: "Which three institution segments had the largest rural credit portfolio in July 2026?"
+        dependencia_semantica: media
+        modelos: [fct_carteira, dim_modalidade]
+      - id: D17
+        papel: mista
+        pergunta: "Em qual mês de 2025 o volume de PIX recebido por pessoas físicas foi o maior?"
+        question: "In which month of 2025 was the volume of PIX received by individuals the highest?"
+        dependencia_semantica: media
+        modelos: [fct_pix]
+      - id: D18
+        papel: mista
+        pergunta: "Quais as três UFs com mais empresas ativas por habitante, incluindo os MEI, considerando as empresas de dezembro de 2025 e a população de 2025?"
+        question: "Which three states had the most active companies per inhabitant, including individual microentrepreneurs (MEI), considering companies in December 2025 and the 2025 population?"
+        dependencia_semantica: media
+        modelos: [fct_empresas_ativas, fct_populacao]
+      - id: D19
+        papel: mista
+        pergunta: "Quanto cresceu, em percentual, a carteira de crédito de aposentados e pensionistas entre julho de 2025 e julho de 2026?"
+        question: "By what percentage did the credit portfolio of retirees and pensioners grow between July 2025 and July 2026?"
+        dependencia_semantica: media
+        modelos: [fct_carteira]
+      - id: D20
+        papel: mista
+        pergunta: "Qual foi a parcela da carteira total com destinação específica em cada mês do primeiro semestre de 2026?"
+        question: "What was the share of the total portfolio with a specific allocation in each month of the first half of 2026?"
+        dependencia_semantica: alta
+        modelos: [fct_carteira, dim_tempo]
+      - id: D21
+        papel: mista
+        pergunta: "Em quantos pontos percentuais a taxa de inadimplência das microempresas mudou entre julho de 2025 e julho de 2026?"
+        question: "By how many percentage points did the default rate of micro-enterprises change between July 2025 and July 2026?"
+        dependencia_semantica: alta
+        modelos: [fct_carteira]
+      - id: D22
+        papel: mista
+        pergunta: "Qual modalidade de crédito concentrava o maior ativo problemático da carteira de pessoa jurídica em dezembro de 2025?"
+        question: "Which credit modality held the largest problem assets of the corporate portfolio in December 2025?"
+        dependencia_semantica: alta
+        modelos: [fct_carteira, dim_modalidade]
+      - id: D23
+        papel: mista
+        pergunta: "Qual UF do Nordeste teve o maior crescimento percentual da carteira de crédito entre julho de 2025 e julho de 2026?"
+        question: "Which Northeast state had the largest percentage growth of its credit portfolio between July 2025 and July 2026?"
+        dependencia_semantica: media
+        modelos: [fct_carteira, dim_uf]
+      - id: D24
+        papel: mista
+        pergunta: "Quanto cresceu, em percentual, a massa de rendimento do trabalho no Brasil entre o segundo trimestre de 2025 e o de 2026?"
+        question: "By what percentage did the total labor income in Brazil grow between the second quarter of 2025 and that of 2026?"
+        dependencia_semantica: baixa
+        modelos: [fct_renda_do_trabalho]
+      - id: D25
+        papel: mista
+        pergunta: "Em quantos por cento o valor médio por transação de PIX paga por pessoas físicas mudou entre julho de 2025 e julho de 2026?"
+        question: "By what percentage did the average value per PIX transaction paid by individuals change between July 2025 and July 2026?"
+        dependencia_semantica: media
+        modelos: [fct_pix]
+      - id: D26
+        papel: mista
+        pergunta: "Qual era o rendimento médio do trabalho em Roraima no segundo trimestre de 2026?"
+        question: "What was the average labor income in Roraima in the second quarter of 2026?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+        modelos: [fct_renda_do_trabalho]
+      - id: D27
+        papel: mista
+        pergunta: "Que parcela da carteira de pessoa física estava em clientes sem renda informada em julho de 2026?"
+        question: "What share of the individuals' portfolio was held by clients with no reported income in July 2026?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+        modelos: [fct_carteira]
+      - id: D28
+        papel: mista
+        pergunta: "Qual foi a meta da Selic no fim de cada trimestre de 2025?"
+        question: "What was the Selic policy rate target at the end of each quarter of 2025?"
+        dependencia_semantica: alta
+        tipo_de_acerto: valor_com_ressalva
+        modelos: [fct_selic]
+      - id: D29
+        papel: mista
+        pergunta: "Quantas linhas de carteira a base tem em junho e em julho de 2025, e por que o número mudou?"
+        question: "How many portfolio rows does the data have in June and in July 2025, and why did the number change?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: valor_com_ressalva
+        modelos: [fct_carteira]
+      - id: D30
+        papel: mista
+        pergunta: "Quanto crédito foi concedido em julho de 2026?"
+        question: "How much credit was granted in July 2026?"
+        dependencia_semantica: maxima
+        tipo_de_acerto: abstencao
+        modelos: []

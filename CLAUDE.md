@@ -52,6 +52,8 @@ uv run python -m scripts.validar_assistente
 uv run python -m scripts.validar_assistente --autoteste
 uv run python -m scripts.validar_selecao
 uv run python -m scripts.validar_selecao --autoteste
+uv run python -m scripts.validar_experimento
+uv run python -m scripts.validar_experimento --autoteste
 ```
 Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'` precisa sair limpo. O CI também roda `dbt parse` com `uvx --from dbt-core==1.12.3 --with dbt-databricks==1.10.9`.
 
@@ -85,6 +87,17 @@ Depois de regerar as seeds, `git diff --exit-code -- 'dbt/seeds/ontologia_*.csv'
 - Errata 1 (antes de rodar): `evaluation/selecao.yml` e `assistente/modelo_de_prompt.yml`. O `scripts.selecionar_modelos` se recusa a rodar sem ela. Errata 2 (depois): `assistente/parametros.yml` e `evaluation/selecao/resultado.json`.
 - A execução (`scripts.selecionar_modelos`) e a correção às cegas (`correcao.as_cegas`) são do Yuri, na máquina dele, com o Ollama. `scripts.resumir_selecao` gera o resultado, a página `docs/selecao-dos-modelos.md` e os modelos do `parametros.yml`.
 - O corretor (`correcao/`) compara por valor e é o da #50. O `validar_selecao` e o `--autoteste` rodam sem modelo no workflow `selecao.yml`; o `--ensaio` do executor também.
+
+## Experimento (#50, ADR 0031 e 0032)
+- Custo-benefício antes de rigor: este projeto simula um case de negócios. Antes de qualquer escolha de método, traga a opção simples e a rigorosa, com o custo de cada uma em tempo, e recomende pensando no case. Não congele ferramenta.
+- Estatística em `experimento/estatistica.py`, funções puras usadas pelo resumo, pelo validador e pelo notebook. O Newcombe é o método 10 do artigo de 1998, conferido contra a Tabela III.
+- A variação do instrumento é a do `assistente/parametros.yml` (`assistente/variacoes.py`): a execução 1 rodou na V−1, em `data/experimento/`; a execução 2 roda na V4, em `data/experimento/execucao-2/`. A V4 corrige a ordem das chaves do JSON, que fazia o modelo se abster antes de pensar no SQL.
+- Execução: `uv run --group rag python -m scripts.executar_experimento --perguntas teste`, com o `ollama serve` aberto com `OLLAMA_KV_CACHE_TYPE=q8_0` e `OLLAMA_FLASH_ATTENTION=1`. O executor grava o commit no `ambiente.json` e recusa o teste com mudança sem commit. Erro de servidor não grava a execução e para: basta rodar de novo.
+- Correção às cegas: `uv run python -m correcao.as_cegas --experimento --execucao <n>`. Na execução 2, só o que decide a maioria.
+- `scripts.resumir_experimento --execucao <n>` gera `evaluation/experimento/execucao-<n>/` (resultado e registros) e `docs/experimento.md`; `--do-publicado` refaz sem `data/`. O notebook `notebooks/experimento.ipynb` lê só o publicado e roda com `uv run --group notebook jupyter nbconvert --to notebook --execute --inplace notebooks/experimento.ipynb`.
+- O registro (`evaluation/registro.yml`) guarda só o pré-registro da #47, os arquivos da #46, da #48 e da #49 e os resultados das execuções. Código não se congela por errata.
+- QA por outro caminho: `scripts.analises.qa_experimento`, `qa_corretor` e `replay_v_menos_1` (este precisa de `data/`). O workflow `experimento.yml` roda os validadores e o `--ensaio` sem modelo.
+- Conjunto de desenvolvimento em `evaluation/desenvolvimento/` (30 perguntas inventadas), com `scripts.gerar_gabarito_de_desenvolvimento` e `scripts.validar_desenvolvimento`; roda com `--perguntas desenvolvimento --variacao <V>`. A medida parcial das variações está no ADR 0032.
 
 ## Dashboard (`dashboard/`)
 - JavaScript sem framework (ADR 0017), Vite e ECharts carregado sob demanda, com o palco em tela única (ADR 0022).

@@ -1,0 +1,183 @@
+# =============================================================================
+# PT: O que conta, em cada pergunta do conjunto de desenvolvimento (#118),
+#     para corrigir a resposta, no mesmo formato e com as mesmas regras do
+#     evaluation/comparacao.yml. A tolerância sai da coluna, pela regra do
+#     evaluation/hipoteses.yml: colunas _pct em pontos, meses_com_dado exata,
+#     o resto relativo, texto e data por identidade. As abstenções se
+#     corrigem só pela rubrica.
+#
+# EN: What counts, per development question, to grade an answer, in the same
+#     format and rules as evaluation/comparacao.yml.
+# =============================================================================
+
+perguntas:
+
+  D01:
+    unica:
+      - consulta: D01.sql
+        verificar:
+          - valor: meta_selic_pct
+  D02:
+    unica:
+      - consulta: D02.sql
+        verificar:
+          - valor: empresas_ativas
+  D03:
+    unica:
+      - consulta: D03.sql
+        verificar:
+          - valor: populacao
+  D04:
+    unica:
+      - consulta: D04.sql
+        verificar:
+          - valor: carteira_a_vencer
+  D05:
+    unica:
+      - consulta: D05.sql
+        verificar:
+          - valor: rendimento_medio
+  D06:
+    unica:
+      - consulta: D06.sql
+        verificar:
+          - valor: carteira_vencida
+  D07:
+    unica:
+      - consulta: D07.sql
+        verificar:
+          - valor: meses_com_dado
+  D08:
+    unica:
+      - consulta: D08.sql
+        verificar:
+          - valor: meta_selic_maxima_pct
+
+  D09:
+    abstencao: so_rubrica
+  D10:
+    abstencao: so_rubrica
+  D11:
+    abstencao: so_rubrica
+  D12:
+    abstencao: so_rubrica
+  D13:
+    abstencao: so_rubrica
+  D14:
+    abstencao: so_rubrica
+
+  D15:
+    unica:
+      - consulta: D15.sql
+        verificar:
+          - valor: participacao_pos_fixado_pct
+  D16:
+    unica:
+      - consulta: D16.sql
+        verificar:
+          - lista: ranking
+            chave: segmento
+            n: 3
+            ordem: posicao
+            valores: [carteira_ativa]
+  D17:
+    unica:
+      - consulta: D17.sql
+        verificar:
+          - valor: mes
+          - uma_de: [volume, quantidade]
+  D18:
+    unica:
+      - consulta: D18.sql
+        verificar:
+          - lista: ranking
+            chave: uf
+            n: 3
+            ordem: posicao
+            valores: [empresas_por_mil_habitantes]
+  D19:
+    unica:
+      - consulta: D19.sql
+        verificar:
+          - valor: crescimento_pct
+  D20:
+    unica:
+      - consulta: D20.sql
+        verificar:
+          - valor: participacao_destinacao_especifica_pct
+            linha: {mes: '2026-01-31'}
+          - valor: participacao_destinacao_especifica_pct
+            linha: {mes: '2026-02-28'}
+          - valor: participacao_destinacao_especifica_pct
+            linha: {mes: '2026-03-31'}
+          - valor: participacao_destinacao_especifica_pct
+            linha: {mes: '2026-04-30'}
+          - valor: participacao_destinacao_especifica_pct
+            linha: {mes: '2026-05-31'}
+          - valor: participacao_destinacao_especifica_pct
+            linha: {mes: '2026-06-30'}
+  D21:
+    unica:
+      - consulta: D21.sql
+        verificar:
+          - valor: variacao_pp
+  D22:
+    unica:
+      - consulta: D22.sql
+        verificar:
+          - lista: ranking
+            chave: codigo_modalidade
+            n: 1
+            ordem: -ativo_problematico
+            valores: [ativo_problematico]
+  D23:
+    unica:
+      - consulta: D23.sql
+        verificar:
+          - lista: ranking
+            chave: uf
+            n: 1
+            ordem: posicao
+            valores: [crescimento_pct]
+  D24:
+    unica:
+      - consulta: D24.sql
+        verificar:
+          - valor: crescimento_pct
+  D25:
+    unica:
+      - consulta: D25.sql
+        verificar:
+          - valor: variacao_pct
+  D26:
+    unica:
+      - consulta: D26.sql
+        verificar:
+          - valor: rendimento_medio
+  D27:
+    unica:
+      - consulta: D27.sql
+        verificar:
+          - valor: participacao_renda_indisponivel_pct
+  D28:
+    unica:
+      - consulta: D28.sql
+        verificar:
+          - valor: meta_selic_pct
+            linha: {mes: '2025-03-31'}
+          - valor: meta_selic_pct
+            linha: {mes: '2025-06-30'}
+          - valor: meta_selic_pct
+            linha: {mes: '2025-09-30'}
+          - valor: meta_selic_pct
+            linha: {mes: '2025-12-31'}
+  D29:
+    unica:
+      - consulta: D29.sql
+        verificar:
+          - valor: recortes
+            linha: {mes: '2025-06-30'}
+          - valor: recortes
+            linha: {mes: '2025-07-31'}
+  D30:
+    abstencao: so_rubrica

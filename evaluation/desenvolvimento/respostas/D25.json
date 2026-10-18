@@ -1,0 +1,21 @@
+{
+  "consulta": "D25.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "valor_medio_julho_2025",
+    "valor_medio_julho_2026",
+    "variacao_pct"
+  ],
+  "tipos": [
+    "DOUBLE",
+    "DOUBLE",
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "192.6640649",
+      "185.4363059",
+      "-3.751482679"
+    ]
+  ]
+}

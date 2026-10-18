@@ -1,0 +1,15 @@
+{
+  "consulta": "D08.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "meta_selic_maxima_pct"
+  ],
+  "tipos": [
+    "DECIMAL"
+  ],
+  "linhas": [
+    [
+      "15.0000"
+    ]
+  ]
+}

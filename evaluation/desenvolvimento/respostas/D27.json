@@ -1,0 +1,15 @@
+{
+  "consulta": "D27.sql",
+  "mes_de_referencia": "2026-07-31",
+  "colunas": [
+    "participacao_renda_indisponivel_pct"
+  ],
+  "tipos": [
+    "DOUBLE"
+  ],
+  "linhas": [
+    [
+      "2.083808341"
+    ]
+  ]
+}

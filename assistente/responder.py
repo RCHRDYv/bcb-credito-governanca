@@ -34,8 +34,9 @@ import hashlib
 import json
 import time
 from dataclasses import asdict
+from functools import partial
 
-from assistente import contexto, ontologia
+from assistente import contexto, ontologia, variacoes
 from assistente.cliente import ErroDeGeracao, Geracao, conferir_contexto, conferir_estimativa, estimar_tokens
 from assistente.parametros import CONDICOES, Parametros
 from assistente.sql import ErroDeSQL, executar
@@ -74,6 +75,7 @@ class ErroDeFormato(Exception):
     tipo = "formato"
 
 
+
 def ler_json(geracao: Geracao, esquema: dict) -> dict:
     """
     PT: Lê a resposta do modelo e confere campos e tipos contra o esquema.
@@ -97,17 +99,73 @@ def ler_json(geracao: Geracao, esquema: dict) -> dict:
         if regra is _TEXTO and not isinstance(dados[campo], str):
             raise ErroDeFormato(f"{campo} não é texto")
     if "valores" in esquema["properties"]:
-        valores = dados["valores"]
-        if not (isinstance(valores, dict) and isinstance(valores.get("colunas"), list)
-                and isinstance(valores.get("linhas"), list)):
-            raise ErroDeFormato("valores não é {colunas, linhas}")
-        if not all(isinstance(c, str) for c in valores["colunas"]):
-            raise ErroDeFormato("valores.colunas tem item que não é texto")
-        for linha in valores["linhas"]:
-            if not isinstance(linha, list) or len(linha) != len(valores["colunas"]):
-                raise ErroDeFormato("valores.linhas tem linha de tamanho diferente das colunas")
-            if any(not (v is None or isinstance(v, (str, int, float))) or isinstance(v, bool) for v in linha):
-                raise ErroDeFormato("valores.linhas tem célula que não é texto, número ou nulo")
+        _conferir_valores(dados["valores"])
+    return dados
+
+
+def _conferir_valores(valores) -> None:
+    """PT: a forma de valores, {colunas, linhas} / EN: the shape of valores"""
+    if not (isinstance(valores, dict) and isinstance(valores.get("colunas"), list)
+            and isinstance(valores.get("linhas"), list)):
+        raise ErroDeFormato("valores não é {colunas, linhas}")
+    if not all(isinstance(c, str) for c in valores["colunas"]):
+        raise ErroDeFormato("valores.colunas tem item que não é texto")
+    for linha in valores["linhas"]:
+        if not isinstance(linha, list) or len(linha) != len(valores["colunas"]):
+            raise ErroDeFormato("valores.linhas tem linha de tamanho diferente das colunas")
+        if any(not (v is None or isinstance(v, (str, int, float))) or isinstance(v, bool) for v in linha):
+            raise ErroDeFormato("valores.linhas tem célula que não é texto, número ou nulo")
+
+
+class _Pares(list):
+    """PT: os pares de um objeto JSON, na ordem / EN: a JSON object's ordered pairs"""
+
+
+def _como_dict(valor):
+    """PT: objetos lidos como pares voltam a dict / EN: pairs back to dicts"""
+    if isinstance(valor, _Pares):
+        return {k: _como_dict(v) for k, v in valor}
+    if isinstance(valor, list):
+        return [_como_dict(v) for v in valor]
+    return valor
+
+
+def ler_json_prefixado(geracao: Geracao, campos: list[str]) -> dict:
+    """
+    PT: Lê a resposta de uma variação com chaves prefixadas (V0 em diante):
+        confere que as chaves vieram todas, na ordem pedida, e os tipos, e
+        devolve os nomes registrados (a_interpretacao vira interpretacao).
+        Não conserta nada.
+    EN: Reads a prefixed-key answer (V0 on): checks all keys came, in the
+        requested order, and their types; returns the registered names.
+    """
+    if geracao.motivo_do_fim == "length":
+        raise ErroDeFormato("resposta cortada no limite de tokens")
+    try:
+        pares = json.loads(geracao.texto, object_pairs_hook=_Pares)
+    except json.JSONDecodeError as erro:
+        raise ErroDeFormato(f"não é JSON: {erro}") from None
+    # PT: um array no topo não é objeto, mesmo que tenha cara de pares.
+    # EN: a top-level array is not an object, even if it looks like pairs.
+    if not isinstance(pares, _Pares):
+        raise ErroDeFormato("não é um objeto JSON")
+    esperadas = variacoes.prefixadas(campos)
+    recebidas = [k for k, _ in pares]
+    if recebidas != esperadas:
+        raise ErroDeFormato(f"chaves {recebidas}, esperado {esperadas} nesta ordem")
+    dados = {}
+    for (_, valor), campo in zip(pares, campos):
+        if campo == "valores":
+            if not isinstance(valor, _Pares):
+                raise ErroDeFormato("valores não é um objeto")
+            valor = _como_dict(valor)
+            _conferir_valores(valor)
+        elif campo == "abstem":
+            if not isinstance(valor, bool):
+                raise ErroDeFormato("abstem não é booleano")
+        elif not isinstance(valor, str):
+            raise ErroDeFormato(f"{campo} não é texto")
+        dados[campo] = valor
     return dados
 
 
@@ -158,18 +216,167 @@ def _gerar(cliente, mensagens: list[dict], esquema: dict, seed: int, p: Parametr
     return geracao
 
 
+def resultado_vazio(resultado: dict) -> bool:
+    """PT: nenhuma linha, ou só células nulas / EN: no rows, or only nulls"""
+    return resultado["total_de_linhas"] == 0 or all(v is None for linha in resultado["linhas"] for v in linha)
+
+
+def _abstencao(interpretacao: str, motivo: str) -> dict:
+    return {"interpretacao": interpretacao, "sql": "", "valores": {"colunas": [], "linhas": []}, "ressalva": "",
+            "abstencao": motivo.strip() or "(sem motivo)"}
+
+
+def _fluxo_da_v_menos_1(registro: dict, estado: dict, pergunta: str, condicao: str, seed: int, cliente, banco,
+                        p: Parametros, modelo: dict[str, str], trechos) -> None:
+    """
+    PT: O fluxo da V−1, o instrumento da execução 1, como foi registrado: a
+        abstenção da primeira chamada encerra a execução, e o SQL roda uma
+        vez, sem nova tentativa.
+    EN: V−1's flow, run 1's instrument as registered.
+    """
+    mensagens = contexto.primeira_chamada(condicao, pergunta, modelo, trechos)
+    geracao = _gerar(cliente, mensagens, ESQUEMA_DA_PRIMEIRA, seed, p, registro)
+    primeira = ler_json(geracao, ESQUEMA_DA_PRIMEIRA)
+
+    if primeira["abstencao"].strip():
+        registro["resposta"] = {"interpretacao": primeira["interpretacao"], "sql": "",
+                                "valores": {"colunas": [], "linhas": []}, "ressalva": "",
+                                "abstencao": primeira["abstencao"]}
+        return
+    if not primeira["sql"].strip():
+        raise ErroDeFormato("sem sql e sem abstenção")
+    estado["etapa"] = "sql"
+    resultado = executar(banco, primeira["sql"], p.limite_de_linhas, p.limite_de_tempo_do_sql)
+    registro["resultado"] = resultado
+
+    estado["etapa"] = "segunda_chamada"
+    mensagens = contexto.segunda_chamada(mensagens, geracao.texto, resultado, modelo)
+    geracao = _gerar(cliente, mensagens, ESQUEMA_DA_SEGUNDA, seed, p, registro)
+    segunda = ler_json(geracao, ESQUEMA_DA_SEGUNDA)
+    registro["resposta"] = {"interpretacao": segunda["interpretacao"], "sql": primeira["sql"],
+                            "valores": segunda["valores"], "ressalva": segunda["ressalva"],
+                            "abstencao": segunda["abstencao"]}
+
+
+def mensagens_da_primeira(v: variacoes.Variacao, condicao: str, pergunta: str, modelo: dict[str, str],
+                          trechos) -> list[dict]:
+    """
+    PT: As mensagens da primeira chamada de uma variação: o sistema da
+        condição (com as junções no bloco do esquema, na V4) e a mensagem do
+        usuário da variação. O dimensionamento conta estas mesmas mensagens.
+    EN: A variant's first call messages; the sizing counts these same ones.
+    """
+    mensagens = contexto.primeira_chamada(condicao, pergunta, modelo, trechos)
+    if v.juncoes:
+        bloco = contexto.preencher(modelo["bloco_esquema"], esquema=contexto.texto_do_esquema())
+        juncoes = variacoes.juncoes(contexto.esquema_esperado())
+        mensagens[0]["content"] = mensagens[0]["content"].replace(bloco, f"{bloco}\n\n{juncoes}", 1)
+    mensagens[1]["content"] = variacoes.mensagem_da_primeira(v, pergunta)
+    return mensagens
+
+
+def _fluxo_da_variacao(v: variacoes.Variacao, registro: dict, estado: dict, pergunta: str, condicao: str,
+                       seed: int, cliente, banco, p: Parametros, modelo: dict[str, str], trechos) -> None:
+    """
+    PT: O fluxo de uma variação da V0 em diante (#118, ADR 0032):
+
+        1. primeira chamada com as chaves prefixadas; com SQL não vazio, o
+           SQL roda, qualquer que seja o booleano de abstenção; se ele falha
+           com o booleano verdadeiro, vale a abstenção;
+        2. na V3 e na V4, uma nova tentativa só, quando o SQL dá erro, para
+           na guarda ou volta vazio: o modelo recebe a resposta anterior
+           e o problema, e a nova resposta substitui a anterior;
+        3. segunda chamada sobre a primeira chamada e a tentativa válida.
+
+        A resposta final tem os cinco campos registrados; abstencao recebe o
+        motivo quando o booleano é verdadeiro.
+    EN: A variant's flow: prefixed first call (non-empty SQL runs), at most
+        one retry in V3/V4 on SQL error, guard or empty result (the new
+        answer replaces the old), then the second call on the valid attempt.
+    """
+    mensagens = mensagens_da_primeira(v, condicao, pergunta, modelo, trechos)
+    campos = variacoes.campos_da_primeira(v)
+    esquema = variacoes.esquema_json(campos)
+    geracao = _gerar(cliente, mensagens, esquema, seed, p, registro)
+    primeira = ler_json_prefixado(geracao, campos)
+
+    while True:
+        if not primeira["sql"].strip():
+            if not primeira["abstem"]:
+                raise ErroDeFormato("sem sql e sem abstenção")
+            registro["resposta"] = _abstencao(primeira["interpretacao"], primeira["motivo"])
+            return
+        estado["etapa"] = "sql"
+        erro_de_sql = None
+        try:
+            resultado = executar(banco, primeira["sql"], p.limite_de_linhas, p.limite_de_tempo_do_sql)
+        except ErroDeSQL as erro:
+            if not (v.nova_tentativa and not registro["novas_tentativas"] and erro.tipo in ("sql", "guarda")):
+                # PT: com abstem verdadeiro, o SQL que falha (na V3 e na V4,
+                #     depois da nova tentativa) deixa a abstenção valer
+                #     (decisão de 2026-10-15); o SQL e o erro ficam no registro.
+                # EN: with abstem true, a failing SQL leaves the abstention.
+                if primeira["abstem"]:
+                    registro["sql_da_abstencao"] = {"sql": primeira["sql"], "tipo": erro.tipo,
+                                                    "mensagem": str(erro)}
+                    registro["resposta"] = _abstencao(primeira["interpretacao"], primeira["motivo"])
+                    return
+                raise
+            erro_de_sql, resultado = erro, None
+        if v.nova_tentativa and not registro["novas_tentativas"] and (erro_de_sql or resultado_vazio(resultado)):
+            estado["etapa"] = "nova_tentativa"
+            registro["novas_tentativas"] = 1
+            # PT: a tentativa substituída fica no registro, com o problema.
+            # EN: the replaced attempt stays in the record, with its problem.
+            registro["tentativa_substituida"] = {
+                "sql": primeira["sql"], "erro": {"tipo": erro_de_sql.tipo, "mensagem": str(erro_de_sql)}
+                if erro_de_sql else None, "resultado": None if erro_de_sql else resultado}
+            pedido = [*mensagens,
+                      {"role": "assistant", "content": geracao.texto},
+                      {"role": "user", "content": variacoes.mensagem_da_nova_tentativa(
+                          str(erro_de_sql) if erro_de_sql else None)}]
+            geracao = _gerar(cliente, pedido, esquema, seed, p, registro)
+            primeira = ler_json_prefixado(geracao, campos)
+            continue
+        break
+    registro["resultado"] = resultado
+
+    estado["etapa"] = "segunda_chamada"
+    aviso = ""
+    if resultado["cortado"]:
+        aviso = f" (resultado cortado em {len(resultado['linhas'])} de {resultado['total_de_linhas']} linhas)"
+    tabela = json.dumps({"colunas": resultado["colunas"], "linhas": resultado["linhas"]}, ensure_ascii=False)
+    segunda_mensagens = [*mensagens, {"role": "assistant", "content": geracao.texto},
+                         {"role": "user", "content": variacoes.mensagem_da_segunda(v, tabela, aviso)}]
+    campos = variacoes.campos_da_segunda(v)
+    geracao = _gerar(cliente, segunda_mensagens, variacoes.esquema_json(campos), seed, p, registro)
+    segunda = ler_json_prefixado(geracao, campos)
+    registro["resposta"] = {
+        "interpretacao": segunda["interpretacao"], "sql": primeira["sql"], "valores": segunda["valores"],
+        "ressalva": segunda["ressalva"],
+        "abstencao": (segunda["motivo"].strip() or "(sem motivo)") if segunda["abstem"] else "",
+    }
+
+
 def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Parametros,
-              modelo: dict[str, str], trechos: list[dict] | None = None) -> dict:
+              modelo: dict[str, str], trechos: list[dict] | None = None, variacao: str = "V-1") -> dict:
     """
     PT: Uma execução completa. Devolve o registro: parâmetros, trechos,
         chamadas, resultado do SQL, resposta nos cinco campos, proveniência e
         erro, quando houver. Em C e D, os trechos vêm de quem chama, de uma
-        busca só antes da geração.
+        busca só antes da geração. A variacao escolhe o instrumento
+        (assistente/variacoes.py); a V−1, o padrão, é o da execução 1, e o
+        registro dela não muda.
     EN: One full run; returns its record. In C and D the caller passes the
-        excerpts, from a single search before generation.
+        excerpts, from a single search before generation. variacao picks
+        the instrument; V−1, the default, is run 1's and its record is
+        unchanged.
     """
     if condicao not in CONDICOES:
         raise ValueError(f"condição desconhecida: {condicao}")
+    if variacao not in variacoes.VARIACOES:
+        raise ValueError(f"variação desconhecida: {variacao}")
+    v = variacoes.VARIACOES[variacao]
     usa_trechos = "trechos" in CONDICOES[condicao]
     if usa_trechos and trechos is None:
         raise ValueError(f"a condição {condicao} precisa dos trechos da busca")
@@ -187,33 +394,17 @@ def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Par
         "proveniencia": None,
         "erro": None,
     }
+    if v.nome != "V-1":
+        registro["variacao"] = v.nome
+        registro["novas_tentativas"] = 0
     inicio = time.perf_counter()
-    etapa = "primeira_chamada"
+    estado = {"etapa": "primeira_chamada"}
+    fluxo = _fluxo_da_v_menos_1 if v.nome == "V-1" else partial(_fluxo_da_variacao, v)
     try:
-        mensagens = contexto.primeira_chamada(condicao, pergunta, modelo, registro["trechos"] if usa_trechos else None)
-        geracao = _gerar(cliente, mensagens, ESQUEMA_DA_PRIMEIRA, seed, p, registro)
-        primeira = ler_json(geracao, ESQUEMA_DA_PRIMEIRA)
-
-        if primeira["abstencao"].strip():
-            registro["resposta"] = {"interpretacao": primeira["interpretacao"], "sql": "",
-                                    "valores": {"colunas": [], "linhas": []}, "ressalva": "",
-                                    "abstencao": primeira["abstencao"]}
-        else:
-            if not primeira["sql"].strip():
-                raise ErroDeFormato("sem sql e sem abstenção")
-            etapa = "sql"
-            resultado = executar(banco, primeira["sql"], p.limite_de_linhas, p.limite_de_tempo_do_sql)
-            registro["resultado"] = resultado
-
-            etapa = "segunda_chamada"
-            mensagens = contexto.segunda_chamada(mensagens, geracao.texto, resultado, modelo)
-            geracao = _gerar(cliente, mensagens, ESQUEMA_DA_SEGUNDA, seed, p, registro)
-            segunda = ler_json(geracao, ESQUEMA_DA_SEGUNDA)
-            registro["resposta"] = {"interpretacao": segunda["interpretacao"], "sql": primeira["sql"],
-                                    "valores": segunda["valores"], "ressalva": segunda["ressalva"],
-                                    "abstencao": segunda["abstencao"]}
+        fluxo(registro, estado, pergunta, condicao, seed, cliente, banco, p, modelo,
+              registro["trechos"] if usa_trechos else None)
     except (ErroDeGeracao, ErroDeSQL, ErroDeFormato) as erro:
-        registro["erro"] = {"tipo": erro.tipo, "etapa": etapa, "mensagem": str(erro)}
+        registro["erro"] = {"tipo": erro.tipo, "etapa": estado["etapa"], "mensagem": str(erro)}
 
     resultado = registro["resultado"]
     registro["proveniencia"] = {

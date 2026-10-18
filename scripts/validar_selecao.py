@@ -397,7 +397,27 @@ def checar_casos_de_lista(g: Gabarito) -> list[str]:
     for descricao, obtido, esperado in casos:
         if obtido != esperado:
             erros.append(f"corretor: {descricao} deu {obtido}, esperado {esperado}")
-    return erros
+    return erros + checar_posicao_contra_codigo()
+
+
+def checar_posicao_contra_codigo() -> list[str]:
+    """
+    PT: Regressão da correção de 2026-10-15 (#118): uma coluna de posição
+        (1, 2, 3) empata com a do código ("01", "02", "03") em itens
+        achados, e o item tem de sair da coluna do código.
+    EN: Regression for the 2026-10-15 fix: a position column ties with the
+        code column, and items must come from the code column.
+    """
+    consulta = Consulta(nome="regressao", colunas=("codigo", "valor"), tipos=("STRING", "DECIMAL"),
+                        linhas=({"codigo": "02", "valor": "10"}, {"codigo": "01", "valor": "20"},
+                                {"codigo": "03", "valor": "30"}), classes={})
+    tabela = corretor.Tabela.de({"colunas": ["posicao", "codigo", "valor"],
+                                 "linhas": [[1, "02", 10], [2, "01", 20], [3, "03", 30]]})
+    obtido = corretor._identificar(tabela, consulta, "codigo")
+    esperado = {0: {0}, 1: {1}, 2: {2}}
+    if obtido != esperado:
+        return [f"corretor: a posição ganhou do código no empate ({obtido}, esperado {esperado})"]
+    return []
 
 
 # -----------------------------------------------------------------------------
