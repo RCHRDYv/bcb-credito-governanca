@@ -100,7 +100,6 @@ def limite_declarado(execucao: int, hipoteses: dict) -> str:
     return " ".join(texto.split())
 
 
-RELATORIO = "experimento.pdf"
 NOTEBOOK = "../notebooks/experimento.ipynb"
 
 
@@ -356,8 +355,7 @@ def pagina(resultados: dict[int, dict], hipoteses: dict) -> str:
         "EN: Result of the pre-registered 2x2 experiment: 41 questions, four conditions, two local models, "
         "5 runs each. Confirmatory claims come from run 2; run 1 is reported as registered.",
         "",
-        f"O relatório completo, com os gráficos e a memória de cálculo, está em [{RELATORIO}]({RELATORIO}), e o "
-        f"notebook que o gera em [`notebooks/experimento.ipynb`]({NOTEBOOK}).",
+        f"Os gráficos e a memória de cálculo estão no notebook [`notebooks/experimento.ipynb`]({NOTEBOOK}).",
         "",
     ]
     for execucao in sorted(resultados, reverse=True):

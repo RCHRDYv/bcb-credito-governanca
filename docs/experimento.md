@@ -6,7 +6,62 @@ PT: O resultado do experimento registrado em `evaluation/hipoteses.yml` ([ADR 00
 
 EN: Result of the pre-registered 2x2 experiment: 41 questions, four conditions, two local models, 5 runs each. Confirmatory claims come from run 2; run 1 is reported as registered.
 
-O relatório completo, com os gráficos e a memória de cálculo, está em [experimento.pdf](experimento.pdf), e o notebook que o gera em [`notebooks/experimento.ipynb`](../notebooks/experimento.ipynb).
+Os gráficos e a memória de cálculo estão no notebook [`notebooks/experimento.ipynb`](../notebooks/experimento.ipynb).
+
+## Execução 2: resultado confirmatório
+
+Variação do instrumento: V4. Retrato do esquema estrela: `2026-07-31`. Dados em `evaluation/experimento/execucao-2/`.
+
+### Limites
+
+- São 41 perguntas, e o grupo de ressalva e abstenção tem 12. A conclusão vale para este domínio e este conjunto, com tamanho de efeito, e não como lei geral (ADR 0013). A seleção dos modelos pela condição A puxa contra a H1 e a H2, e esse viés é declarado junto do resultado (ADR 0026). A execução 1 falhou no controle de qualidade do instrumento e saiu como registrada; a execução 2 usa a V4, escolhida por custo-benefício depois de uma medida parcial num conjunto de 30 perguntas inventadas (ADR 0032).
+- A H5 é exploratória: fica fora do Holm, e o grupo de ressalva e abstenção tem 12 perguntas.
+- Execuções repetidas por erro de servidor: 0 (ADR 0031).
+- A correção às cegas julgou só o que decide a maioria de 3 em 5: nas perguntas já decididas, as execuções não julgadas contam como não certas, então a contagem de 0 a 5 e a parcela em que as 5 concordam são mínimas. O acerto de cada pergunta não muda.
+
+### gemma-4-12b
+
+| Hipótese | Comparação | Efeito (p.p.) | IC 95% (p.p.) | p | p ajustado (Holm) | Decisão |
+|---|---|---:|---|---:|---:|---|
+| H1: B acerta mais que A | B−A (41 perguntas) | −4,9 | −16,6 a 5,2 | 1,000 | 1,000 | não sustentada |
+| H2: C acerta mais que A | C−A (41 perguntas) | 0,0 | −12,6 a 12,6 | 0,688 | 1,000 | não sustentada |
+| H3: B acerta mais que C nas perguntas de valor | B−C (29 perguntas) | −6,9 | −22,0 a 5,8 | 1,000 | 1,000 | não sustentada |
+| H4: D acerta pelo menos tanto quanto o melhor entre B e C | D−B, margem −5,0 | 2,4 | −7,1 a 13,2 | 0,049 | 1,000 | não sustentada |
+|  | D−C, margem −5,0 | −2,4 | −14,5 a 9,1 | 0,305 |  |  |
+| H5: A vantagem da ontologia sobre os documentos é maior nas perguntas de valor_com_ressalva e abstencao do que nas de valor (exploratória) | B−C, ressalva e abstenção menos valor | 6,9 | 0,0 a 17,2 | 0,498 | fora do Holm | não sustentada |
+
+Perguntas certas por condição, de 41:
+
+| Condição | Certas | Valor | Com ressalva | Abstenção | As 5 execuções concordam | Abstenções indevidas (execuções) |
+|---|---:|---:|---:|---:|---:|---:|
+| A | 3 | 1 | 1 | 1 | 90,2% | 42 |
+| B | 1 | 0 | 0 | 1 | 90,2% | 17 |
+| C | 3 | 2 | 0 | 1 | 90,2% | 29 |
+| D | 2 | 0 | 1 | 1 | 90,2% | 22 |
+
+Q de Cochran nas quatro condições (descritivo): Q = 2,20, 3 graus de liberdade, p 0,532.
+
+### qwen3.5-9b
+
+| Hipótese | Comparação | Efeito (p.p.) | IC 95% (p.p.) | p | p ajustado (Holm) | Decisão |
+|---|---|---:|---|---:|---:|---|
+| H1: B acerta mais que A | B−A (41 perguntas) | 2,4 | −10,1 a 15,3 | 0,500 | 1,000 | não sustentada |
+| H2: C acerta mais que A | C−A (41 perguntas) | −2,4 | −13,2 a 7,1 | 1,000 | 1,000 | não sustentada |
+| H3: B acerta mais que C nas perguntas de valor | B−C (29 perguntas) | 6,9 | −5,8 a 22,0 | 0,250 | 1,000 | não sustentada |
+| H4: D acerta pelo menos tanto quanto o melhor entre B e C | D−B, margem −5,0 | −7,3 | −19,4 a 2,5 | 1,000 | 1,000 | não sustentada |
+|  | D−C, margem −5,0 | −2,4 | −12,6 a 6,4 | 0,226 |  |  |
+| H5: A vantagem da ontologia sobre os documentos é maior nas perguntas de valor_com_ressalva e abstencao do que nas de valor (exploratória) | B−C, ressalva e abstenção menos valor | −6,9 | −31,9 a 16,7 | 0,891 | fora do Holm | não sustentada |
+
+Perguntas certas por condição, de 41:
+
+| Condição | Certas | Valor | Com ressalva | Abstenção | As 5 execuções concordam | Abstenções indevidas (execuções) |
+|---|---:|---:|---:|---:|---:|---:|
+| A | 2 | 0 | 1 | 1 | 92,7% | 24 |
+| B | 3 | 2 | 1 | 0 | 82,9% | 18 |
+| C | 1 | 0 | 0 | 1 | 97,6% | 32 |
+| D | 0 | 0 | 0 | 0 | 90,2% | 23 |
+
+Q de Cochran nas quatro condições (descritivo): Q = 3,75, 3 graus de liberdade, p 0,290.
 
 ## Execução 1: resultado registrado, com instrumento falho
 

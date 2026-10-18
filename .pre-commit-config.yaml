@@ -26,8 +26,12 @@ repos:
       #     irreversível.
       # EN: Blocks large files. Each monthly SCR CSV is 100 MB to 300 MB, and a
       #     single accidental commit would bloat the repository irreversibly.
+      # PT: Os registros publicados do experimento ficam fora: são o histórico
+      #     completo de cada execução, e a execução 2 passa de 5 MB (ADR 0032).
+      # EN: The experiment's published records are exempt (run 2 exceeds 5 MB).
       - id: check-added-large-files
         args: ['--maxkb=5000']
+        exclude: ^evaluation/experimento/.*/execucoes\.jsonl\.gz$
 
       # PT: Bloqueia chave privada em qualquer formato.
       # EN: Blocks private keys in any format.
