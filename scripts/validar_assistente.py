@@ -19,7 +19,10 @@ PT: Valida o assistente de dados (#49, ADR 0029) sem rede, sem modelo e sem
        fct_*.
     4. **Limites.** O tempo esgotado interrompe a consulta perto do limite,
        e o resultado acima do limite de linhas é cortado com o aviso
-       "cortado em N de M linhas" na segunda chamada.
+       "cortado em N de M linhas" na segunda chamada. Esgotado o tempo na
+       busca das linhas, o total não é contado: num banco espião, que perde
+       a interrupção como o DuckDB parado, o erro é de tempo e nenhum
+       count(*) é enviado (#120).
     5. **Fluxo** (hipoteses.yml, execucao.fluxo e falhas). A abstenção não
        executa SQL nem faz a segunda chamada; saída fora do formato, prompt
        maior que o num_ctx e erro de SQL viram erro tipado, sem nova
@@ -38,7 +41,8 @@ PT: Valida o assistente de dados (#49, ADR 0029) sem rede, sem modelo e sem
 EN: Validates the data assistant with no network, model or data: a fake
     model, empty star schema tables and invented excerpts. Checks
     parameters against the pre-registration, prompt assembly per condition,
-    the SQL guard, time and row limits, the run flow (abstention, typed
+    the SQL guard, time and row limits (no count(*) once out of time), the
+    run flow (abstention, typed
     errors without retry, the five answer fields), code-built provenance,
     and that smoke questions are not registered ones. --autoteste swaps one
     piece at a time for a broken version and checks each is rejected for
@@ -105,6 +109,10 @@ CASOS_DA_GUARDA = [
 LENTO = "with recursive t(n) as (select 1 union all select n + 1 from t where n < 1000000000) select count(*) from t"
 LIMITE_DE_TEMPO = 0.5
 FOLGA_DE_TEMPO = 2.0
+# PT: o banco espião demora mais que o limite na busca das linhas.
+# EN: the spy database takes longer than the limit to fetch.
+DEMORA_DA_BUSCA = 1.0
+SQL_DO_CORTE = "select carteira_ativa from fct_carteira"
 
 PROVENIENCIA_SQL = ("select sum(c.carteira_ativa) from fct_carteira c join dim_modalidade m "
                     "using (codigo_submodalidade) where c.uf = 'AC' and m.codigo_submodalidade = '0203'")
@@ -124,6 +132,35 @@ class Pecas:
     executar: Callable = executar
     responder: Callable = responder
     perguntas_de_fumaca: tuple[str, ...] = PERGUNTAS_DE_FUMACA
+
+
+class BancoEspiao:
+    """
+    PT: Um banco falso que anota os comandos, devolve uma linha a mais que o
+        limite depois de DEMORA_DA_BUSCA e perde a interrupção, como o DuckDB
+        quando ela chega com a conexão parada (#120).
+    EN: A fake database that logs commands, returns one row over the limit
+        after DEMORA_DA_BUSCA and loses the interrupt, like an idle DuckDB.
+    """
+
+    description = [("carteira_ativa", "DECIMAL(18,2)")]
+
+    def __init__(self) -> None:
+        self.comandos: list[str] = []
+
+    def execute(self, comando: str) -> BancoEspiao:
+        self.comandos.append(comando)
+        return self
+
+    def fetchmany(self, n: int) -> list[tuple]:
+        time.sleep(DEMORA_DA_BUSCA)
+        return [(i,) for i in range(n)]
+
+    def fetchone(self) -> tuple:
+        return (10**9,)
+
+    def interrupt(self) -> None:
+        pass
 
 
 def _json(**campos) -> str:
@@ -198,6 +235,24 @@ def checar_tempo(pecas: Pecas, banco) -> list[str]:
             return [f"tempo: a interrupção levou {segundos:.1f} s para um limite de {LIMITE_DE_TEMPO} s"]
         return []
     return ["tempo: a consulta lenta terminou sem interrupção"]
+
+
+def checar_tempo_no_corte(pecas: Pecas) -> list[str]:
+    """
+    PT: conferência 4, tempo esgotado na busca: erro de tempo, sem count(*)
+    EN: check 4, timeout during the fetch: time error, no count(*)
+    """
+    banco = BancoEspiao()
+    try:
+        pecas.executar(banco, SQL_DO_CORTE, 10, LIMITE_DE_TEMPO)
+    except ErroDeSQL as erro:
+        if erro.tipo != "tempo":
+            return [f"tempo no corte: deu erro {erro.tipo} e não de tempo"]
+    else:
+        return ["tempo no corte: a busca passou do tempo e o resultado voltou sem erro"]
+    if any("count(*)" in c for c in banco.comandos):
+        return ["tempo no corte: o count(*) rodou depois do tempo esgotado"]
+    return []
 
 
 def _rodar(pecas: Pecas, banco, p, modelo, respostas: list, pergunta: str = "pergunta de teste",
@@ -329,6 +384,7 @@ def validar(pecas: Pecas, p, modelo, hipoteses: dict, registradas: list[str]) ->
         *checar_montagem(pecas, modelo),
         *checar_guarda(pecas),
         *checar_tempo(pecas, banco),
+        *checar_tempo_no_corte(pecas),
         *checar_fluxo(pecas, banco, p, modelo, formato),
         *checar_proveniencia(pecas, banco, p, modelo),
         *checar_fumaca(pecas, registradas),
@@ -378,6 +434,17 @@ def autoteste(p, modelo, hipoteses: dict, registradas: list[str]) -> list[str]:
         cliente.gerar = gerar_sem_abstencao
         return responder(pergunta, condicao, seed, cliente=cliente, **kwargs)
 
+    def executar_que_conta_depois_do_tempo(banco, sql, n, t):
+        # PT: o defeito da execução 2: esgotado o tempo, o count(*) roda mesmo
+        #     assim. Só no banco espião, onde ele não trava.
+        # EN: run 2's defect: count(*) runs after the timeout; spy only.
+        try:
+            return executar(banco, sql, n, t)
+        except ErroDeSQL as erro:
+            if erro.tipo == "tempo" and isinstance(banco, BancoEspiao):
+                banco.execute(f"select count(*) from (\n{sql}\n) as resultado")
+            raise
+
     def responder_sem_confianca(*args, **kwargs):
         registro = responder(*args, **kwargs)
         for c in registro["proveniencia"]["conceitos"]:
@@ -389,6 +456,8 @@ def autoteste(p, modelo, hipoteses: dict, registradas: list[str]) -> list[str]:
         ("D com trechos diferentes de C", Pecas(sistema=d_sem_um_trecho), "D difere de B mais o bloco de trechos"),
         ("guarda que aprova tudo", Pecas(analisar=lambda sql: Analise()), "guarda: aprovou"),
         ("sem limite de tempo", Pecas(executar=lambda b, s, n, t: executar(b, s, n, t * 10)), "tempo: a interrupção"),
+        ("count(*) depois do tempo", Pecas(executar=executar_que_conta_depois_do_tempo),
+         "o count(*) rodou depois do tempo"),
         ("sem corte de linhas", Pecas(executar=lambda b, s, n, t: executar(b, s, n * 10, t)), "corte:"),
         ("nova tentativa depois do erro", Pecas(responder=responder_que_tenta_de_novo), "com nova tentativa"),
         ("abstenção ignorada", Pecas(responder=responder_que_ignora_abstencao), "abstenção:"),

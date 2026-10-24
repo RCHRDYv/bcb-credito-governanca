@@ -11,11 +11,16 @@ PT: As variações do instrumento (#118, ADR 0032), cumulativas. A V−1 é o
     - V2: a V1 mais um campo de plano antes do SQL;
     - V3: a V2 mais uma nova tentativa quando o SQL dá erro, para na guarda
       ou volta vazio;
-    - V4: a V3 mais as chaves de junção no bloco do esquema.
+    - V4: a V3 mais as chaves de junção no bloco do esquema;
+    - V5: a V4 com a ontologia recuperada em B e D: só os itens mais
+      próximos da pergunta (rag/ontologia.py), no lugar da ontologia
+      inteira (#120);
+    - V6: a V5 com o esquema descrito nas quatro condições: uma frase por
+      tabela e por coluna, de assistente/esquema_descrito.yml (#120).
 
-    A mensagem de sistema é a mesma da V−1 nas quatro condições (a V4 só
-    acrescenta as junções ao bloco do esquema, igual em todas). A resposta
-    final mantém os cinco campos registrados em
+    A mensagem de sistema é a mesma da V−1 nas quatro condições até a V4 (a
+    V4 só acrescenta as junções ao bloco do esquema, igual em todas). A
+    resposta final mantém os cinco campos registrados em
     comparacao.formato_da_resposta.
 
 EN: The cumulative instrument variants. V−1 is run 1's instrument and V4
@@ -23,7 +28,8 @@ EN: The cumulative instrument variants. V−1 is run 1's instrument and V4
     interpretation and SQL before abstaining, with a boolean abstention and
     SQL taking precedence; V1 adds the criterion and toy examples after the
     question; V2 a plan field; V3 one retry on SQL error, guard or empty
-    result; V4 join keys in the schema block.
+    result; V4 join keys in the schema block; V5 the retrieved ontology
+    items in B and D; V6 the described schema in all four conditions.
 """
 
 from __future__ import annotations
@@ -36,9 +42,19 @@ from pathlib import Path
 import yaml
 
 from ingestion.fontes import RAIZ
+from scripts.validar_gabarito import tipo_no_duckdb
 
 ARQUIVO = RAIZ / "assistente" / "variacoes.yml"
+ESQUEMA_DESCRITO = RAIZ / "assistente" / "esquema_descrito.yml"
 LETRAS = "abcdefgh"
+# PT: os itens da ontologia recuperados por pergunta em B e D, da V5 em
+#     diante (#120, decisão de 2026-10-23). Pela cobertura no conjunto de
+#     desenvolvimento (scripts/analises/cobertura_da_ontologia.py), a curva
+#     fica plana de 5 a 12 itens, em 69,6% dos ids do fonte; o 5 iguala B
+#     aos 5 trechos de C.
+# EN: ontology items retrieved per question in B and D from V5 on; the
+#     dev-set coverage is flat from 5 to 12, and 5 matches C's 5 excerpts.
+ITENS_DA_ONTOLOGIA = 5
 # PT: corte do erro na mensagem da nova tentativa, em caracteres. A
 #     resposta anterior vai inteira: o limite de tokens da resposta já a
 #     limita, e o dimensionamento conta essa chamada.
@@ -58,15 +74,20 @@ class Variacao:
     plano: bool = False
     nova_tentativa: bool = False
     juncoes: bool = False
+    ontologia_recuperada: bool = False
+    esquema_descrito: bool = False
 
 
+_V4 = dict(chaves_prefixadas=True, criterio=True, plano=True, nova_tentativa=True, juncoes=True)
 VARIACOES = {
     "V-1": Variacao("V-1"),
     "V0": Variacao("V0", chaves_prefixadas=True),
     "V1": Variacao("V1", chaves_prefixadas=True, criterio=True),
     "V2": Variacao("V2", chaves_prefixadas=True, criterio=True, plano=True),
     "V3": Variacao("V3", chaves_prefixadas=True, criterio=True, plano=True, nova_tentativa=True),
-    "V4": Variacao("V4", chaves_prefixadas=True, criterio=True, plano=True, nova_tentativa=True, juncoes=True),
+    "V4": Variacao("V4", **_V4),
+    "V5": Variacao("V5", **_V4, ontologia_recuperada=True),
+    "V6": Variacao("V6", **_V4, ontologia_recuperada=True, esquema_descrito=True),
 }
 ORDEM = list(VARIACOES)
 
@@ -197,3 +218,26 @@ def juncoes(esquema: dict[str, list]) -> str:
               for fato in (t for t in colunas if t.startswith("fct_"))
               for dim, chave in chaves.items() if chave in colunas[fato]]
     return _preencher(textos()["bloco_juncoes"], juncoes="\n".join(linhas))
+
+
+@lru_cache(maxsize=1)
+def descricoes(arquivo: Path = ESQUEMA_DESCRITO) -> dict[str, dict]:
+    """PT: as frases de cada tabela e coluna / EN: table and column sentences"""
+    return yaml.safe_load(arquivo.read_text(encoding="utf-8"))["tabelas"]
+
+
+def esquema_descrito(esquema: dict[str, list]) -> str:
+    """
+    PT: O esquema descrito da V6 (#120): cada tabela com o que uma linha
+        representa e cada coluna com o tipo do DuckDB e o que guarda, na
+        ordem do esquema. Uma tabela ou coluna sem frase para tudo (KeyError):
+        o validar_variacoes confere a cobertura.
+    EN: V6's described schema, per table and column, in schema order.
+    """
+    d = descricoes()
+    partes = []
+    for tabela, colunas in esquema.items():
+        linhas = [f"{tabela}: {d[tabela]['descricao']}"]
+        linhas += [f"- {nome} {tipo_no_duckdb(tipo)}: {d[tabela]['colunas'][nome]}" for nome, tipo in colunas]
+        partes.append("\n".join(linhas))
+    return _preencher(textos()["esquema_descrito"], esquema="\n\n".join(partes))

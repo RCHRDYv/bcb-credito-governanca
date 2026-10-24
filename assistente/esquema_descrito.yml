@@ -1,0 +1,179 @@
+# =============================================================================
+# PT: O esquema descrito da V6 (#120, ADR 0033): uma frase por tabela, com o
+#     que uma linha dela representa, e uma por coluna, com o que ela guarda e
+#     a unidade. Vai igual nas quatro condições, no lugar do esquema cru.
+#
+#     Só a forma: nenhum aviso, regra de uso ou definição tirada da
+#     ontologia, que continua só em B e D. Assim a H1 mede a ontologia além
+#     do dicionário de dados. As duas ligações que não são igualdade de
+#     chave (fct_populacao.ano e fct_renda_do_trabalho.fim_do_trimestre)
+#     ficam na frase da coluna; as outras junções saem do bloco de junções
+#     da V4.
+#
+#     Escrito a partir do dbt/models/marts/_marts.yml e dos valores do
+#     retrato local, sem olhar as 41 perguntas do teste. O
+#     scripts/validar_variacoes.py confere que cada tabela e cada coluna do
+#     evaluation/gabarito/esquema_estrela.json tem a sua frase, e nada além.
+#
+# EN: V6's described schema: one sentence per table (what a row is) and per
+#     column (what it holds, unit), identical in all four conditions. Form
+#     only, no ontology warnings, rules or definitions. The two non-key links
+#     live in their column sentences. Coverage is checked by
+#     validar_variacoes.
+# =============================================================================
+
+tabelas:
+  dim_cnae_ocupacao:
+    descricao: "Uma linha por seção do CNAE, para pessoa jurídica, ou natureza da ocupação, para pessoa física."
+    colunas:
+      cnae_ocupacao_desambiguado: "O valor com o prefixo do tipo de cliente ('PF - ' ou 'PJ - '). Chave da tabela."
+      cliente: "Tipo de cliente: PF ou PJ."
+      cnae_ocupacao: "A seção do CNAE ou a natureza da ocupação, sem o prefixo."
+      taxonomia: "Nome da classificação a que o valor pertence."
+      aviso: "Observação sobre o valor, quando houver; nula nas demais linhas."
+
+  dim_modalidade:
+    descricao: "Uma linha por submodalidade de crédito, com a modalidade a que ela pertence."
+    colunas:
+      codigo_submodalidade: "Código da submodalidade, com quatro dígitos. Chave da tabela."
+      codigo_modalidade: "Código da modalidade, com dois dígitos."
+      modalidade: "Rótulo da modalidade como vem no dado."
+      submodalidade: "Rótulo da submodalidade como vem no dado."
+      nome_oficial_modalidade: "Nome da modalidade no leiaute do SCR."
+      nome_oficial_submodalidade: "Nome da submodalidade no leiaute do SCR."
+      definicao: "Texto da definição da submodalidade; nulo quando não há definição oficial."
+      confianca: "Grau de confiança da definição."
+      sem_definicao_oficial: "Verdadeiro quando a submodalidade não tem definição oficial."
+      fonte: "Documento e página de onde a definição veio."
+
+  dim_natureza_juridica:
+    descricao: "Uma linha por grupo de natureza jurídica do cadastro do CNPJ."
+    colunas:
+      grupo_natureza_juridica: "Código do grupo, de 0 a 5. Chave da tabela."
+      natureza_juridica: "Nome do grupo."
+
+  dim_porte:
+    descricao: "Uma linha por porte do cliente, separado por tipo de cliente."
+    colunas:
+      porte_desambiguado: "O porte com o prefixo do tipo de cliente ('PF - ' ou 'PJ - '). Chave da tabela."
+      cliente: "Tipo de cliente: PF ou PJ."
+      porte: "Rótulo do porte como vem no dado, sem o prefixo."
+      taxonomia: "Nome da classificação a que o porte pertence."
+      aviso: "Observação sobre o valor, quando houver; nula nas demais linhas."
+
+  dim_porte_receita:
+    descricao: "Uma linha por porte da empresa no cadastro do CNPJ."
+    colunas:
+      porte_empresa: "Código do porte no CNPJ, com dois dígitos. Chave da tabela."
+      porte_receita: "Rótulo do porte no CNPJ."
+      aviso: "Observação sobre o porte."
+
+  dim_segmento:
+    descricao: "Uma linha por segmento de instituição financeira."
+    colunas:
+      segmento: "Nome do segmento. Chave da tabela."
+      definicao_do_segmento: "Texto que define como os segmentos são agrupados."
+
+  dim_tempo:
+    descricao: "Uma linha por data-base, o mês de referência da carteira."
+    colunas:
+      data_base: "Último dia do mês de referência. Chave da tabela."
+      ano: "Ano da data-base."
+      mes: "Mês da data-base, de 1 a 12."
+      trimestre: "Trimestre da data-base, de 1 a 4."
+      ano_mes: "Ano e mês no formato AAAA-MM."
+      eh_mes_mais_recente: "Verdadeiro só na data-base mais recente."
+      criterio_ativo_problematico: "Texto do critério de ativo problemático que vale no mês."
+      ativo_problematico_comparavel_com_mes_anterior: "Se o ativo problemático do mês se compara com o do mês anterior."
+      granularidade_da_publicacao: "Texto que descreve o nível de detalhe da publicação no mês."
+      divergencia_entre_versoes: "Texto com o patamar da diferença entre a V2 e a V1 no mês."
+      quebras_no_mes: "Id da quebra da série que começa no mês; nulo nos demais meses."
+
+  dim_uf:
+    descricao: "Uma linha por unidade da federação."
+    colunas:
+      uf: "Sigla da UF. Chave da tabela."
+      nome_da_uf: "Nome da UF."
+      codigo_ibge: "Código da UF no IBGE, com dois dígitos."
+      definicao_da_uf: "Texto que define a dimensão UF."
+
+  fct_carteira:
+    descricao: "A carteira de crédito do SCR na publicação atual (V2): uma linha por recorte publicado, com data-base, UF, segmento, submodalidade, porte, CNAE ou ocupação, tipo de cliente, origem e indexador. Os saldos estão em reais."
+    colunas:
+      data_base: "Último dia do mês de referência."
+      uf: "Sigla da UF."
+      segmento: "Segmento da instituição financeira."
+      codigo_submodalidade: "Código da submodalidade, com quatro dígitos."
+      porte_desambiguado: "Porte com o prefixo do tipo de cliente ('PF - ' ou 'PJ - ')."
+      cnae_ocupacao_desambiguado: "Seção do CNAE ou natureza da ocupação, com o prefixo do tipo de cliente ('PF - ' ou 'PJ - ')."
+      cliente: "Tipo de cliente: PF ou PJ."
+      origem: "Origem dos recursos."
+      indexador: "Indexador das operações, em seis categorias, como Prefixado e Pós-fixado."
+      numero_de_operacoes: "Quantidade de operações do recorte; nula quando a contagem não foi divulgada."
+      contagem_suprimida: "Verdadeiro quando o numero_de_operacoes não foi divulgado."
+      carteira_a_vencer: "Saldo a vencer do recorte, em reais."
+      carteira_vencida: "Saldo vencido do recorte, em reais."
+      carteira_ativa: "Saldo da carteira ativa do recorte, em reais."
+      carteira_inadimplencia: "Saldo da carteira inadimplida do recorte, em reais."
+      ativo_problematico: "Saldo do ativo problemático do recorte, em reais."
+      modalidade_v1_efetiva: "Rótulo da modalidade correspondente na publicação antiga (V1), com o prefixo 'PF - ' ou 'PJ - '."
+      origem_da_modalidade_v1: "Como a correspondência com a V1 foi obtida."
+
+  fct_carteira_v1:
+    descricao: "A carteira de crédito do SCR na publicação antiga (V1): uma linha por data-base, UF, tipo de cliente, modalidade da V1 e origem. Os saldos estão em reais."
+    colunas:
+      data_base: "Último dia do mês de referência."
+      uf: "Sigla da UF."
+      cliente: "Tipo de cliente: PF ou PJ."
+      modalidade_v1: "Rótulo da modalidade na V1, com o prefixo 'PF - ' ou 'PJ - '."
+      origem: "Origem dos recursos."
+      carteira_ativa: "Saldo da carteira ativa, em reais."
+      carteira_inadimplida_arrastada: "Saldo da carteira inadimplida arrastada, em reais."
+      ativo_problematico: "Saldo do ativo problemático, em reais."
+
+  fct_empresas_ativas:
+    descricao: "Empresas ativas no fim de cada mês, do cadastro do CNPJ: uma linha por data-base, UF, porte, grupo de natureza jurídica e MEI."
+    colunas:
+      data_base: "Último dia do mês de referência."
+      uf: "Sigla da UF."
+      porte_empresa: "Código do porte no CNPJ, com dois dígitos; pode ser nulo."
+      grupo_natureza_juridica: "Código do grupo de natureza jurídica, de 0 a 5."
+      mei: "Verdadeiro para as empresas que eram MEI no fim do mês."
+      empresas_ativas: "Número de empresas ativas no fim do mês."
+
+  fct_pix:
+    descricao: "O PIX de cada mês: uma linha por data-base, UF, lado e tipo de cliente."
+    colunas:
+      data_base: "Último dia do mês de referência."
+      uf: "Sigla da UF."
+      lado: "Lado da transação."
+      cliente: "Tipo de cliente: PF ou PJ."
+      valor: "Valor transacionado no mês, em reais."
+      quantidade: "Número de transações no mês."
+      pessoas: "Número de pessoas distintas que fizeram transações no mês."
+
+  fct_populacao:
+    descricao: "População residente estimada pelo IBGE: uma linha por ano e UF."
+    colunas:
+      ano: "Ano da estimativa. Liga às tabelas mensais pelo ano da data_base."
+      uf: "Sigla da UF."
+      populacao: "População residente estimada, em pessoas."
+
+  fct_renda_do_trabalho:
+    descricao: "Rendimento do trabalho da PNAD Contínua do IBGE, em valores nominais: uma linha por trimestre e UF."
+    colunas:
+      ano: "Ano do trimestre."
+      trimestre: "Trimestre do ano, de 1 a 4."
+      fim_do_trimestre: "Último dia do trimestre. Liga a um mês das tabelas mensais pelo maior fim_do_trimestre menor ou igual à data_base."
+      uf: "Sigla da UF."
+      rendimento_medio: "Rendimento médio mensal do trabalho das pessoas ocupadas, em reais."
+      cv_rendimento_medio: "Coeficiente de variação do rendimento médio, em %."
+      massa_de_rendimento: "Massa de rendimento mensal do trabalho, em reais."
+      cv_massa_de_rendimento: "Coeficiente de variação da massa de rendimento, em %."
+
+  fct_selic:
+    descricao: "A meta da Selic vigente no último dia de cada mês: uma linha por data-base."
+    colunas:
+      data_base: "Último dia do mês de referência."
+      selic_meta: "Meta da Selic, em % ao ano."
+      data_do_valor: "Dia de onde veio o valor da meta."

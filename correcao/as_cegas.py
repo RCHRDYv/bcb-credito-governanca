@@ -61,7 +61,6 @@ from correcao.acerto import (
     PADRAO_DA_SELECAO,
     PADRAO_DO_EXPERIMENTO,
     PASTA_DA_SELECAO,
-    PASTA_DO_EXPERIMENTO,
     a_julgar,
     acerto_da_execucao,
     corrigir_todas,
@@ -70,6 +69,7 @@ from correcao.acerto import (
     ler_julgamentos,
 )
 from correcao.corretor import Gabarito, carregar_gabarito
+from experimento.execucoes import EXECUCOES
 from scripts.validar_perguntas import VIGENTE, perguntas
 
 LIMITE_DE_LINHAS = 30
@@ -221,18 +221,17 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--experimento", action="store_true",
                         help="julga as execuções do experimento (#50), todas as pendentes")
-    parser.add_argument("--execucao", type=int, choices=[1, 2], help="com --experimento: qual execução (#118)")
+    parser.add_argument("--execucao", type=int, choices=sorted(EXECUCOES),
+                        help="com --experimento: qual execução (#118, #120)")
     parser.add_argument("--pasta", type=Path, default=None)
     args = parser.parse_args()
     if args.experimento and not args.execucao:
-        parser.error("--experimento pede --execucao 1 ou 2")
+        parser.error(f"--experimento pede --execucao, uma de {sorted(EXECUCOES)}")
 
     g = carregar_gabarito()
     _, por_id = perguntas(VIGENTE)
     if args.experimento:
-        from scripts.executar_experimento import PASTA_DA_EXECUCAO_2
-
-        pasta = args.pasta or (PASTA_DO_EXPERIMENTO if args.execucao == 1 else PASTA_DA_EXECUCAO_2)
+        pasta = args.pasta or EXECUCOES[args.execucao].pasta
         # PT: os modelos que rodaram nesta pasta, pelo ambiente de cada um.
         # EN: the models that ran in this folder, by their environment file.
         candidatos = sorted(a.parent.name for a in (pasta / "execucoes").glob("*/ambiente.json"))

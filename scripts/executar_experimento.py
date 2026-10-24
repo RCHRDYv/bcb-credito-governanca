@@ -50,17 +50,26 @@ EN: Runs the 41 registered questions in the four conditions, with the 5
     resumed. --ensaio runs offline; --ordem prints the order.
 
     A variação do instrumento (#118, ADR 0032, assistente/variacoes.py) é a
-    do assistente/parametros.yml: a execução 1 rodou na V−1, em
-    data/experimento/, e a execução 2 roda na V4, em
-    data/experimento/execucao-2/. O conjunto de desenvolvimento
+    do assistente/parametros.yml, e a pasta da execução sai do
+    experimento/execucoes.py: a execução 1 rodou na V−1, em
+    data/experimento/; a 2, na V4, em data/experimento/execucao-2/; e a 3
+    roda na V6, em data/experimento/execucao-3/ (#120). O conjunto de desenvolvimento
     (--perguntas desenvolvimento) roda qualquer variação nos modelos
-    registrados, em data/desenvolvimento/<variação>/.
+    registrados, em data/desenvolvimento/<variação>/, e aceita
+    --repeticoes N para rodar só as N primeiras seeds.
+
+    Da V5 em diante, B e D recebem os itens da ontologia recuperados da
+    pergunta (rag/ontologia.py), buscados uma vez e gravados em ontologia/,
+    como os trechos: na pasta da execução, no teste, e em
+    data/desenvolvimento/, no desenvolvimento, iguais para a V5 e a V6.
 
 Uso / Usage:
     uv run --group rag python -m scripts.executar_experimento --perguntas teste
     uv run python -m scripts.executar_experimento --perguntas teste --ensaio
     uv run python -m scripts.executar_experimento --perguntas teste --ordem
     uv run --group rag python -m scripts.executar_experimento --perguntas desenvolvimento --variacao V4
+    uv run --group rag python -m scripts.executar_experimento --perguntas desenvolvimento --variacao V6 \
+        --modelo gemma-4-12b --repeticoes 1
 """
 
 from __future__ import annotations
@@ -72,19 +81,21 @@ import hashlib
 import json
 import shutil
 import subprocess
+from functools import partial
 from pathlib import Path
 
 import duckdb
 import numpy as np
 import yaml
 
-from assistente import parametros, variacoes
+from assistente import ontologia, parametros, variacoes
 from assistente.cliente import ClienteFalso, ClienteOllama
 from assistente.parametros import CONDICOES, PARAMETROS, Parametros
 from assistente.responder import responder
 from assistente.sql import abrir_banco, banco_vazio
 from correcao.acerto import PASTA_DO_EXPERIMENTO
 from experimento import desenvolvimento
+from experimento.execucoes import ATUAL, da_variacao
 from scripts.esquema_estrela_duckdb import esquema_esperado
 from scripts.selecionar_modelos import (
     _get,
@@ -100,15 +111,7 @@ from scripts.selecionar_modelos import (
 from scripts.validar_perguntas import VIGENTE, perguntas
 from scripts.validar_registro import RAIZ
 
-# PT: o Ollama com que as execuções rodaram; outra versão pode mudar a
-#     gramática e a geração (ADR 0032).
-# EN: the Ollama version the runs used.
-VERSAO_DO_OLLAMA = "0.40.4"
 PASTA_DO_DESENVOLVIMENTO = RAIZ / "data" / "desenvolvimento"
-# PT: a execução 1 roda na V−1, em data/experimento; a execução 2, na
-#     variação do parametros.yml, numa pasta própria.
-# EN: run 1 (V−1) lives in data/experimento; run 2 in its own folder.
-PASTA_DA_EXECUCAO_2 = PASTA_DO_EXPERIMENTO / "execucao-2"
 # PT: a seed do sorteio da ordem das condições, registrada com o código.
 # EN: seed of the condition order draw, frozen with the code.
 SEED_DA_ORDEM = 50
@@ -227,10 +230,15 @@ def faltam_execucoes(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta
                for id_ in por_id for c in CONDICOES for s in p.seeds)
 
 
-def conferir_versao_do_ollama(endereco: str) -> str:
+def conferir_versao_do_ollama(endereco: str, registrada: str) -> str:
+    """
+    PT: O Ollama no ar tem de ser o da execução (experimento/execucoes.py):
+        outra versão pode mudar a gramática e a geração (ADR 0032).
+    EN: The running Ollama must be the run's registered version.
+    """
     versao = _get(endereco, "/api/version").get("version")
-    if versao != VERSAO_DO_OLLAMA:
-        raise SystemExit(f"ERRO Ollama {versao}, registrado {VERSAO_DO_OLLAMA}: instale a versão registrada")
+    if versao != registrada:
+        raise SystemExit(f"ERRO Ollama {versao}, registrado {registrada}: instale a versão registrada")
     return versao
 
 
@@ -305,6 +313,29 @@ def trechos_da_pergunta(pasta: Path, id_: str, pergunta: str, buscar, indice: di
     return trechos
 
 
+def itens_da_pergunta(pasta: Path, id_: str, pergunta: str, buscar_itens, assinatura: dict) -> list[str]:
+    """
+    PT: Os ids dos itens da ontologia recuperados para a pergunta (V5 em
+        diante, #120), no mesmo padrão dos trechos: buscados uma vez,
+        gravados com a assinatura da busca (modelo, k e sha256 dos itens) e
+        lidos dali em diante, para B e D e para os dois modelos receberem os
+        mesmos. Um arquivo de outra busca ou de outro enunciado para tudo.
+    EN: The ontology item ids retrieved for the question, searched once and
+        stored with the search signature, so B, D and both models get the
+        same ones; a file from another search or question text stops the run.
+    """
+    arquivo = pasta / "ontologia" / f"{id_}.json"
+    if arquivo.exists():
+        gravado = json.loads(arquivo.read_text(encoding="utf-8"))
+        if gravado.get("assinatura") != assinatura or gravado.get("pergunta") != pergunta:
+            raise SystemExit(f"ERRO {arquivo} veio de outra busca ou de outro enunciado ({gravado.get('assinatura')}, "
+                             f"agora {assinatura}): as execuções já gravadas usaram esses itens")
+        return [i["id"] for i in gravado["itens"]]
+    itens = buscar_itens(pergunta)
+    gravar_json(arquivo, {"id_pergunta": id_, "pergunta": pergunta, "assinatura": assinatura, "itens": itens})
+    return [i["id"] for i in itens]
+
+
 def registrar_repeticao(pasta: Path, registro: dict) -> None:
     """PT: anota um erro de servidor / EN: logs a server error"""
     arquivo = pasta / REPETICOES
@@ -316,7 +347,9 @@ def registrar_repeticao(pasta: Path, registro: dict) -> None:
 
 def rodar_modelo(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta: Path, *,
                  cliente_para, banco, modelo_de_prompt: dict, buscar, indice: dict[str, str],
-                 variacao: str = "V-1", pasta_dos_trechos: Path | None = None, cego: bool = False) -> int:
+                 variacao: str = "V-1", pasta_dos_trechos: Path | None = None, cego: bool = False,
+                 buscar_itens=None, assinatura_dos_itens: dict | None = None,
+                 pasta_dos_itens: Path | None = None) -> int:
     """
     PT: As perguntas de um modelo, na ordem registrada, pulando as execuções
         já gravadas. Devolve quantas rodaram agora. Um erro de servidor é
@@ -324,10 +357,14 @@ def rodar_modelo(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta: Pa
         Com cego (o conjunto de desenvolvimento), o progresso sai só como contagem, sem a
         condição, o desfecho nem o tempo de cada execução: fora o G0, nada
         aparece por condição.
+        Da V5 em diante, os itens da ontologia de cada pergunta saem do
+        itens_da_pergunta, em pasta_dos_itens (#120).
     EN: One model's questions in the registered order, skipping recorded
         runs. A server error is logged and stops the run unrecorded. With
-        cego, progress shows neither condition nor outcome.
+        cego, progress shows neither condition nor outcome. From V5 on, each
+        question's ontology items come from itens_da_pergunta.
     """
+    recupera = variacoes.VARIACOES[variacao].ontologia_recuperada
     rodadas = 0
     total = len(por_id) * len(CONDICOES) * len(p.seeds)
     ja_feitas = total - faltam_execucoes(modelo, p, por_id, pasta)
@@ -338,11 +375,14 @@ def rodar_modelo(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta: Pa
         if not faltam:
             continue
         trechos = trechos_da_pergunta(pasta_dos_trechos or pasta, id_, pergunta["pergunta"], buscar, indice)
+        itens = (itens_da_pergunta(pasta_dos_itens or pasta, id_, pergunta["pergunta"], buscar_itens,
+                                   assinatura_dos_itens) if recupera else None)
         for condicao, seed in faltam:
             registro = responder(pergunta["pergunta"], condicao, seed, cliente=cliente_para(id_, seed), banco=banco,
                                  p=p, modelo=modelo_de_prompt,
                                  trechos=trechos if "trechos" in CONDICOES[condicao] else None,
-                                 variacao=variacao)
+                                 variacao=variacao,
+                                 itens_da_ontologia=itens if "ontologia" in CONDICOES[condicao] else None)
             registro = {"candidato": modelo["nome"], "id_pergunta": id_, **registro}
             if registro["erro"] and registro["erro"]["tipo"] == "servidor":
                 registrar_repeticao(pasta, registro)
@@ -369,6 +409,13 @@ def rodar_modelo(modelo: dict, p: Parametros, por_id: dict[str, dict], pasta: Pa
 TRECHOS_DE_ENSAIO = [{"trecho": 1, "documento": "ensaio", "titulo": None, "secao": None, "pagina": None,
                       "texto": "trecho de ensaio, sem RAG", "similaridade": 1.0}]
 INDICE_DE_ENSAIO = {"modelo": "ensaio", "sha256_trechos": "ensaio", "sha256_embeddings": "ensaio"}
+# PT: os itens da ontologia do ensaio: os três primeiros, sem embeddings.
+# EN: dry-run ontology items: the first three, no embeddings.
+ASSINATURA_DOS_ITENS_DE_ENSAIO = {"modelo": "ensaio", "k": 3, "sha256_itens": "ensaio"}
+
+
+def itens_de_ensaio(pergunta: str) -> list[dict]:
+    return [{"id": id_, "similaridade": 1.0} for id_, _, _ in ontologia.itens()[:3]]
 
 
 def respostas_de_ensaio_da_variacao(variacao: str, id_: str) -> list[str]:
@@ -420,7 +467,18 @@ def ensaio(por_id: dict[str, dict], pasta: Path = PASTA_DO_EXPERIMENTO / "ensaio
     rodar_modelo(modelo, p, duas, pasta,
                  cliente_para=lambda id_, seed: ClienteFalso(respostas_de_ensaio_da_variacao(variacao, id_)),
                  banco=banco_vazio(), modelo_de_prompt=parametros.modelo_de_prompt(),
-                 buscar=lambda pergunta: TRECHOS_DE_ENSAIO, indice=INDICE_DE_ENSAIO, variacao=variacao)
+                 buscar=lambda pergunta: TRECHOS_DE_ENSAIO, indice=INDICE_DE_ENSAIO, variacao=variacao,
+                 buscar_itens=itens_de_ensaio, assinatura_dos_itens=ASSINATURA_DOS_ITENS_DE_ENSAIO)
+    if variacoes.VARIACOES[variacao].ontologia_recuperada:
+        # PT: B e D levam os itens do ensaio, e A e C nenhum (#120).
+        # EN: B and D carry the dry-run items, A and C none.
+        esperados = [i["id"] for i in itens_de_ensaio("")]
+        for id_ in duas:
+            for c in CONDICOES:
+                registro = json.loads(arquivo_da_execucao(pasta, modelo["nome"], c, id_, 1).read_text(encoding="utf-8"))
+                if registro.get("itens_da_ontologia") != (esperados if "ontologia" in CONDICOES[c] else []):
+                    raise SystemExit(f"ERRO o ensaio da {variacao} gravou outros itens da ontologia em {id_} {c}")
+        print("Itens da ontologia recuperados só em B e D / retrieved items only in B and D.")
     if variacao != "V-1" and variacoes.VARIACOES[variacao].nova_tentativa:
         # PT: a pergunta com SQL tem de ter passado pela nova tentativa.
         # EN: the SQL question must have gone through the retry.
@@ -441,10 +499,14 @@ def main() -> None:
     parser.add_argument("--pasta", type=Path, help="pasta de saída")
     parser.add_argument("--ensaio", action="store_true", help="sem Ollama, sem dado e sem RAG")
     parser.add_argument("--ordem", action="store_true", help="só mostra a ordem das condições")
+    parser.add_argument("--repeticoes", type=int, choices=range(1, 6), metavar="N",
+                        help="só no desenvolvimento: as N primeiras seeds registradas, de 1 a 5 (#120)")
     args = parser.parse_args()
 
     variacao = args.variacao or variacao_registrada()
     teste = args.perguntas == "teste"
+    if teste and args.repeticoes:
+        parser.error("--repeticoes só vale no conjunto de desenvolvimento: o teste roda as 5 seeds registradas")
     meta, por_id = perguntas(VIGENTE) if teste else desenvolvimento.perguntas()
     registrados = {m["nome"] for m in modelos_do_experimento()}
     modelos = [m for m in modelos_do_experimento() if not args.modelo or m["nome"] in args.modelo]
@@ -472,18 +534,34 @@ def main() -> None:
         if codigo["mudancas_sem_commit"]:
             raise SystemExit("ERRO há mudanças sem commit: faça o commit antes de rodar o teste, para o resultado "
                              "corresponder a um código conhecido")
-        pasta = PASTA_DO_EXPERIMENTO if variacao == "V-1" else PASTA_DA_EXECUCAO_2
-        # PT: a execução 2 recebe os mesmos trechos da execução 1.
-        # EN: run 2 reuses run 1's excerpts.
-        pasta_dos_trechos = PASTA_DO_EXPERIMENTO
+        pasta = da_variacao(variacao).pasta
+        # PT: da execução 2 em diante, os trechos são os da execução 1; os
+        #     itens da ontologia ficam na pasta da execução.
+        # EN: from run 2 on, excerpts are run 1's; items stay in the run's folder.
+        pasta_dos_trechos, pasta_dos_itens = PASTA_DO_EXPERIMENTO, pasta
     else:
         pasta = args.pasta or PASTA_DO_DESENVOLVIMENTO / variacao
-        pasta_dos_trechos = pasta.parent
+        # PT: no desenvolvimento, trechos e itens ficam na pasta-mãe, iguais
+        #     para todas as variações: da V5 para a V6 só muda o esquema.
+        # EN: on the dev set, excerpts and items are shared across variants.
+        pasta_dos_trechos = pasta_dos_itens = pasta.parent
     conferir_retrato()
     indice = conferir_indice()
     variaveis = conferir_variaveis(carregar_selecao())
-    versao = conferir_versao_do_ollama(parametros.carregar().endereco)
+    # PT: no teste, a versão da execução; no desenvolvimento, a da execução
+    #     que roda agora, para a checagem medir o mesmo Ollama.
+    # EN: test runs use their run's version; the dev set the current run's.
+    registrada = (da_variacao(variacao) if teste else ATUAL).ollama
+    versao = conferir_versao_do_ollama(parametros.carregar().endereco, registrada)
     from assistente.contexto import buscar_trechos
+
+    buscar_itens = assinatura_dos_itens = None
+    if variacoes.VARIACOES[variacao].ontologia_recuperada:
+        from rag import ontologia as busca_da_ontologia
+
+        k = variacoes.ITENS_DA_ONTOLOGIA
+        buscar_itens = partial(busca_da_ontologia.buscar_itens, k=k)
+        assinatura_dos_itens = busca_da_ontologia.assinatura(k)
 
     banco, modelo_de_prompt = abrir_banco(), parametros.modelo_de_prompt()
     assinatura = assinatura_dos_enunciados(por_id)
@@ -492,6 +570,8 @@ def main() -> None:
         parametros.conferir_pre_registro(p)
         if p.provisorio:
             raise SystemExit("ERRO assistente/parametros.yml ainda provisório")
+        if args.repeticoes:
+            p = dataclasses.replace(p, seeds=p.seeds[:args.repeticoes])
         conferir_pasta(pasta, m["nome"], variacao, p, args.perguntas, assinatura)
         if not faltam_execucoes(m, p, por_id, pasta):
             print(f"\n{m['nome']}: nada a rodar em {pasta}")
@@ -517,7 +597,9 @@ def main() -> None:
         try:
             rodadas = rodar_modelo(m, p, por_id, pasta, cliente_para=lambda id_, seed: cliente, banco=banco,
                                    modelo_de_prompt=modelo_de_prompt, buscar=buscar_trechos, indice=indice,
-                                   variacao=variacao, pasta_dos_trechos=pasta_dos_trechos, cego=not teste)
+                                   variacao=variacao, pasta_dos_trechos=pasta_dos_trechos, cego=not teste,
+                                   buscar_itens=buscar_itens, assinatura_dos_itens=assinatura_dos_itens,
+                                   pasta_dos_itens=pasta_dos_itens)
         except ParadaPorServidor as erro:
             raise SystemExit(f"ERRO de servidor em {erro}. A execução não foi gravada e entrou no "
                              f"{(pasta / REPETICOES).relative_to(RAIZ).as_posix()}. Confira o ollama serve e "
@@ -527,7 +609,7 @@ def main() -> None:
         print(f"  {rodadas} execuções agora")
     if teste:
         print(f"\nRodado. Próximo passo: uv run python -m correcao.as_cegas --experimento --execucao "
-              f"{1 if variacao == 'V-1' else 2}")
+              f"{da_variacao(variacao).numero}")
 
 
 if __name__ == "__main__":

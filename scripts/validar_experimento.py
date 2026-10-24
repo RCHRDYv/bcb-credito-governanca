@@ -72,6 +72,7 @@ from correcao import acerto, as_cegas
 from correcao.corretor import Gabarito, carregar_gabarito
 from experimento import estatistica
 from experimento.estatistica import Tabela
+from experimento.execucoes import EXECUCOES
 from scripts import executar_experimento, resumir_experimento
 from scripts.validar_perguntas import VIGENTE, perguntas
 from scripts.validar_registro import HIPOTESES, REGISTRO, RAIZ
@@ -303,6 +304,19 @@ def checar_executor(por_id: dict[str, dict]) -> list[str]:
             erros.append("trechos: o cache de outro índice foi aceito")
         except SystemExit:
             pass
+        # PT: itens da ontologia gravados com outra busca (outro k) ou com
+        #     outro enunciado também param (#120).
+        # EN: ontology items stored from another search or text stop too.
+        buscar_itens, assinatura = executar_experimento.itens_de_ensaio, \
+            executar_experimento.ASSINATURA_DOS_ITENS_DE_ENSAIO
+        executar_experimento.itens_da_pergunta(pasta, id_, pergunta["pergunta"], buscar_itens, assinatura)
+        for descricao, enunciado, outra in [("outra busca", pergunta["pergunta"], {**assinatura, "k": assinatura["k"] + 1}),
+                                            ("outro enunciado", pergunta["pergunta"] + " (revisada)", assinatura)]:
+            try:
+                executar_experimento.itens_da_pergunta(pasta, id_, enunciado, buscar_itens, outra)
+                erros.append(f"itens da ontologia: o cache de {descricao} foi aceito")
+            except SystemExit:
+                pass
     return erros
 
 
@@ -388,6 +402,11 @@ def checar_resultado(resultado: dict, hipoteses: dict, tipos: dict[str, str]) ->
         erros.append(f"resultado: gerado com o numpy {resultado['metadata'].get('numpy')}, este ambiente tem "
                      f"{np.__version__}; a simulação da H5 só se refaz no mesmo numpy (Python fixado no workflow)")
     for nome, m in resultado["modelos"].items():
+        # PT: cada execução roda na versão do Ollama do seu registro (#120).
+        # EN: each run uses its registered Ollama version.
+        if execucao in EXECUCOES and (m.get("ambiente") or {}).get("ollama") != EXECUCOES[execucao].ollama:
+            erros.append(f"resultado: {nome} rodou no Ollama {(m.get('ambiente') or {}).get('ollama')} na execução "
+                         f"{execucao}, registrado {EXECUCOES[execucao].ollama}")
         for c, por in m["execucoes"].items():
             # PT: na execução 1, tudo julgado; na 2, pendente só em
             #     pergunta já decidida pela maioria (ADR 0032).
@@ -489,6 +508,22 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
             modelo["certas"]["B"][pergunta] = 5 - modelo["certas"]["B"][pergunta]
         return copia
 
+    def pendente_que_decide():
+        # PT: na execução 2, que julga só o que decide, uma pergunta com duas
+        #     certas e um errado que vira pendente fica sem decisão; as
+        #     certas não mudam, e só a regra do pendente pode reprovar (#120).
+        # EN: in run 2, a question with two certo and one errado turned
+        #     pendente is undecided; certo counts stay, so only the pending
+        #     rule can reject it.
+        copia = copy.deepcopy(d)
+        for m in copia.resultados[2]["modelos"].values():
+            for por in m["execucoes"].values():
+                for s in por.values():
+                    if s.count("certo") == 2 and "errado" in s:
+                        s[s.index("errado")] = "pendente"
+                        return copia
+        raise SystemExit("ERRO a execução 2 publicada não tem pergunta com duas certas e um errado")
+
     def sem_h5(*args, **kwargs):
         analise = _analisar_original(*args, **kwargs)
         analise["hipoteses"].pop("H5")
@@ -528,9 +563,16 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
         ("cache de trechos sem conferir o índice", lambda: d, mock.patch.object(
             executar_experimento, "trechos_da_pergunta",
             lambda pasta, id_, pergunta, buscar, indice: buscar(pergunta)), "cache de outro índice"),
+        ("cache de itens da ontologia sem conferir a busca", lambda: d, mock.patch.object(
+            executar_experimento, "itens_da_pergunta",
+            lambda pasta, id_, pergunta, buscar_itens, assinatura: [i["id"] for i in buscar_itens(pergunta)]),
+         "cache de outra busca"),
     ]
     if d.resultados:
         negativos.append(("resultado adulterado numa contagem", resultado_adulterado, None, "resultado"))
+    if 2 in d.resultados:
+        negativos.append(("pendente em pergunta não decidida na execução 2", pendente_que_decide, None,
+                          "sem julgamento que decide"))
     falhas = []
     for descricao, montar, remendo, trecho in negativos:
         with remendo or contextlib.nullcontext():

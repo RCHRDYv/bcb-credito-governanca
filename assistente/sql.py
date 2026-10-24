@@ -58,6 +58,13 @@ REFERENCIA_PROIBIDA = {"TABLE_FUNCTION", "SHOW_REF", "COLUMN_DATA", "DELIM_GET"}
 # EN: one query at a time on the connection; the interface may call from
 #     another thread.
 _UMA_POR_VEZ = threading.Lock()
+# PT: o tempo mínimo que precisa sobrar para o count(*) do total, em
+#     segundos (#120). Com menos, o relógio novo dispararia antes de a
+#     consulta começar, a interrupção se perderia e o count(*) rodaria sem
+#     limite; vale como tempo esgotado.
+# EN: minimum time left for the total's count(*); with less, the new timer
+#     could fire before the query starts, so it counts as a timeout.
+MARGEM_DO_TOTAL = 0.05
 
 
 class ErroDeSQL(Exception):
@@ -246,6 +253,23 @@ def executar(banco: duckdb.DuckDBPyConnection, sql: str, limite_de_linhas: int, 
             total = len(linhas)
             if total > limite_de_linhas:
                 linhas = linhas[:limite_de_linhas]
+                # PT: o relógio da consulta para aqui (#120). Disparado na
+                #     busca ou entre os dois comandos, a interrupção se perde
+                #     com a conexão parada, e o count(*) rodaria sem limite:
+                #     foi o que travou a Q29 da execução 2. Esgotado o tempo,
+                #     o total não é contado; senão, o count(*) ganha um
+                #     relógio novo, só com o tempo que resta.
+                # EN: the query's timer stops here. Fired during the fetch or
+                #     between both commands, the interrupt is lost on an idle
+                #     connection and count(*) would run unbounded. Out of time,
+                #     the total is not counted; otherwise count(*) gets a new
+                #     timer with the time left.
+                relogio.cancel()
+                resta = limite_de_tempo - (time.perf_counter() - inicio)
+                if estourou.is_set() or resta < MARGEM_DO_TOTAL:
+                    raise ErroDeSQL("tempo", f"passou de {limite_de_tempo:g} s")
+                relogio = threading.Timer(resta, interromper)
+                relogio.start()
                 # PT: quebra de linha antes do parêntese: um comentário -- no
                 #     fim do comando não engole o fechamento.
                 # EN: newline before the parenthesis, so a trailing -- comment

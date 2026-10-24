@@ -13,8 +13,16 @@ PT: Valida as variações do instrumento (#118, ADR 0032) sem modelo, com o
        resumo diz isso.
     3. **Mesmo texto nas quatro condições.** Em cada variação, a mensagem do
        usuário é igual em A, B, C e D, e a mensagem de sistema de D é a de B
-       mais o bloco de trechos. As junções só aparecem na V4, nas quatro.
-    4. **Fluxo de cada variação.** Chaves fora da ordem são erro de formato
+       mais o bloco de trechos. As junções aparecem da V4 em diante, nas
+       quatro.
+    4. **Ontologia recuperada** (#120). Da V5 em diante, B e D trazem
+       exatamente os itens recebidos, e A e C nenhum; antes da V5, B e D
+       trazem a ontologia inteira.
+    5. **Esquema descrito** (#120). O assistente/esquema_descrito.yml tem
+       uma frase para cada tabela e cada coluna do esquema estrela, e nada
+       além. Na V6, cada coluna aparece com o tipo e a frase nas quatro
+       condições, e o esquema cru sai; antes da V6, nenhuma frase aparece.
+    6. **Fluxo de cada variação.** Chaves fora da ordem são erro de formato
        (da V0 em diante; a V−1 aceita a ordem alfabética); com SQL não vazio
        o SQL roda mesmo com o booleano de abstenção; sem SQL e sem abstenção
        é erro de formato; na V3, erro de SQL e resultado vazio pedem uma
@@ -25,8 +33,10 @@ PT: Valida as variações do instrumento (#118, ADR 0032) sem modelo, com o
     reprova cada uma.
 
 EN: Validates the instrument variants offline: menu order, V−1 reproducing
-    run 1's prompts, the same text across conditions, and each variant's
-    flow (key order, SQL precedence, retry semantics, five final fields).
+    run 1's prompts, the same text across conditions, retrieved ontology
+    items only in B and D from V5, the described schema in all four
+    conditions in V6 with full coverage, and each variant's flow (key
+    order, SQL precedence, retry semantics, five final fields).
 
 Uso / Usage:
     uv run python -m scripts.validar_variacoes
@@ -40,19 +50,26 @@ import dataclasses
 import gzip
 import hashlib
 import json
+import re
 import sys
 from dataclasses import replace
 from unittest import mock
 
-from assistente import contexto, parametros, responder as modulo_responder, variacoes
+from assistente import contexto, ontologia, parametros, responder as modulo_responder, variacoes
 from assistente.cliente import ClienteFalso
 from assistente.parametros import CONDICOES
 from assistente.responder import responder
 from assistente.sql import banco_vazio
 from scripts.esquema_estrela_duckdb import esquema_esperado
+from scripts.validar_gabarito import tipo_no_duckdb
 from scripts.validar_registro import RAIZ
 
-CARDAPIO = ["V-1", "V0", "V1", "V2", "V3", "V4"]
+CARDAPIO = ["V-1", "V0", "V1", "V2", "V3", "V4", "V5", "V6"]
+# PT: os itens que a validação passa como recuperados, da V5 em diante.
+# EN: the items the validation passes as retrieved, from V5 on.
+ITENS = ["metricas.carteira_ativa", "dimensoes.dim_uf", "dimensoes.dim_porte", "modalidades.mod_02",
+         "fontes_externas.selic_meta"]
+ID_NO_BLOCO = re.compile(r"^- id: (\S+)$", re.MULTILINE)
 CAMPOS_REGISTRADOS = {"interpretacao", "sql", "valores", "ressalva", "abstencao"}
 EXECUCAO_1 = [RAIZ / "data" / "experimento" / "execucoes",
               RAIZ / "evaluation" / "experimento" / "execucao-1" / "execucoes.jsonl.gz"]
@@ -117,9 +134,16 @@ def checar_v_menos_1(registros: list[dict] | None) -> tuple[list[str], int]:
 
 def _mensagens_da_primeira(nome: str, condicao: str) -> list[dict]:
     cliente = ClienteFalso(["{}"])
+    recupera = variacoes.VARIACOES[nome].ontologia_recuperada and "ontologia" in CONDICOES[condicao]
     responder(PERGUNTA, condicao, 1, cliente=cliente, banco=banco_vazio(), p=_p(), modelo=parametros.modelo_de_prompt(),
-              trechos=TRECHOS if "trechos" in CONDICOES[condicao] else None, variacao=nome)
+              trechos=TRECHOS if "trechos" in CONDICOES[condicao] else None, variacao=nome,
+              itens_da_ontologia=ITENS if recupera else None)
     return cliente.chamadas[0]["mensagens"]
+
+
+def _sistemas() -> dict[str, dict[str, str]]:
+    """PT: a mensagem de sistema por variação e condição / EN: system messages"""
+    return {nome: {c: _mensagens_da_primeira(nome, c)[0]["content"] for c in CONDICOES} for nome in variacoes.ORDEM}
 
 
 def checar_condicoes() -> list[str]:
@@ -135,12 +159,88 @@ def checar_condicoes() -> list[str]:
             erros.append(f"{nome}: o sistema de D não é o de B mais os trechos")
         com_juncoes = {c: juncoes in m[0]["content"] for c, m in por_condicao.items()}
         if set(com_juncoes.values()) != {variacoes.VARIACOES[nome].juncoes}:
-            erros.append(f"{nome}: junções {com_juncoes}, esperado só na V4 e nas quatro condições")
+            erros.append(f"{nome}: junções {com_juncoes}, esperado da V4 em diante e nas quatro condições")
     return erros
 
 
 # -----------------------------------------------------------------------------
-# PT: 4. Fluxo / EN: flow
+# PT: 4. Ontologia recuperada / EN: retrieved ontology
+# -----------------------------------------------------------------------------
+
+def checar_ontologia(sistemas: dict[str, dict[str, str]]) -> list[str]:
+    """
+    PT: Os ids da ontologia em cada condição: da V5 em diante, os itens
+        recebidos em B e D; antes, a ontologia inteira; em A e C, nenhum.
+    EN: Ontology ids per condition: the given items in B and D from V5,
+        the whole ontology before, none in A and C.
+    """
+    erros = []
+    todos = [id_ for id_, _, _ in ontologia.itens()]
+    for nome, por_condicao in sistemas.items():
+        esperados = sorted(ITENS) if variacoes.VARIACOES[nome].ontologia_recuperada else sorted(todos)
+        for c, sistema in por_condicao.items():
+            achados = sorted(ID_NO_BLOCO.findall(sistema))
+            alvo = esperados if "ontologia" in CONDICOES[c] else []
+            if achados != alvo:
+                erros.append(f"{nome}: itens da ontologia em {c} são {len(achados)} ({achados[:3]}...), esperado "
+                             f"{len(alvo)}")
+    return erros
+
+
+# -----------------------------------------------------------------------------
+# PT: 5. Esquema descrito / EN: described schema
+# -----------------------------------------------------------------------------
+
+def checar_descricoes(descricoes: dict[str, dict]) -> list[str]:
+    """
+    PT: Uma frase para cada tabela e coluna do esquema estrela, e nada além.
+        Uma frase que aponta para a ontologia (copiada do dbt) também reprova.
+    EN: One sentence per star schema table and column, and nothing else.
+    """
+    erros = []
+    esquema = esquema_esperado()
+    if sorted(descricoes) != sorted(esquema):
+        erros.append(f"descrições: tabelas {sorted(set(descricoes) ^ set(esquema))} a mais ou a menos")
+    for tabela, colunas in esquema.items():
+        d = descricoes.get(tabela) or {}
+        if not (d.get("descricao") or "").strip():
+            erros.append(f"descrições: {tabela} sem a frase da tabela")
+        nomes = [nome for nome, _ in colunas]
+        frases = d.get("colunas") or {}
+        if diferenca := sorted(set(frases) ^ set(nomes)):
+            erros.append(f"descrições: colunas de {tabela} a mais ou a menos: {diferenca}")
+        for frase in [d.get("descricao") or "", *map(str, frases.values())]:
+            if not frase.strip() or "ontology/" in frase or "Ver " in frase:
+                erros.append(f"descrições: frase vazia ou que aponta para a ontologia em {tabela}: '{frase}'")
+    return erros
+
+
+def checar_esquema_descrito(sistemas: dict[str, dict[str, str]]) -> list[str]:
+    """
+    PT: Na V6, cada coluna com o tipo e a frase, nas quatro condições, e sem
+        o esquema cru; antes da V6, nenhuma frase.
+    EN: In V6, every column with type and sentence in all four conditions
+        and no raw schema; before V6, no sentence.
+    """
+    erros = []
+    descricoes = variacoes.descricoes()
+    linhas = [f"- {nome} {tipo_no_duckdb(tipo)}: {descricoes[tabela]['colunas'][nome]}"
+              for tabela, colunas in esquema_esperado().items() for nome, tipo in colunas]
+    cru = contexto.texto_do_esquema()
+    for nome, por_condicao in sistemas.items():
+        descrito = variacoes.VARIACOES[nome].esquema_descrito
+        for c, sistema in por_condicao.items():
+            faltam = [linha for linha in linhas if linha not in sistema]
+            if descrito and (faltam or cru in sistema):
+                erros.append(f"{nome}: esquema descrito incompleto em {c} ({len(faltam)} colunas sem a frase"
+                             f"{', e com o esquema cru' if cru in sistema else ''})")
+            elif not descrito and len(faltam) != len(linhas):
+                erros.append(f"{nome}: esquema descrito em {c} antes da V6")
+    return erros
+
+
+# -----------------------------------------------------------------------------
+# PT: 6. Fluxo / EN: flow
 # -----------------------------------------------------------------------------
 
 def _p():
@@ -242,7 +342,15 @@ def checar_fluxo() -> list[str]:
 
 def validar(registros: list[dict] | None) -> tuple[list[str], int]:
     v_menos_1, conferidos = checar_v_menos_1(registros)
-    return checar_cardapio() + v_menos_1 + checar_condicoes() + checar_fluxo(), conferidos
+    erros = checar_cardapio() + v_menos_1
+    if descricoes := checar_descricoes(variacoes.descricoes()):
+        # PT: sem a cobertura das frases, a montagem da V6 quebraria antes
+        #     de dizer o motivo.
+        # EN: without full coverage, V6 assembly would break first.
+        return erros + descricoes, conferidos
+    sistemas = _sistemas()
+    return (erros + checar_condicoes() + checar_ontologia(sistemas) + checar_esquema_descrito(sistemas)
+            + checar_fluxo()), conferidos
 
 
 def _leitura_tolerante(geracao, campos: list[str]) -> dict:
@@ -257,6 +365,33 @@ def _leitura_tolerante(geracao, campos: list[str]) -> dict:
 
 
 _LER_JSON_PREFIXADO = modulo_responder.ler_json_prefixado
+_MENSAGENS_DA_PRIMEIRA = modulo_responder.mensagens_da_primeira
+_BLOCO_DA_ONTOLOGIA = ontologia.bloco
+_DESCRICOES = variacoes.descricoes
+
+
+def _descrito_so_em_a(v, condicao, pergunta, modelo, trechos, itens_da_ontologia=None):
+    """PT: o esquema cru volta em B, C e D / EN: raw schema back in B, C and D"""
+    mensagens = _MENSAGENS_DA_PRIMEIRA(v, condicao, pergunta, modelo, trechos, itens_da_ontologia)
+    if v.esquema_descrito and condicao != "A":
+        descrito = variacoes.esquema_descrito(esquema_esperado())
+        mensagens[0]["content"] = mensagens[0]["content"].replace(descrito, contexto.texto_do_esquema())
+    return mensagens
+
+
+def _itens_tambem_em_a(v, condicao, pergunta, modelo, trechos, itens_da_ontologia=None):
+    """PT: A ganha os itens recuperados / EN: A gets the retrieved items too"""
+    mensagens = _MENSAGENS_DA_PRIMEIRA(v, condicao, pergunta, modelo, trechos, itens_da_ontologia)
+    if v.ontologia_recuperada and condicao == "A":
+        mensagens[0]["content"] += "\n\n" + ontologia.bloco(ids=ITENS)
+    return mensagens
+
+
+def _descricoes_com_coluna_a_mais():
+    """PT: uma frase para uma coluna que não existe / EN: an extra column"""
+    copia = json.loads(json.dumps(_DESCRICOES()))
+    copia["dim_uf"]["colunas"]["coluna_que_nao_existe"] = "Frase de uma coluna que não existe."
+    return copia
 
 
 def _leitura_que_aceita_array(geracao, campos: list[str]) -> dict:
@@ -282,6 +417,16 @@ def autoteste(registros: list[dict] | None) -> list[str]:
         ("critério que muda com a condição", mock.patch.object(
             variacoes, "mensagem_da_primeira",
             side_effect=lambda v, p, _n=[0]: (_n.__setitem__(0, _n[0] + 1), f"{p} {_n[0]}")[1]), "muda entre"),
+        ("ontologia inteira em B e D na V5", mock.patch.object(
+            ontologia, "bloco", lambda pasta=ontologia.ONTOLOGIA, ids=None: _BLOCO_DA_ONTOLOGIA(pasta)),
+         "itens da ontologia em B"),
+        ("itens recuperados também em A", mock.patch.object(modulo_responder, "mensagens_da_primeira",
+                                                             _itens_tambem_em_a), "itens da ontologia em A"),
+        ("esquema descrito só em A", mock.patch.object(modulo_responder, "mensagens_da_primeira",
+                                                        _descrito_so_em_a), "esquema descrito incompleto em B"),
+        ("frase para uma coluna que não existe", mock.patch.object(variacoes, "descricoes",
+                                                                    _descricoes_com_coluna_a_mais),
+         "colunas de dim_uf a mais ou a menos"),
     ]
     falhas = []
     for descricao, remendo, trecho in negativos:
@@ -310,7 +455,8 @@ def main() -> None:
     else:
         falhas, conferidos = validar(registros)
         fonte = "sem os registros da execução 1, pulada" if registros is None else f"{conferidos} primeiras chamadas"
-        print(f"  cardápio {variacoes.ORDEM}; V-1 contra a execução 1: {fonte}; condições e fluxo conferidos")
+        print(f"  cardápio {variacoes.ORDEM}; V-1 contra a execução 1: {fonte}; condições, ontologia recuperada, "
+              "esquema descrito e fluxo conferidos")
     for falha in falhas:
         print(f"ERRO {falha}")
     if falhas:

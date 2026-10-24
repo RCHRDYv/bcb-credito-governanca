@@ -105,12 +105,17 @@ def item_do_bloco(id_: str, item: dict) -> dict:
     return {"id": id_, **corpo}
 
 
-def bloco(pasta: Path = ONTOLOGIA) -> str:
+def bloco(pasta: Path = ONTOLOGIA, ids: list[str] | None = None) -> str:
     """
-    PT: O bloco de contexto da ontologia, em YAML, um item por entrada.
-    EN: The ontology context block, in YAML, one entry per item.
+    PT: O bloco de contexto da ontologia, em YAML, um item por entrada. Com
+        ids (a ontologia recuperada da V5 em diante, #120), só esses itens,
+        na ordem dos arquivos; sem eles, a ontologia inteira, como na V−1.
+    EN: The ontology context block, in YAML, one entry per item; with ids,
+        only those items, in file order.
     """
-    entradas = [item_do_bloco(id_, item) for id_, _, item in itens(pasta)]
+    if ids is not None and (desconhecidos := set(ids) - {id_ for id_, _, _ in itens(pasta)}):
+        raise ValueError(f"itens fora da ontologia: {sorted(desconhecidos)}")
+    entradas = [item_do_bloco(id_, item) for id_, _, item in itens(pasta) if ids is None or id_ in ids]
     return yaml.safe_dump(entradas, allow_unicode=True, sort_keys=False, width=10_000).strip()
 
 

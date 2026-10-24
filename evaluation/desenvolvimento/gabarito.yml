@@ -17,7 +17,6 @@
 # =============================================================================
 
 metadata:
-  versao: 1
   conjunto_de_perguntas: "evaluation/desenvolvimento/perguntas.yml"
   leituras_aceitas_decididas_em: "2026-10-15"
 
