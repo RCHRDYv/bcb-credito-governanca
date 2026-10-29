@@ -5,7 +5,9 @@
 #     mensagens do usuário (o formato da resposta, o critério e os exemplos)
 #     e, na V4, acrescentam as chaves de junção ao bloco do esquema. A
 #     mensagem de sistema, com as instruções e os blocos de contexto, é a
-#     mesma da V−1 nas quatro condições.
+#     mesma da V−1 nas quatro condições até a V4. A V5 troca a ontologia
+#     inteira de B e D pelos itens recuperados da pergunta, e a V6 troca o
+#     esquema cru pelo esquema descrito, igual nas quatro condições (#120).
 #
 #     Os nomes dos campos levam prefixo de letra porque a gramática do Ollama
 #     gera as chaves em ordem alfabética: sem o prefixo, "abstencao" vinha
@@ -91,3 +93,12 @@ problema_de_vazio: "O SQL rodou e não trouxe nenhuma linha, ou só valores nulo
 bloco_juncoes: |-
   Colunas que ligam as tabelas, para as junções:
   {juncoes}
+
+# PT: o esquema descrito da V6 (#120), no lugar do esquema cru do
+#     bloco_esquema, igual nas quatro condições. As frases saem de
+#     assistente/esquema_descrito.yml.
+# EN: V6's described schema, replacing the raw one in all four conditions.
+esquema_descrito: |-
+  Cada tabela traz o que uma linha dela representa, e cada coluna, o tipo e o que ela guarda.
+
+  {esquema}

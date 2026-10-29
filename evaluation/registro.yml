@@ -2438,3 +2438,39 @@ erratas:
     execucoes.jsonl.gz, ao lado, e o scripts.validar_experimento os
     recorrige e exige este mesmo resultado. Decidi em 2026-10-18.
   sha256: f7e07f943692d62ddee5012710ad2d9a59f6d62830dd65caa7a6455249dca41a
+- data: '2026-10-24'
+  arquivo: assistente/parametros.yml
+  motivo: >-
+    Correção do instrumento, da #120 (ADR 0033, decidi em 2026-10-23). A
+    execução 3, a confirmatória, roda na variação V6: a ontologia entra
+    em B e D só com os 5 itens recuperados da pergunta, e o esquema vai
+    descrito nas quatro condições. Os modelos e os parâmetros não mudam.
+  sha256: 925a05bf248ef3e6aeb83bc7859ec02074d25d06a29e607beece854de16830a1
+- data: '2026-10-24'
+  arquivo: evaluation/hipoteses.yml
+  motivo: >-
+    Correção do instrumento, da #120 (ADR 0033, decidi em 2026-10-23),
+    antes da execução 3. A condição A passa a receber o esquema descrito,
+    só com a forma, e B, o esquema descrito com os itens da ontologia
+    recuperados da pergunta; entra o bloco ontologia_recuperada; o fluxo
+    passa a ser o da V6; a variância vale da execução 2 em diante; o
+    fixado antes da execução ganha o número de itens, as frases do
+    esquema e a versão do Ollama; e o limite declarado conta o piso da
+    execução 2, a V6 desenhada depois dele e a troca do Ollama da 0.40.4
+    para a 0.40.9. O limite da execução 2 fica guardado em
+    evaluation/experimento/execucao-2/limite_declarado.txt. As hipóteses,
+    os testes, a margem e o alfa não mudam.
+  sha256: 1d5bf6999e5ce17d76e255a277a6f12e6c4da11c2a8cc2b819749ae93343713b
+- data: '2026-10-28'
+  arquivo: evaluation/experimento/execucao-3/resultado.json
+  motivo: >-
+    Arquivo novo, da #120 (ADR 0033). O resultado da execução 3, a
+    confirmatória, com a variação V6 do instrumento e o Ollama 0.40.9,
+    no commit 101173c: as contagens por pergunta, condição e modelo
+    (mínimas nas perguntas decididas, porque a correção às cegas julgou
+    só o que decide a maioria), a análise das hipóteses e os
+    julgamentos. Nenhuma hipótese foi sustentada nos dois modelos. Os
+    registros completos ficam em execucoes.jsonl.gz, ao lado, e o
+    scripts.validar_experimento os recorrige e exige este mesmo
+    resultado. Decidi em 2026-10-28.
+  sha256: 7c3856b768f01578e4ad45dfd6c2a693748809bda056aed68cf3a929446856fb

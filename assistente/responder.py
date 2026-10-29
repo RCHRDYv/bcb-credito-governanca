@@ -182,8 +182,9 @@ def celulas_de_texto(resultado: dict) -> set[str]:
 def _chamada(mensagens: list[dict], geracao: Geracao, p: Parametros) -> dict:
     """
     PT: O registro de uma chamada. A mensagem de sistema, que leva a
-        ontologia inteira em B e D, entra pelo sha256 e pelo tamanho: ela se
-        refaz da condição, dos trechos e dos arquivos versionados.
+        ontologia em B e D, entra pelo sha256 e pelo tamanho: ela se refaz
+        da condição, dos trechos, dos itens recuperados (da V5 em diante) e
+        dos arquivos versionados.
     EN: One call's record; the system message goes in by sha256 and size.
     """
     sistema = mensagens[0]["content"]
@@ -259,24 +260,56 @@ def _fluxo_da_v_menos_1(registro: dict, estado: dict, pergunta: str, condicao: s
 
 
 def mensagens_da_primeira(v: variacoes.Variacao, condicao: str, pergunta: str, modelo: dict[str, str],
-                          trechos) -> list[dict]:
+                          trechos, itens_da_ontologia: list[str] | None = None) -> list[dict]:
     """
     PT: As mensagens da primeira chamada de uma variação: o sistema da
-        condição (com as junções no bloco do esquema, na V4) e a mensagem do
-        usuário da variação. O dimensionamento conta estas mesmas mensagens.
-    EN: A variant's first call messages; the sizing counts these same ones.
+        condição e a mensagem do usuário da variação. No sistema, a V4
+        acrescenta as junções ao bloco do esquema; a V5 troca a ontologia
+        inteira de B e D pelos itens recuperados; e a V6 troca o esquema cru
+        pelo descrito, nas quatro condições (#120). Cada ligação age sozinha,
+        e um bloco que não aparece na mensagem para a execução. O
+        dimensionamento conta estas mesmas mensagens.
+    EN: A variant's first call messages: V4 adds joins to the schema block,
+        V5 swaps B and D's full ontology for the retrieved items, V6 the raw
+        schema for the described one. The sizing counts these same ones.
     """
     mensagens = contexto.primeira_chamada(condicao, pergunta, modelo, trechos)
-    if v.juncoes:
-        bloco = contexto.preencher(modelo["bloco_esquema"], esquema=contexto.texto_do_esquema())
-        juncoes = variacoes.juncoes(contexto.esquema_esperado())
-        mensagens[0]["content"] = mensagens[0]["content"].replace(bloco, f"{bloco}\n\n{juncoes}", 1)
+    sistema = mensagens[0]["content"]
+    if v.ontologia_recuperada and "ontologia" in CONDICOES[condicao]:
+        if itens_da_ontologia is None:
+            raise ValueError(f"a condição {condicao} da {v.nome} precisa dos itens recuperados da ontologia")
+        inteira = contexto.preencher(modelo["bloco_ontologia"], ontologia=ontologia.bloco())
+        recuperada = contexto.preencher(modelo["bloco_ontologia"], ontologia=ontologia.bloco(ids=itens_da_ontologia))
+        sistema = _trocar_bloco(sistema, inteira, recuperada, f"ontologia de {condicao} na {v.nome}")
+    if v.juncoes or v.esquema_descrito:
+        cru = contexto.preencher(modelo["bloco_esquema"], esquema=contexto.texto_do_esquema())
+        esquema = (variacoes.esquema_descrito(contexto.esquema_esperado()) if v.esquema_descrito
+                   else contexto.texto_do_esquema())
+        novo = contexto.preencher(modelo["bloco_esquema"], esquema=esquema)
+        if v.juncoes:
+            novo += "\n\n" + variacoes.juncoes(contexto.esquema_esperado())
+        sistema = _trocar_bloco(sistema, cru, novo, f"esquema de {condicao} na {v.nome}")
+    mensagens[0]["content"] = sistema
     mensagens[1]["content"] = variacoes.mensagem_da_primeira(v, pergunta)
     return mensagens
 
 
+def _trocar_bloco(sistema: str, antes: str, depois: str, onde: str) -> str:
+    """
+    PT: Troca um bloco da mensagem de sistema, que tem de aparecer uma vez
+        só. Um bloco que não aparece não pode virar uma troca que não faz
+        nada: a execução levaria o instrumento antigo sem erro (#120).
+    EN: Swaps one system message block, which must appear exactly once; a
+        missing block must not become a silent no-op.
+    """
+    if (vezes := sistema.count(antes)) != 1:
+        raise ValueError(f"o bloco a trocar ({onde}) aparece {vezes} vezes na mensagem de sistema, e não uma")
+    return sistema.replace(antes, depois, 1)
+
+
 def _fluxo_da_variacao(v: variacoes.Variacao, registro: dict, estado: dict, pergunta: str, condicao: str,
-                       seed: int, cliente, banco, p: Parametros, modelo: dict[str, str], trechos) -> None:
+                       seed: int, cliente, banco, p: Parametros, modelo: dict[str, str], trechos,
+                       itens_da_ontologia: list[str] | None = None) -> None:
     """
     PT: O fluxo de uma variação da V0 em diante (#118, ADR 0032):
 
@@ -294,7 +327,7 @@ def _fluxo_da_variacao(v: variacoes.Variacao, registro: dict, estado: dict, perg
         one retry in V3/V4 on SQL error, guard or empty result (the new
         answer replaces the old), then the second call on the valid attempt.
     """
-    mensagens = mensagens_da_primeira(v, condicao, pergunta, modelo, trechos)
+    mensagens = mensagens_da_primeira(v, condicao, pergunta, modelo, trechos, itens_da_ontologia)
     campos = variacoes.campos_da_primeira(v)
     esquema = variacoes.esquema_json(campos)
     geracao = _gerar(cliente, mensagens, esquema, seed, p, registro)
@@ -359,16 +392,20 @@ def _fluxo_da_variacao(v: variacoes.Variacao, registro: dict, estado: dict, perg
 
 
 def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Parametros,
-              modelo: dict[str, str], trechos: list[dict] | None = None, variacao: str = "V-1") -> dict:
+              modelo: dict[str, str], trechos: list[dict] | None = None, variacao: str = "V-1",
+              itens_da_ontologia: list[str] | None = None) -> dict:
     """
     PT: Uma execução completa. Devolve o registro: parâmetros, trechos,
         chamadas, resultado do SQL, resposta nos cinco campos, proveniência e
         erro, quando houver. Em C e D, os trechos vêm de quem chama, de uma
-        busca só antes da geração. A variacao escolhe o instrumento
-        (assistente/variacoes.py); a V−1, o padrão, é o da execução 1, e o
-        registro dela não muda.
+        busca só antes da geração; da V5 em diante, os itens recuperados da
+        ontologia de B e D também (#120), e os ids vão para o registro, para
+        a mensagem de sistema se refazer dos arquivos. A variacao escolhe o
+        instrumento (assistente/variacoes.py); a V−1, o padrão, é o da
+        execução 1, e o registro dela não muda.
     EN: One full run; returns its record. In C and D the caller passes the
-        excerpts, from a single search before generation. variacao picks
+        excerpts, from a single search before generation; from V5 on, B and
+        D's retrieved ontology items too, recorded by id. variacao picks
         the instrument; V−1, the default, is run 1's and its record is
         unchanged.
     """
@@ -380,6 +417,9 @@ def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Par
     usa_trechos = "trechos" in CONDICOES[condicao]
     if usa_trechos and trechos is None:
         raise ValueError(f"a condição {condicao} precisa dos trechos da busca")
+    usa_itens = v.ontologia_recuperada and "ontologia" in CONDICOES[condicao]
+    if usa_itens and itens_da_ontologia is None:
+        raise ValueError(f"a condição {condicao} da {v.nome} precisa dos itens recuperados da ontologia")
 
     registro = {
         "pergunta": pergunta,
@@ -397,9 +437,12 @@ def responder(pergunta: str, condicao: str, seed: int, *, cliente, banco, p: Par
     if v.nome != "V-1":
         registro["variacao"] = v.nome
         registro["novas_tentativas"] = 0
+    if v.ontologia_recuperada:
+        registro["itens_da_ontologia"] = list(itens_da_ontologia) if usa_itens else []
     inicio = time.perf_counter()
     estado = {"etapa": "primeira_chamada"}
-    fluxo = _fluxo_da_v_menos_1 if v.nome == "V-1" else partial(_fluxo_da_variacao, v)
+    fluxo = (_fluxo_da_v_menos_1 if v.nome == "V-1"
+             else partial(_fluxo_da_variacao, v, itens_da_ontologia=itens_da_ontologia if usa_itens else None))
     try:
         fluxo(registro, estado, pergunta, condicao, seed, cliente, banco, p, modelo,
               registro["trechos"] if usa_trechos else None)

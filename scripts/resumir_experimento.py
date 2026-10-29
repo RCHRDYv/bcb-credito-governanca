@@ -45,7 +45,6 @@ from assistente.parametros import CONDICOES
 from correcao.acerto import (
     EXECUCOES_POR_PERGUNTA,
     PADRAO_DO_EXPERIMENTO,
-    PASTA_DO_EXPERIMENTO,
     a_julgar,
     corrigir_todas,
     execucoes_vigentes,
@@ -55,6 +54,7 @@ from correcao.acerto import (
 from correcao.corretor import carregar_gabarito
 from experimento.contagem import contar
 from experimento.estatistica import MAIORIA, MARGEM_DE_NAO_INFERIORIDADE, analisar
+from experimento.execucoes import EXECUCOES, titulo
 from scripts.executar_experimento import REPETICOES, SEED_DA_ORDEM
 from scripts.resumir_selecao import gravar_execucoes as gravar_jsonl_gz
 from scripts.validar_perguntas import VIGENTE, perguntas
@@ -62,14 +62,10 @@ from scripts.validar_registro import HIPOTESES, RAIZ
 
 PASTA_DO_RESULTADO = RAIZ / "evaluation" / "experimento"
 PAGINA = RAIZ / "docs" / "experimento.md"
-EXECUCOES_DO_EXPERIMENTO = (1, 2)
-# PT: onde cada execução foi rodada (data/, fora do git) e o que ela diz de
-#     si na página. A execução 1 falhou no controle de qualidade do
-#     instrumento (#118, ADR 0032) e sai como foi registrada.
-# EN: where each run's records live and how the page labels it.
-PASTA_LOCAL = {1: PASTA_DO_EXPERIMENTO, 2: PASTA_DO_EXPERIMENTO / "execucao-2"}
-TITULO = {1: "Execução 1: resultado registrado, com instrumento falho",
-          2: "Execução 2: resultado confirmatório"}
+# PT: as execuções, a pasta local e o título de cada uma estão no
+#     experimento/execucoes.py (#120).
+# EN: runs, local folders and titles live in experimento/execucoes.py.
+EXECUCOES_DO_EXPERIMENTO = tuple(EXECUCOES)
 
 
 def pasta_publicada(execucao: int) -> Path:
@@ -86,15 +82,19 @@ def execucoes_de(execucao: int) -> Path:
 
 def limite_declarado(execucao: int, hipoteses: dict) -> str:
     """
-    PT: O limite declarado de uma execução: o da execução 1 fica guardado no
-        texto em que foi registrado, e o da 2 vem do hipoteses.yml vigente.
-    EN: A run's declared limit: run 1 keeps its registered text.
+    PT: O limite declarado de uma execução: o de uma execução que uma errata
+        posterior do hipoteses.yml mudou fica guardado no texto em que foi
+        registrado (a execução 1 sempre); o da mais nova vem do
+        hipoteses.yml vigente.
+    EN: A run's declared limit: a run whose text a later errata changed
+        keeps its registered text (run 1 always); the newest uses the
+        current hipoteses.yml.
     """
     guardado = pasta_publicada(execucao) / "limite_declarado.txt"
-    if execucao == 1:
-        if not guardado.exists():
-            raise SystemExit(f"ERRO falta {guardado.relative_to(RAIZ).as_posix()}, o limite registrado da execução 1")
+    if guardado.exists():
         texto = guardado.read_text(encoding="utf-8")
+    elif execucao == 1:
+        raise SystemExit(f"ERRO falta {guardado.relative_to(RAIZ).as_posix()}, o limite registrado da execução 1")
     else:
         texto = hipoteses["estatistica"]["limite_declarado"]
     return " ".join(texto.split())
@@ -212,6 +212,16 @@ def ler_local(pasta: Path) -> tuple[list[dict], dict, dict, list[dict]]:
     return ler_execucoes(pasta, PADRAO_DO_EXPERIMENTO), ler_julgamentos(pasta), ambientes, repeticoes
 
 
+def abstencoes_publicadas(execucao: int) -> Counter:
+    """
+    PT: As execuções com abstenção, por modelo, nos registros publicados.
+    EN: Runs with an abstention per model, from the published records.
+    """
+    with gzip.open(execucoes_de(execucao), "rt", encoding="utf-8") as arquivo:
+        registros = [json.loads(linha) for linha in arquivo]
+    return Counter(r["candidato"] for r in registros if (r.get("resposta") or {}).get("abstencao"))
+
+
 def gravar_execucoes(execucoes: list[dict], execucao: int = 1) -> None:
     """
     PT: Os registros num JSONL comprimido e determinístico, pelo mesmo
@@ -269,23 +279,40 @@ def linhas_das_hipoteses(analise: dict, hipoteses: dict) -> list[str]:
     return linhas
 
 
-def secao_da_execucao(resultado: dict, hipoteses: dict) -> list[str]:
+def _modelo_de_prefixo(modelos: dict, prefixo: str) -> str:
+    """
+    PT: O modelo da execução cujo nome curto começa pelo prefixo; sem ele, o
+        texto da página não se monta, e o erro diz por quê.
+    EN: The run's model whose short name starts with the prefix.
+    """
+    achados = [m for m in modelos if m.startswith(prefixo)]
+    if len(achados) != 1:
+        raise SystemExit(f"ERRO esperava um modelo com o prefixo {prefixo} entre {sorted(modelos)}, achei {achados}")
+    return achados[0]
+
+
+def secao_da_execucao(resultado: dict, hipoteses: dict, confirmatoria: int) -> list[str]:
     """PT: a seção de uma execução / EN: one run's section"""
     meta, modelos = resultado["metadata"], resultado["modelos"]
     execucao = meta["execucao"]
     linhas = [
-        f"## {TITULO[execucao]}",
+        f"## {titulo(execucao, confirmatoria)}",
         "",
         f"Variação do instrumento: {', '.join(meta['variacao'])}. Retrato do esquema estrela: "
         f"`{meta['mes_de_referencia']}`. Dados em `evaluation/experimento/execucao-{execucao}/`.",
         "",
     ]
     if execucao == 1:
+        # PT: as abstenções saem dos registros publicados (#120).
+        # EN: abstentions come from the published records.
+        abstencoes = abstencoes_publicadas(execucao)
+        gemma, qwen = (abstencoes[_modelo_de_prefixo(modelos, p)] for p in ("gemma", "qwen"))
+        por_modelo = meta["perguntas"] * len(CONDICOES) * meta["execucoes_por_pergunta"]
         linhas += [
             "Esta execução falhou no controle de qualidade do instrumento: a gramática do Ollama gerava as chaves "
             "do JSON em ordem alfabética, e o modelo escrevia o motivo da abstenção antes de interpretar a pergunta "
-            "e antes do SQL. O Gemma se absteve em 713 das 820 execuções e o Qwen em 817, quase igual nas quatro "
-            "condições, e quase não há par discordante. "
+            f"e antes do SQL. O Gemma se absteve em {gemma} das {por_modelo} execuções e o Qwen em {qwen}, quase "
+            "igual nas quatro condições, e quase não há par discordante. "
             "O resultado sai como foi registrado e não informa sobre as hipóteses "
             "([ADR 0032](adr/0032-emenda-do-instrumento-do-experimento.md)).",
             "",
@@ -302,9 +329,10 @@ def secao_da_execucao(resultado: dict, hipoteses: dict) -> list[str]:
         f"- Execuções repetidas por erro de servidor: {len(resultado['repeticoes_por_servidor'])} (ADR 0031).",
         "",
     ]
-    if execucao == 2:
-        # PT: a correção da execução 2 julgou só o que decide (ADR 0032).
-        # EN: run 2 grading judged only what decides the majority.
+    if execucao != 1:
+        # PT: da execução 2 em diante, a correção julga só o que decide
+        #     (ADR 0032).
+        # EN: from run 2 on, grading judges only what decides the majority.
         linhas[-1:-1] = ["- A correção às cegas julgou só o que decide a maioria de 3 em 5: nas perguntas já "
                          "decididas, as execuções não julgadas contam como não certas, então a contagem de 0 a 5 e a "
                          "parcela em que as 5 concordam são mínimas. O acerto de cada pergunta não muda."]
@@ -331,11 +359,57 @@ def secao_da_execucao(resultado: dict, hipoteses: dict) -> list[str]:
     return linhas
 
 
+def comparacao_entre_execucoes(resultados: dict[int, dict]) -> list[str]:
+    """
+    PT: As perguntas certas por execução, modelo e condição, lado a lado
+        (#120, decisão de 2026-10-23). É descritiva: entre as execuções
+        mudaram o instrumento e a versão do Ollama, e nenhum teste compara
+        uma execução com outra. Com uma execução só, não sai nada.
+    EN: Right questions per run, model and condition, side by side;
+        descriptive only. Nothing with a single run.
+    """
+    if len(resultados) < 2:
+        return []
+    linhas = [
+        "## As execuções lado a lado",
+        "",
+        "Perguntas certas, de 41, por execução, modelo e condição. A comparação é descritiva: entre uma execução e "
+        "outra mudaram o instrumento e, na 3, a versão do Ollama "
+        "([ADR 0033](adr/0033-correcao-do-instrumento-do-experimento.md)), e nenhum teste compara execuções.",
+        "",
+        "| Execução | Variação | Ollama | Modelo | A | B | C | D |",
+        "|---|---|---|---|---:|---:|---:|---:|",
+    ]
+    for execucao in sorted(resultados, reverse=True):
+        r = resultados[execucao]
+        for nome, m in r["modelos"].items():
+            certas = [str(m["analise"]["condicoes"][c]["perguntas_certas"]) for c in CONDICOES]
+            linhas.append(f"| {execucao} | {', '.join(r['metadata']['variacao'])} | {m['ambiente']['ollama']} | "
+                          f"{nome} | {' | '.join(certas)} |")
+    return [*linhas, ""]
+
+
 def pagina(resultados: dict[int, dict], hipoteses: dict) -> str:
     """
-    PT: docs/experimento.md, com uma seção por execução publicada.
-    EN: The docs page, one section per published run.
+    PT: docs/experimento.md, com uma seção por execução publicada. A
+        confirmatória é a mais nova; as anteriores saem como registradas.
+    EN: The docs page, one section per published run; the newest is
+        confirmatory.
     """
+    confirmatoria = max(resultados)
+    anteriores = sorted(n for n in resultados if n != confirmatoria)
+
+    def lista(e: str) -> str:
+        return ", ".join(map(str, anteriores[:-1])) + f" {e} {anteriores[-1]}"
+
+    if not anteriores:
+        anteriores_pt = anteriores_en = ""
+    elif len(anteriores) == 1:
+        anteriores_pt = f"; a execução {anteriores[0]} sai como foi registrada"
+        anteriores_en = f"; run {anteriores[0]} is reported as registered"
+    else:
+        anteriores_pt = f"; as execuções {lista('e')} saem como foram registradas"
+        anteriores_en = f"; runs {lista('and')} are reported as registered"
     linhas = [
         "# Experimento 2x2: ontologia contra documentos",
         "",
@@ -345,21 +419,23 @@ def pagina(resultados: dict[int, dict], hipoteses: dict) -> str:
         f"PT: O resultado do experimento registrado em `{HIPOTESES}` "
         "([ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md), "
         "[ADR 0031](adr/0031-execucao-e-analise-do-experimento.md), "
-        "[ADR 0032](adr/0032-emenda-do-instrumento-do-experimento.md)). As 41 perguntas do "
+        "[ADR 0032](adr/0032-emenda-do-instrumento-do-experimento.md), "
+        "[ADR 0033](adr/0033-correcao-do-instrumento-do-experimento.md)). As 41 perguntas do "
         "`evaluation/questions_v3.yml` rodam nas quatro condições (A só o esquema, B com a ontologia, C com os "
         "trechos dos documentos, D com os dois), nos dois modelos locais, 5 vezes cada. Uma pergunta acerta numa "
         "condição quando 3 ou mais das 5 execuções acertam. O efeito é a diferença pareada de proporções, em "
         "pontos percentuais, com o intervalo de Newcombe de 95% (método 10). As afirmações confirmatórias são da "
-        "execução 2; a execução 1 sai como foi registrada.",
+        f"execução {confirmatoria}{anteriores_pt}.",
         "",
         "EN: Result of the pre-registered 2x2 experiment: 41 questions, four conditions, two local models, "
-        "5 runs each. Confirmatory claims come from run 2; run 1 is reported as registered.",
+        f"5 runs each. Confirmatory claims come from run {confirmatoria}{anteriores_en}.",
         "",
         f"Os gráficos e a memória de cálculo estão no notebook [`notebooks/experimento.ipynb`]({NOTEBOOK}).",
         "",
+        *comparacao_entre_execucoes(resultados),
     ]
     for execucao in sorted(resultados, reverse=True):
-        linhas += secao_da_execucao(resultados[execucao], hipoteses)
+        linhas += secao_da_execucao(resultados[execucao], hipoteses, confirmatoria)
     linhas += [
         "## Como ler",
         "",
@@ -397,7 +473,8 @@ def main() -> None:
         parser.error("--pasta só vale com --parcial: o resultado publicado sai da pasta fixa da execução")
 
     hipoteses = yaml.safe_load((RAIZ / HIPOTESES).read_text(encoding="utf-8"))
-    lidos = ler_publicado(args.execucao) if args.do_publicado else ler_local(args.pasta or PASTA_LOCAL[args.execucao])
+    lidos = (ler_publicado(args.execucao) if args.do_publicado
+             else ler_local(args.pasta or EXECUCOES[args.execucao].pasta))
     resultado, problemas = montar(*lidos, hipoteses, execucao=args.execucao)
     for nome, m in resultado["modelos"].items():
         certas = {c: sum(n >= MAIORIA for n in por.values()) for c, por in m["certas"].items()}

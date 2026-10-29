@@ -42,7 +42,7 @@ metadata:
   gabarito: "evaluation/gabarito.yml"
   comparacao: "evaluation/comparacao.yml"
   registro: "evaluation/registro.yml"
-  adrs: ["0012", "0013", "0015", "0026", "0031", "0032"]
+  adrs: ["0012", "0013", "0015", "0026", "0031", "0032", "0033"]
 
 # -----------------------------------------------------------------------------
 # PT: Condições. A e B não mudam (ADR 0013); C e D são a extensão.
@@ -55,15 +55,17 @@ condicoes:
     contexto mudam, e eles se ligam e desligam (ADR 0012). Todas consultam o
     esquema estrela, e só ele (ADR 0007), no DuckDB, sobre o retrato
     exportado pela #45. A descrição de cada condição é a da
-    docs/especificacao.md, palavra por palavra.
+    docs/especificacao.md, palavra por palavra, menos a de A e a de B, que a
+    errata de 2026-10-24 (#120, ADR 0033) mudou para o instrumento da
+    execução 3.
   A:
     nome: "só o esquema"
     contexto: [esquema]
-    descricao: "O modelo recebe apenas o esquema cru, sem descrição."
+    descricao: "O modelo recebe apenas o esquema descrito: uma frase por tabela e por coluna, só com a forma, sem a ontologia."
   B:
     nome: "só a ontologia"
     contexto: [esquema, ontologia]
-    descricao: "Esquema mais ontologia, descrições e regras de negócio."
+    descricao: "Esquema descrito mais os itens da ontologia mais próximos da pergunta, com as descrições e as regras de negócio."
   C:
     nome: "só os documentos"
     contexto: [esquema, trechos]
@@ -98,13 +100,24 @@ condicoes:
       da #46, escolhido e versionado antes de qualquer execução de C ou D.
       Sem ajuste fino.
 
+  ontologia_recuperada:
+    # PT: da execução 3 em diante (#120, ADR 0033).
+    # EN: from run 3 on.
+    itens_por_pergunta: 5
+    busca: "a mesma dos trechos: o modelo de embeddings do RAG, cosseno exato e o enunciado como está, uma vez antes da geração"
+    texto_do_item: "o YAML do item como vai no prompt, cortado no limite de tokens do modelo de embeddings"
+    escolha_do_numero: "pela cobertura dos ids do fonte nas 30 perguntas de desenvolvimento, sem olhar as 41 do teste"
+    mesmos_itens_em_B_e_D: true
+    registro: "Os ids recuperados são gravados junto de cada execução."
+
   contexto_do_modelo: >
     O mesmo num_ctx nas quatro condições: o menor múltiplo de 4.096 tokens
     que comporta as duas chamadas do fluxo. A segunda é a maior: o maior
     prompt de D, mais o SQL, mais o resultado no limite de linhas do SQL,
     mais o limite de tokens da resposta. Um prompt que passaria do limite não
     é cortado em silêncio: a execução daquela pergunta conta como erro, como
-    as outras falhas.
+    as outras falhas. Na execução 3, o num_ctx continua o da seleção, 53.248,
+    que comporta com folga o prompt menor da V6.
 
 # -----------------------------------------------------------------------------
 # PT: Execução
@@ -120,14 +133,17 @@ execucao:
     O modelo recebe o prompt e escreve um SQL, ou se abstém, num objeto JSON
     com as chaves numa ordem fixa: a interpretação, um plano curto, o SQL, a
     abstenção e o motivo. A mensagem do usuário traz o critério de abstenção
-    e dois exemplos num esquema de brinquedo, e o bloco do esquema traz as
-    colunas que ligam os fatos às dimensões, iguais nas quatro condições.
+    e dois exemplos num esquema de brinquedo. O bloco do esquema traz uma
+    frase por tabela e por coluna, só com a forma, e as colunas que ligam os
+    fatos às dimensões, iguais nas quatro condições. Em B e D, a ontologia
+    entra só com os itens recuperados da pergunta (ontologia_recuperada).
     Com SQL não vazio, o SQL roda, só leitura, com limite de linhas e de
     tempo. Se ele dá erro ou volta vazio, o modelo recebe o problema e
     escreve de novo, uma vez só. O resultado volta ao modelo, que escreve a
     resposta no formato registrado em comparacao.formato_da_resposta. É a
-    variação V4 do instrumento (assistente/variacoes.py, ADR 0032); a
-    execução 1 rodou com o fluxo original, a V−1.
+    variação V6 do instrumento (assistente/variacoes.py, ADR 0033); a
+    execução 1 rodou com o fluxo original, a V−1, e a execução 2 com a V4,
+    sem a descrição do esquema e com a ontologia inteira (ADR 0032).
   falhas: >
     Saída fora do formato, tempo esgotado, erro de SQL e prompt maior que o
     num_ctx contam como erro. O erro de SQL, a guarda e o resultado vazio
@@ -139,15 +155,17 @@ execucao:
   variancia: >
     Por pergunta, condição e modelo, o número de execuções certas, de 0 a 5,
     é publicado, com a distribuição por condição e a parcela de perguntas em
-    que as 5 execuções concordam. Na execução 2, a correção às cegas julgou
-    só o que decide a maioria (ADR 0032): nas perguntas já decididas, a
-    contagem é mínima.
+    que as 5 execuções concordam. Da execução 2 em diante, a correção às
+    cegas julga só o que decide a maioria (ADR 0032): nas perguntas já
+    decididas, a contagem é mínima.
   fixado_antes_da_execucao:
     - "nome, versão exata e quantização de cada modelo (#48, ADR 0026)"
     - "modelo de prompt, com os blocos de contexto (#48)"
     - "num_ctx, limite de tokens da resposta, limite de linhas e de tempo do SQL (#48)"
     - "modelo de embeddings e índice do corpus (#46)"
     - "retrato do esquema estrela no DuckDB, com o mes_de_referencia (#45)"
+    - "o número de itens da ontologia recuperada e as frases do esquema descrito (#120, ADR 0033)"
+    - "a versão do Ollama de cada execução (experimento/execucoes.py, #120)"
 
 # -----------------------------------------------------------------------------
 # PT: Hipóteses (ADR 0013). Cada uma pode ser refutada, e um resultado contra
@@ -245,9 +263,14 @@ estatistica:
     lei geral (ADR 0013). A seleção dos modelos pela condição A puxa contra a
     H1 e a H2, e esse viés é declarado junto do resultado (ADR 0026). A
     execução 1 falhou no controle de qualidade do instrumento e saiu como
-    registrada; a execução 2 usa a V4, escolhida por custo-benefício depois
+    registrada; a execução 2 usou a V4, escolhida por custo-benefício depois
     de uma medida parcial num conjunto de 30 perguntas inventadas (ADR
-    0032).
+    0032), e ficou no piso: de 0 a 3 das 41 perguntas certas em qualquer
+    condição, sem separar as condições. A execução 3 usa a V6, desenhada
+    depois de ver esse piso: a ontologia entra recortada por pergunta em B
+    e D, e o esquema vai descrito nas quatro condições. A V6 foi medida
+    antes só no conjunto de desenvolvimento, e o Ollama passou da 0.40.4 à
+    0.40.9 (ADR 0033).
 
 # -----------------------------------------------------------------------------
 # PT: Regra de comparação com o gabarito (ADR 0015, decisão 7)
