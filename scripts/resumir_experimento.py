@@ -359,6 +359,36 @@ def secao_da_execucao(resultado: dict, hipoteses: dict, confirmatoria: int) -> l
     return linhas
 
 
+def comparacao_entre_execucoes(resultados: dict[int, dict]) -> list[str]:
+    """
+    PT: As perguntas certas por execução, modelo e condição, lado a lado
+        (#120, decisão de 2026-10-23). É descritiva: entre as execuções
+        mudaram o instrumento e a versão do Ollama, e nenhum teste compara
+        uma execução com outra. Com uma execução só, não sai nada.
+    EN: Right questions per run, model and condition, side by side;
+        descriptive only. Nothing with a single run.
+    """
+    if len(resultados) < 2:
+        return []
+    linhas = [
+        "## As execuções lado a lado",
+        "",
+        "Perguntas certas, de 41, por execução, modelo e condição. A comparação é descritiva: entre uma execução e "
+        "outra mudaram o instrumento e, na 3, a versão do Ollama "
+        "([ADR 0033](adr/0033-correcao-do-instrumento-do-experimento.md)), e nenhum teste compara execuções.",
+        "",
+        "| Execução | Variação | Ollama | Modelo | A | B | C | D |",
+        "|---|---|---|---|---:|---:|---:|---:|",
+    ]
+    for execucao in sorted(resultados, reverse=True):
+        r = resultados[execucao]
+        for nome, m in r["modelos"].items():
+            certas = [str(m["analise"]["condicoes"][c]["perguntas_certas"]) for c in CONDICOES]
+            linhas.append(f"| {execucao} | {', '.join(r['metadata']['variacao'])} | {m['ambiente']['ollama']} | "
+                          f"{nome} | {' | '.join(certas)} |")
+    return [*linhas, ""]
+
+
 def pagina(resultados: dict[int, dict], hipoteses: dict) -> str:
     """
     PT: docs/experimento.md, com uma seção por execução publicada. A
@@ -389,7 +419,8 @@ def pagina(resultados: dict[int, dict], hipoteses: dict) -> str:
         f"PT: O resultado do experimento registrado em `{HIPOTESES}` "
         "([ADR 0013](adr/0013-experimento-2x2-ontologia-contra-documentos.md), "
         "[ADR 0031](adr/0031-execucao-e-analise-do-experimento.md), "
-        "[ADR 0032](adr/0032-emenda-do-instrumento-do-experimento.md)). As 41 perguntas do "
+        "[ADR 0032](adr/0032-emenda-do-instrumento-do-experimento.md), "
+        "[ADR 0033](adr/0033-correcao-do-instrumento-do-experimento.md)). As 41 perguntas do "
         "`evaluation/questions_v3.yml` rodam nas quatro condições (A só o esquema, B com a ontologia, C com os "
         "trechos dos documentos, D com os dois), nos dois modelos locais, 5 vezes cada. Uma pergunta acerta numa "
         "condição quando 3 ou mais das 5 execuções acertam. O efeito é a diferença pareada de proporções, em "
@@ -401,6 +432,7 @@ def pagina(resultados: dict[int, dict], hipoteses: dict) -> str:
         "",
         f"Os gráficos e a memória de cálculo estão no notebook [`notebooks/experimento.ipynb`]({NOTEBOOK}).",
         "",
+        *comparacao_entre_execucoes(resultados),
     ]
     for execucao in sorted(resultados, reverse=True):
         linhas += secao_da_execucao(resultados[execucao], hipoteses, confirmatoria)

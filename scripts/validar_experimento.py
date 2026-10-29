@@ -317,6 +317,16 @@ def checar_executor(por_id: dict[str, dict]) -> list[str]:
                 erros.append(f"itens da ontologia: o cache de {descricao} foi aceito")
             except SystemExit:
                 pass
+        # PT: uma pasta gravada noutra versão do Ollama não recebe execuções
+        #     novas (#120).
+        # EN: a folder recorded on another Ollama version is refused.
+        ambiente = pasta / "execucoes" / modelo["nome"] / "ambiente.json"
+        ambiente.write_text(json.dumps({"variacao": "V-1", "perguntas": "teste", "ollama": "0.0.1"}), encoding="utf-8")
+        try:
+            executar_experimento.conferir_pasta(pasta, modelo["nome"], "V-1", p, "teste", None, "0.0.2")
+            erros.append("ollama: a pasta de outra versão do Ollama foi aceita")
+        except SystemExit:
+            pass
     return erros
 
 
@@ -393,8 +403,9 @@ def checar_sintetico(hipoteses: dict, tipos: dict[str, str]) -> list[str]:
 def checar_resultado(resultado: dict, hipoteses: dict, tipos: dict[str, str]) -> list[str]:
     erros = []
     execucao = resultado["metadata"].get("execucao")
-    # PT: as duas execuções rodam com os modelos do parametros.yml (ADR 0032).
-    # EN: both runs use the parametros.yml models.
+    # PT: todas as execuções rodam com os modelos do parametros.yml (ADR 0032
+    #     e 0033).
+    # EN: every run uses the parametros.yml models.
     esperados = sorted(m["nome"] for m in executar_experimento.modelos_do_experimento())
     if sorted(resultado["modelos"]) != esperados:
         erros.append(f"resultado: modelos {list(resultado['modelos'])} na execução {execucao}, esperado {esperados}")
@@ -408,9 +419,10 @@ def checar_resultado(resultado: dict, hipoteses: dict, tipos: dict[str, str]) ->
             erros.append(f"resultado: {nome} rodou no Ollama {(m.get('ambiente') or {}).get('ollama')} na execução "
                          f"{execucao}, registrado {EXECUCOES[execucao].ollama}")
         for c, por in m["execucoes"].items():
-            # PT: na execução 1, tudo julgado; na 2, pendente só em
-            #     pergunta já decidida pela maioria (ADR 0032).
-            # EN: run 1 fully judged; run 2 pending only in decided questions.
+            # PT: na execução 1, tudo julgado; da 2 em diante, pendente só
+            #     em pergunta já decidida pela maioria (ADR 0032).
+            # EN: run 1 fully judged; from run 2 on, pending only in decided
+            #     questions.
             if any(len(s) != acerto.EXECUCOES_POR_PERGUNTA for s in por.values()):
                 erros.append(f"resultado: {nome} {c} com pergunta sem 5 execuções")
             if any("pendente" in s and (execucao == 1 or acerto.acerto_da_pergunta(s) == "pendente")
@@ -524,6 +536,14 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
                         return copia
         raise SystemExit("ERRO a execução 2 publicada não tem pergunta com duas certas e um errado")
 
+    def resultado_noutra_versao_do_ollama():
+        # PT: um resultado publicado com a versão do Ollama trocada (#120).
+        # EN: a published result with its Ollama version swapped.
+        copia = copy.deepcopy(d)
+        modelo = next(iter(copia.resultados[max(copia.resultados)]["modelos"].values()))
+        modelo["ambiente"]["ollama"] = "0.0.1"
+        return copia
+
     def sem_h5(*args, **kwargs):
         analise = _analisar_original(*args, **kwargs)
         analise["hipoteses"].pop("H5")
@@ -567,12 +587,17 @@ def autoteste(d: Dados, g: Gabarito) -> list[str]:
             executar_experimento, "itens_da_pergunta",
             lambda pasta, id_, pergunta, buscar_itens, assinatura: [i["id"] for i in buscar_itens(pergunta)]),
          "cache de outra busca"),
+        ("pasta que aceita outra versão do Ollama", lambda: d, mock.patch.object(
+            executar_experimento, "conferir_pasta", lambda *args, **kwargs: None), "outra versão do Ollama"),
     ]
     if d.resultados:
         negativos.append(("resultado adulterado numa contagem", resultado_adulterado, None, "resultado"))
     if 2 in d.resultados:
         negativos.append(("pendente em pergunta não decidida na execução 2", pendente_que_decide, None,
                           "sem julgamento que decide"))
+    if d.resultados:
+        negativos.append(("resultado noutra versão do Ollama", resultado_noutra_versao_do_ollama, None,
+                          "rodou no Ollama"))
     falhas = []
     for descricao, montar, remendo, trecho in negativos:
         with remendo or contextlib.nullcontext():

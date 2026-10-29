@@ -24,14 +24,15 @@ PT: A correção às cegas (evaluation/hipoteses.yml, comparacao.correcao),
 
     Com --experimento (#50, ADR 0031), lê a pasta da execução. Na execução
     1, julga todas as pendentes, decididas ou não, para a contagem de 0 a 5
-    sair exata; na execução 2, só as que ainda decidem a maioria, como na
-    seleção (ADR 0032). Execuções com a mesma visão cega (o que
+    sair exata; da execução 2 em diante, só as que ainda decidem a maioria,
+    como na seleção (ADR 0032). Execuções com a mesma visão cega (o que
     o item mostra, mais os aspectos a julgar e as leituras que bateram)
     viram um item só, e o julgamento vale para todas elas. A visão não tem
     modelo nem condição, e os itens vêm embaralhados por ela. O --execucao
-    escolhe a pasta (1: data/experimento; 2: data/experimento/execucao-2,
-    #118), e os modelos saem do ambiente.json de cada modelo nela, não do
-    parametros.yml, que muda entre as duas execuções.
+    escolhe a pasta pelo experimento/execucoes.py (1: data/experimento;
+    2: data/experimento/execucao-2; 3: data/experimento/execucao-3, #120),
+    e os modelos saem do ambiente.json de cada modelo nela, não do
+    parametros.yml, que muda entre as execuções.
 
 EN: Blind grading in the terminal, one item at a time. Only what the script
     cannot decide and can still change a question's result is judged:
@@ -40,12 +41,13 @@ EN: Blind grading in the terminal, one item at a time. Only what the script
     excerpts; citations are stripped; items are shuffled under opaque ids.
     Each judgment is saved at once and the command resumes where it stopped.
     --experimento judges every pending run in run 1 and only deciding runs
-    in run 2, merging runs with the same blind view into one item; --execucao picks the folder, and
-    the models come from its ambiente.json files.
+    from run 2 on, merging runs with the same blind view into one item;
+    --execucao picks the folder from experimento/execucoes.py, and the
+    models come from its ambiente.json files.
 
 Uso / Usage:
     uv run python -m correcao.as_cegas
-    uv run python -m correcao.as_cegas --experimento --execucao 2
+    uv run python -m correcao.as_cegas --experimento --execucao 3
 """
 
 from __future__ import annotations

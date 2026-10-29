@@ -146,8 +146,9 @@ def variacao_registrada(arquivo: Path = PARAMETROS) -> str:
 def parametros_da_execucao(m: dict) -> Parametros:
     """
     PT: Os parâmetros de um modelo registrado, do assistente/parametros.yml.
-        O num_ctx de 53.248 serve da V−1 à V4: o pior caso medido da V4 no
-        Gemma é de 53.043 tokens (ADR 0032).
+        O num_ctx de 53.248 serve da V−1 à V6: o pior caso medido da V4 no
+        Gemma é de 53.043 tokens (ADR 0032), e o prompt da V6, com a
+        ontologia recortada, é bem menor (ADR 0033).
     EN: A registered model's parameters, from parametros.yml.
     """
     return parametros.carregar(modelo=m["ollama"])
@@ -195,14 +196,15 @@ def assinatura_dos_enunciados(por_id: dict[str, dict]) -> str:
 
 
 def conferir_pasta(pasta: Path, modelo: str, variacao: str, p: Parametros, perguntas_: str = "teste",
-                   assinatura: str | None = None) -> None:
+                   assinatura: str | None = None, ollama: str | None = None) -> None:
     """
     PT: Uma pasta que já tem execuções de outra variação, de outro conjunto
-        de perguntas, de outros enunciados ou com outros parâmetros não
-        recebe execuções novas. O ambiente sem variação conta como V−1, e
-        sem conjunto, como o teste (é o da execução 1).
+        de perguntas, de outros enunciados, com outros parâmetros ou de
+        outra versão do Ollama não recebe execuções novas. O ambiente sem
+        variação conta como V−1, e sem conjunto, como o teste (é o da
+        execução 1).
     EN: A folder holding runs of another variant, question set, question
-        texts or parameters is refused.
+        texts, parameters or Ollama version is refused.
     """
     arquivo = pasta / "execucoes" / modelo / "ambiente.json"
     if not arquivo.exists():
@@ -210,6 +212,12 @@ def conferir_pasta(pasta: Path, modelo: str, variacao: str, p: Parametros, pergu
     ambiente = json.loads(arquivo.read_text(encoding="utf-8"))
     if (ambiente.get("variacao") or "V-1") != variacao:
         raise SystemExit(f"ERRO {arquivo} é da {ambiente.get('variacao') or 'V-1'}, não da {variacao}")
+    # PT: outra versão pode mudar a gramática e a geração (ADR 0032); a
+    #     pasta não mistura duas, e o ambiente não reescreve a anterior (#120).
+    # EN: another version may change grammar and generation; no mixing.
+    if ollama and ambiente.get("ollama") and ambiente["ollama"] != ollama:
+        raise SystemExit(f"ERRO {arquivo} foi gravado no Ollama {ambiente['ollama']}, e o no ar é o {ollama}: rode "
+                         "numa pasta nova (--pasta)")
     if (ambiente.get("perguntas") or "teste") != perguntas_:
         raise SystemExit(f"ERRO {arquivo} é do conjunto {ambiente.get('perguntas') or 'teste'}, não do {perguntas_}")
     if assinatura and ambiente.get("enunciados") and ambiente["enunciados"] != assinatura:
@@ -572,7 +580,7 @@ def main() -> None:
             raise SystemExit("ERRO assistente/parametros.yml ainda provisório")
         if args.repeticoes:
             p = dataclasses.replace(p, seeds=p.seeds[:args.repeticoes])
-        conferir_pasta(pasta, m["nome"], variacao, p, args.perguntas, assinatura)
+        conferir_pasta(pasta, m["nome"], variacao, p, args.perguntas, assinatura, versao)
         if not faltam_execucoes(m, p, por_id, pasta):
             print(f"\n{m['nome']}: nada a rodar em {pasta}")
             continue
